@@ -345,26 +345,28 @@ watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => 
 
 //console.log("====>: chrome.runtime.onMessage.hasListeners(windowsUpdatedListener)", chrome.runtime.onMessage.hasListener(windowsUpdatedListener))
 //chrome.runtime.onMessage.addListener(windowsUpdatedListener)
-chrome.windows.onCreated.addListener((w: chrome.windows.Window) => updateWindows())
-chrome.windows.onRemoved.addListener((wId: number) => updateWindows())
+if (inBexMode()) {
+  chrome.windows.onCreated.addListener((w: chrome.windows.Window) => updateWindows())
+  chrome.windows.onRemoved.addListener((wId: number) => updateWindows())
 
 
-chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
-  //console.log("***here we are", tabId, removeInfo)
-  useWindowsStore().setup('got window-updated message')
-    .then(() => windowRows.value = calcWindowRows())
-    .catch((err) => handleError(err))
-})
+  chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
+    //console.log("***here we are", tabId, removeInfo)
+    useWindowsStore().setup('got window-updated message')
+      .then(() => windowRows.value = calcWindowRows())
+      .catch((err) => handleError(err))
+  })
 
 
-chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-  useWindowsStore().setup('got window-updated message')
-    .then(() => windowRows.value = calcWindowRows())
-    .catch((err) => {
-      console.log("could not yet calcWindowRows: " + err)
-      //handleError(err)
-    })
-})
+  chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+    useWindowsStore().setup('got window-updated message')
+      .then(() => windowRows.value = calcWindowRows())
+      .catch((err) => {
+        console.log("could not yet calcWindowRows: " + err)
+        //handleError(err)
+      })
+  })
+}
 
 watchEffect(() => {
   // adding potentially new windows from 'open in window' logic
@@ -385,7 +387,7 @@ watchEffect(() => {
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 //const openOptionsPage = () => window.open('#/mainpanel/settings');
 const openOptionsPage = () => {
-  ($q.platform.is.cordova || $q.platform.is.capacitor) ?
+  ($q.platform.is.cordova || $q.platform.is.capacitor || !$q.platform.is.bex) ?
     //Browser.open({ url: 'http://capacitorjs.com/' }).catch((err) => console.log("error", err)) :
     router.push("/settings") :
     NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/settings')], undefined, [], true, true)

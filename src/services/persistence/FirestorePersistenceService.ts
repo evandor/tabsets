@@ -19,8 +19,6 @@ import {LocalStorage} from "quasar";
 import {APP_INSTALLATION_ID} from "boot/constants";
 import {useDB} from "src/services/usePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {Entity} from "src/models/Entity";
-import {Api} from "src/models/Api";
 import {useUiStore} from "stores/uiStore";
 
 function tabsetDoc(tabsetId: string) {
@@ -127,59 +125,6 @@ class FirestorePersistenceService implements PersistenceService {
     useUiStore().syncing = true
     await deleteDoc(spaceDoc(entityId))
     useUiStore().syncing = false
-  }
-
-  // === Entities ======================================
-
-  saveEntity(entity: Entity) {
-    setDoc(entityDoc(entity.id), JSON.parse(JSON.stringify(entity)))
-  }
-
-  async deleteEntity(entityId: string) {
-    await deleteDoc(entityDoc(entityId))
-  }
-
-  async findEntityById(entityId: string): Promise<Entity> {
-    const ts = await getDoc(entityDoc(entityId))
-    return Promise.resolve(ts.data() as Entity)
-  }
-
-  async getEntities(): Promise<Entity[]> {
-    const entities: Entity[] = []
-    const fromDb = await getDocs(entitiesCollection())
-    fromDb.forEach((doc: any) => {
-      let newItem = doc.data() as Entity
-      newItem.id = doc.id;
-      //useSpacesStore().addSpace(newItem)
-      entities.push(newItem)
-    })
-    return Promise.resolve(entities);
-  }
-
-  // === APIs ======================================
-
-  async findApiById(apiId: string): Promise<Api> {
-    const ts = await getDoc(apiDoc(apiId))
-    return Promise.resolve(ts.data() as Api)
-  }
-
-  async getApis(): Promise<Api[]> {
-    const apis: Api[] = []
-    const fromDb = await getDocs(apisCollection())
-    fromDb.forEach((doc: any) => {
-      let newItem = doc.data() as Api
-      newItem.id = doc.id;
-      apis.push(newItem)
-    })
-    return Promise.resolve(apis);
-  }
-
-  saveApi(api: Api): void {
-    setDoc(apiDoc(api.id), JSON.parse(JSON.stringify(api)))
-  }
-
-  async deleteApi(apiId: string) {
-    await deleteDoc(apiDoc(apiId))
   }
 
   /**

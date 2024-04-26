@@ -8,7 +8,6 @@
                       group="tabsets"
                       :default-opened="tabsStore.tabsets.size === 1"
                       switch-toggle-side
-                      expand-icon-toggle
                       dense-toggle
                       v-model="selected_model[tabset.id]"
                       @update:model-value="val => updateSelectedTabset(tabset.id, val, index)">
@@ -71,17 +70,19 @@
                         @mouseover="hoveredTabset = tabset.id"
                         @mouseleave="hoveredTabset = undefined">
           <q-item-label>
-            <!--                <q-icon-->
-            <!--                  id="foo"-->
-            <!--                  v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"-->
-            <!--                  @click.stop="saveInTabset(tabset.id, tabset.folderActive)"-->
-            <!--                  class="q-mr-none"-->
-            <!--                  name="o_bookmark_add"-->
-            <!--                  :class="alreadyInTabset() ? '':'cursor-pointer'"-->
-            <!--                  :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"-->
-            <!--                  size="xs"-->
-            <!--                  data-testid="saveInTabsetBtn">-->
-            <!--                </q-icon>-->
+
+            <!-- workaround for adding URLs in non-bex environments -->
+            <q-btn outline
+                   v-if="!inBexMode()"
+                   @click.stop="$q.dialog({component: AddUrlDialog})"
+                   class="q-ma-none q-px-sm q-py-none cursor-pointer"
+                   name="o_bookmark_add"
+                   color="warning"
+                   size="xs">
+              <div>Add URL</div>
+            </q-btn>
+            <!-- workaround for adding URLs in non-bex environments -->
+
             <q-btn outline
                    v-if="showAddTabButton(tabset as Tabset, currentChromeTab)"
                    @click.stop="saveInTabset(tabset.id, tabset.folderActive)"
@@ -252,6 +253,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 
 const props = defineProps({
   tabsets: {type: Array as PropType<Array<Tabset>>, required: true}
@@ -633,6 +635,15 @@ const saveInTabset = (tabsetId: string, activeFolder: string | undefined) => {
     // if (alreadyInTabset()) {
     //   return
     // }
+    useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS, activeFolder))
+  } else {
+    console.warn("expected to find tabsetId", tabsetId)
+  }
+}
+
+const addURL = (tabsetId: string, activeFolder: string | undefined) => {
+  const useTS: Tabset | undefined = useTabsetService().getTabset(tabsetId)
+  if (useTS) {
     useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS, activeFolder))
   } else {
     console.warn("expected to find tabsetId", tabsetId)

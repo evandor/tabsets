@@ -2,15 +2,11 @@ import {Tabset} from "src/models/Tabset";
 import {Tab} from "src/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
-import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {MetaLink} from "src/models/MetaLink";
-import {Window} from "src/windows/models/Window";
 import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
-import {Entity} from "src/models/Entity";
-import {Api} from "src/models/Api";
 
 interface PersistenceService {
 
@@ -55,11 +51,6 @@ interface PersistenceService {
   addNotification(notification: Notification): Promise<any>
   notificationRead(notificationId: string): Promise<void>
 
-  // getSuggestions(): Promise<Suggestion[]>
-  // addSuggestion(suggestion: Suggestion): Promise<any>
-  // removeSuggestion(id: string): any;
-  // setSuggestionState(id: string, state: SuggestionState): any;
-
   compactDb(): Promise<any>
 
   getActiveFeatures(): Promise<string[]>
@@ -70,13 +61,6 @@ interface PersistenceService {
   getGroups(): Promise<chrome.tabGroups.TabGroup[]>
   deleteGroupByTitle(title: string): Promise<void>
 
-  // addWindow(window: Window): Promise<any>
-  // getWindows(): Promise<Window[]>
-  // getWindow(windowId: number): Promise<Window | undefined>
-  // removeWindow(windowId: number): Promise<void>
-  // updateWindow(window: Window): Promise<void>
-  // upsertWindow(window: Window): Promise<void>
-
   getMessages(): Promise<Message[]>
   addMessage(msg: Message):void
 
@@ -84,16 +68,6 @@ interface PersistenceService {
   upsertAccount(account: Account):void
 
   clear(name: string):any
-
-  saveEntity(entity: Entity): void
-  getEntities(): Promise<Entity[]>
-  findEntityById(id: string): Promise<Entity>
-  deleteEntity(entityId: string): Promise<void>;
-
-  saveApi(api: Api): void
-  getApis(): Promise<Api[]>
-  findApiById(id: string): Promise<Api>
-  deleteApi(apiId: string): Promise<void>;
 
 }
 

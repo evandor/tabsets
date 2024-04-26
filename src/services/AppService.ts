@@ -25,8 +25,6 @@ import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
 import FsPersistenceService from "src/services/persistence/FirestorePersistenceService";
-import {useEntitiesStore} from "stores/entitiesStore";
-import {useApisStore} from "stores/apisStore";
 
 function dbStoreToUse(st: SyncType) {
   const isAuthenticated = useAuthStore().isAuthenticated()
@@ -98,7 +96,7 @@ class AppService {
     //useAuthStore().upsertAccount(account)
 
     await useNotificationsStore().initialize(useDB(undefined).db)
-    useSuggestionsStore().init(useDB(undefined).db)
+    useSuggestionsStore().init()
     await messagesStore.initialize(useDB(undefined).db)
 
     tabsetService.setLocalStorage(localStorage)
@@ -151,18 +149,10 @@ class AppService {
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsStore = useTabsStore()
-    const entitiesStore = useEntitiesStore()
-    const apisStore = useApisStore()
 
     const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
     await spacesStore.initialize(spacesPersistence)
     await useTabsetService().init(store, false)
-
-    await entitiesStore.initialize(store)
-    // await useEntitiesService().init(store)
-
-    await apisStore.initialize(store)
-    //await useApisStore().init(store)
 
     ChromeApi.init(router)
 
