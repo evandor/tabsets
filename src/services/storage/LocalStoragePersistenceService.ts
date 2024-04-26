@@ -11,8 +11,6 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
-import {Entity} from "src/models/Entity";
-import {Api} from "src/models/Api";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -247,34 +245,5 @@ export class LocalStoragePersistenceService implements PersistenceService {
     console.warn("not implemented")
   }
 
-  saveEntity (entity: Entity): void {
-  }
-
-  findEntityById(id: string): Promise<Entity> {
-    return Promise.resolve(new Entity("0","..."));
-  }
-
-  getEntities(): Promise<Entity[]> {
-    return Promise.resolve([]);
-  }
-
-  deleteApi(apiId: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
-  deleteEntity(entityId: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
-  findApiById(id: string): Promise<Api> {
-    return Promise.reject("undefined");
-  }
-
-  getApis(): Promise<Api[]> {
-    return Promise.resolve([]);
-  }
-
-  saveApi(api: Api): void {
-  }
 
 }

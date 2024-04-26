@@ -139,7 +139,6 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
 import {AppFeatures} from "src/models/AppFeatures";
-import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useSettingsStore} from "src/stores/settingsStore"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
@@ -153,10 +152,7 @@ import {useAuthStore} from "stores/authStore";
 const route = useRoute();
 const router = useRouter();
 const localStorage = useQuasar().localStorage
-const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
 const permissionsStore = usePermissionsStore()
-const uiStore = useUiStore()
 
 const title = ref('')
 const {sendMsg} = useUtils()
@@ -445,22 +441,6 @@ text.set(FeatureIdent.TABSETS_SHARING.toLowerCase(), {
   needsAccount: true,
   permissions: []
 })
-// text.set(FeatureIdent.CONTEXT_MENUS.toLowerCase(), {
-//   name: 'Tabsets Context Menus on Websites',
-//   description: 'Integrate more deeply with Tabsets by using context menus. This might be available automatically when using some other features.',
-//   permissions: []
-// })
-text.set(FeatureIdent.ENTITY_MANAGER.toLowerCase(), {
-  name: 'Entitiy Manager',
-  description: 'Define your own entities to manage',
-  permissions: []
-})
-text.set(FeatureIdent.API_MANAGER.toLowerCase(), {
-  name: 'API Manager',
-  description: 'Access to APIs',
-  permissions: []
-})
-
 
 watchEffect(() => {
     feature.value = route.params.feature as string
