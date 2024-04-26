@@ -39,7 +39,6 @@ import {FeatureIdent} from "src/models/AppFeature";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {useRoute} from "vue-router";
 import {Tabset, TabsetType} from "src/models/Tabset";
-import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 
 const {inBexMode} = useUtils()
 

@@ -21,7 +21,6 @@ import JsUtils from "src/utils/JsUtils";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
-import {DynamicTabSourceType} from "src/models/DynamicTabSource";
 import {useUiStore} from "stores/uiStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
@@ -621,23 +620,7 @@ export function useTabsetService() {
   }
 
   const tabsToShow = (tabset: Tabset): Tab[] => {
-    if (tabset.type === TabsetType.DYNAMIC &&
-      tabset.dynamicTabs && tabset.dynamicTabs.type === DynamicTabSourceType.TAG) {
-      const results: Tab[] = []
-      //console.log("checking", tabset.dynamicTabs)
-      const tag = tabset.dynamicTabs?.config['tags' as keyof object][0]
-      //console.log("using tag", tag)
-      const tabsets: Tabset[] = [...useTabsStore().tabsets.values()] as Tabset[]
-      _.forEach(tabsets, (tabset: Tabset) => {
-        _.forEach(tabset.tabs, (tab: Tab) => {
-          if (tab.tags?.indexOf(tag) >= 0) {
-            results.push(tab)
-          }
-        })
-      })
-      //return _.orderBy(results, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-      return results
-    }
+
     let tabs: Tab[] = tabset.tabs
 
 
