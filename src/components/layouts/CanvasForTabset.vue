@@ -37,14 +37,14 @@ import iDraw from 'idraw';
 import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute} from "vue-router";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsStore} from "stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import IDrawUtils from "src/utils/IDrawUtils";
 import {uid} from "quasar";
 import _ from "lodash"
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
 const route = useRoute()
 

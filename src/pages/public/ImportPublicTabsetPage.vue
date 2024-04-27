@@ -49,7 +49,7 @@
 import {onMounted, ref} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {uid, useMeta} from "quasar";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useTabsetService} from "src/services/TabsetService2";
 import _ from "lodash"

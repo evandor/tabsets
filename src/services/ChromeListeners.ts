@@ -1,7 +1,7 @@
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {HTMLSelection, Tab} from "src/models/Tab";
+import {HTMLSelection, Tab} from "src/tabsets/models/Tab";
 import {uid, useQuasar} from "quasar";
 import throttledQueue from 'throttled-queue';
 import {useWindowsStore} from "src/windows/stores/windowsStore";
@@ -21,6 +21,7 @@ import "rangy/lib/rangy-serializer";
 import {useAuthStore} from "stores/authStore";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const {
   saveCurrentTabset,
@@ -28,9 +29,10 @@ const {
   saveText,
   saveMetaLinksFor,
   saveLinksFor,
-  addToTabsetId,
-  saveThumbnailFor
+  addToTabsetId
 } = useTabsetService()
+
+const {saveThumbnailFor} = useThumbnailsService()
 
 const {sanitize, sendMsg, inBexMode} = useUtils()
 

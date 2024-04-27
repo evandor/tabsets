@@ -30,7 +30,7 @@ import {uid, useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
 
 defineEmits([

@@ -1,5 +1,5 @@
-import {Tabset} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
+import {Tabset} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
 import {Notification} from "src/models/Notification";
 import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
@@ -17,12 +17,6 @@ interface PersistenceService {
   saveTabset(tabset: Tabset): Promise<any>
   deleteTabset(tabsetId: string):Promise<any>
   cleanUpTabsets(): Promise<void>
-
-  updateThumbnail(url: string):Promise<void>
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string):Promise<void>
-  getThumbnail(url: string):Promise<string>
-  deleteThumbnail(url: string):Promise<void>
-  cleanUpThumbnails():Promise<void>
 
   getContent(url: string):Promise<object>
   updateContent(url: string):Promise<object>

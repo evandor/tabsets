@@ -2,10 +2,10 @@ import {defineStore} from 'pinia';
 import Fuse from 'fuse.js'
 import _ from "lodash"
 import {SearchDoc} from "src/models/SearchDoc";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import {ref} from "vue";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import throttledQueue from "throttled-queue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";

@@ -155,7 +155,7 @@
 
 <script lang="ts" setup>
 
-import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {PropType, ref} from "vue";
@@ -178,7 +178,7 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 
 const {inBexMode} = useUtils()
 

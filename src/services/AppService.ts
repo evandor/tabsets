@@ -25,6 +25,8 @@ import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
 import FsPersistenceService from "src/services/persistence/FirestorePersistenceService";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
 
 function dbStoreToUse(st: SyncType) {
   const isAuthenticated = useAuthStore().isAuthenticated()
@@ -153,6 +155,11 @@ class AppService {
     const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
     await spacesStore.initialize(spacesPersistence)
     await useTabsetService().init(store, false)
+
+    const thumbnailsPersistence = IndexedDbThumbnailsPersistence
+      //store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
+    await thumbnailsPersistence.init()
+    await useThumbnailsService().init(thumbnailsPersistence)
 
     ChromeApi.init(router)
 

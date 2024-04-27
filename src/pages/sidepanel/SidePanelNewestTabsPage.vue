@@ -51,8 +51,8 @@
 
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
-import {Tabset} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
+import {Tabset} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {formatDistance} from "date-fns";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";

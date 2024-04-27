@@ -15,9 +15,9 @@ import 'regenerator-runtime/runtime'
 import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {useUtils} from "src/services/Utils";
-import {Tabset, TabsetSharing} from "src/models/Tabset";
+import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 
 import EditorJsConfig from "src/utils/EditorJsConfig";

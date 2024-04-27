@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {PropType, ref} from "vue";
 import {useQuasar} from "quasar";
 import _ from "lodash"
@@ -38,7 +38,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {useRoute} from "vue-router";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 
 const {inBexMode} = useUtils()
 

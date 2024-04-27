@@ -1,6 +1,6 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import PdfService from "src/services/PdfService";

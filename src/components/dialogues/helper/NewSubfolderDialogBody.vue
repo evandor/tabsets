@@ -54,7 +54,7 @@
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {QForm, useDialogPluginComponent} from "quasar";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useUtils} from "src/services/Utils";

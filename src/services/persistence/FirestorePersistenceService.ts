@@ -4,9 +4,9 @@ import {Space} from "src/spaces/models/Space";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {MetaLink} from "src/models/MetaLink";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Notification} from "src/models/Notification";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
@@ -158,10 +158,6 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject(undefined);
   }
 
-  cleanUpThumbnails(): Promise<void> {
-    return Promise.reject(undefined);
-  }
-
   clear(name: string): any {
   }
 
@@ -181,10 +177,6 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   deleteMHtml(id: string): Promise<void> {
-    return Promise.reject(undefined);
-  }
-
-  deleteThumbnail(url: string): Promise<void> {
     return Promise.reject(undefined);
   }
 
@@ -292,23 +284,12 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject(undefined);
   }
 
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
-    return this.indexedDB.saveThumbnail(tab, thumbnail)
-  }
-
-  setSuggestionState(id: string, state: SuggestionState): any {
-  }
-
   updateContent(url: string): Promise<object> {
     return Promise.reject({});
   }
 
   updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
     return Promise.reject(undefined);
-  }
-
-  updateThumbnail(url: string): Promise<void> {
-    return this.indexedDB.updateThumbnail(url)
   }
 
   getAccount(accountId: string): Promise<Account> {

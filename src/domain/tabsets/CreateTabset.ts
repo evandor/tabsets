@@ -11,7 +11,7 @@ import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggesti
 import Analytics from "src/utils/google-analytics";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {TabsetType} from "src/models/Tabset";
+import {TabsetType} from "src/tabsets/models/Tabset";
 
 const {sendMsg} = useUtils()
 

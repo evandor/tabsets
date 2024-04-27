@@ -1,4 +1,4 @@
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {TabsetColumn} from "src/models/TabsetColumn";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {ListDetailLevel} from "stores/uiStore";

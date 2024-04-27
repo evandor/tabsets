@@ -1,6 +1,6 @@
 // export default interface Types {
 
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 
 export type Programmer = {
   name: string;

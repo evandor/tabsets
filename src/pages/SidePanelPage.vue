@@ -134,9 +134,9 @@
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash"
-import {Tabset, TabsetSharing, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {LocalStorage, scroll} from "quasar";

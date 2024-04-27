@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import _ from "lodash";
 import {onMounted, ref, watchEffect, watch} from "vue"
 import OpenTabCard from "components/layouts/OpenTabCard.vue";

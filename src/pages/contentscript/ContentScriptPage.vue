@@ -40,10 +40,10 @@ import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabsetCommand"
-import {Tab} from "src/models/Tab";
+import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
+import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 
 const {sendMsg} = useUtils()
 

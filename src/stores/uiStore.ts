@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash"
 import {LocalStorage, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";

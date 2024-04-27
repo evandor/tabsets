@@ -4,7 +4,7 @@ import TabsetService from "src/services/TabsetService";
 import {useUtils} from "src/services/Utils";
 import {ListDetailLevel} from "stores/uiStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const {sendMsg} = useUtils()

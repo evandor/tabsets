@@ -19,7 +19,7 @@ import NewSpaceDialog from "src/spaces/dialogues/NewSpaceDialog.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash";
 import {Space} from "src/spaces/models/Space";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()

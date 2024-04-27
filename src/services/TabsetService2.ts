@@ -1,13 +1,13 @@
 import {STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";
 import {uid} from "quasar";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useSearchStore} from "src/stores/searchStore";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {MetaLink} from "src/models/MetaLink";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
 // @ts-ignore
@@ -27,6 +27,7 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/model
 import {MonitoringType} from "src/models/Monitor";
 import {BlobType} from "src/models/SavedBlob";
 import {TabInFolder} from "src/models/TabInFolder";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -234,17 +235,13 @@ export function useTabsetService() {
     }
   }
 
-  const removeThumbnailsFor = (url: string): Promise<any> => {
-    return db.deleteThumbnail(url)
-  }
-
   const deleteTabset = (tabsetId: string): Promise<string> => {
     const tabset = getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
       _.forEach(tabsStore.getTabset(tabsetId)?.tabs, (t: Tab) => {
         console.debug(t, "removing thumbnails")
-        removeThumbnailsFor(t?.url || '')
+        useThumbnailsService().removeThumbnailsFor(t?.url || '')
       })
       tabsStore.deleteTabset(tabsetId)
       db.deleteTabset(tabsetId)
@@ -530,14 +527,6 @@ export function useTabsetService() {
     return Promise.reject("tab.url undefined")
   }
 
-  const saveThumbnailFor = (tab: chrome.tabs.Tab | undefined, thumbnail: string) => {
-    if (tab && tab.url) {
-      db.saveThumbnail(tab, thumbnail)
-        //.then(() => console.log("added thumbnail"))
-        .catch(err => console.log("err", err))
-    }
-  }
-
   const saveBlob = (tab: chrome.tabs.Tab | undefined, blob: Blob): Promise<string> => {
     if (tab && tab.url) {
       const id: string = uid()
@@ -570,7 +559,7 @@ export function useTabsetService() {
     console.log("deleting tab", tab.id, tab.chromeTabId, tabset.id)
     const tabUrl = tab.url || ''
     if (tabsetsFor(tabUrl).length <= 1) {
-      removeThumbnailsFor(tabUrl)
+      useThumbnailsService().removeThumbnailsFor(tabUrl)
         .then(() => console.debug("deleting thumbnail for ", tabUrl))
         .catch(err => console.log("error deleting thumbnail", err))
 
@@ -707,10 +696,6 @@ export function useTabsetService() {
     addToTabsetId,
     addToTabset,
     tabsetsFor,
-    saveThumbnailFor,
-    //housekeeping,
-    //saveRequestFor,
-    removeThumbnailsFor,
     removeContentFor,
     deleteTab,
     urlExistsInATabset,

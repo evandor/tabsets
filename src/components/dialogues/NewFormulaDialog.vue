@@ -40,7 +40,7 @@
 
 import {useDialogPluginComponent} from "quasar";
 import NewTabsetDialogBody from "components/dialogues/helper/NewTabsetDialogBody.vue";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";

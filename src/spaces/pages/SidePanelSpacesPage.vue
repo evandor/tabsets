@@ -135,7 +135,7 @@
 import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {uid, useQuasar} from "quasar";

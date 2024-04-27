@@ -135,7 +135,7 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import {Tab, TabComment} from "src/models/Tab";
+import {Tab, TabComment} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useUtils} from "src/services/Utils"

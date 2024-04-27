@@ -28,7 +28,7 @@
 
 <script lang="ts" setup>
 
-import {Tab, UrlExtension} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {PropType} from "vue";
 import {useUtils} from "src/services/Utils";

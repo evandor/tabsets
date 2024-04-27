@@ -226,7 +226,7 @@
 
 <script lang="ts" setup>
 
-import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
@@ -240,11 +240,11 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
 import {openURL, scroll, uid, useQuasar} from "quasar";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabsetCommand";
+import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
 import {useUtils} from "src/services/Utils";
 import getScrollTarget = scroll.getScrollTarget;
 

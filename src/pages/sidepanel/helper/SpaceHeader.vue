@@ -19,7 +19,7 @@
 
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {ref, watchEffect} from "vue";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 
 const props = defineProps({
   spaceId: {type: String, required: true},

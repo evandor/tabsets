@@ -39,7 +39,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import normalizeUrl from 'normalize-url';
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useUtils} from "src/services/Utils";
 import {useUiStore} from "src/stores/uiStore";

@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import {Tab, TabSorting} from "src/models/Tab";
+import {Tab, TabSorting} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {PropType, ref} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'

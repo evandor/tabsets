@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";

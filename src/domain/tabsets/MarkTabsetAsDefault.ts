@@ -1,7 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
-import {TabsetStatus} from "src/models/Tabset";
+import {TabsetStatus} from "src/tabsets/models/Tabset";
 import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
 
 class UndoCommand implements Command<TabsetStatus> {

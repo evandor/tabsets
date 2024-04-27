@@ -1,11 +1,11 @@
 import Command from "src/domain/Command";
 import TabsetService from "src/services/TabsetService";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";
-import {useTabsStore} from "src/stores/tabsStore";
+import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tabset, TabsetSharing} from "src/models/Tabset";
+import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
 import {useUtils} from "src/services/Utils";
 import {useSearchStore} from "stores/searchStore";
 import {uid, useQuasar} from "quasar";
@@ -25,7 +25,6 @@ const {sendMsg} = useUtils()
  */
 export class AddTabToTabsetCommand implements Command<any> {
 
-
   constructor(
     public tab: Tab,
     public tabset: Tabset,
@@ -33,7 +32,6 @@ export class AddTabToTabsetCommand implements Command<any> {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    const tabsStore = useTabsStore()
     console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset.id}', active folder: ${this.activeFolder}`)
     let tabsetOrFolder = this.tabset
     if (this.activeFolder) {

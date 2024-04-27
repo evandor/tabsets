@@ -57,7 +57,7 @@ import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/utils/google-analytics";
 import {useTabsStore} from "stores/tabsStore";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 
 const route = useRoute()

@@ -211,7 +211,7 @@ import {reactive, ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useRouter} from "vue-router";
 import {openURL, useQuasar} from "quasar";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";

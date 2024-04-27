@@ -353,7 +353,7 @@ import {ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
@@ -366,7 +366,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import MHtmlPage from "pages/MHtmlPage.vue";
 import MHtmlViewHelper from "pages/sidepanel/helper/MHtmlViewHelper.vue";
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";

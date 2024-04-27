@@ -396,8 +396,8 @@ import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
-import {Tab} from "src/models/Tab";
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import {Tab} from "src/tabsets/models/Tab";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()

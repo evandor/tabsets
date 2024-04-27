@@ -80,12 +80,12 @@ import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {Notify, QForm} from "quasar";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {TabAssignmentCommand} from "src/domain/tabs/TabAssignmentCommand";
 import JsUtils from "src/utils/JsUtils";
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
 const route = useRoute()
 

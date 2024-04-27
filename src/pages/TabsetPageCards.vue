@@ -49,7 +49,7 @@ import TabGroups from "components/layouts/TabGroups.vue";
 import TabsExporter from "components/layouts/TabsExporter.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {PropType, ref, watchEffect} from "vue";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";
 import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsCanvas from "components/layouts/TabsCanvas.vue";
@@ -58,7 +58,7 @@ import {useRoute} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import TabGrid from "components/layouts/TabGrid.vue";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 
 const tabsStore = useTabsStore()
 const route = useRoute()

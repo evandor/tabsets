@@ -1,9 +1,9 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {Tab, TabComment} from "src/models/Tab";
+import {Tab, TabComment} from "src/tabsets/models/Tab";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tabset, TabsetSharing} from "src/models/Tabset";
+import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
 import {useUiStore} from "stores/uiStore";
 
 export class AddCommentCommand implements Command<any> {

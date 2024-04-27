@@ -41,8 +41,8 @@ import {useQuasar} from "quasar";
 import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useSettingsStore} from "src/stores/settingsStore"
 import Analytics from "src/utils/google-analytics"
 import PanelTabList from "components/layouts/PanelTabList.vue";

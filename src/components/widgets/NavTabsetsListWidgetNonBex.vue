@@ -69,7 +69,7 @@
 <script lang="ts" setup>
 
 import {PropType, ref, watchEffect} from "vue";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {openURL, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
@@ -78,7 +78,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useUiStore} from "src/stores/uiStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";

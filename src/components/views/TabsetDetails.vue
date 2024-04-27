@@ -25,7 +25,7 @@
 import {useUiStore} from "src/stores/uiStore";
 import {ref, watchEffect} from "vue";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import InfoItem from "components/views/helper/InfoItem.vue";
 
 const uiStore = useUiStore()

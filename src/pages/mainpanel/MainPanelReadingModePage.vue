@@ -68,7 +68,7 @@
 import {useRoute} from "vue-router";
 import {useTabsStore} from "stores/tabsStore";
 import {onMounted, ref, watchEffect} from "vue";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {Readability} from "@mozilla/readability";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";

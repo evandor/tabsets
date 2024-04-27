@@ -3,8 +3,8 @@ import {Space} from "src/spaces/models/Space";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {QVueGlobals, useQuasar} from "quasar";
-import {Tabset} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
+import {Tabset} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
 import {Notification} from "src/models/Notification";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
@@ -74,10 +74,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  cleanUpThumbnails(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
   compactDb(): Promise<any> {
     return Promise.resolve(undefined);
   }
@@ -91,10 +87,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
   }
 
   cleanUpTabsets(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
-  deleteThumbnail(url: string): Promise<void> {
     return Promise.resolve(undefined);
   }
 
@@ -132,14 +124,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   getSuggestions(): Promise<Suggestion[]> {
     return Promise.resolve([]);
-  }
-
-  getThumbnail(url: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  loadSpaces(): Promise<any> {
-    return Promise.resolve(undefined);
   }
 
   loadTabsets(): Promise<void> {

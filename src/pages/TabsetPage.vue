@@ -275,7 +275,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {FeatureIdent} from "src/models/AppFeature";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import PageForTabset from "components/layouts/PageForTabset.vue";

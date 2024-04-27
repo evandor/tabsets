@@ -1,7 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsetService} from "src/services/TabsetService2";
-import {TabsetType} from "src/models/Tabset";
+import {TabsetType} from "src/tabsets/models/Tabset";
 
 export enum SpecialTabsetIdent {
   BACKUP = "BACKUP",

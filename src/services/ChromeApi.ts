@@ -1,28 +1,25 @@
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {CLEANUP_PERIOD_IN_MINUTES, MONITORING_PERIOD_IN_MINUTES} from "boot/constants";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
-import TabService from "src/services/TabService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useSearchStore} from "src/stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
 import {FeatureIdent} from "src/models/AppFeature";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
-import {Router, useRoute, useRouter} from "vue-router";
+import {Router} from "vue-router";
 
-// @ts-ignore
-import rangy from "rangy/lib/rangy-core.js";
-//import "rangy/lib/rangy-highlighter";
-//import "rangy/lib/rangy-classapplier";
-//import "rangy/lib/rangy-textrange";
 import "rangy/lib/rangy-serializer";
+import {useTabsetService} from "src/services/TabsetService2";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
+const {urlExistsInATabset} = useTabsetService()
 
 function runHousekeeping() {
   //housekeeping()
@@ -30,8 +27,9 @@ function runHousekeeping() {
   console.log("housekeeping now...")
 
   persistenceService.cleanUpTabsets()
-  // clean up thumbnails
-  persistenceService.cleanUpThumbnails()
+
+  // TODO
+  //persistenceService.cleanUpThumbnails()
 
   persistenceService.cleanUpRequests()
 
@@ -61,6 +59,10 @@ function runHousekeeping() {
   //TabService.checkScheduled()
 }
 
+function runThumbnailsHousekeeping(fnc: (url:string) => boolean) {
+  console.log("housekeeping thumbnails now...")
+  useThumbnailsService().cleanUpThumbnails(fnc)
+}
 
 async function checkMonitors(router: Router) {
   const monitoredContentHash: string[] = []
@@ -77,7 +79,7 @@ async function checkMonitors(router: Router) {
     // if (router.currentRoute.value.path.startsWith("/sidepanel")) {
     //   useWindowsStore().openThrottledInWindow(monitoredContentHash, {focused: false, state: "minimized"})
     // } else {
-      console.warn("not running openThrottledInWindow due to path not starting with /sidepanel", router.currentRoute.value.path)
+    console.warn("not running openThrottledInWindow due to path not starting with /sidepanel", router.currentRoute.value.path)
     // }
   }
 }
@@ -110,6 +112,7 @@ class ChromeApi {
       (alarm: chrome.alarms.Alarm) => {
         if (alarm.name === "housekeeping") {
           runHousekeeping()
+          runThumbnailsHousekeeping(urlExistsInATabset)
         } else if (alarm.name === "monitoring") {
           if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING)) {
             checkMonitors(router)
@@ -164,7 +167,8 @@ class ChromeApi {
               id: 'tabset_extension',
               title: 'Tabsets Extension',
               documentUrlPatterns: ['https://*/*', 'https://*/'],
-              contexts: ['all']},
+              contexts: ['all']
+            },
             () => {
               // chrome.contextMenus.create({
               //   id: 'open_tabsets_page',

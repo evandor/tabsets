@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia';
 import _, {forEach} from 'lodash'
 import {LocalStorage, uid, useQuasar} from "quasar";
-import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {Tab, TabComment, UrlExtension} from "src/models/Tab";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
+import {Tab, TabComment, UrlExtension} from "src/tabsets/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
@@ -13,7 +13,7 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Space} from "src/spaces/models/Space";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
   // @ts-ignore

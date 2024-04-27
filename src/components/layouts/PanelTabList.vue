@@ -40,13 +40,13 @@
 </template>
 
 <script setup lang="ts">
-import {Tab, TabSorting} from "src/models/Tab";
+import {Tab, TabSorting} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {PropType} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
 
 const props = defineProps({

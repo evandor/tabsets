@@ -46,11 +46,11 @@
 </template>
 
 <script setup lang="ts">
-import {Tab, TabSorting} from "src/models/Tab";
+import {Tab, TabSorting} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {ref, onMounted, PropType, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {TabsetColumn} from "src/models/TabsetColumn";

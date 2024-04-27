@@ -3,10 +3,8 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {Space} from "src/spaces/models/Space";
-import {Tab} from "src/models/Tab";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
 import {uid} from "quasar";
@@ -15,12 +13,9 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/model
 import {useUiStore} from "src/stores/uiStore";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {Window} from "src/windows/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
-import {Entity} from "src/models/Entity";
-import {Api} from "src/models/Api";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -98,37 +93,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.resolve(data)
   }
 
-  async updateThumbnail(url: string): Promise<void> {
-    const encodedUrl = btoa(url)
-    const tnObjectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
-    let tnCursor = await tnObjectStore.openCursor()
-    while (tnCursor) {
-      //console.log("cursor", tnCursor.value, encodedUrl)
-      if (tnCursor.value.expires !== 0 && tnCursor.key === encodedUrl) {
-        const data = tnCursor.value
-        tnObjectStore.put({
-            expires: 0,
-            thumbnail: data.thumbnail
-          },
-          tnCursor.key)
-      }
-      tnCursor = await tnCursor.continue();
-    }
-  }
-
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
-    if (tab.url) {
-      const encodedTabUrl = btoa(tab.url)
-      return this.db.put('thumbnails', {
-        expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
-        thumbnail: thumbnail
-      }, encodedTabUrl)
-        .then(() => console.debug(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
-        .catch(err => console.error(new Tab(uid(), tab), err))
-    }
-    return Promise.reject("no url provided or db not ready")
-  }
-
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
     const encodedTabUrl = btoa(url)
     return this.db.put('requests', {
@@ -195,11 +159,6 @@ class IndexedDbPersistenceService implements PersistenceService {
       .catch(err => console.log("err", err))
   }
 
-  getThumbnail(url: string): Promise<string> {
-    const encodedUrl = btoa(url)
-    return this.db.get('thumbnails', encodedUrl)
-  }
-
   getRequest(url: string): Promise<string> {
     const encodedUrl = btoa(url)
     return this.db.get('requests', encodedUrl)
@@ -211,10 +170,6 @@ class IndexedDbPersistenceService implements PersistenceService {
       return this.db.get('content', encodedUrl)
     }
     return Promise.reject("db not ready (yet)")
-  }
-
-  deleteThumbnail(url: string): Promise<void> {
-    return this.db.delete('thumbnails', btoa(url))
   }
 
   deleteContent(url: string): Promise<void> {
@@ -264,9 +219,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  async cleanUpThumbnails(): Promise<void> {
-    return this.cleanUpExpired("thumbnails")
-  }
 
   async cleanUpRequests(): Promise<void> {
     return this.cleanUpExpired('requests')
@@ -418,11 +370,11 @@ class IndexedDbPersistenceService implements PersistenceService {
                   console.log("creating db tabs")
                   db.createObjectStore('tabs');
                 }*/
-        if (!db.objectStoreNames.contains('thumbnails')) {
-          console.log("creating db thumbnails")
-          let store = db.createObjectStore('thumbnails');
-          store.createIndex("expires", "expires", {unique: false});
-        }
+        // if (!db.objectStoreNames.contains('thumbnails')) {
+        //   console.log("creating db thumbnails")
+        //   let store = db.createObjectStore('thumbnails');
+        //   store.createIndex("expires", "expires", {unique: false});
+        // }
         if (!db.objectStoreNames.contains('content')) {
           console.log("creating db content")
           let store = db.createObjectStore('content');
@@ -546,37 +498,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db.put('accounts', normalizedAccount, normalizedAccount.id)
   }
 
-  saveEntity(entity: Entity): void {
-    this.db.put('entities', entity, entity.id)
-  }
-
-  deleteEntity(entityId: string): Promise<void> {
-    return this.db.delete('entities', entityId)
-  }
-
-  async getEntities(): Promise<Entity[]> {
-    return await this.db.getAll('entities')
-  }
-
-  async findEntityById(id: string) {
-    return await this.db.get('entities', id)
-  }
-
-  saveApi(api: Api): void {
-    this.db.put('apis', api, api.id)
-  }
-
-  deleteApi(apiId: string): Promise<void> {
-    return this.db.delete('apis', apiId)
-  }
-
-  async getApis(): Promise<Api[]> {
-    return await this.db.getAll('apis')
-  }
-
-  async findApiById(id: string) {
-    return await this.db.get('apis', id)
-  }
 }
 
 export default new IndexedDbPersistenceService()

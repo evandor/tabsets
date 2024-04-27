@@ -1,5 +1,5 @@
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {TABSET_NAME_MAX_LENGTH} from "src/models/Tabset";
+import {TABSET_NAME_MAX_LENGTH} from "src/tabsets/models/Tabset";
 
 export class TabsetColumn {
 

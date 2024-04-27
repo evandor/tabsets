@@ -56,7 +56,7 @@
 
 <script setup lang="ts">
 
-import {Tab} from "src/models/Tab"
+import {Tab} from "src/tabsets/models/Tab"
 import NavigationService from "src/services/NavigationService"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useTabsetService} from "src/services/TabsetService2";

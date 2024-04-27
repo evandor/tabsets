@@ -33,7 +33,7 @@ import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {PropType, ref} from "vue";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {DeleteTabsetFolderCommand} from "src/domain/tabsets/DeleteTabsetFolderCommand";
 
 defineEmits([

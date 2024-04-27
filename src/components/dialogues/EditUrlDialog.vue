@@ -78,7 +78,7 @@ import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
-import {Tab, UrlExtension} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";

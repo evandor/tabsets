@@ -55,8 +55,8 @@ import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import TabList from "components/layouts/TabList.vue";
 import Analytics from "src/utils/google-analytics"
 

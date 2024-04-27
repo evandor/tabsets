@@ -49,14 +49,14 @@
 <script lang="ts" setup>
 
 import {onMounted, ref, watchEffect} from "vue";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useUtils} from "src/services/Utils";
 import _ from "lodash"
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";

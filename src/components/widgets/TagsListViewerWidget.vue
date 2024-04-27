@@ -58,8 +58,8 @@ import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 
 const emit = defineEmits(['tagSelected']);

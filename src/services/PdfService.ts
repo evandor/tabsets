@@ -1,5 +1,5 @@
 import {useDB} from "src/services/usePersistenceService";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import backendApi from "src/services/BackendApi";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import _ from "lodash"

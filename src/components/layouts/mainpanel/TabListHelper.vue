@@ -38,7 +38,7 @@
 import {DrawerTabs, useUiStore} from "stores/uiStore";
 import TabListElementWidget from "components/widgets/TabListElementWidget.vue";
 import {PropType, ref} from "vue";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {useUtils} from "src/services/Utils";
 import {useTabsStore} from "stores/tabsStore";
 

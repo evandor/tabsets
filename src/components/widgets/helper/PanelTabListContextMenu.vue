@@ -117,12 +117,12 @@
 import {PropType, ref} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {Notify, useQuasar} from "quasar";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
 import NavigationService from "src/services/NavigationService";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
