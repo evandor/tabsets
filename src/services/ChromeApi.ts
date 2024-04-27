@@ -28,9 +28,6 @@ function runHousekeeping() {
 
   persistenceService.cleanUpTabsets()
 
-  // TODO
-  //persistenceService.cleanUpThumbnails()
-
   persistenceService.cleanUpRequests()
 
   persistenceService.cleanUpMetaLinks()

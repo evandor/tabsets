@@ -158,7 +158,7 @@ class AppService {
 
     const thumbnailsPersistence = IndexedDbThumbnailsPersistence
       //store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
-    await thumbnailsPersistence.init()
+
     await useThumbnailsService().init(thumbnailsPersistence)
 
     ChromeApi.init(router)
