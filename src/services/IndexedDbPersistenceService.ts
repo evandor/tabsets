@@ -76,23 +76,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.delete('tabsets', tabsetId)
   }
 
-  async updateContent(url: string): Promise<object> {
-    const encodedUrl = btoa(url)
-
-    const objectStore = this.db.transaction("content", "readwrite").objectStore("content");
-    let cursor = await objectStore.openCursor()
-    let data = null
-    while (cursor) {
-      if (cursor.value.id === encodedUrl) {
-        data = cursor.value
-        data['expires'] = 0
-        objectStore.put(data, cursor.key)
-      }
-      cursor = await cursor.continue();
-    }
-    return Promise.resolve(data)
-  }
-
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
     const encodedTabUrl = btoa(url)
     return this.db.put('requests', {
@@ -162,14 +145,6 @@ class IndexedDbPersistenceService implements PersistenceService {
   getRequest(url: string): Promise<string> {
     const encodedUrl = btoa(url)
     return this.db.get('requests', encodedUrl)
-  }
-
-  getContent(url: string): Promise<object> {
-    const encodedUrl = btoa(url)
-    if (this.db) {
-      return this.db.get('content', encodedUrl)
-    }
-    return Promise.reject("db not ready (yet)")
   }
 
   getMetaLinks(url: string): Promise<object> {
@@ -321,11 +296,11 @@ class IndexedDbPersistenceService implements PersistenceService {
         //   let store = db.createObjectStore('thumbnails');
         //   store.createIndex("expires", "expires", {unique: false});
         // }
-        if (!db.objectStoreNames.contains('content')) {
-          console.log("creating db content")
-          let store = db.createObjectStore('content');
-          store.createIndex("expires", "expires", {unique: false});
-        }
+        // if (!db.objectStoreNames.contains('content')) {
+        //   console.log("creating db content")
+        //   let store = db.createObjectStore('content');
+        //   store.createIndex("expires", "expires", {unique: false});
+        // }
         if (!db.objectStoreNames.contains('spaces')) {
           console.log("creating db spaces")
           db.createObjectStore('spaces');

@@ -18,6 +18,7 @@ import {deleteDoc, doc, Firestore, setDoc} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useAuthStore} from "stores/authStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useContentService} from "src/content/services/ContentService";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -136,7 +137,7 @@ class TabsetService {
   }
 
   async getContentForUrl(url: string): Promise<object> {
-    return db.getContent(url)
+    return useContentService().getContent(url)
   }
 
 

@@ -192,14 +192,6 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject([]);
   }
 
-  getContent(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
-
-  getContents(): Promise<any[]> {
-    return Promise.resolve([]);
-  }
-
   getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
     return Promise.reject([]);
   }
@@ -278,10 +270,6 @@ class FirestorePersistenceService implements PersistenceService {
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
     return Promise.reject(undefined);
-  }
-
-  updateContent(url: string): Promise<object> {
-    return Promise.reject({});
   }
 
   updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
