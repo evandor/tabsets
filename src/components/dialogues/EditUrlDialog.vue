@@ -74,7 +74,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
+import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";

@@ -36,7 +36,6 @@
 <script setup lang="ts">
 
 import {Tab} from "src/tabsets/models/Tab";
-import OpenTabCard from "components/layouts/OpenTabCard.vue"
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore"
 import {VueDraggableNext} from 'vue-draggable-next'

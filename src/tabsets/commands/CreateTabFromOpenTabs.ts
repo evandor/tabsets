@@ -3,12 +3,12 @@ import TabsetService from "src/services/TabsetService";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";
-import {useTabsStore} from "src/stores/tabsStore";
+import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "stores/searchStore";
 import {uid} from "quasar";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "stores/uiStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 
 const {saveCurrentTabset} = useTabsetService()

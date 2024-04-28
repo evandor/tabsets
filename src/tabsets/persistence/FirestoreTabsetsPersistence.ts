@@ -57,6 +57,13 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     // no op for firestore
   }
 
+  saveTabset(ts: Tabset): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  deleteTabset(tabsetId: string): void {
+  }
+
 
 }
 

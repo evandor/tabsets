@@ -34,7 +34,7 @@
 import {useDialogPluginComponent} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ref} from "vue";
-import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabsetCommand"
+import {ShareTabsetCommand} from "src/tabsets/commands/ShareTabsetCommand"
 
 defineEmits([
   ...useDialogPluginComponent.emits

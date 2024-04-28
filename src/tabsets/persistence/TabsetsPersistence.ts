@@ -9,7 +9,8 @@ interface TabsetsPersistence {
 
   loadTabsets(): Promise<any>
   addTabset(ts: Tabset): Promise<any>
-  //deleteSpace(spaceId: string): void;
+  saveTabset(ts: Tabset): Promise<any>
+  deleteTabset(tabsetId: string): Promise<any>;
 
 
   compactDb(): Promise<any>

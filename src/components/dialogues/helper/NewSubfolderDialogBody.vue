@@ -59,7 +59,7 @@ import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useUtils} from "src/services/Utils";
 import DialogButton from "components/buttons/DialogButton.vue";
-import {CreateFolderCommand} from "src/domain/tabsets/CreateFolderCommand";
+import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()

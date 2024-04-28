@@ -115,7 +115,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
+import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
@@ -123,7 +123,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {CreateGroupCommand} from "src/domain/tabs/CreateGroup";
 import {RenameGroupCommand} from "src/domain/tabs/RenameGroup";
-import {TabsetColumn} from "src/models/TabsetColumn";
+import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {DeleteGroupCommand} from "src/domain/tabs/DeleteGroup";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants"
 import ChromeApi from "src/services/ChromeApi";

@@ -89,7 +89,6 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 import _ from "lodash";
 import {onMounted, ref, watchEffect, watch} from "vue"
-import OpenTabCard from "components/layouts/OpenTabCard.vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";

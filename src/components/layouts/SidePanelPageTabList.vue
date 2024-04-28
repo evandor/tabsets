@@ -53,10 +53,10 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
 import {useTabsetService} from "src/services/TabsetService2";
-import {TabsetColumn} from "src/models/TabsetColumn";
+import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants";
 import _ from "lodash"
-import {IndexedTab} from "src/models/IndexedTab";
+import {IndexedTab} from "src/tabsets/models/IndexedTab";
 
 const props = defineProps({
   hideMenu: {type: Boolean, default: false},
@@ -91,8 +91,6 @@ const handleDragAndDrop = (event: any, column: TabsetColumn) => {
     console.log(`             '${added.element.tab.id}' ${added.oldIndex} -> ${realNewIndex}`)
     movedElement.columnId = column.id
     useTabsetService().saveCurrentTabset()
-    //useCommandExecutor()
-    //  .executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))
   }
 }
 

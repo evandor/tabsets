@@ -30,7 +30,7 @@
 
 import {QForm, useDialogPluginComponent} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
+import {MarkTabsetDeletedCommand} from "src/tabsets/commands/MarkTabsetDeleted";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {ref} from "vue";

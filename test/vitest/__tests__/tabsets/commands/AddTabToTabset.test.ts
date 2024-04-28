@@ -10,7 +10,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {useSearchStore} from "stores/searchStore";
 import PersistenceService from "src/services/PersistenceService";
-import {CreateFolderCommand} from "src/domain/tabsets/CreateFolderCommand";
+import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
 
 installQuasarPlugin();
 

@@ -1,6 +1,6 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {TabsetColumn} from "src/models/TabsetColumn";
+import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import _ from "lodash"

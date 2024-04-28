@@ -1,7 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
-import {TabsetColumn} from "src/models/TabsetColumn";
+import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {uid} from "quasar";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";

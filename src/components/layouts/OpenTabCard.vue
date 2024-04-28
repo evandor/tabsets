@@ -62,7 +62,7 @@ import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
+import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils"

@@ -37,7 +37,7 @@
 
 import {LocalStorage, useDialogPluginComponent, useQuasar} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {ShareTabsetCommand} from "src/domain/tabsets/ShareTabsetCommand"
+import {ShareTabsetCommand} from "src/tabsets/commands/ShareTabsetCommand"
 import {TabsetSharing} from "src/tabsets/models/Tabset";
 import {ref} from "vue";
 import {SHARING_AUTHOR_IDENT} from "boot/constants";

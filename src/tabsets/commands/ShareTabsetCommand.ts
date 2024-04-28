@@ -2,7 +2,7 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {TabsetSharing} from "src/tabsets/models/Tabset";
-import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabsetCommand"
+import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
 
 
 export class ShareTabsetCommand implements Command<any> {

@@ -39,7 +39,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {ImportTabsetsCommand} from "src/domain/tabsets/ImportTabsets";
+import {ImportTabsetsCommand} from "src/tabsets/commands/ImportTabsets";
 import {useUtils} from "src/services/Utils";
 
 defineEmits([

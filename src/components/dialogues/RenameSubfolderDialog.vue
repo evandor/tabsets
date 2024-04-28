@@ -38,7 +38,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameWindowCommand} from "src/windows/commands/RenameWindow";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tabset} from "src/tabsets/models/Tabset";
-import {RenameFolderCommand} from "src/domain/tabsets/RenameFolderCommand";
+import {RenameFolderCommand} from "src/tabsets/commands/RenameFolderCommand";
 
 defineEmits([
   ...useDialogPluginComponent.emits

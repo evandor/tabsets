@@ -51,7 +51,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       tabsets.value.set(ts.id, ts)
     }
 
-    function createTabset(tabsetName: string, tabs: Tab[], color: string | undefined = undefined) {
+    async function createTabset(tabsetName: string, tabs: Tab[], color: string | undefined = undefined) {
       const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
         .substring(0, 31)
       const trustedColor = color ?
@@ -73,7 +73,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       ts = new Tabset(uid(), trustedName, tabs, [])
       ts.color = trustedColor
       tabsets.value.set(ts.id, ts)
-      storage.addTabset(ts)
+      await storage.addTabset(ts)
 
       // TODO
       // if (currentSpace && currentSpace.id && ts.spaces.findIndex(s => s === currentSpace.id) < 0) {
@@ -118,12 +118,22 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       // TODO markDuplicates(ts)
     }
 
+    function saveTabset(ts: Tabset) {
+      return storage.saveTabset(JSON.parse(JSON.stringify(ts)))
+    }
+
+  function deleteTabset(tsId: string) {
+    return storage.deleteTabset(tsId)
+  }
+
     return {
       initialize,
       tabsets,
       createTabset,
       addTabset,
-      setTabset
+      saveTabset, // check save vs add vs create
+      setTabset,
+      deleteTabset
     }
   }
 )

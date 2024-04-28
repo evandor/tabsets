@@ -26,7 +26,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
 import {MonitoringType} from "src/models/Monitor";
 import {BlobType} from "src/models/SavedBlob";
-import {TabInFolder} from "src/models/TabInFolder";
+import {TabInFolder} from "src/tabsets/models/TabInFolder";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -242,7 +242,7 @@ export function useTabsetService() {
     }
   }
 
-  const deleteTabset = (tabsetId: string): Promise<string> => {
+  const deleteTabset = async (tabsetId: string): Promise<string> => {
     const tabset = getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
@@ -251,7 +251,12 @@ export function useTabsetService() {
         useThumbnailsService().removeThumbnailsFor(t?.url || '')
       })
       tabsStore.deleteTabset(tabsetId)
-      db.deleteTabset(tabsetId)
+
+      // TODO in progress: NEW APPROACH
+      await useTabsetsStore().deleteTabset(tabsetId)
+
+      await db.deleteTabset(tabsetId)
+
       //this.db.delete('tabsets', tabsetId)
       const nextKey: string = tabsStore.tabsets.keys().next().value
       console.log("setting next key to", nextKey)
@@ -314,6 +319,10 @@ export function useTabsetService() {
       const rootTabset = rootTabsetFor(tabset)
       console.debug(`saving (sub-)tabset '${tabset.name}' with ${tabset.tabs.length} tab(s) at id ${rootTabset?.id}`)
       if (rootTabset) {
+
+        // TODO in progress: NEW APPROACH
+        await useTabsetsStore().saveTabset(rootTabset)
+
         return db.saveTabset(rootTabset)
       }
     }

@@ -13,7 +13,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import PlaceholderUtils from "src/utils/PlaceholderUtils";
 import {Monitor, MonitoringType} from "src/models/Monitor";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
-import {TabsetColumn} from "src/models/TabsetColumn";
+import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {deleteDoc, doc, Firestore, setDoc} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useAuthStore} from "stores/authStore";
