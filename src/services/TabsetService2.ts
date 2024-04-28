@@ -28,6 +28,7 @@ import {MonitoringType} from "src/models/Monitor";
 import {BlobType} from "src/models/SavedBlob";
 import {TabInFolder} from "src/models/TabInFolder";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useContentService} from "src/content/services/ContentService";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -42,7 +43,7 @@ export function useTabsetService() {
 
     await db.loadTabsets()
     if (!doNotInitSearchIndex) {
-      useSearchStore().populateFromContent(db.getContents())
+      useSearchStore().populateFromContent(useContentService().getContents())
       useSearchStore().populateFromTabsets()
     }
 
@@ -352,7 +353,7 @@ export function useTabsetService() {
     const title = tab.title || ''
     const tabsetIds: string[] = tabsetsFor(tab.url)
 
-    db.saveContent(tab, text, metas, title, tabsetIds)
+    useContentService().saveContent(tab, text, metas, title, tabsetIds)
       .catch((err: any) => console.log("err", err))
 
     const tabsets = [...useTabsStore().tabsets.values()] as Tabset[]
@@ -549,11 +550,9 @@ export function useTabsetService() {
     }
   }
 
-
   const removeContentFor = (url: string): Promise<any> => {
-    return db.deleteContent(url)
+    return useContentService().deleteContent(url)
   }
-
 
   const deleteTab = (tab: Tab, tabset: Tabset): Promise<Tabset> => {
     console.log("deleting tab", tab.id, tab.chromeTabId, tabset.id)

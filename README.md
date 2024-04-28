@@ -28,6 +28,7 @@ git submodule add -b chrome-extension https://github.com/evandor/submodule-bookm
 git submodule add -b main https://github.com/evandor/submodule-windows.git src/windows
 git submodule add -b main https://github.com/evandor/submodule-suggestions.git src/suggestions
 git submodule add -b main https://github.com/evandor/submodule-thumbnails.git src/thumbnails
+git submodule add -b main https://github.com/evandor/submodule-content.git src/content
 ```
 
 ```bash

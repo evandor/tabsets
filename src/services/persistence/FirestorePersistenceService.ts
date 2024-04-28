@@ -264,10 +264,6 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject(undefined);
   }
 
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
-    return Promise.reject(undefined);
-  }
-
   saveLinks(url: string, links: any): Promise<void> {
     return Promise.reject(undefined);
   }

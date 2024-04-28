@@ -172,31 +172,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject("db not ready (yet)")
   }
 
-  deleteContent(url: string): Promise<void> {
-    return this.db.delete('content', btoa(url))
-  }
-
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<IDBValidKey> {
-    if (tab.url) {
-      const encodedTabUrl = btoa(tab.url)
-      return this.db.put('content', {
-        id: encodedTabUrl,
-        expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
-        title,
-        url: tab.url,
-        content: text,
-        metas: metas,
-        tabsets: tabsetIds,
-        favIconUrl: tab.favIconUrl
-      }, encodedTabUrl)
-        .then((res) => {
-          // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
-          return res
-        })
-    }
-    return Promise.reject("tab.url missing")
-  }
-
   getMetaLinks(url: string): Promise<object> {
     const encodedUrl = btoa(url)
     return this.db.get('metalinks', encodedUrl)
@@ -250,35 +225,6 @@ class IndexedDbPersistenceService implements PersistenceService {
       }
       cursor = await cursor.continue();
     }
-  }
-
-  async cleanUpContent(): Promise<SearchDoc[]> {
-    const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
-    let contentCursor = await contentObjectStore.openCursor()
-    let result: SearchDoc[] = []
-    while (contentCursor) {
-      if (contentCursor.value.expires !== 0) {
-        const exists: boolean = this.urlExistsInATabset(atob(contentCursor.key.toString()))
-        if (exists) {
-          const data = contentCursor.value
-          data.expires = 0
-          contentObjectStore.put(data, contentCursor.key)
-          result.push(new SearchDoc(
-            data.id, "", data.title, data.url, data.description, "", data.content, [], '', data.favIconUrl
-          ))
-        } else {
-          if (contentCursor.value.expires < new Date().getTime()) {
-            contentObjectStore.delete(contentCursor.key)
-          }
-        }
-      }
-      contentCursor = await contentCursor.continue();
-    }
-    return Promise.resolve(result)
-  }
-
-  getContents(): Promise<any[]> {
-    return this.db.getAll('content')
   }
 
   async saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {

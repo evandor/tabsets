@@ -18,6 +18,7 @@ import {Router} from "vue-router";
 import "rangy/lib/rangy-serializer";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useContentService} from "src/content/services/ContentService";
 
 const {urlExistsInATabset} = useTabsetService()
 
@@ -34,7 +35,18 @@ function runHousekeeping() {
 
   persistenceService.cleanUpLinks()
 
-  persistenceService.cleanUpContent()
+  // TODO
+  //TabService.checkScheduled()
+}
+
+function runThumbnailsHousekeeping(fnc: (url:string) => boolean) {
+  console.log("housekeeping thumbnails now...")
+  useThumbnailsService().cleanUpThumbnails(fnc)
+}
+
+function runContentHousekeeping(fnc: (url:string) => boolean) {
+  console.log("housekeeping content now...")
+  useContentService().cleanUpContent(fnc)
     .then(searchDocs => {
       _.forEach(searchDocs, d => {
         //console.log("got document", d)
@@ -50,15 +62,6 @@ function runHousekeeping() {
       })
       //useSearchStore().addToIndex()
     })
-
-
-  // TODO
-  //TabService.checkScheduled()
-}
-
-function runThumbnailsHousekeeping(fnc: (url:string) => boolean) {
-  console.log("housekeeping thumbnails now...")
-  useThumbnailsService().cleanUpThumbnails(fnc)
 }
 
 async function checkMonitors(router: Router) {
@@ -110,6 +113,7 @@ class ChromeApi {
         if (alarm.name === "housekeeping") {
           runHousekeeping()
           runThumbnailsHousekeeping(urlExistsInATabset)
+          runContentHousekeeping(urlExistsInATabset)
         } else if (alarm.name === "monitoring") {
           if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING)) {
             checkMonitors(router)

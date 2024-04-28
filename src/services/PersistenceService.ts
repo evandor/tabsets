@@ -18,13 +18,6 @@ interface PersistenceService {
   deleteTabset(tabsetId: string):Promise<any>
   cleanUpTabsets(): Promise<void>
 
-  getContent(url: string):Promise<object>
-  updateContent(url: string):Promise<object>
-  deleteContent(url: string):Promise<void>
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]):Promise<any>
-  cleanUpContent(): Promise<SearchDoc[]>
-  getContents(): Promise<any[]>
-
   getRequest(url: string): Promise<string>
 
   getMetaLinks(url: string): Promise<object>

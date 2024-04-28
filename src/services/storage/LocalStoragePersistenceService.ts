@@ -94,10 +94,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve({});
   }
 
-  getContents(): Promise<any[]> {
-    return Promise.resolve([]);
-  }
-
   getLinks(url: string): Promise<object> {
     return Promise.resolve({});
   }
@@ -134,30 +130,7 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
-  saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  saveStats(date: string, dataset: object): void {
-  }
-
   saveTabset(tabset: Tabset): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
-  updateContent(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
-
-  updateThumbnail(url: string): Promise<void> {
     return Promise.resolve(undefined);
   }
 
