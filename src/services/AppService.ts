@@ -29,6 +29,7 @@ import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
 import {useContentService} from "src/content/services/ContentService";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 function dbStoreToUse(st: SyncType) {
   const isAuthenticated = useAuthStore().isAuthenticated()
@@ -72,6 +73,8 @@ class AppService {
     const messagesStore = useMessagesStore()
     const searchStore = useSearchStore()
     const uiStore = useUiStore()
+    const tabsetsStore = useTabsetsStore()
+
     this.router = router
 
     uiStore.appLoading = "loading tabsets..."
@@ -88,6 +91,8 @@ class AppService {
 
     settingsStore.initialize(quasar.localStorage);
     tabsStore.initialize().catch((err) => console.error("***" + err))
+
+    //tabsetsStore.initialize()
 
     searchStore.init().catch((err) => console.error(err))
 
@@ -153,10 +158,17 @@ class AppService {
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsStore = useTabsStore()
+    const tabsetsStore = useTabsetsStore()
 
-    const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
+    const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
+      useDB().spacesFirestoreDb : useDB().spacesIndexedDb
     await spacesStore.initialize(spacesPersistence)
     await useTabsetService().init(store, false)
+
+    const tabsetsPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
+      useDB().tabsetsFirestoreDb : useDB().tabsetsIndexedDb
+    await tabsetsStore.initialize(tabsetsPersistence)
+    //await useTabsetService().init(store, false)
 
     const thumbnailsPersistence = IndexedDbThumbnailsPersistence
       //store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb

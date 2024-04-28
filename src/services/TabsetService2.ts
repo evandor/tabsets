@@ -29,6 +29,7 @@ import {BlobType} from "src/models/SavedBlob";
 import {TabInFolder} from "src/models/TabInFolder";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 let db: PersistenceService = null as unknown as PersistenceService
 
@@ -107,6 +108,11 @@ export function useTabsetService() {
     try {
       const result: NewOrReplacedTabset = await useTabsStore()
         .updateOrCreateTabset(trustedName, tabs, merge, windowId, tsType, trustedColor)
+
+      // TODO in progress: NEW APPROACH
+      await useTabsetsStore().createTabset(trustedName, tabs, trustedColor)
+
+
       if (result && result.tabset) {
         await saveTabset(result.tabset)
         // result.tabset.tabs.forEach((tab: Tab) => {

@@ -10,6 +10,8 @@ interface SpacesPersistence {
   addSpace(space: Space): Promise<any>
   deleteSpace(spaceId: string): void;
 
+  migrate(): any
+
   compactDb(): Promise<any>
 
 }

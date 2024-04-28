@@ -11,7 +11,7 @@
 <script lang="ts" setup>
 
 import {useDialogPluginComponent} from "quasar";
-import NewTabsetDialogBody from "components/dialogues/helper/NewTabsetDialogBody.vue";
+import NewTabsetDialogBody from "src/tabsets/dialogues/helper/NewTabsetDialogBody.vue";
 
 defineEmits([
   ...useDialogPluginComponent.emits

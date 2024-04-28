@@ -64,6 +64,10 @@ class FirestoreSpacesPersistence implements SpacesPersistence {
     return Promise.resolve(undefined);
   }
 
+  migrate(): any {
+    // no op
+  }
+
 
 }
 

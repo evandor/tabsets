@@ -39,7 +39,7 @@
 <script lang="ts" setup>
 
 import {useDialogPluginComponent} from "quasar";
-import NewTabsetDialogBody from "components/dialogues/helper/NewTabsetDialogBody.vue";
+import NewTabsetDialogBody from "src/tabsets/dialogues/helper/NewTabsetDialogBody.vue";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";

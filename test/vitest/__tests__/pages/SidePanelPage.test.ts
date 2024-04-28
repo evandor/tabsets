@@ -9,7 +9,7 @@ import SidePanelPage from "pages/SidePanelPage.vue";
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import {useQuasar} from "quasar";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 
 installQuasarPlugin();

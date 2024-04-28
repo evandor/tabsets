@@ -1,6 +1,5 @@
 import {IDBPDatabase, openDB, deleteDB} from "idb";
 import _ from "lodash";
-import {useUiStore} from "src/stores/uiStore";
 import SpacesPersistence from "src/spaces/persistence/SpacesPersistence";
 import {Space} from "src/spaces/models/Space";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
@@ -60,6 +59,20 @@ class IndexedDbSpacesStorage implements SpacesPersistence {
         .catch(err => console.log("err", err))
     })
   }
+
+  async migrate() {
+    // 0.4.11 - 0.5.0
+    const oldDB = await openDB("db")
+    const oldSpaces = await oldDB.getAll('spaces')
+    for(const oldSpace of oldSpaces) {
+      const optionalSpaceInNewDb = await this.db.get(this.STORE_IDENT, oldSpace.id) as Space | undefined
+      if (!optionalSpaceInNewDb) {
+        console.log("migrating old space", oldSpace.id, oldSpace.name)
+        await this.db.add(this.STORE_IDENT, oldSpace, oldSpace.id)
+      }
+    }
+  }
+
 
 
 }

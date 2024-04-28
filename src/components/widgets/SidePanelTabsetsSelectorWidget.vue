@@ -105,7 +105,7 @@ import {useQuasar} from "quasar";
 import _ from "lodash";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
