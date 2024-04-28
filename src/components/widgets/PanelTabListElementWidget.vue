@@ -394,6 +394,7 @@ import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const {inBexMode, isCurrentTab} = useUtils()
 const {handleSuccess} = useNotificationHandler()
@@ -459,7 +460,7 @@ onMounted(() => {
 })
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
-  return await TabsetService.getThumbnailFor(tab)
+  return await useThumbnailsService().getThumbnailFor(tab.url)
 }
 
 watchEffect(() => {

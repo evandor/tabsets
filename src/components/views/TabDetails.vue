@@ -222,6 +222,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const {inBexMode} = useUtils()
 
@@ -251,10 +252,10 @@ watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigi
 
 watchEffect(() => {
   if (uiStore.getSelectedTab) {
-    TabsetService.getThumbnailFor(uiStore.getSelectedTab)
+    useThumbnailsService().getThumbnailFor(uiStore.getSelectedTab.url)
       .then(data => {
         if (data) {
-          thumbnail.value = data.thumbnail
+          thumbnail.value = data
         } else {
           thumbnail.value = ''
         }

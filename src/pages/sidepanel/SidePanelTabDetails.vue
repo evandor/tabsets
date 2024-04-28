@@ -373,6 +373,7 @@ import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import {SavePngCommand} from "src/domain/tabs/SavePng";
 import {SavePdfCommand} from "src/domain/tabs/SavePdf";
 import {useAuthStore} from "stores/authStore";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const {inBexMode} = useUtils()
 
@@ -420,10 +421,10 @@ watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigi
 
 watchEffect(() => {
   if (tab.value) {
-    TabsetService.getThumbnailFor(tab.value)
+    useThumbnailsService().getThumbnailFor(tab.value.url)
         .then(data => {
           if (data) {
-            thumbnail.value = data.thumbnail
+            thumbnail.value = data
           } else {
             thumbnail.value = ''
           }

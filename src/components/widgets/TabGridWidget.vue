@@ -48,6 +48,7 @@ import {onMounted, PropType, ref, watchEffect} from "vue"
 import NavigationService from "src/services/NavigationService"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useTabsetService} from "src/services/TabsetService2";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -85,7 +86,7 @@ const shortUrl = () => {
   return ""
 }
 const thumbnailFor = async (tab: Tab): Promise<object> => {
-  return await TabsetService.getThumbnailFor(tab)
+  return await useThumbnailsService().getThumbnailFor(tab.url)
 }
 
 watchEffect(() => {

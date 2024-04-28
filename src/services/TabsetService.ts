@@ -109,15 +109,6 @@ class TabsetService {
     }
   }
 
-
-  // async getThumbnailFor(selectedTab: Tab): Promise<any> {
-  //   //console.log("checking thumbnail for", selectedTab.url)
-  //   if (selectedTab.url) {
-  //     return db.getThumbnail(selectedTab.url)
-  //   }
-  //   return Promise.reject("url not provided");
-  // }
-
   async getRequestFor(selectedTab: Tab): Promise<any> {
     if (selectedTab.url) {
       return this.getRequestForUrl(selectedTab.url)
@@ -614,7 +605,7 @@ class TabsetService {
 
       console.log("setting thumbnails as images")
       for (const tab of ts.tabs) {
-        const thumb = await useThumbnailsService().getThumbnailFor(tab)
+        const thumb = await useThumbnailsService().getThumbnailFor(tab.url)
         if (thumb) {
           if (thumb && thumb['thumbnail' as keyof object]) {
             tab.image = thumb['thumbnail' as keyof object]

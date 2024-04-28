@@ -155,6 +155,7 @@ import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {useUiStore} from "stores/uiStore";
 import PwaCommentDialog from "components/dialogues/PwaCommentDialog.vue";
 import {SHARING_AVATAR_IDENT} from "boot/constants";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -260,8 +261,8 @@ const setCustomTitle = (tab: Tab, newValue: string) =>
 const copyToClipboard = (text: string) =>
   useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
 
-const thumbnailFor = async (tab: Tab): Promise<object> => {
-  return await TabsetService.getThumbnailFor(tab)
+const thumbnailFor = async (tab: Tab): Promise<string> => {
+  return await useThumbnailsService().getThumbnailFor(tab.url)
 }
 
 watchEffect(() => {
