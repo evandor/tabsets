@@ -45,6 +45,8 @@ import IDrawUtils from "src/utils/IDrawUtils";
 import {uid} from "quasar";
 import _ from "lodash"
 import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 
@@ -157,7 +159,7 @@ watchEffect(() => {
     // }
     //console.log("got tabset id", tabsetId.value)
     tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
-    useTabsStore().selectCurrentTabset(tabsetId.value)
+    useTabsetsStore().selectCurrentTabset(tabsetId.value)
   }
 })
 

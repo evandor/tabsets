@@ -160,6 +160,7 @@ import AppService from "src/services/AppService";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import {useI18n} from 'vue-i18n'
 import SidePanelTabsetsExpansionList from "components/tabsets/SidePanelTabsetsExpansionList.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -273,7 +274,7 @@ if (inBexMode()) {
         return true
       }
       const tsId = message.data.tabsetId
-      useTabsStore().selectCurrentTabset(tsId)
+      useTabsetsStore().selectCurrentTabset(tsId)
     } else if (message.name === 'feature-activated') {
       usePermissionsStore().addActivateFeature(message.data.feature)
       if (message.data.feature === 'help') {

@@ -106,6 +106,8 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import NavigationService from "src/services/NavigationService";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 
@@ -131,7 +133,7 @@ watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
   tabset.value = useTabsStore().getTabset(tabsetId.value)
   if (tabset.value) {
-    useTabsStore().selectCurrentTabset(tabset.value.id)
+    useTabsetsStore().selectCurrentTabset(tabset.value.id)
   }
 })
 
@@ -152,7 +154,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 if (inBexMode() && chrome) {

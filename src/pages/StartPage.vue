@@ -16,6 +16,7 @@
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useRouter} from "vue-router";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -34,7 +35,7 @@ timer = setTimeout(() => {
     const selectedTS = localStorage.getItem("selectedTabset")
     if (selectedTS) {
       console.log("setting selected tabset from storage", selectedTS)
-      useTabsStore().selectCurrentTabset(selectedTS)
+      useTabsetsStore().selectCurrentTabset(selectedTS)
       router.push("/tabsets/" + selectedTS)
     } else {
       router.push("/tabsets")

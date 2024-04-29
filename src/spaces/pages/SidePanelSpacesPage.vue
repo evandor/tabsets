@@ -156,6 +156,7 @@ import SpaceHeader from "pages/sidepanel/helper/SpaceHeader.vue";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {inBexMode} = useUtils()
 
@@ -264,7 +265,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 watchEffect(() => {

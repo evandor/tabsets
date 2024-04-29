@@ -192,6 +192,7 @@ import {useUtils} from "src/services/Utils";
 import {api} from "boot/axios";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -289,7 +290,7 @@ function getOrder() {
 const update = (tabsetIdent: object) => {
   console.log("selected tabset now: ", tabsetIdent)
   tabsetname.value = tabsetIdent['label' as keyof object]
-  tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
+  useTabsetsStore().selectCurrentTabset(tabsetIdent['value' as keyof object])
 }
 
 const formatLength = (length: number, singular: string, plural: string) => {

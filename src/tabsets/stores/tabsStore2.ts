@@ -70,7 +70,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     //this.browserTabset = current
   }
 
-  async function setCurrentChromeTab(tab: chrome.tabs.Tab) {
+  function setCurrentChromeTab(tab: chrome.tabs.Tab) {
     currentChromeTab.value = tab
     currentChromeTabs.value.set(tab.windowId, tab)
     const MAX_HISTORY_LENGTH = 12
@@ -130,6 +130,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     return browserTabs.value.length
   })
 
+  // TODO needed?
   const getChromeTabs = computed(() => {
     return browserTabs.value
   })
@@ -144,9 +145,11 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     initialize,
     browserTabs,
     tabsCount,
+    loadTabs,
     getChromeTabs,
     setCurrentChromeTab,
     getCurrentChromeTab,
+    currentChromeTab,
     tabHistoryBack,
     tabHistoryForward
   }

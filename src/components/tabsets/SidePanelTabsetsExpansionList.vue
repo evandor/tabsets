@@ -254,6 +254,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const props = defineProps({
   tabsets: {type: Array as PropType<Array<Tabset>>, required: true}
@@ -367,7 +368,7 @@ watchEffect(() => {
 
   watchEffect(() => {
     const windowId = useWindowsStore().currentChromeWindow?.id || 0
-    currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+    currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
   })
 })
 

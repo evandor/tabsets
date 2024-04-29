@@ -28,6 +28,8 @@ export const useTabsetsStore = defineStore('tabsets', () => {
      */
     const tabsets = ref<Map<string, Tabset>>(new Map<string, Tabset>())
 
+    const currentTabset = ref<Tabset | undefined>(undefined)
+
     /**
      * initialize store with
      * @param ps a persistence storage
@@ -116,9 +118,67 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       return storage.saveTabset(JSON.parse(JSON.stringify(ts)))
     }
 
-  function deleteTabset(tsId: string) {
-    return storage.deleteTabset(tsId)
-  }
+    function deleteTabset(tsId: string) {
+      return storage.deleteTabset(tsId)
+        .then((res) => {
+          if (currentTabset.value && currentTabset.value.id === tsId) {
+            currentTabset.value = undefined
+          }
+          return res
+        })
+    }
+
+
+  // deleteTabset(tabsetId: string) {
+  //   this.tabsets.delete(tabsetId)
+  //   if (this.currentTabsetId === tabsetId) {
+  //     this.currentTabsetId = null as unknown as string
+  //   }
+  // },
+
+    function selectCurrentTabset(tabsetId: string): Tabset | undefined {
+      const found = _.find([...tabsets.value.values()] as Tabset[], k => {
+        const ts = k || new Tabset("", "", [])
+        return ts.id === tabsetId
+      })
+      if (found) {
+        // console.log("found", found)
+        currentTabset.value = found //this.tabsets.get(found) || new Tabset("", "", [])
+
+        //ChromeApi.buildContextMenu("tabsStore")
+        return found
+      } else {
+        console.debug("not found:", tabsetId)//, [...this.tabsets.values()])
+      }
+      return undefined
+    }
+
+    // *** getters ***
+
+    const getCurrentTabs = computed(() => currentTabset.value ? currentTabset.value.tabs : [])
+    const getCurrentTabset = computed(() => currentTabset.value)
+
+    const currentTabsetName = computed(() => currentTabset.value ? currentTabset.value.name : undefined)
+
+    const tabForUrlInSelectedTabset = computed(() => {
+      return (url: string): Tab | undefined => {
+        const tabs: Tab[] = currentTabset.value ? currentTabset.value.tabs as Tab[] : []
+        return _.find(tabs, t => t.url === url)
+      }
+    })
+
+    // currentTabsetName: (state): string | undefined => {
+    //   const candidates = _.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)
+    //   if (candidates.length > 0) {
+    //     return candidates[0].name
+    //   }
+    //   return undefined
+    // },
+    //
+    //   tabForUrlInSelectedTabset: (state): (url: string) => Tab | undefined => {
+    //   const tabs: Tab[] = state.tabsets.get(state.currentTabsetId)?.tabs as Tab[] || []
+    //   return (url: string) => _.find(tabs, t => t.url === url)
+    // },
 
     return {
       initialize,
@@ -127,7 +187,12 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       addTabset,
       saveTabset, // check save vs add vs create
       setTabset,
-      deleteTabset
+      deleteTabset,
+      selectCurrentTabset,
+      getCurrentTabs,
+      getCurrentTabset,
+      currentTabsetName,
+      tabForUrlInSelectedTabset
     }
   }
 )

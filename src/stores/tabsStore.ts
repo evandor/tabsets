@@ -35,11 +35,6 @@ function markDuplicates(tabset: Tabset) {
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
 
-    // cannot use type chrome.tabs.Tab if not in bex mode
-//    currentChromeTab: null as unknown as chrome.tabs.Tab,
-    // tab by window id
-  //  currentChromeTabs: new Map() as Map<number, chrome.tabs.Tab>,
-
     /**
      * a named list of tabsets managed by this extension.
      */
@@ -51,7 +46,7 @@ export const useTabsStore = defineStore('tabs', {
     pendingTabset: null as unknown as Tabset,
 
     // which tabset should be shown in the extension?
-    currentTabsetId: null as unknown as string,
+    //currentTabsetId: null as unknown as string,
 
     // use listeners? Might make sense to turn them off when restoring old tabset for example
     listenersOn: true
@@ -85,30 +80,12 @@ export const useTabsStore = defineStore('tabs', {
       const tabset = state.tabsets.get(key)
       return tabset?.name || 'unknown'
     }),
-    getCurrentTabs: (state): Tab[] => {
-      return state.tabsets.get(state.currentTabsetId)?.tabs as Tab[] || []
-    },
-    getCurrentTabset: (state): Tabset | undefined => {
-      //console.log("calling getcurrenttabset", state.currentTabsetId)
-      return state.tabsets.get(state.currentTabsetId) as Tabset
-    },
     getTabset: (state) => {
       return (tabsetId: string): Tabset | undefined => {
         return state.tabsets.get(tabsetId) as Tabset
       }
     },
-    currentTabsetName: (state): string | undefined => {
-      const candidates = _.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)
-      if (candidates.length > 0) {
-        return candidates[0].name
-      }
-      return undefined
-    },
 
-    tabForUrlInSelectedTabset: (state): (url: string) => Tab | undefined => {
-      const tabs: Tab[] = state.tabsets.get(state.currentTabsetId)?.tabs as Tab[] || []
-      return (url: string) => _.find(tabs, t => t.url === url)
-    },
 
     tabsForUrl: (state): (url: string) => Tab[] => {
       return (url: string) => {
@@ -214,23 +191,7 @@ export const useTabsStore = defineStore('tabs', {
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
     },
 
-    selectCurrentTabset(tabsetId: string): Tabset | undefined {
-      const found = _.find([...this.tabsets.values()] as Tabset[], k => {
-        const ts = k || new Tabset("", "", [])
-        return ts.id === tabsetId
-      })
-      if (found) {
-        // console.log("found", found)
-        this.currentTabsetId = tabsetId //this.tabsets.get(found) || new Tabset("", "", [])
 
-        //ChromeApi.buildContextMenu("tabsStore")
-
-        return found
-      } else {
-        console.debug("not found:", tabsetId)//, [...this.tabsets.values()])
-      }
-      return undefined
-    },
 
     removeTab(tabset: Tabset, tabId: string) {
       tabset.tabs = _.filter(tabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
@@ -326,12 +287,6 @@ export const useTabsStore = defineStore('tabs', {
       return ts
     },
 
-    deleteTabset(tabsetId: string) {
-      this.tabsets.delete(tabsetId)
-      if (this.currentTabsetId === tabsetId) {
-        this.currentTabsetId = null as unknown as string
-      }
-    },
 
     addTabset(ts: Tabset) {
       //console.log("adding tabset", ts)

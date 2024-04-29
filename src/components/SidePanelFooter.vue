@@ -218,6 +218,7 @@ import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -304,7 +305,7 @@ watchEffect(() => {
     return
   }
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 // watchEffect(() => {

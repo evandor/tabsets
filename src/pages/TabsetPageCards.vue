@@ -59,6 +59,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import TabGrid from "components/layouts/TabGrid.vue";
 import {Tabset} from "src/tabsets/models/Tabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const tabsStore = useTabsStore()
 const route = useRoute()
@@ -104,7 +105,7 @@ watchEffect(() => {
   tabsetId.value = route?.params.tabsetId as string
   if (tabsetId.value) {
     console.debug("got tabset id", tabsetId.value)
-    const ts = tabsStore.selectCurrentTabset(tabsetId.value)
+    const ts = useTabsetsStore().selectCurrentTabset(tabsetId.value)
   }
 })
 

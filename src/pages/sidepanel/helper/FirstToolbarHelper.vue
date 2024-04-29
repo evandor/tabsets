@@ -192,21 +192,7 @@ const stopSession = () => {
   }
 }
 
-// const createWebsiteClipTooltip = () => {
-//   const windowId = useWindowsStore().currentChromeWindow.id || 0
-//   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-//   return "Create Website Clip for tab " + currentChromeTab.url
-// }
-
 const webClipActive = () => tabsStore.currentChromeTab
-
-// const createClip = () => {
-//   const windowId = useWindowsStore().currentChromeWindow.id || 0
-//   const currentChromeTab = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
-//   if (currentChromeTab && currentChromeTab.id) {
-//     ChromeApi.executeClippingJS(currentChromeTab.id)
-//   }
-// }
 
 const showSearchIcon = () => tabsStore.tabsets.size > 1
 

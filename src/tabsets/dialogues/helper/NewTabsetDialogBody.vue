@@ -100,6 +100,7 @@ import {useUtils} from "src/services/Utils";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()
@@ -112,6 +113,7 @@ const props = defineProps({
 })
 
 const tabsStore = useTabsStore()
+const tabsStore2 = useTabsStore2()
 const router = useRouter()
 
 const newTabsetName = ref(props.name)
@@ -155,7 +157,7 @@ const doesNotExistYet = (val: string) => {
 }
 
 const submit = () => {
-  console.log("submit", addAllOpenTabs.value, tabsStore.tabs, windowModel.value)
+  console.log("submit", addAllOpenTabs.value, tabsStore2.browserTabs, windowModel.value)
   const existsInTabset = tabsStore.existingInTabset(newTabsetName.value)
   if (existsInTabset && existsInTabset.status === TabsetStatus.ARCHIVED) {
     unarchiveTabset()
@@ -163,7 +165,7 @@ const submit = () => {
     useTabsetService().selectTabset(existsInTabset.id)
     //router.push("/sidepanel?first=")
   } else {
-    let tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
+    let tabsToUse = addAllOpenTabs.value ? tabsStore2.browserTabs : []
     if (props.windowId) {
       console.log("windowsStore", windowsStore)
       // TODO ignoring props.windowId !?!

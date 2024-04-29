@@ -22,6 +22,8 @@ import EditorJS, {OutputData} from "@editorjs/editorjs";
 
 import EditorJsConfig from "src/utils/EditorJsConfig";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -42,7 +44,7 @@ watchEffect(() => {
   if (tabsetId.value) {
     console.debug("got tabset id", tabsetId.value)
     tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
-    tabsStore.selectCurrentTabset(tabsetId.value)
+    useTabsetsStore().selectCurrentTabset(tabsetId.value)
 
     if (tabset.value && !editorJS2) { // && !editorJS2.isReady) {
       // @ts-ignore

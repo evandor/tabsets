@@ -6,7 +6,6 @@ import {uid, useQuasar} from "quasar";
 import throttledQueue from 'throttled-queue';
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useSettingsStore} from "src/stores/settingsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
@@ -22,17 +21,15 @@ import {useAuthStore} from "stores/authStore";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {
-  saveCurrentTabset,
   saveTabset,
   saveText,
   saveMetaLinksFor,
   saveLinksFor,
   addToTabsetId
 } = useTabsetService()
-
-const {saveThumbnailFor} = useThumbnailsService()
 
 const {sanitize, sendMsg, inBexMode} = useUtils()
 
@@ -41,13 +38,13 @@ async function setCurrentTab() {
 
   //console.debug("setting current tab", tabs)
   if (tabs && tabs[0]) {
-    useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
+    useTabsStore2().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
   } else {
     // Seems to be necessary when creating a new chrome group
     const tabs2 = await chrome.tabs.query({active: true})
     //console.log("setting current tab II", tabs2)
     if (tabs2 && tabs2[0]) {
-      useTabsStore().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
+      useTabsStore2().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
     }
   }
 }
@@ -229,8 +226,7 @@ class ChromeListeners {
 
   clearWorking() {
     if (this.inProgress) {
-      const tabsStore = useTabsStore()
-      tabsStore.loadTabs('onProgressStopped')
+      useTabsStore2().loadTabs('onProgressStopped')
     }
     this.inProgress = false
   }
@@ -474,9 +470,8 @@ class ChromeListeners {
   }
 
   onReplaced(n1: number, n2: number) {
-    const tabsStore = useTabsStore()
     console.log(`onReplaced: tab ${n1} replaced with ${n2}`)
-    tabsStore.loadTabs('onReplaced');
+    useTabsStore2().loadTabs('onReplaced');
   }
 
   async onActivated(info: chrome.tabs.TabActiveInfo) {
@@ -513,9 +508,8 @@ class ChromeListeners {
 
   onMoved(number: number, info: chrome.tabs.TabMoveInfo) {
     this.eventTriggered()
-    const tabsStore = useTabsStore()
     console.debug(`onMoved: tab ${number} moved: ${JSON.stringify(info)}`)
-    tabsStore.loadTabs('onMoved');
+    useTabsStore2().loadTabs('onMoved');
   }
 
   onAttached(number: number, info: chrome.tabs.TabAttachInfo) {

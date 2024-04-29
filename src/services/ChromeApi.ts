@@ -19,6 +19,7 @@ import "rangy/lib/rangy-serializer";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {urlExistsInATabset} = useTabsetService()
 
@@ -373,7 +374,7 @@ class ChromeApi {
         url: _.map(urlAndGroupArray, a => a['url' as keyof object])
       })
     } else if (windowName) { // open in named window
-      useTabsStore().selectCurrentTabset(tabset.id)
+      useTabsetsStore().selectCurrentTabset(tabset.id)
       NavigationService.openOrCreateTab(
         _.map(urlAndGroupArray, a => a['url' as keyof object]),
         undefined,
