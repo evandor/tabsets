@@ -30,6 +30,7 @@ import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDb
 import {useContentService} from "src/content/services/ContentService";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 function dbStoreToUse(st: SyncType) {
   const isAuthenticated = useAuthStore().isAuthenticated()
@@ -169,6 +170,8 @@ class AppService {
       useDB().tabsetsFirestoreDb : useDB().tabsetsIndexedDb
     await tabsetsStore.initialize(tabsetsPersistence)
     //await useTabsetService().init(store, false)
+
+    await useTabsStore2().initialize()
 
     const thumbnailsPersistence = IndexedDbThumbnailsPersistence
       //store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb

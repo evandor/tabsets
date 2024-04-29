@@ -41,10 +41,10 @@ export const useTabsStore = defineStore('tabs', {
   state: () => ({
 
     // tabset extension id, set at init
-    ownTabId: null as unknown as number,
+    //ownTabId: null as unknown as number,
 
     // chrome's current's windows tabs, reloaded on various events
-    tabs: [] as unknown as chrome.tabs.Tab[],
+    // tabs: [] as unknown as chrome.tabs.Tab[],
 
     // cannot use type chrome.tabs.Tab if not in bex mode
     currentChromeTab: null as unknown as chrome.tabs.Tab,
@@ -71,12 +71,7 @@ export const useTabsStore = defineStore('tabs', {
     /**
      * the browsers tabs as a tabset
      */
-    browserTabset: null as unknown as Tabset,
-
-    /**
-     * tabs the extension should ignore
-     */
-    //ignoredTabset: null as unknown as Tabset,
+    //browserTabset: null as unknown as Tabset,
 
     /**
      * tabs to revisit later (will be available in all spaces)
@@ -110,10 +105,10 @@ export const useTabsStore = defineStore('tabs', {
       return allTabs.slice(0, 12)
     },
 
-    tabsCount(): number {
-      return this.tabs.length
-    },
-    getChromeTabs: (state): chrome.tabs.Tab[] => state.tabs,
+    // tabsCount(): number {
+    //   return this.tabs.length
+    // },
+    // getChromeTabs: (state): chrome.tabs.Tab[] => state.tabs,
     tabsetNames: (state) => _.map([...state.tabsets.keys()], key => {
       const tabset = state.tabsets.get(key)
       return tabset?.name || 'unknown'
@@ -232,19 +227,19 @@ export const useTabsStore = defineStore('tabs', {
       })
       return res
     },
-    scheduledTabs: (state) => {
-      const res: Tab[] = []
-      _.forEach([...state.tabsets.values()] as Tabset[], (ts: Tabset) => {
-        //if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
-        _.forEach(ts.tabs, (t: Tab) => {
-          if (t.scheduledFor) {
-            res.push(t)
-          }
-        })
-        // }
-      })
-      return res
-    },
+    // scheduledTabs: (state) => {
+    //   const res: Tab[] = []
+    //   _.forEach([...state.tabsets.values()] as Tabset[], (ts: Tabset) => {
+    //     //if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
+    //     _.forEach(ts.tabs, (t: Tab) => {
+    //       if (t.scheduledFor) {
+    //         res.push(t)
+    //       }
+    //     })
+    //     // }
+    //   })
+    //   return res
+    // },
     getCurrentChromeTab: (state) => {
       return (windowId: number): chrome.tabs.Tab | undefined => {
         return state.currentChromeTabs.get(windowId)
@@ -256,37 +251,37 @@ export const useTabsStore = defineStore('tabs', {
     async initialize() {
       console.debug(" ...initializing tabsStore")
 
-      if ("bex" === process.env.MODE) {
-        // --- own tab id ---
-        const ownTab = await ChromeApi.getCurrentTab()
-        if (ownTab && ownTab.id) {
-          //console.log("setting extension tab id to ", ownTab.id)
-          this.ownTabId = ownTab.id
-        }
-
-        // --- setting current tabs
-        this.tabs = await queryTabs()
-      }
+      // if ("bex" === process.env.MODE) {
+      //   // --- own tab id ---
+      //   const ownTab = await ChromeApi.getCurrentTab()
+      //   if (ownTab && ownTab.id) {
+      //     //console.log("setting extension tab id to ", ownTab.id)
+      //     this.ownTabId = ownTab.id
+      //   }
+      //
+      //   // --- setting current tabs
+      //   //this.tabs = await queryTabs()
+      // }
 
       // @ts-ignore
-      this.browserTabset = new Tabset("current", "current",
-        _.map(this.tabs, t => new Tab(uid(), t)))
+      //this.browserTabset = new Tabset("current", "current", [])
+        //_.map(this.tabs, t => new Tab(uid(), t)))
 
       this.pendingTabset = new Tabset("pending", "pending", [], [])
     },
 
-    async loadTabs(eventName: string) {
-      // potentially expansive method
-      // console.log(`${eventName}: -- loading tabs for tabset '${this.currentTabsetId}'`)
-      //console.log(`${eventName}: -- loading tabs for tabset 'current'`)
-      this.tabs = await queryTabs()
-      const current = new Tabset("current", "current",
-        _.map(this.tabs, t => {
-          return new Tab(uid(), t)
-        }))
-      markDuplicates(current)
-      this.browserTabset = current
-    },
+    // async loadTabs(eventName: string) {
+    //   // potentially expansive method
+    //   // console.log(`${eventName}: -- loading tabs for tabset '${this.currentTabsetId}'`)
+    //   //console.log(`${eventName}: -- loading tabs for tabset 'current'`)
+    //   this.tabs = await queryTabs()
+    //   const current = new Tabset("current", "current",
+    //     _.map(this.tabs, t => {
+    //       return new Tab(uid(), t)
+    //     }))
+    //   markDuplicates(current)
+    //   this.browserTabset = current
+    // },
 
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
       // @ts-ignore
@@ -458,14 +453,6 @@ export const useTabsStore = defineStore('tabs', {
       }
     },
 
-    deactivateListeners() {
-      console.log("setting listeners to false")
-      this.listenersOn = false
-    },
-    activateListeners() {
-      console.log("setting listeners to true")
-      this.listenersOn = true
-    },
     addTabset(ts: Tabset) {
       //console.log("adding tabset", ts)
       ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)

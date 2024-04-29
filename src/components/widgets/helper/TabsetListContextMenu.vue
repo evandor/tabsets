@@ -164,13 +164,13 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
-import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
+import RestoreTabsetDialog from "src/tabsets/dialogues/RestoreTabsetDialog.vue";
 import {Space} from "src/spaces/models/Space";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
 import {openURL, useQuasar} from "quasar";
-import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {ShareTabsetCommand} from "src/tabsets/commands/ShareTabsetCommand"
 import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";

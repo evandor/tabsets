@@ -73,6 +73,7 @@ import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import NavigationService from "src/services/NavigationService";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const localstorage = useQuasar().localStorage
 
@@ -105,7 +106,7 @@ watchEffect(() => {
   currentWindowName.value = res
 })
 
-watch(() => useTabsStore().tabsCount, (a, b) => {
+watch(() => useTabsStore2().tabsCount, (a, b) => {
   rows.value = calcStatsRows()
 })
 
@@ -126,7 +127,7 @@ const calcStatsRows = () => {
       snapshot: getFromSnapshot('Open Windows'),
       link: "https://docs.tabsets.net/windows-management"
     },
-    {name: 'Open Tabs', count: useTabsStore().tabs.length, snapshot: getFromSnapshot('Open Tabs')}
+    {name: 'Open Tabs', count: useTabsStore2().tabsCount, snapshot: getFromSnapshot('Open Tabs')}
   ]
 }
 

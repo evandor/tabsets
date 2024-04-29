@@ -86,46 +86,49 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   async saveTabset(tabset: Tabset): Promise<any> {
-    useUiStore().syncing = true
-    tabset.origin = this.installationId
-    console.log(`saving tabset ${tabset.id} in installation ${this.installationId}`)
-    await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
-    useUiStore().syncing = false
+    // noop, done in FirestoreTabsetsPersistence
+
+    // useUiStore().syncing = true
+    // tabset.origin = this.installationId
+    // console.log(`saving tabset ${tabset.id} in installation ${this.installationId}`)
+    // await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
+    // useUiStore().syncing = false
   }
 
   async deleteTabset(tabsetId: string): Promise<any> {
-    useUiStore().syncing = true
-    await deleteDoc(tabsetDoc(tabsetId))
-    useUiStore().syncing = false
+    // noop, done in FirestoreTabsetsPersistence
+    // useUiStore().syncing = true
+    // await deleteDoc(tabsetDoc(tabsetId))
+    // useUiStore().syncing = false
   }
 
   /**
    * === Spaces ========================================
    */
 
-  async loadSpaces(): Promise<any> {
-    useUiStore().syncing = true
-    LocalStorage.set("ui.spaces.lastUpdate", new Date().getTime());
-    (await getDocs(spacesCollection())).forEach((doc) => {
-      let newItem = doc.data() as Space
-      newItem.id = doc.id;
-      useSpacesStore().addSpace(newItem)
-    })
-    useUiStore().syncing = false
-    return Promise.resolve(undefined);
-  }
-
-  async addSpace(entity: Space): Promise<any> {
-    useUiStore().syncing = true
-    await setDoc(spaceDoc(entity.id), JSON.parse(JSON.stringify(entity)))
-    useUiStore().syncing = false
-  }
-
-  async deleteSpace(entityId: string) {
-    useUiStore().syncing = true
-    await deleteDoc(spaceDoc(entityId))
-    useUiStore().syncing = false
-  }
+  // async loadSpaces(): Promise<any> {
+  //   useUiStore().syncing = true
+  //   LocalStorage.set("ui.spaces.lastUpdate", new Date().getTime());
+  //   (await getDocs(spacesCollection())).forEach((doc) => {
+  //     let newItem = doc.data() as Space
+  //     newItem.id = doc.id;
+  //     useSpacesStore().addSpace(newItem)
+  //   })
+  //   useUiStore().syncing = false
+  //   return Promise.resolve(undefined);
+  // }
+  //
+  // async addSpace(entity: Space): Promise<any> {
+  //   useUiStore().syncing = true
+  //   await setDoc(spaceDoc(entity.id), JSON.parse(JSON.stringify(entity)))
+  //   useUiStore().syncing = false
+  // }
+  //
+  // async deleteSpace(entityId: string) {
+  //   useUiStore().syncing = true
+  //   await deleteDoc(spaceDoc(entityId))
+  //   useUiStore().syncing = false
+  // }
 
   /**
    * === ... ========================================
@@ -168,15 +171,7 @@ class FirestorePersistenceService implements PersistenceService {
   deleteBlob(tabId: string, elementId: string): void {
   }
 
-  deleteContent(url: string): Promise<void> {
-    return Promise.reject(undefined);
-  }
-
   deleteGroupByTitle(title: string): Promise<void> {
-    return Promise.reject(undefined);
-  }
-
-  deleteMHtml(id: string): Promise<void> {
     return Promise.reject(undefined);
   }
 
@@ -197,14 +192,6 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   getLinks(url: string): Promise<object> {
-    return Promise.reject({});
-  }
-
-  getMHtml(url: string): Promise<object> {
-    return Promise.reject({});
-  }
-
-  getMHtmlInline(url: string): Promise<object> {
     return Promise.reject({});
   }
 

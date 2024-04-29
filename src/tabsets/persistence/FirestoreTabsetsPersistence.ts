@@ -3,15 +3,18 @@ import {collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc} from "fi
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
-import {useUiStore} from "stores/uiStore";
 import {Tabset} from "src/tabsets/models/Tabset";
-import {useTabsStore} from "stores/tabsStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {LocalStorage} from "quasar";
+import {APP_INSTALLATION_ID} from "boot/constants";
+import {useUiStore} from "stores/uiStore";
 
 const STORE_IDENT = 'tabsets';
 
-function spaceDoc(spaceId: string) {
-  return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, STORE_IDENT, spaceId)
+const installationId = LocalStorage.getItem(APP_INSTALLATION_ID) as string || '---'
+
+function tabsetDoc(tabsetId: string) {
+  return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, STORE_IDENT, tabsetId)
 }
 
 function tabsetsCollection() {
@@ -32,12 +35,12 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     return Promise.resolve("")
   }
 
-
   compactDb(): Promise<any> {
     return Promise.resolve(undefined);
   }
 
   async loadTabsets(): Promise<any> {
+    console.log("loading tabsets", this.getServiceName());
     // useUiStore().syncing = true
     const docs = await getDocs(tabsetsCollection())
     docs.forEach((doc) => {
@@ -45,6 +48,7 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
       newItem.id = doc.id;
       useTabsetsStore().setTabset(newItem)
     })
+    console.log("loading tabsets, found ", useTabsetsStore().tabsets.size);
     // useUiStore().syncing = false
     return Promise.resolve(undefined);
   }
@@ -57,11 +61,18 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     // no op for firestore
   }
 
-  saveTabset(ts: Tabset): Promise<any> {
-    return Promise.resolve(undefined);
+  async saveTabset(tabset: Tabset): Promise<any> {
+    //useUiStore().syncing = true
+    tabset.origin = installationId
+    console.log(`saving tabset ${tabset.id} in installation ${installationId}`)
+    await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
+    //useUiStore().syncing = false
   }
 
-  deleteTabset(tabsetId: string): void {
+  async deleteTabset(tabsetId: string): Promise<any> {
+    //useUiStore().syncing = true
+    await deleteDoc(tabsetDoc(tabsetId))
+    //useUiStore().syncing = false
   }
 
 

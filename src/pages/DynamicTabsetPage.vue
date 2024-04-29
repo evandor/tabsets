@@ -178,7 +178,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/tabsets/models/Tab";
-import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
+import RestoreTabsetDialog from "src/tabsets/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabList from "components/layouts/TabList.vue";

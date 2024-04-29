@@ -73,7 +73,7 @@ import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {openURL, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";

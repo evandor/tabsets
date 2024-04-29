@@ -59,8 +59,8 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
-import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
+import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 
 const tabsStore = useTabsStore()

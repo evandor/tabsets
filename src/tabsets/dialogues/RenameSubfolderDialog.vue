@@ -32,7 +32,7 @@
 
 import {computed, PropType, ref, watchEffect} from "vue";
 import {useDialogPluginComponent} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
+import {useTabsStore} from "stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameWindowCommand} from "src/windows/commands/RenameWindow";

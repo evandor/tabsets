@@ -1,19 +1,13 @@
 import {defineStore} from 'pinia';
 import _ from 'lodash'
 import {computed, ref, watch, watchEffect} from "vue";
-import {Space} from "src/spaces/models/Space";
-import PersistenceService from "src/services/PersistenceService";
 import {LocalStorage, uid} from "quasar";
-import throttledQueue from "throttled-queue";
-import SpacesPersistence from "src/spaces/persistence/SpacesPersistence";
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {Tab, TabComment} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 
 /**
  * a pinia store for "Tabsets".
