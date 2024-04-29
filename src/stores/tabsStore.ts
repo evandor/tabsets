@@ -15,11 +15,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
-async function queryTabs(): Promise<chrome.tabs.Tab[]> {
-  // @ts-ignore
-  return await chrome.tabs.query({currentWindow: true});
-}
-
 function markDuplicates(tabset: Tabset) {
   //console.log("marking duplicates in tabset", tabset.id)
   const urls = new Set<string>()
@@ -40,23 +35,10 @@ function markDuplicates(tabset: Tabset) {
 export const useTabsStore = defineStore('tabs', {
   state: () => ({
 
-    // tabset extension id, set at init
-    //ownTabId: null as unknown as number,
-
-    // chrome's current's windows tabs, reloaded on various events
-    // tabs: [] as unknown as chrome.tabs.Tab[],
-
     // cannot use type chrome.tabs.Tab if not in bex mode
-    currentChromeTab: null as unknown as chrome.tabs.Tab,
+//    currentChromeTab: null as unknown as chrome.tabs.Tab,
     // tab by window id
-    currentChromeTabs: new Map() as Map<number, chrome.tabs.Tab>,
-
-    // the ids of the tabs the user activated, limited to the last X entries
-    chromeTabsHistory: new Array<[number, string]>(),
-    // where are we in the chromeTabsHistory?
-    chromeTabsHistoryPosition: -1,
-    // we are currently navigating through the history?
-    chromeTabsHistoryNavigating: false,
+  //  currentChromeTabs: new Map() as Map<number, chrome.tabs.Tab>,
 
     /**
      * a named list of tabsets managed by this extension.
@@ -67,16 +49,6 @@ export const useTabsStore = defineStore('tabs', {
      * if the user opens a new tab, this will be stored here
      */
     pendingTabset: null as unknown as Tabset,
-
-    /**
-     * the browsers tabs as a tabset
-     */
-    //browserTabset: null as unknown as Tabset,
-
-    /**
-     * tabs to revisit later (will be available in all spaces)
-     */
-    backupTabset: null as unknown as Tabset,
 
     // which tabset should be shown in the extension?
     currentTabsetId: null as unknown as string,
@@ -227,105 +199,19 @@ export const useTabsStore = defineStore('tabs', {
       })
       return res
     },
-    // scheduledTabs: (state) => {
-    //   const res: Tab[] = []
-    //   _.forEach([...state.tabsets.values()] as Tabset[], (ts: Tabset) => {
-    //     //if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
-    //     _.forEach(ts.tabs, (t: Tab) => {
-    //       if (t.scheduledFor) {
-    //         res.push(t)
-    //       }
-    //     })
-    //     // }
-    //   })
-    //   return res
-    // },
-    getCurrentChromeTab: (state) => {
-      return (windowId: number): chrome.tabs.Tab | undefined => {
-        return state.currentChromeTabs.get(windowId)
-      }
-    }
+
   },
 
   actions: {
     async initialize() {
       console.debug(" ...initializing tabsStore")
 
-      // if ("bex" === process.env.MODE) {
-      //   // --- own tab id ---
-      //   const ownTab = await ChromeApi.getCurrentTab()
-      //   if (ownTab && ownTab.id) {
-      //     //console.log("setting extension tab id to ", ownTab.id)
-      //     this.ownTabId = ownTab.id
-      //   }
-      //
-      //   // --- setting current tabs
-      //   //this.tabs = await queryTabs()
-      // }
-
-      // @ts-ignore
-      //this.browserTabset = new Tabset("current", "current", [])
-        //_.map(this.tabs, t => new Tab(uid(), t)))
-
       this.pendingTabset = new Tabset("pending", "pending", [], [])
     },
-
-    // async loadTabs(eventName: string) {
-    //   // potentially expansive method
-    //   // console.log(`${eventName}: -- loading tabs for tabset '${this.currentTabsetId}'`)
-    //   //console.log(`${eventName}: -- loading tabs for tabset 'current'`)
-    //   this.tabs = await queryTabs()
-    //   const current = new Tabset("current", "current",
-    //     _.map(this.tabs, t => {
-    //       return new Tab(uid(), t)
-    //     }))
-    //   markDuplicates(current)
-    //   this.browserTabset = current
-    // },
 
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
       // @ts-ignore
       return _.filter(this.tabs, (t: chrome.tabs.Tab) => t.groupId === groupId)
-    },
-
-    setCurrentChromeTab(tab: chrome.tabs.Tab) {
-      this.currentChromeTab = tab
-      this.currentChromeTabs.set(tab.windowId, tab)
-      const MAX_HISTORY_LENGTH = 12
-
-      // console.log("%cchromeTabsHistoryPosition", "color:green;font-style:bold;",
-      //     tab.id, this.chromeTabsHistoryPosition, this.chromeTabsHistory.length, this.chromeTabsHistoryNavigating)
-
-      // tab was activated without using the navigation
-      if (tab.id && !this.chromeTabsHistoryNavigating) {
-
-        // update urls for matching id
-        this.chromeTabsHistory.forEach(([tabId, url], index) => {
-          if (tabId === tab.id) {
-            this.chromeTabsHistory[index] = [tabId, tab.url || '']
-          }
-        });
-
-        const historyLength = this.chromeTabsHistory.length
-        this.chromeTabsHistoryPosition = Math.min(MAX_HISTORY_LENGTH - 1, historyLength)
-        if (historyLength > 0 &&
-          this.chromeTabsHistory[historyLength - 1][0] !== tab.id &&
-          this.chromeTabsHistory[historyLength - 1][1] !== tab.url
-        ) {
-          this.chromeTabsHistory.push([tab.id, tab.url || ''])
-        } else if (historyLength === 0) {
-          this.chromeTabsHistory.push([tab.id, tab.url || ''])
-        } else {
-          //console.log("did not add, adjusting position", historyLength - 1)
-          this.chromeTabsHistoryPosition = historyLength - 1
-        }
-        if (this.chromeTabsHistory.length > MAX_HISTORY_LENGTH) {
-          // console.log("deleting first element")
-          this.chromeTabsHistory.splice(0, 1)
-        }
-      } else if (this.chromeTabsHistoryNavigating) {
-        this.chromeTabsHistoryNavigating = false
-      }
     },
 
     selectCurrentTabset(tabsetId: string): Tabset | undefined {
@@ -425,12 +311,6 @@ export const useTabsStore = defineStore('tabs', {
             documentationTab,
             new Tab(uid(), ChromeApi.createChromeTabObject(
               "Philosophy", "https://tabsets.web.app/#/philosophy")),
-            // new Tab(uid(), ChromeApi.createChromeTabObject(
-            //     "Glossary","https://tabsets.web.app/#/glossary")),
-            // new Tab(uid(), ChromeApi.createChromeTabObject(
-            //     "Features","https://tabsets.web.app/#/features")),
-            // new Tab(uid(), ChromeApi.createChromeTabObject(
-            //     "FAQ","https://tabsets.web.app/#/faq")),
             new Tab(uid(), ChromeApi.createChromeTabObject(
               "Pricacy", "https://tabsets.web.app/#/privacy")),
             new Tab(uid(), ChromeApi.createChromeTabObject(
@@ -477,13 +357,6 @@ export const useTabsStore = defineStore('tabs', {
 
       useWindowsStore().addToWindowSet(ts.window)
 
-      if (ts.sharing === TabsetSharing.PUBLIC_LINK || ts.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED) {
-        // MqttService.init()
-        // if (ts.sharedId) {
-        //   MqttService.subscribe(ts.sharedId)
-        // }
-      }
-
       this.tabsets.set(ts.id, ts)
       markDuplicates(ts)
     },
@@ -507,24 +380,6 @@ export const useTabsStore = defineStore('tabs', {
         }
       }
       this.pendingTabset.tabs.push(tab)
-    },
-
-    tabHistoryBack() {
-      if (this.chromeTabsHistoryPosition > 0) {
-        console.log("called tabHistoryBack with", this.chromeTabsHistoryPosition)
-        this.chromeTabsHistoryPosition -= 1
-        this.chromeTabsHistoryNavigating = true
-      }
-      return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
-    },
-
-    tabHistoryForward() {
-      if (this.chromeTabsHistoryPosition < this.chromeTabsHistory.length - 1) {
-        console.log("called tabHistoryForward with", this.chromeTabsHistoryPosition, this.chromeTabsHistory.length)
-        this.chromeTabsHistoryPosition += 1
-        this.chromeTabsHistoryNavigating = true
-      }
-      return this.chromeTabsHistory[this.chromeTabsHistoryPosition]
     },
 
     clearTabsets() {

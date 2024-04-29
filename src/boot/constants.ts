@@ -2,8 +2,8 @@ import {boot} from 'quasar/wrappers'
 
 const INDEX_DB_VERSION = 22
 
-const CLEANUP_PERIOD_IN_MINUTES = 1 // in prod: 10
-const EXPIRE_DATA_PERIOD_IN_MINUTES = 2 // in prod: 60
+const CLEANUP_PERIOD_IN_MINUTES = 10 // in prod: 10
+const EXPIRE_DATA_PERIOD_IN_MINUTES = 60 // in prod: 60
 const MONITORING_PERIOD_IN_MINUTES = 60 // in prod: 60
 
 
