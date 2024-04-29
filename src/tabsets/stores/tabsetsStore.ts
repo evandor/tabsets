@@ -153,6 +153,10 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       return undefined
     }
 
+    function unsetCurrentTabset():void {
+      currentTabset.value = undefined
+    }
+
     // *** getters ***
 
     const getCurrentTabs = computed(() => currentTabset.value ? currentTabset.value.tabs : [])
@@ -184,6 +188,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       initialize,
       tabsets,
       createTabset,
+      unsetCurrentTabset,
       addTabset,
       saveTabset, // check save vs add vs create
       setTabset,

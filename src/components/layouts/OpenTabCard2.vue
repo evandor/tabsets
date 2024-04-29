@@ -81,7 +81,7 @@ const alreadyInCurrentTabset = ref(false)
 
 const closeTab = (tab: chrome.tabs.Tab) => {
   NavigationService.closeChromeTab(tab)
-  tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== tab.url)
+  // tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== tab.url)
 }
 
 const self = chrome.runtime?.getURL("")

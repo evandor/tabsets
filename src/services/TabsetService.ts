@@ -19,6 +19,8 @@ import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useAuthStore} from "stores/authStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
@@ -41,63 +43,53 @@ class TabsetService {
   }
 
   isOpen(tabUrl: string): boolean {
-    const tabsStore = useTabsStore()
-    return _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => {
+    const tabsStore = useTabsStore2()
+    return _.filter(tabsStore.browserTabs, (t: chrome.tabs.Tab) => {
       return t?.url === tabUrl
     }).length > 0
   }
 
   chromeTabIdFor(tabUrl: string): number | undefined {
-    const tabsStore = useTabsStore()
-    const candidates = _.filter(tabsStore.tabs, (t: chrome.tabs.Tab) => t?.url === tabUrl)
+    const tabsStore = useTabsStore2()
+    const candidates = _.filter(tabsStore.browserTabs, (t: chrome.tabs.Tab) => t?.url === tabUrl)
     return candidates.length > 0 ? candidates[0].id : undefined
   }
 
-  saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {
-    const tabsStore = useTabsStore()
-    const currentTabset = tabsStore.getCurrentTabset
-    let successful = 0
-    let failed = 0
-
-    if (currentTabset) {
-      _.forEach(
-        tabsStore.pendingTabset.tabs as Tab[],
-        t => {
-          if (t?.chromeTabId) {
-            if (!onlySelected || (onlySelected && t.selected)) {
-              //currentTabset.tabs.push(t)
-              this.saveToCurrentTabset(t)
-                .then(() => successful += 1)
-                .catch(() => failed += 1)
-            }
-          } else {
-            console.log("got tab with missing data", t)
-          }
-        })
-
-      if (!onlySelected) {
-        tabsStore.pendingTabset.tabs = []
-      } else {
-        _.remove(tabsStore.pendingTabset.tabs, {selected: true});
-      }
-      return saveTabset(currentTabset)
-        .then(() => Promise.resolve())
-    }
-    return Promise.reject("no current tabset set")
-  }
+  // saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {
+  //   const tabsStore = useTabsStore()
+  //   const currentTabset = useTabsetService().getCurrentTabset
+  //   let successful = 0
+  //   let failed = 0
+  //
+  //   if (currentTabset) {
+  //     _.forEach(
+  //       tabsStore.pendingTabset.tabs as Tab[],
+  //       t => {
+  //         if (t?.chromeTabId) {
+  //           if (!onlySelected || (onlySelected && t.selected)) {
+  //             //currentTabset.tabs.push(t)
+  //             this.saveToCurrentTabset(t)
+  //               .then(() => successful += 1)
+  //               .catch(() => failed += 1)
+  //           }
+  //         } else {
+  //           console.log("got tab with missing data", t)
+  //         }
+  //       })
+  //
+  //     if (!onlySelected) {
+  //       tabsStore.pendingTabset.tabs = []
+  //     } else {
+  //       _.remove(tabsStore.pendingTabset.tabs, {selected: true});
+  //     }
+  //     return saveTabset(currentTabset)
+  //       .then(() => Promise.resolve())
+  //   }
+  //   return Promise.reject("no current tabset set")
+  // }
 
   saveSelectedPendingTabs() {
-    this.saveAllPendingTabs(true)
-  }
-
-  removeSelectedPendingTabs() {
-    const tabsStore = useTabsStore()
-    tabsStore.pendingTabset.tabs = []
-  }
-
-  removeAllPendingTabs() {
-    const tabsStore = useTabsStore()
-    tabsStore.pendingTabset.tabs = []
+   // this.saveAllPendingTabs(true)
   }
 
   setOnlySelectedTab(tab: Tab) {
@@ -189,32 +181,32 @@ class TabsetService {
     return saveCurrentTabset()
   }
 
-  createPendingFromBrowserTabs() {
-    console.log(`createPendingFromBrowserTabs`)
-    const tabsStore = useTabsStore()
-    if (tabsStore.pendingTabset) {
-      tabsStore.pendingTabset.tabs = []
-      const urlSet = new Set<string>()
-      _.forEach(tabsStore.tabs, t => {
-        if (t.url) {
-          if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
-            urlSet.add(t.url)
-            tabsStore.addToPendingTabset(new Tab(uid(), t))
-            //tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
-          }
-        }
-      })
-    }
-  }
+  // createPendingFromBrowserTabs() {
+  //   console.log(`createPendingFromBrowserTabs`)
+  //   const tabsStore = useTabsStore()
+  //   if (tabsStore.pendingTabset) {
+  //     tabsStore.pendingTabset.tabs = []
+  //     const urlSet = new Set<string>()
+  //     _.forEach(tabsStore.tabs, t => {
+  //       if (t.url) {
+  //         if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
+  //           urlSet.add(t.url)
+  //           tabsStore.addToPendingTabset(new Tab(uid(), t))
+  //           //tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
+  //         }
+  //       }
+  //     })
+  //   }
+  // }
 
-  getSelectedPendingTabs(): Tab[] {
-    const tabsStore = useTabsStore()
-    const ts = tabsStore.pendingTabset
-    if (ts) {
-      return _.filter(ts.tabs as Tab[], t => t.selected)
-    }
-    return []
-  }
+  // getSelectedPendingTabs(): Tab[] {
+  //   const tabsStore = useTabsStore()
+  //   const ts = tabsStore.pendingTabset
+  //   if (ts) {
+  //     return _.filter(ts.tabs as Tab[], t => t.selected)
+  //   }
+  //   return []
+  // }
 
   moveToTabset(tabId: string, toTabsetId: string, copy: boolean = false): Promise<any> {
     const tabsStore = useTabsStore()
@@ -446,7 +438,7 @@ class TabsetService {
 
   moveTo(tabId: string, newIndex: number, column: TabsetColumn) {
     console.log("moving", tabId, newIndex, column.id)
-    let tabs = useTabsStore().getCurrentTabs
+    let tabs = useTabsetsStore().getCurrentTabs
     //console.log("tabs", tabs)
     //tabs = _.filter(tabs, (t: Tab) => t.columnId === column.id)
     const oldIndex = _.findIndex(tabs, t => t.id === tabId)
@@ -456,7 +448,7 @@ class TabsetService {
       tabs.splice(newIndex, 0, tab);
 
       // Sharing
-      const currentTs = useTabsStore().getCurrentTabset
+      const currentTs = useTabsetsStore().getCurrentTabset
       if (currentTs) {
         if (currentTs.sharedId && currentTs.sharing === TabsetSharing.PUBLIC_LINK) {
           currentTs.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
@@ -542,8 +534,8 @@ class TabsetService {
       ts.status = TabsetStatus.DELETED
       return saveTabset(ts)
         .then(() => {
-          if (useTabsStore().currentTabsetId === tabsetId) {
-            useTabsStore().currentTabsetId = null as unknown as string
+          if (useTabsetsStore().getCurrentTabset?.id === tabsetId) {
+            useTabsetsStore().unsetCurrentTabset()// = null as unknown as string
           }
           return ts
         })

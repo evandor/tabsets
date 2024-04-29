@@ -82,10 +82,10 @@ onMounted(() => {
     webview.addEventListener('did-start-loading', (a: any, b: any) => {
       console.log("loading", a.srcElement.src)
       src.value = a.srcElement.src
-      const pendingTabs:Tab[] = useTabsStore().pendingTabset.tabs
-      if (pendingTabs.findIndex((t:Tab) => t.url === a.srcElement.src) < 0) {
-        pendingTabs.push(new Tab(uid(),  ChromeApi.createChromeTabObject(a.srcElement.src, a.srcElement.src,"")))
-      }
+      // const pendingTabs:Tab[] = useTabsStore().pendingTabset.tabs
+      // if (pendingTabs.findIndex((t:Tab) => t.url === a.srcElement.src) < 0) {
+      //   pendingTabs.push(new Tab(uid(),  ChromeApi.createChromeTabObject(a.srcElement.src, a.srcElement.src,"")))
+      // }
     })
     // @ts-ignore
     webview.addEventListener('did-stop-loading', (a:any,b:any) => {

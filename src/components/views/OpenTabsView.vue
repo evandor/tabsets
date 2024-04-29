@@ -154,22 +154,14 @@ const saveSelectedTabs = () => {
 }
 
 const toggleInvert = (invert: boolean) => {
-  tabsStore.pendingTabset?.tabs.forEach(t => {
-    if (!useTabsetService().urlExistsInCurrentTabset(t.url || '')) {
-      t.selected = !t.selected
-      tabSelectionChanged({tabId: t.id, selected: t.selected})
-    }
-  })
+  // tabsStore.pendingTabset?.tabs.forEach(t => {
+  //   if (!useTabsetService().urlExistsInCurrentTabset(t.url || '')) {
+  //     t.selected = !t.selected
+  //     tabSelectionChanged({tabId: t.id, selected: t.selected})
+  //   }
+  // })
 }
 
-const addOpenTabs = () => {
-  if (process.env.MODE !== 'bex') {
-    console.log("useTabsStore().pendingTabset", useTabsStore().pendingTabset)
-    useTabsStore().pendingTabset = new Tabset("dummy", "dummy", [])
-  } else {
-    TabsetService.createPendingFromBrowserTabs()
-  }
-}
 
 </script>
 

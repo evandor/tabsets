@@ -43,10 +43,8 @@ export const useTabsStore = defineStore('tabs', {
     /**
      * if the user opens a new tab, this will be stored here
      */
-    pendingTabset: null as unknown as Tabset,
+    //pendingTabset: null as unknown as Tabset,
 
-    // which tabset should be shown in the extension?
-    //currentTabsetId: null as unknown as string,
 
     // use listeners? Might make sense to turn them off when restoring old tabset for example
     listenersOn: true
@@ -183,7 +181,7 @@ export const useTabsStore = defineStore('tabs', {
     async initialize() {
       console.debug(" ...initializing tabsStore")
 
-      this.pendingTabset = new Tabset("pending", "pending", [], [])
+      //this.pendingTabset = new Tabset("pending", "pending", [], [])
     },
 
     tabsForGroup(groupId: number): chrome.tabs.Tab[] {
@@ -196,9 +194,9 @@ export const useTabsStore = defineStore('tabs', {
     removeTab(tabset: Tabset, tabId: string) {
       tabset.tabs = _.filter(tabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
       markDuplicates(tabset)
-      if (this.pendingTabset) {
-        this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
-      }
+      // if (this.pendingTabset) {
+      //   this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
+      // }
       for (const folder of tabset.folders || []) {
         this.removeTab(folder, tabId)
       }
@@ -315,27 +313,27 @@ export const useTabsStore = defineStore('tabs', {
       this.tabsets.set(ts.id, ts)
       markDuplicates(ts)
     },
-    setTabsets(ts: Tabset[]) {
-      console.log("adding tabsets", ts.length)
-      //ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
-      const tabsetMap = new Map<string, Tabset>()
-      ts.forEach(ts => tabsetMap.set(ts.id, ts))
-      this.tabsets = tabsetMap
-      //markDuplicates(ts)
-    },
-    addToPendingTabset(tab: Tab) {
-      if (usePermissionsStore().hasFeature(FeatureIdent.IGNORE)) {
-        const ignoreTS = this.getTabset('IGNORE')
-        if (ignoreTS && tab.url) {
-          const foundIndex = ignoreTS.tabs.findIndex((ignoreTab: Tab) => ignoreTab.url?.startsWith(tab.url || 'xxx'))
-          if (foundIndex >= 0) {
-            console.log("ignoring", tab.url, ignoreTS.tabs[foundIndex].url)
-            return false
-          }
-        }
-      }
-      this.pendingTabset.tabs.push(tab)
-    },
+    // setTabsets(ts: Tabset[]) {
+    //   console.log("adding tabsets", ts.length)
+    //   //ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
+    //   const tabsetMap = new Map<string, Tabset>()
+    //   ts.forEach(ts => tabsetMap.set(ts.id, ts))
+    //   this.tabsets = tabsetMap
+    //   //markDuplicates(ts)
+    // },
+    // addToPendingTabset(tab: Tab) {
+    //   if (usePermissionsStore().hasFeature(FeatureIdent.IGNORE)) {
+    //     const ignoreTS = this.getTabset('IGNORE')
+    //     if (ignoreTS && tab.url) {
+    //       const foundIndex = ignoreTS.tabs.findIndex((ignoreTab: Tab) => ignoreTab.url?.startsWith(tab.url || 'xxx'))
+    //       if (foundIndex >= 0) {
+    //         console.log("ignoring", tab.url, ignoreTS.tabs[foundIndex].url)
+    //         return false
+    //       }
+    //     }
+    //   }
+    //   this.pendingTabset.tabs.push(tab)
+    // },
 
     clearTabsets() {
       this.tabsets = new Map<string, Tabset>()

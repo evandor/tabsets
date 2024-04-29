@@ -303,15 +303,15 @@ const updateSelectionCount = () => {
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
 
-const filteredTabs = () => {
-  const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => true)
-  if (filter.value && filter.value.trim() !== '') {
-    return _.filter(noDupliatesTabs, (t: Tab) =>
-      (t?.url && t?.url.indexOf(filter.value) >= 0) ||
-      (t?.title && t?.title.indexOf(filter.value) >= 0))
-  }
-  return noDupliatesTabs
-}
+// const filteredTabs = () => {
+//   const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => true)
+//   if (filter.value && filter.value.trim() !== '') {
+//     return _.filter(noDupliatesTabs, (t: Tab) =>
+//       (t?.url && t?.url.indexOf(filter.value) >= 0) ||
+//       (t?.title && t?.title.indexOf(filter.value) >= 0))
+//   }
+//   return noDupliatesTabs
+// }
 
 const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})

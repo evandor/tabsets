@@ -100,20 +100,6 @@ const submit = () => {
 
   useCommandExecutor()
     .executeFromUi(new CreateFolderCommand(newFolderName.value, tabsToUse, props.tabsetId, props.parentFolder))
-    .then((res) => {
-
-      if (!addAllOpenTabs.value) {
-       // TabsetService.createPendingFromBrowserTabs()
-      } else {
-        if (tabsStore.pendingTabset) {
-          // clear pending tabset - why necessary?
-         // tabsStore.pendingTabset.tabs = []
-        }
-      }
-      //useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-      //router.push("/sidepanel?first=")
-    })
-
 }
 
 </script>

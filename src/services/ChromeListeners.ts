@@ -22,6 +22,7 @@ import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {
   saveTabset,
@@ -262,7 +263,7 @@ class ChromeListeners {
     })
     if (!foundSession) {
       console.debug("pushing to pending", tab)
-      tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
+      //tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
     }
   }
 
@@ -301,8 +302,8 @@ class ChromeListeners {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
 
       // handle pending Tabset
-      this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
-      this.handleUpdateInjectScripts(tabsStore.pendingTabset as Tabset, info, chromeTab)
+      //this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
+      this.handleUpdateInjectScripts(info, chromeTab)
 
       // handle existing tabs
       if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
@@ -392,7 +393,7 @@ class ChromeListeners {
     }
   }
 
-  private handleUpdateInjectScripts(tabset: Tabset, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
+  private handleUpdateInjectScripts(info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
     // TODO ignoring urls !?
     // if (this.ignoreUrl(tab, info)) {
     //   return
@@ -409,7 +410,7 @@ class ChromeListeners {
     }
 
     if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-      const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
+      const tabForUrl = useTabsetsStore().tabForUrlInSelectedTabset(tab.url || '')
       console.log("about to run annotationScript...", tabForUrl)
       if (tabForUrl) {
         chrome.scripting.executeScript({
