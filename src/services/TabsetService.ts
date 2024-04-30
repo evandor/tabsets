@@ -436,10 +436,10 @@ class TabsetService {
     }
   }
 
-  moveTo(tabId: string, newIndex: number, column: TabsetColumn) {
+  async moveTo(tabId: string, newIndex: number, column: TabsetColumn) {
     console.log("moving", tabId, newIndex, column.id)
     let tabs = useTabsetsStore().getCurrentTabs
-    //console.log("tabs", tabs)
+    console.log("tabs before", tabs)
     //tabs = _.filter(tabs, (t: Tab) => t.columnId === column.id)
     const oldIndex = _.findIndex(tabs, t => t.id === tabId)
     if (oldIndex >= 0) {
@@ -455,8 +455,9 @@ class TabsetService {
         }
       }
 
-      saveCurrentTabset()
+      await saveCurrentTabset()
     }
+    console.log("tabs after", useTabsetsStore().getCurrentTabs)
   }
 
   setView(tabsetId: string, view: string) {

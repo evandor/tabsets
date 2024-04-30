@@ -6,14 +6,14 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 class UndoCommand implements Command<TabsetStatus> {
 
-  constructor(public tabsetId: string, public tabsetPage: object) {
+  constructor(public tabsetId: string, public tabsetPage: string) {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
     const tabset = useTabsetsStore().getTabset(this.tabsetId)
     if (tabset) {
       tabset.page = this.tabsetPage
-      await useTabsetService().saveTabset(tabset)
+      const res = await useTabsetService().saveTabset(tabset)
       return new ExecutionResult(res, "Description was reverted")
     }
     return Promise.reject("could not get tabset id")
@@ -23,7 +23,7 @@ class UndoCommand implements Command<TabsetStatus> {
 
 export class DeleteTabsetDescriptionCommand implements Command<string> {
 
-  constructor(public tabsetId: string, public tabsetPage: object) {
+  constructor(public tabsetId: string, public tabsetPage: string) {
   }
 
   async execute(): Promise<ExecutionResult<string>> {
