@@ -48,7 +48,7 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
                             process.env.MODE === 'bex') {
                             useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
                         // } else if (useTabsStore().tabsets.size >= 3 &&
-                        //     useTabsStore().allTabsCount > 10 &&
+                        //     useTabsetsStore().allTabsCount > 10 &&
                         //     !usePermissionsStore().hasFeature(FeatureIdent.NEWEST_TABS) &&
                         //     process.env.MODE === 'bex') {
                         //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE))

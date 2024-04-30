@@ -96,7 +96,7 @@ onMounted(() => {
 
 
 watchEffect(async () => {
-  const res = useTabsStore().getTabAndTabsetId(tabId)
+  const res = useTabsetsStore().getTabAndTabsetId(tabId)
   if (res && res.tab) {
     tab.value = res.tab
     const response = await fetch(tab.value.url || '')

@@ -125,6 +125,18 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     return chromeTabsHistory.value[chromeTabsHistoryPosition.value]
   }
 
+  function removeTab(tabset: Tabset, tabId: string) {
+    tabset.tabs = _.filter(tabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
+    // markDuplicates(tabset)
+    // if (this.pendingTabset) {
+    //   this.pendingTabset.tabs = _.filter(this.pendingTabset.tabs as Tab[], (t: Tab) => t.id !== tabId)
+    // }
+    for (const folder of tabset.folders || []) {
+      removeTab(folder, tabId)
+    }
+  }
+
+
   // *** getters ***
   const tabsCount = computed(() => {
     return browserTabs.value.length
@@ -141,6 +153,8 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     }
   })
 
+
+
   return {
     initialize,
     browserTabs,
@@ -152,6 +166,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     currentChromeTab,
     tabHistoryBack,
     tabHistoryForward,
-    chromeTabsHistoryNavigating
+    chromeTabsHistoryNavigating,
+    removeTab
   }
 })

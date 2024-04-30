@@ -1,14 +1,15 @@
 import {defineStore} from 'pinia';
-import _ from 'lodash'
+import _, {forEach} from 'lodash'
 import {computed, ref, watch, watchEffect} from "vue";
 import {LocalStorage, uid} from "quasar";
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
-import {Tab, TabComment} from "src/tabsets/models/Tab";
+import {Tab, TabComment, UrlExtension} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Space} from "src/spaces/models/Space";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
 /**
  * a pinia store for "Tabsets".
@@ -48,7 +49,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       tabsets.value.set(ts.id, ts)
     }
 
-    async function createTabset(tabsetName: string, tabs: Tab[], color: string | undefined = undefined) {
+    async function createTabset(tabsetName: string, tabs: Tab[], color: string | undefined = undefined): Promise<Tabset> {
       const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
         .substring(0, 31)
       const trustedColor = color ?
@@ -77,7 +78,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       //   ts.spaces.push(currentSpace.id)
       // }
 
-      return Promise.resolve()
+      return Promise.resolve(ts)
     }
 
     function addTabset(ts: Tabset) {
@@ -191,7 +192,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       }
     })
 
-  const existingInTabset = computed(() => {
+    const existingInTabset = computed(() => {
       return (searchName: string, space: Space = null as unknown as Space): Tabset | undefined => {
         const trustedName = searchName.replace(STRIP_CHARS_IN_USER_INPUT, '')
         return _.find([...tabsets.value.values()] as Tabset[], (ts: Tabset) => {
@@ -202,13 +203,74 @@ export const useTabsetsStore = defineStore('tabsets', () => {
           }
         })
       }
+    })
 
-  })
+    const getTabAndTabsetId = computed(() => {
+      return (tabId: string): TabAndTabsetId | undefined => {
+        console.log("call to getTab1", tabId)
+        for (const [key, value] of tabsets.value) {
+          const found = useTabsetService().findTabInFolder([value as Tabset], tabId)
+          // const found: Tab | undefined = _.find(value.tabs, t => {
+          //   return t.id === tabId
+          // })
+          if (found && found.tab) {
+            return new TabAndTabsetId(found.tab, value.id)
+          }
+        }
+        return undefined
+      }
+    })
 
-  // existingInTabset: (state) => {
-  // },
+    const tabsetFor = computed(() => {
+      return (tabId: string): Tabset | undefined => {
+        for (const [key, value] of tabsets.value) {
+          if (_.find(value.tabs, t => t.id === tabId)) {
+            return value as Tabset
+          }
+        }
+        return undefined
+      }
+    })
 
-  // getTabset: (state) => {
+    const tabsForUrl = computed((): (url: string) => Tab[] => {
+      return (url: string) => {
+        const tabs: Tab[] = []
+        forEach([...tabsets.value.values()] as Tabset[], (ts: Tabset) => {
+          forEach(ts.tabs, (t: Tab) => {
+            if (t.url === url) {
+              tabs.push(t)
+            }
+          })
+        })
+        return tabs
+      }
+    })
+
+    const allTabsCount = computed(() => {
+      var count = 0
+      for (const [key, value] of tabsets.value) {
+        const nr = value.tabs?.length
+        count = count + nr
+      }
+      return count;
+    })
+
+    const rssTabs = computed(() => {
+      const res: Tab[] = []
+      _.forEach([...tabsets.value.values()] as Tabset[], (ts: Tabset) => {
+        if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
+          _.forEach(ts.tabs, (t: Tab) => {
+            if (t.extension === UrlExtension.RSS) {
+              res.push(t)
+            }
+          })
+        }
+      })
+      return res
+    })
+
+
+    // getTabset: (state) => {
     //   return (tabsetId: string): Tabset | undefined => {
     //     return state.tabsets.get(tabsetId) as Tabset
     //   }
@@ -254,7 +316,12 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       currentTabsetName,
       tabForUrlInSelectedTabset,
       getTabset,
-      existingInTabset
+      existingInTabset,
+      getTabAndTabsetId,
+      tabsetFor,
+      tabsForUrl,
+      allTabsCount,
+      rssTabs
     }
   }
 )

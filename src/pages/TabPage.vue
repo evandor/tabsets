@@ -437,7 +437,7 @@ onMounted(() => {
 watchEffect(() => {
   const tabId = route.params.id.toString() || ''
   console.log("got tabId", tabId)
-  const tabInfo = useTabsStore().getTabAndTabsetId(tabId)
+  const tabInfo = useTabsetsStore().getTabAndTabsetId(tabId)
   //.then((tabInfo: TabAndTabsetId | undefined) => {
   if (tabInfo) {
     console.log("got tab", tabInfo.tab)

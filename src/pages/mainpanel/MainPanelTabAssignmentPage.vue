@@ -108,7 +108,7 @@ onMounted(() => {
 watchEffect(() => {
   tabId.value = route.params.id as string
   if (tabId.value) {
-    const t = useTabsStore().getTabAndTabsetId(tabId.value)
+    const t = useTabsetsStore().getTabAndTabsetId(tabId.value)
         //.then((t: TabAndTabsetId | undefined) => {
       if (t) {
         tab.value = t.tab

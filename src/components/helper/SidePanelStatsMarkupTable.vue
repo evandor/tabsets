@@ -94,7 +94,7 @@ watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => 
   rows.value = calcStatsRows()
 })
 
-watch(() => useTabsStore().allTabsCount, (a,b) => {
+watch(() => useTabsetsStore().allTabsCount, (a,b) => {
   rows.value = calcStatsRows()
 })
 
@@ -116,7 +116,7 @@ watch(() => useWindowsStore().currentChromeWindows, (a, b) => {
 
 const calcStatsRows = () => {
   return [
-    {name: 'Tabs', count: useTabsStore().allTabsCount, snapshot: getFromSnapshot('Tabs')},
+    {name: 'Tabs', count: useTabsetsStore().allTabsCount, snapshot: getFromSnapshot('Tabs')},
     {name: 'Tabsets', count: useTabsStore().tabsets.size, snapshot: getFromSnapshot('Tabsets')},
     {name: 'Spaces', count: useSpacesStore().spaces.size, snapshot: getFromSnapshot('Spaces')},
     {name: 'Bookmarks', count: useBookmarksStore().bookmarksCount, snapshot: getFromSnapshot('Bookmarks'), link:"https://docs.tabsets.net/bookmarks"},

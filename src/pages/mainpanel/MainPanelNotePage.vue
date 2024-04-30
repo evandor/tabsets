@@ -109,7 +109,7 @@ watchEffect(async () => {
   closeOnSave.value = route.query.closeOnSave ? route.query.edit === "true" : false
 
   if (noteId.value) {
-    const tabObject = useTabsStore().getTabAndTabsetId(noteId.value)
+    const tabObject = useTabsetsStore().getTabAndTabsetId(noteId.value)
         //.then((tabObject: TabAndTabsetId | undefined) => {
 
           if (tabObject) {

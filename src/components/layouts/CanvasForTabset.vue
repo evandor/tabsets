@@ -135,7 +135,7 @@ onMounted(() => {
     console.log('screenSelectElement: event = ', e.element);
     if (e.element.name.startsWith("tab-")) {
       const tabId = e.element.name.replace("tab-", "")
-      const tabData = useTabsStore().getTabAndTabsetId(tabId)
+      const tabData = useTabsetsStore().getTabAndTabsetId(tabId)
        //   .then((tabData: TabAndTabsetId | undefined) => {
             if (tabData) {
               selectedTab.value = tabData.tab

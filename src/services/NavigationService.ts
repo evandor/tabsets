@@ -65,13 +65,13 @@ class NavigationService {
     if (process.env.MODE === "bex") {
       for (const url of withUrls) {
         // get all tabs with this url
-        const tabsForUrl = useTabsStore().tabsForUrl(url) || []
+        const tabsForUrl = useTabsetsStore().tabsForUrl(url) || []
         tabsForUrl.forEach(t => {
           if (t.httpInfo) {
             t.httpError = ''
             t.httpInfo = ''
 
-            const ts = useTabsStore().tabsetFor(t.id)
+            const ts = useTabsetsStore().tabsetFor(t.id)
             if (ts) {
               //console.log("saving tabset ", ts)
               useTabsetService().saveTabset(ts)
@@ -166,9 +166,9 @@ class NavigationService {
     if (forceCurrent) {
       return 'current'
     } else if (urls.length === 1) {
-      const tabs = useTabsStore().tabsForUrl(urls[0])
+      const tabs = useTabsetsStore().tabsForUrl(urls[0])
       if (tabs.length === 1) {
-        const tabAndTabsetId = useTabsStore().getTabAndTabsetId(tabs[0].id)
+        const tabAndTabsetId = useTabsetsStore().getTabAndTabsetId(tabs[0].id)
         if (tabAndTabsetId) {
           return useTabsetsStore().getTabset(tabAndTabsetId.tabsetId)?.window || 'current'
         }

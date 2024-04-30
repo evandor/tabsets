@@ -593,7 +593,7 @@ const matcherTooltip = () => {
 const unsetGroup = () => {
   if (props.tab) {
     props.tab.groupName = undefined
-    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+    const res = useTabsetsStore().getTabAndTabsetId(props.tab.id)
     //.then((res: TabAndTabsetId | undefined) => {
     if (res) {
       const tab = res.tab
@@ -622,7 +622,7 @@ const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
 const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {
     props.tab.groupName = group.title
-    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+    const res = useTabsetsStore().getTabAndTabsetId(props.tab.id)
     // .then((res: TabAndTabsetId | undefined) => {
     if (res) {
       const tab = res.tab

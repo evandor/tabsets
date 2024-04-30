@@ -307,7 +307,7 @@ class ChromeListeners {
 
       // handle existing tabs
       if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-        const matchingTabs = useTabsStore().tabsForUrl(chromeTab.url || '')
+        const matchingTabs = useTabsetsStore().tabsForUrl(chromeTab.url || '')
         for (const t of matchingTabs) {
           // we care only about actually setting a group, not about removal
           if (info.groupId && info.groupId >= 0) {
@@ -315,7 +315,7 @@ class ChromeListeners {
             t.groupId = info.groupId
             t.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
             t.updated = new Date().getTime()
-            const tabset = tabsStore.tabsetFor(t.id)
+            const tabset = useTabsetsStore().tabsetFor(t.id)
             if (tabset) {
               await useTabsetService().saveTabset(tabset)
             }
@@ -698,7 +698,7 @@ class ChromeListeners {
     console.log("handleCaptureClipping", request, sender, request.tabsetId)
 
     const blob = await this.capture(request)
-    const currentTS = useTabsetService().getCurrentTabset()
+    const currentTS = useTabsetsStore().getCurrentTabset
 
     if (sender.tab && currentTS) {
       console.log("blob", blob)
@@ -715,7 +715,7 @@ class ChromeListeners {
 
   private async handleCaptureAnnotation(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     console.log("handleCaptureAnnotation", request, sender, request.tabsetId)
-    const currentTS = useTabsetService().getCurrentTabset()
+    const currentTS = useTabsetsStore().getCurrentTabset
     if (sender.tab && currentTS) {
       const url = sender.tab.url || ''
       const t = _.find(currentTS.tabs, t => t.url === url)
@@ -735,7 +735,7 @@ class ChromeListeners {
   }
 
   private async handleMessageWebsiteImage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    const currentTS = useTabsetService().getCurrentTabset()
+    const currentTS = useTabsetsStore().getCurrentTabset
     if (sender.tab && currentTS) {
       console.log("request", request)
       const newTab = new Tab(uid(), sender.tab)

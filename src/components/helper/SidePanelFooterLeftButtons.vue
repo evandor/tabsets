@@ -10,7 +10,7 @@
     <q-tooltip class="tooltip">{{ suggestionsLabel() }}</q-tooltip>
   </q-btn>
 
-  <q-btn v-if="useTabsStore().allTabsCount > 0"
+  <q-btn v-if="useTabsetsStore().allTabsCount > 0"
          icon="o_view_list"
          :size="props.size"
          class="q-my-xs q-ml-xs q-mr-none q-px-xs"

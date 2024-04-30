@@ -106,7 +106,7 @@
             <q-tooltip class="tooltip-small" v-else-if="tsBadges.length > 0">
               {{ tooltipAlreadyInOtherTabsets(tabset.name) }}
             </q-tooltip>
-            <q-tooltip v-else-if="useTabsStore().allTabsCount === 0"
+            <q-tooltip v-else-if="useTabsetsStore().allTabsCount === 0"
                        transition-show="flip-right"
                        transition-hide="flip-left"
                        v-model="showAddCurrentTabTooltip"
@@ -289,7 +289,7 @@ const hoveredPublicLink = ref(false)
 const headerDescription = ref<string>('')
 
 onMounted(() => {
-  if (useTabsStore().allTabsCount === 0) {
+  if (useTabsetsStore().allTabsCount === 0) {
     setTimeout(() => {
       showAddCurrentTabTooltip.value = true
       setTimeout(() => showAddCurrentTabTooltip.value = false, 4500)

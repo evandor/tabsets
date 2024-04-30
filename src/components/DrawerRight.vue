@@ -129,7 +129,7 @@ watchEffect(() => {
   openTabsCountRatio.value = Math.min((tabsStore.tabs?.length || 0) / settingsStore.thresholds['max' as keyof object], 1)
 })
 
-watchEffect(() => rssTabsCount.value = tabsStore.rssTabs?.length)
+watchEffect(() => rssTabsCount.value = useTabsetsStore().rssTabs?.length)
 
 const toggleShowOnlyFolders = () => {
   console.log("****")

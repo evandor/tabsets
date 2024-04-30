@@ -40,7 +40,7 @@ const router = useRouter()
 
 const rssTabs = ref<Tab[]>([])
 
-watchEffect(() => rssTabs.value = tabsStore.rssTabs)
+watchEffect(() => rssTabs.value = useTabsetsStore().rssTabs)
 
 
 const open = (tab: Tab) => {

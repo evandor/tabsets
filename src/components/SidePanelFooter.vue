@@ -297,7 +297,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (currentChromeTabs.value[0]?.url) {
-    currentTabs.value = useTabsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
+    currentTabs.value = useTabsetsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
   }
 })
 

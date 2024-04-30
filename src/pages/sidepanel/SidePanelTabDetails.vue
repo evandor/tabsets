@@ -401,7 +401,7 @@ const tags = ref<string[]>([])
 watchEffect(() => {
   const tabId = route.params.tabId as unknown as string
   console.log("tabid", tabId)
-  const tabObject = useTabsStore().getTabAndTabsetId(tabId)
+  const tabObject = useTabsetsStore().getTabAndTabsetId(tabId)
       //.then((tabObject: TabAndTabsetId | undefined) => {
         if (tabObject) {
           tab.value = tabObject.tab

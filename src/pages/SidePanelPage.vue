@@ -299,7 +299,7 @@ if (inBexMode()) {
       const tabset = useTabsetsStore().getTabset(message.data.tabsetId) as Tabset
       if (message.data.noteId) {
         console.log("updating note", message.data.noteId)
-        const res = useTabsStore().getTabAndTabsetId(message.data.noteId)
+        const res = useTabsetsStore().getTabAndTabsetId(message.data.noteId)
         //.then((res: TabAndTabsetId | undefined) => {
         if (res) {
           const note = res.tab

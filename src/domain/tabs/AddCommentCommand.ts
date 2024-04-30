@@ -13,7 +13,7 @@ export class AddCommentCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
 
-    const tabData = useTabsStore().getTabAndTabsetId(this.tabId)
+    const tabData = useTabsetsStore().getTabAndTabsetId(this.tabId)
     if (tabData && tabData.tab) {
       console.log("retrieved tabData", tabData)
       const tab = tabData.tab

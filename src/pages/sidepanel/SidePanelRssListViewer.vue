@@ -83,7 +83,7 @@ onMounted(() => {
 })
 
 
-watchEffect(() => rssTabs.value = tabsStore.rssTabs)
+watchEffect(() => rssTabs.value = useTabsetsStore().rssTabs)
 
 
 const open = (tab: Tab) => {

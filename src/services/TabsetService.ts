@@ -22,7 +22,7 @@ import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
-const {getTabset, getCurrentTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
+const {getTabset, saveTabset, saveCurrentTabset, tabsetsFor, addToTabset} = useTabsetService()
 
 const {db} = useDB()
 
@@ -35,7 +35,7 @@ class TabsetService {
   }
 
   async saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> {
-    const currentTs = getCurrentTabset()
+    const currentTs = useTabsetsStore().getCurrentTabset as Tabset | undefined
     if (currentTs) {
       return addToTabset(currentTs, tab, useIndex)
     }
@@ -93,7 +93,7 @@ class TabsetService {
   }
 
   setOnlySelectedTab(tab: Tab) {
-    const currentTabset = getCurrentTabset()
+    const currentTabset = useTabsetsStore().getCurrentTabset as Tabset | undefined
     if (currentTabset) {
       _.forEach(currentTabset.tabs, (t: Tab) => {
         t.selected = t.id === tab.id;
@@ -210,10 +210,10 @@ class TabsetService {
 
   moveToTabset(tabId: string, toTabsetId: string, copy: boolean = false): Promise<any> {
     const tabsStore = useTabsStore()
-    const tabset = tabsStore.tabsetFor(tabId)
+    const tabset = useTabsetsStore().tabsetFor(tabId)
     if (tabset) {
       const tabIndex = _.findIndex(tabset.tabs, {id: tabId})
-      const targetTabset = tabsStore.getTabset(toTabsetId)
+      const targetTabset = useTabsetsStore().getTabset(toTabsetId)
 
       if (tabIndex >= 0 && targetTabset) {
         targetTabset.tabs.push(tabset.tabs[tabIndex])
@@ -461,7 +461,7 @@ class TabsetService {
 
   setView(tabsetId: string, view: string) {
     console.log("setting view", tabsetId, view)
-    const tabset = useTabsStore().getTabset(tabsetId)
+    const tabset = useTabsetsStore().getTabset(tabsetId)
     if (tabset) {
       tabset.view = view
       saveTabset(tabset)
@@ -469,7 +469,7 @@ class TabsetService {
   }
 
   toggleSorting(tabsetId: string): string | undefined {
-    const tabset = useTabsStore().getTabset(tabsetId)
+    const tabset = useTabsetsStore().getTabset(tabsetId)
     if (tabset) {
       switch (tabset.sorting) {
         case 'custom':
@@ -514,7 +514,7 @@ class TabsetService {
 
   saveNote(tabId: string, note: string, scheduledFor: Date | undefined): Promise<void> {
     // console.log("got", tabId, note)
-    const tab = _.find(getCurrentTabset()?.tabs, (t: Tab) => t.id === tabId)
+    const tab = _.find(useTabsetsStore().getCurrentTabset?.tabs, (t: Tab) => t.id === tabId) as Tab | undefined
     if (tab) {
       tab.note = note
       if (scheduledFor) {
