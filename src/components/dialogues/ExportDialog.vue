@@ -46,6 +46,7 @@ import {useDialogPluginComponent} from 'quasar'
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -100,8 +101,8 @@ const exportData = () => {
 
 const foundLabel = () => {
   const spacesCount = useSpacesStore().spaces.size
-  const allTabsCount = tabsStore.allTabsCount
-  const tabsetsCount = tabsStore.tabsets.size
+  const allTabsCount = useTabsetsStore().allTabsCount
+  const tabsetsCount = useTabsetsStore().tabsets.size
   if (spacesCount > 0) {
     return "Found " + allTabsCount + " tabs in " + tabsetsCount + " Tabsets and " + spacesCount + " Spaces"
   }

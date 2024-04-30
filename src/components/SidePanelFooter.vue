@@ -374,7 +374,7 @@ watchEffect(() => {
   // adding potentially new windows from 'open in window' logic
   windowsToOpenOptions.value = []
   tabsetsMangedWindows.value = []
-  for (const ts of [...useTabsStore().tabsets.values()] as Tabset[]) {
+  for (const ts of [...useTabsetsStore().tabsets.values()] as Tabset[]) {
     if (ts.window && ts.window !== "current" && ts.window.trim() !== '') {
       tabsetsMangedWindows.value.push({label: ts.window, value: ts.id})
       const found = _.find(windowRows.value, (r: object) => ts.window === r['name' as keyof object])

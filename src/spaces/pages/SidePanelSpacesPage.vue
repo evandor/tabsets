@@ -157,6 +157,7 @@ import FirestorePersistenceService from "src/services/persistence/FirestorePersi
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 
@@ -223,8 +224,8 @@ watchEffect(() => {
 
 async function getTabsetsForSpaces() {
   let res: Map<string, Tabset[]> = new Map()
-  //console.log("===>", [...useTabsStore().tabsets.values()][0].spaces)
-  _.forEach([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
+  //console.log("===>", [...useTabsetsStore().tabsets.values()][0].spaces)
+  _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
     if (ts.status !== TabsetStatus.DELETED) {
       _.forEach(ts.spaces, (spaceId: string) => {
         if (res.has(spaceId)) {
@@ -269,8 +270,8 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if (useTabsStore().tabsets) {
-    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
+  if (useTabsetsStore().tabsets) {
+    tabsetNameOptions.value = _.map([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
       return {
         label: ts.name,
         value: ts.id
@@ -290,7 +291,7 @@ if (inBexMode()) {
 }
 
 const tabsetsWithoutSpaces = (): Tabset[] => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
       ts.spaces.length === 0 &&
       ts.type !== TabsetType.SPECIAL &&

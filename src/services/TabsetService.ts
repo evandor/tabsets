@@ -187,7 +187,7 @@ class TabsetService {
   //   if (tabsStore.pendingTabset) {
   //     tabsStore.pendingTabset.tabs = []
   //     const urlSet = new Set<string>()
-  //     _.forEach(tabsStore.tabs, t => {
+  //     _.forEach(useTabsStore().browserTabs, t => {
   //       if (t.url) {
   //         if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
   //           urlSet.add(t.url)
@@ -254,7 +254,7 @@ class TabsetService {
     let filename = 'tabsets.' + appVersion + '.json'
     if (exportAs === 'json') {
       data = JSON.stringify({
-        tabsets: [...tabsStore.tabsets.values()],
+        tabsets: [...useTabsetsStore().tabsets.values()],
         spaces: [...spacesStore.spaces.values()]
       })
       return this.createFile(data, filename);
@@ -276,7 +276,7 @@ class TabsetService {
 
       chrome.bookmarks.create({title: 'tabsetsBackup', parentId: '1'}, (result: chrome.bookmarks.BookmarkTreeNode) => {
         // console.log("res", result)
-        _.forEach([...tabsStore.tabsets.values()], ts => {
+        _.forEach([...useTabsetsStore().tabsets.values()], ts => {
           console.log("ts", ts)
           chrome.bookmarks.create({
             title: ts.name,
@@ -319,7 +319,7 @@ class TabsetService {
     })
 
     _.forEach(tabsets, tabset => {
-      tabsStore.addTabset(tabset)
+      useTabsetsStore().addTabset(tabset)
       saveTabset(tabset)
 
       _.forEach(tabset.tabs, tab => {
@@ -349,7 +349,7 @@ class TabsetService {
 
 
   nameForTabsetId(tsId: string): string {
-    return useTabsStore().tabsets.get(tsId)?.name || 'unknown'
+    return useTabsetsStore().tabsets.get(tsId)?.name || 'unknown'
   }
 
   async trackedTabsCount(): Promise<number> {

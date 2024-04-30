@@ -6,7 +6,7 @@
                       header-class="q-ma-none q-pa-none q-pr-md"
                       :header-style="headerStyle(tabset as Tabset)"
                       group="tabsets"
-                      :default-opened="tabsStore.tabsets.size === 1"
+                      :default-opened="useTabsetsStore().tabsets.size === 1"
                       switch-toggle-side
                       dense-toggle
                       v-model="selected_model[tabset.id]"
@@ -17,7 +17,7 @@
           class="q-mt-xs"
           @mouseover="hoveredTabset = tabset.id"
           @mouseleave="hoveredTabset = undefined">
-          <q-item-label :class="tabsStore.currentTabsetId === tabset.id ? 'text-bold text-underline' : ''">
+          <q-item-label :class="useTabsetsStore().getCurrentTabset?.id === tabset.id ? 'text-bold text-underline' : ''">
             <q-icon v-if="tabset.status === TabsetStatus.FAVORITE"
                     color="warning"
                     name="push_pin"
@@ -50,7 +50,8 @@
               </q-tooltip>
               <q-tooltip v-else class="tooltip">This tabset is shared</q-tooltip>
             </q-icon>
-            <span class="text-caption cursor-pointer text-grey-7" @click="openPublicShare(tabset.id)">open shared page</span>
+            <span class="text-caption cursor-pointer text-grey-7"
+                  @click="openPublicShare(tabset.id)">open shared page</span>
             <q-icon
               v-show="hoveredPublicLink"
               class="q-ml-sm cursor-pointer"
@@ -266,7 +267,7 @@ const {inBexMode, sanitize} = useUtils()
 const {handleSuccess, handleError} = useNotificationHandler()
 
 const $q = useQuasar()
-const tabsStore = useTabsStore()
+const tabsetsStore = useTabsetsStore()
 
 
 // https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
@@ -312,7 +313,7 @@ const scrollToElement = (el: any, delay: number) => {
 
 watchEffect(() => {
   // should trigger if currentTabsetId is changed from "the outside"
-  const currentTabsetId = useTabsStore().currentTabsetId
+  const currentTabsetId = useTabsetsStore().getCurrentTabset?.id || ''
   selected_model.value = {}
   selected_model.value[currentTabsetId] = true
   tabsetExpanded.value.set(currentTabsetId, true)
@@ -330,9 +331,9 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if (useTabsStore().tabsets) {
+  if (useTabsetsStore().tabsets) {
     //console.log(" >>> change in tabsets...")
-    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
+    tabsetNameOptions.value = _.map([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
       return {
         label: ts.name,
         value: ts.id
@@ -369,7 +370,7 @@ watchEffect(() => {
 
   watchEffect(() => {
     const windowId = useWindowsStore().currentChromeWindow?.id || 0
-    currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+    currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
   })
 })
 
@@ -395,7 +396,7 @@ const headerStyle = (tabset: Tabset) => {
 }
 
 const suggestTabsetImport = () => {
-  const currentTabUrl = useTabsStore().currentChromeTab?.url
+  const currentTabUrl = useTabsStore2().currentChromeTab?.url
   if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/pwa/tabsets/")) {
     const urlSplit = currentTabUrl.split("/")
     const tabsetId = urlSplit[urlSplit.length - 1]
@@ -406,7 +407,7 @@ const suggestTabsetImport = () => {
 }
 
 const importSharedTabset = () => {
-  const currentTabUrl = useTabsStore().currentChromeTab?.url
+  const currentTabUrl = useTabsStore2().currentChromeTab?.url
   if (currentTabUrl) {
     console.log("Importing", currentTabUrl)
     const urlSplit = currentTabUrl.split("/")
@@ -467,7 +468,7 @@ const calcFolders = (tabset: Tabset): Tabset[] => {
   return tabset.folders
 }
 
-const openPageNote = () => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + useTabsStore().currentTabsetId + "?tab=page"))
+const openPageNote = () => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + useTabsetsStore().getCurrentTabset?.id || '' + "?tab=page"))
 
 const startDrag = (evt: any, folder: Tabset) => {
   console.log("start dragging", evt, folder)
@@ -492,7 +493,7 @@ const endDrag = (evt: any, folder: Tabset) => {
 const drop = (evt: any, folder: Tabset) => {
   console.log("drop", evt, folder)
   const tabToDrag = useUiStore().tabBeingDragged
-  const tabset = useTabsetService().getCurrentTabset()
+  const tabset = useTabsetsStore().getCurrentTabset as Tabset | undefined
   if (tabToDrag && tabset) {
     console.log("tabToDrag", tabToDrag)
     const moveToFolderId = folder.id
@@ -588,13 +589,13 @@ const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => 
     currentChromeTab.url.indexOf('/www/index.html#/mainpanel/notes/') < 0 &&
     currentChromeTab.url !== '' &&
     currentChromeTab.url.indexOf('https://tabsets.web.app/?apiKey=') < 0 &&
-    tabsStore.currentTabsetId === tabset.id
+    useTabsetsStore().getCurrentTabset?.id === tabset.id
   //isCurrentTab()
 }
 
 const saveTabsetDescription = () => {
-  console.log("saving tabset", headerDescription.value, useTabsStore().currentTabsetId)
-  const currentTs = useTabsStore().getCurrentTabset
+  console.log("saving tabset", headerDescription.value, useTabsetsStore().getCurrentTabset)
+  const currentTs = useTabsetsStore().getCurrentTabset
   if (currentTs) {
     currentTs.headerDescription = sanitize(headerDescription.value)
     useTabsetService().saveCurrentTabset()
@@ -625,7 +626,7 @@ const tabsetNameOrChain = (tabset: Tabset) => {
 }
 
 const alreadyInTabset = () => {
-  if (currentChromeTab.value?.url && tabsStore.getCurrentTabset) {
+  if (currentChromeTab.value?.url && tabsetsStore.getCurrentTabset) {
     return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
   }
   return false
@@ -704,7 +705,6 @@ async function handleHeadRequests(selectedTabset: Tabset) {
   }
   useTabsetService().saveTabset(selectedTabset)
 }
-
 
 
 </script>

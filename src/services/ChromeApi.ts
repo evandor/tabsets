@@ -67,7 +67,7 @@ function runContentHousekeeping(fnc: (url:string) => boolean) {
 
 async function checkMonitors(router: Router) {
   const monitoredContentHash: string[] = []
-  for (const ts of useTabsStore().tabsets.values()) {
+  for (const ts of useTabsetsStore().tabsets.values()) {
     for (const tab of ts.tabs) {
       if (tab.monitor && tab.monitor.type === MonitoringType.CONTENT_HASH && tab.url) {
         monitoredContentHash.push(tab.url)
@@ -229,8 +229,8 @@ class ChromeApi {
                   contexts: ['all']
                 })
               }
-              console.debug(` > context menu: save_as_tabset for ${tabsStore.tabsets.size} tabset(s)`)
-              const allTabsets = [...tabsStore.tabsets.values()] as Tabset[]
+              console.debug(` > context menu: save_as_tabset for ${useTabsetsStore().tabsets.size} tabset(s)`)
+              const allTabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
 
               if (allTabsets.length > 0) {
                 chrome.contextMenus.create({

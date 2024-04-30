@@ -57,6 +57,7 @@ import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateSessionCommand} from "src/domain/commands/CreateSession";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -89,17 +90,17 @@ watchEffect(() => {
 
 const createNewTabset = () => {
   hideWarning.value = true
-  const tabsToUse = addAutomatically.value ? tabsStore.tabs : []
+  const tabsToUse = addAutomatically.value ? useTabsStore().browserTabs : []
 
   useCommandExecutor()
     .executeFromUi(new CreateSessionCommand(newTabsetName.value, tabsToUse))
     .then((res) => {
-      if (!addAutomatically.value) {
-        TabsetService.createPendingFromBrowserTabs()
-      } else {
-        // clear pending tabset - why neccessary?
-        // tabsStore.pendingTabset.tabs = []
-      }
+      // if (!addAutomatically.value) {
+      //   TabsetService.createPendingFromBrowserTabs()
+      // } else {
+      //   // clear pending tabset - why neccessary?
+      //   // tabsStore.pendingTabset.tabs = []
+      // }
       // router.push("/tabsets" + useTabsStore().currentTabsetId)
       if (!props.inSidePanel) {
         router.push("/tabsets/" + res.result.tabsetId )

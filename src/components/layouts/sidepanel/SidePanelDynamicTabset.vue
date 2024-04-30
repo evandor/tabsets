@@ -39,6 +39,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {useRoute} from "vue-router";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 
@@ -68,7 +69,7 @@ function currentTabs(): Tab[] {
     //console.log("checking", props.tabset.dynamicTabs)
     const tag = props.tabset.dynamicTabs?.config['tags' as keyof object][0]
     console.log("using tag", tag)
-    _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
+    _.forEach([...useTabsetsStore().tabsets.values()], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(tag) >= 0) {
           results.push(tab)

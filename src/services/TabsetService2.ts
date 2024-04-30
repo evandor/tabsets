@@ -58,7 +58,7 @@ export function useTabsetService() {
 
     ChromeApi.buildContextMenu("tabsetService2")
 
-    useTabsStore().tabsets.forEach(ts => {
+    useTabsetsStore().tabsets.forEach(ts => {
       if (ts.sharedId) {
         //console.log("subscribing to topic ", ts.sharedId)
         //MqttService.subscribe(ts.sharedId)
@@ -158,9 +158,9 @@ export function useTabsetService() {
 
   // @ts-ignore
   const getOrCreateSpecialTabset = async (ident: SpecialTabsetIdent, type: TabsetType): Tabset => {
-    const result: Tabset = await useTabsStore().getOrCreateSpecialTabset(ident, type)
-    await saveTabset(result)
-    return result
+    // const result: Tabset = await useTabsStore().getOrCreateSpecialTabset(ident, type)
+    // await saveTabset(result)
+    return null as unknown as Tabset// result
   }
 
   /**
@@ -201,7 +201,7 @@ export function useTabsetService() {
 
   const getTabset = (tabsetId: string): Tabset | undefined => {
     const tabsStore = useTabsStore()
-    return _.find([...tabsStore.tabsets.values()] as Tabset[], ts => ts.id === tabsetId)
+    return _.find([...useTabsetsStore().tabsets.values()] as Tabset[], ts => ts.id === tabsetId)
   }
 
   const reloadTabset = async (tabsetId: string) => {
@@ -248,7 +248,7 @@ export function useTabsetService() {
       await db.deleteTabset(tabsetId)
 
       //this.db.delete('tabsets', tabsetId)
-      const nextKey: string = tabsStore.tabsets.keys().next().value
+      const nextKey: string = useTabsetsStore().tabsets.keys().next().value
       console.log("setting next key to", nextKey)
       selectTabset(nextKey)
       return Promise.resolve("ok")
@@ -361,7 +361,7 @@ export function useTabsetService() {
     useContentService().saveContent(tab, text, metas, title, tabsetIds)
       .catch((err: any) => console.log("err", err))
 
-    const tabsets = [...useTabsStore().tabsets.values()] as Tabset[]
+    const tabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
 
     const savePromises: Promise<any>[] = []
 
@@ -478,7 +478,7 @@ export function useTabsetService() {
 
   const tabsetsFor = (url: string): string[] => {
     const tabsets: string[] = []
-    for (let ts of [...useTabsStore().tabsets.values()]) {
+    for (let ts of [...useTabsetsStore().tabsets.values()]) {
       if (ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE) {
         if (_.find(ts.tabs, t => t.url === url)) {
           tabsets.push(ts.id)
@@ -490,7 +490,7 @@ export function useTabsetService() {
 
   // const tabsetFor = (id: string): Tabset | undefined => {
   //   let tabset: Tabset | undefined = undefined
-  //   for (let ts of [...useTabsStore().tabsets.values()]) {
+  //   for (let ts of [...useTabsetsStore().tabsets.values()]) {
   //     if (_.find(ts.tabs, t => t.id === id)) {
   //       tabset = ts as Tabset
   //     }
@@ -590,7 +590,7 @@ export function useTabsetService() {
   }
 
   const urlExistsInATabset = (url: string): boolean => {
-    for (let ts of [...useTabsStore().tabsets.values()]) {
+    for (let ts of [...useTabsetsStore().tabsets.values()]) {
       if (_.find(ts.tabs, t => t.url === url)) {
         return true;
       }

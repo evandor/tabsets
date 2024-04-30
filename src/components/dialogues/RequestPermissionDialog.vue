@@ -36,6 +36,7 @@ import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Tab} from "src/tabsets/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

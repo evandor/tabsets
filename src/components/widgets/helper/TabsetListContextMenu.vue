@@ -179,6 +179,7 @@ import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 import {Tab} from "src/tabsets/models/Tab";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 

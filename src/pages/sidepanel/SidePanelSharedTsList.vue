@@ -66,7 +66,7 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  const tabsets: Tabset[] = [...useTabsStore().tabsets.values()] as Tabset[]
+  const tabsets: Tabset[] = [...useTabsetsStore().tabsets.values()] as Tabset[]
   sharedTabsets.value = _.filter(tabsets, (ts: Tabset) => ts.sharing !== undefined && ts.sharing !== TabsetSharing.UNSHARED && ts.status !== TabsetStatus.DELETED)
 })
 

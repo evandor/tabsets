@@ -29,7 +29,7 @@ $q.loading.show({
   message: 'Initializing tabsets. Please hang on...'
 })
 timer = setTimeout(() => {
-  if (tabsStore.tabsets.size === 0) {
+  if (useTabsetsStore().tabsets.size === 0) {
     router.push("/")
   } else {
     const selectedTS = localStorage.getItem("selectedTabset")

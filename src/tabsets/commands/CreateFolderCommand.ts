@@ -6,6 +6,7 @@ import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {uid} from "quasar";
 import _ from "lodash"
 import {Tab} from "src/tabsets/models/Tab";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {sendMsg} = useUtils()
 

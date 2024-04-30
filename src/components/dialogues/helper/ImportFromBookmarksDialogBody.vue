@@ -74,6 +74,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useUtils} from "src/services/Utils";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {sendMsg} = useUtils()
 

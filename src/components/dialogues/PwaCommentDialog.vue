@@ -55,6 +55,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddCommentCommand} from "src/domain/tabs/AddCommentCommand";
 import {useUiStore} from "stores/uiStore";
 import {SHARING_AUTHOR_IDENT} from "boot/constants";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

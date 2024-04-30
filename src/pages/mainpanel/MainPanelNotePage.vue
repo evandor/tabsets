@@ -62,6 +62,7 @@ import EditorJsConfig from "src/utils/EditorJsConfig";
 import './editorjs/linkTool.css';
 import {v5 as uuidv5} from "uuid";
 import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 

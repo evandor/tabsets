@@ -46,6 +46,7 @@ import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useSettingsStore} from "src/stores/settingsStore"
 import Analytics from "src/utils/google-analytics"
 import PanelTabList from "components/layouts/PanelTabList.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -81,7 +82,7 @@ watchEffect(() => {
       _.filter(
         _.flatMap(
           _.filter(
-            _.map([...tabsStore.tabsets.values()] as Tabset[],
+            _.map([...useTabsetsStore().tabsets.values()] as Tabset[],
               (ts: Tabset) => ts),
             (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
           (ts: Tabset) => ts.tabs), (t: Tab) => true),

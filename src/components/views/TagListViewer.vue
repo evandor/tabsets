@@ -26,6 +26,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "stores/uiStore";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import SearchHit from "components/layouts/SearchHit.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const tabsStore = useTabsStore()
 
@@ -43,7 +44,7 @@ const newSearch = (term: string) => {
   if (term && term.trim() !== '') {
     const results: Tab[] = []
 
-    _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
+    _.forEach([...useTabsetsStore().tabsets.values()], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(term) >= 0) {
           console.log("found tab", term, tab.tags)

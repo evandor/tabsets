@@ -29,14 +29,14 @@
                       size="16px"/>
               <q-icon v-else size="16px"/>
 
-              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
+              <q-icon v-if="useTabsetsStore().tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
                       @click="markAsFavorite()"
                       class="q-ml-sm cursor-pointer"
                       color="warning" name="o_grade" size="20px">
                 <q-tooltip class="tooltip">Mark this tabset as a favorite one</q-tooltip>
               </q-icon>
 
-              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
+              <q-icon v-if="useTabsetsStore().tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
                       @click="markAsDefault()"
                       class="q-ml-sm cursor-pointer"
                       color="warning" name="grade" size="20px">

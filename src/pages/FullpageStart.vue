@@ -45,7 +45,7 @@ timer = setTimeout(() => {
     // @ts-ignore
     chrome.sidePanel.setOptions(options);
   })
-  if (tabsStore.tabsets.size === 0) {
+  if (useTabsetsStore().tabsets.size === 0) {
     router.push("/")
   } else {
     const selectedTS = localStorage.getItem("selectedTabset")

@@ -398,6 +398,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import {Tab} from "src/tabsets/models/Tab";
 import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()

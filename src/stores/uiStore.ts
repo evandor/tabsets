@@ -13,6 +13,7 @@ import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
 } from "boot/constants";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",

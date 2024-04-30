@@ -5,6 +5,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
 import {useUiStore} from "stores/uiStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 export class AddCommentCommand implements Command<any> {
 

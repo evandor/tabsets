@@ -106,7 +106,7 @@ onMounted(() => {
   if (shareId.value) {
     console.log("searching for tabset with shareId", shareId.value)
     maybeTabset.value = _.first(
-      _.filter([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.sharedId === shareId.value)
+      _.filter([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.sharedId === shareId.value)
     )
     // skip intro ?
     if (paramNotSet('a') && paramNotSet('n')) {

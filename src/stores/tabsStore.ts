@@ -34,7 +34,7 @@ export const useTabsStore = defineStore('tabs', {
     /**
      * a named list of tabsets managed by this extension.
      */
-    tabsets: new Map<string, Tabset>(),
+   // tabsets: new Map<string, Tabset>(),
 
 
     // use listeners? Might make sense to turn them off when restoring old tabset for example
@@ -106,68 +106,68 @@ export const useTabsStore = defineStore('tabs', {
     //   return new NewOrReplacedTabset(foundTS !== undefined, ts)
     // },
 
-    getOrCreateSpecialTabset(ident: SpecialTabsetIdent, type: TabsetType): Tabset {
-      console.log("creating special tabset", ident, type)
-      const foundTS: Tabset | undefined = _.find([...this.tabsets.values()] as Tabset[], ts => ts.id === ident.toString())
-      let ts: Tabset = null as unknown as Tabset
-      if (foundTS) {
-        ts = foundTS
-        ts.status = TabsetStatus.DEFAULT
-      } else {
-        const id = ident.toString()
-        ts = new Tabset(id, id, [])
-        if (ident === SpecialTabsetIdent.HELP) {
-          const documentation = ChromeApi.createChromeTabObject(
-            "Documentation", "https://docs.tabsets.net")
-          const documentationTab = new Tab(uid(), documentation)
-          documentationTab.description = "find out about Tabsets' Features"
-          ts = new Tabset(id, id, [
-            documentationTab,
-            new Tab(uid(), ChromeApi.createChromeTabObject(
-              "Philosophy", "https://tabsets.web.app/#/philosophy")),
-            new Tab(uid(), ChromeApi.createChromeTabObject(
-              "Pricacy", "https://tabsets.web.app/#/privacy")),
-            new Tab(uid(), ChromeApi.createChromeTabObject(
-              "Terms of service", "https://tabsets.web.app/#/tos")),
-          ])
-          ts.status = TabsetStatus.HIDDEN
-        }
+    // getOrCreateSpecialTabset(ident: SpecialTabsetIdent, type: TabsetType): Tabset {
+    //   console.log("creating special tabset", ident, type)
+    //   const foundTS: Tabset | undefined = _.find([...this.tabsets.values()] as Tabset[], ts => ts.id === ident.toString())
+    //   let ts: Tabset = null as unknown as Tabset
+    //   if (foundTS) {
+    //     ts = foundTS
+    //     ts.status = TabsetStatus.DEFAULT
+    //   } else {
+    //     const id = ident.toString()
+    //     ts = new Tabset(id, id, [])
+    //     if (ident === SpecialTabsetIdent.HELP) {
+    //       const documentation = ChromeApi.createChromeTabObject(
+    //         "Documentation", "https://docs.tabsets.net")
+    //       const documentationTab = new Tab(uid(), documentation)
+    //       documentationTab.description = "find out about Tabsets' Features"
+    //       ts = new Tabset(id, id, [
+    //         documentationTab,
+    //         new Tab(uid(), ChromeApi.createChromeTabObject(
+    //           "Philosophy", "https://tabsets.web.app/#/philosophy")),
+    //         new Tab(uid(), ChromeApi.createChromeTabObject(
+    //           "Pricacy", "https://tabsets.web.app/#/privacy")),
+    //         new Tab(uid(), ChromeApi.createChromeTabObject(
+    //           "Terms of service", "https://tabsets.web.app/#/tos")),
+    //       ])
+    //       ts.status = TabsetStatus.HIDDEN
+    //     }
+    //
+    //     this.tabsets.set(id, ts)
+    //     console.log("tabsets set to ", this.tabsets)
+    //   }
+    //   ts.type = type
+    //   return ts
+    // },
 
-        this.tabsets.set(id, ts)
-        console.log("tabsets set to ", this.tabsets)
-      }
-      ts.type = type
-      return ts
-    },
 
-
-    addTabset(ts: Tabset) {
-      //console.log("adding tabset", ts)
-      ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
-
-      // this part is meant to be used to update tabs in case properties
-      // are deprecated
-      let foundSomething = false
-      ts.tabs.forEach((t: Tab) => {
-        if (t.note && t.note.trim().length > 0) {
-          foundSomething = true
-          console.warn("deprecated property: found tab with note, turning into comment")
-          if (!t.comments) {
-            t.comments = []
-          }
-          t.comments.push(new TabComment("",t.note))
-          delete t['note' as keyof object]
-        }
-      })
-      if (foundSomething) {
-        useTabsetService().saveTabset(ts)
-      }
-
-      useWindowsStore().addToWindowSet(ts.window)
-
-      this.tabsets.set(ts.id, ts)
-      markDuplicates(ts)
-    },
+    // addTabset(ts: Tabset) {
+    //   //console.log("adding tabset", ts)
+    //   ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
+    //
+    //   // this part is meant to be used to update tabs in case properties
+    //   // are deprecated
+    //   let foundSomething = false
+    //   ts.tabs.forEach((t: Tab) => {
+    //     if (t.note && t.note.trim().length > 0) {
+    //       foundSomething = true
+    //       console.warn("deprecated property: found tab with note, turning into comment")
+    //       if (!t.comments) {
+    //         t.comments = []
+    //       }
+    //       t.comments.push(new TabComment("",t.note))
+    //       delete t['note' as keyof object]
+    //     }
+    //   })
+    //   if (foundSomething) {
+    //     useTabsetService().saveTabset(ts)
+    //   }
+    //
+    //   useWindowsStore().addToWindowSet(ts.window)
+    //
+    //   this.tabsets.set(ts.id, ts)
+    //   markDuplicates(ts)
+    // },
     // setTabsets(ts: Tabset[]) {
     //   console.log("adding tabsets", ts.length)
     //   //ts.tabs = _.filter(ts.tabs, (t: Tab) => t !== null)
@@ -191,7 +191,7 @@ export const useTabsStore = defineStore('tabs', {
     // },
 
     clearTabsets() {
-      this.tabsets = new Map<string, Tabset>()
+      //this.tabsets = new Map<string, Tabset>()
     }
   }
 });

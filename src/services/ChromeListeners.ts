@@ -254,7 +254,7 @@ class ChromeListeners {
     const tabsStore = useTabsStore()
 
     let foundSession = false
-    _.forEach([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
+    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
       if (ts.type === TabsetType.SESSION) {
         foundSession = true
         console.debug("pushing to", ts.id, tab)
@@ -325,7 +325,7 @@ class ChromeListeners {
 
       // handle sessions
       let foundSession = false
-      _.forEach([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
+      _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
         if (ts.type === TabsetType.SESSION) {
           foundSession = true
           this.handleUpdate(ts, chromeTab)
@@ -487,8 +487,8 @@ class ChromeListeners {
         console.warn("got runtime error:" + chrome.runtime.lastError);
       }
       const url = tab.url
-      _.forEach([...tabsStore.tabsets.keys()], key => {
-        const ts = tabsStore.tabsets.get(key)
+      _.forEach([...useTabsetsStore().tabsets.keys()], key => {
+        const ts = useTabsetsStore().tabsets.get(key)
         if (ts && ts.status !== TabsetStatus.DELETED) {
           // increasing hit count
           const hits = _.filter(ts.tabs, (t: Tab) => t.url === url) as Tab[]

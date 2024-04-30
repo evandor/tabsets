@@ -31,7 +31,7 @@
         Close some tabs:
       </q-item>
       <q-item
-        :disable="tabsStore.tabsets?.size === 0 || trackedTabsCount === 0"
+        :disable="useTabsetsStore().tabsets?.size === 0 || trackedTabsCount === 0"
         clickable v-close-popup @click="TabsetService.closeTrackedTabs()">
         <q-item-section>&bull; Close all tracked tabs ({{ trackedTabsCount }})</q-item-section>
       </q-item>
@@ -44,9 +44,9 @@
         <q-item-section>&bull; Backup and close current tabs...</q-item-section>
       </q-item>
       <q-item
-        :disable="tabsStore.tabs.length <= 1"
+        :disable="useTabsStore().browserTabs.length <= 1"
         clickable v-close-popup @click="TabsetService.closeAllTabs()">
-        <q-item-section>&bull; Close all other tabs ({{tabsStore.tabs.length - 1}})</q-item-section>
+        <q-item-section>&bull; Close all other tabs ({{useTabsStore().browserTabs.length - 1}})</q-item-section>
       </q-item>
       <q-separator/>
       <q-item disable v-if="showSpecialTabsets()">
@@ -88,6 +88,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
 import {useUtils} from "src/services/Utils";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
@@ -111,12 +112,12 @@ if (!inBexMode()) {
 }
 
 watchEffect(() => {
-  openTabsCountRatio.value = Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1)
+  openTabsCountRatio.value = Math.min(useTabsStore().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1)
   //console.log("threshold", settingsStore.thresholds['max' as keyof object])
-  openTabsCountRatio2.value = Math.round(100 * Math.min(tabsStore.tabs.length / settingsStore.thresholds['max' as keyof object], 1))
+  openTabsCountRatio2.value = Math.round(100 * Math.min(useTabsStore().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1))
 })
 
-watch(() => tabsStore.tabs.length, (after: number, before: number) => {
+watch(() => useTabsStore().browserTabs.length, (after: number, before: number) => {
   if (inBexMode()) {
     TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
   }
@@ -137,18 +138,18 @@ watch(() => tabsStore.getCurrentTabs.length, (after: number, before: number) => 
 //watchEffect(() => TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res))
 
 const showThresholdBar = () =>
-  tabsStore.tabs.length >= settingsStore.thresholds['min' as keyof object]
+  useTabsStore().browserTabs.length >= settingsStore.thresholds['min' as keyof object]
 
 const thresholdStyle = () =>
   "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
 
-const thresholdLabel = () => tabsStore.tabs.length + " open tabs"
+const thresholdLabel = () => useTabsStore().browserTabs.length + " open tabs"
 
 const showOpenTabs = () =>
   useUiStore().rightDrawerSetActiveTab(DrawerTabs.UNASSIGNED_TABS)
 
 watchEffect(() => {
-  existingSession.value = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
+  existingSession.value = _.filter([...useTabsetsStore().tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
 })
 
 const startSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: false}})

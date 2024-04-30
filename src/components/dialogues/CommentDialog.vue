@@ -43,6 +43,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {TabsetSharing} from "src/tabsets/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddCommentCommand} from "src/domain/tabs/AddCommentCommand";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

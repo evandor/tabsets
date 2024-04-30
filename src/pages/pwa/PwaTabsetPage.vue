@@ -128,7 +128,7 @@
 
   <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
   <q-banner rounded class="text-primary q-ma-md" style="border: 1px solid #efefef"
-            v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
+            v-if="!tabsStore.currentTabsetId && useTabsetsStore().tabsets.size > 0">
     <div class="text-body2">
       Select an existing tabset from the list or create a new tabset.
     </div>
@@ -195,6 +195,7 @@ import Analytics from "src/utils/google-analytics";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 import EditorJsConfig from "src/utils/EditorJsConfig";
 import { useMeta } from 'quasar'
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 const router = useRouter()

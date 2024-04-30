@@ -21,7 +21,9 @@
                        ]"
                    data-testid="newTabsetName">
             <template v-slot:hint>
-              <span class="text-negative">{{ isNotArchived(newTabsetName) ? '' : 'Tabset already exists and is archived' }}</span>
+              <span class="text-negative">{{
+                  isNotArchived(newTabsetName) ? '' : 'Tabset already exists and is archived'
+                }}</span>
             </template>
           </q-input>
 
@@ -69,10 +71,10 @@
 
         <q-card-actions align="right">
           <DialogButton label="Cancel" color="primary" v-close-popup/>
-            <DialogButton :label="isNotArchived(newTabsetName) ? 'Add' : 'Restore Tabset'"
-                          type="submit"
-                          data-testid="newTabsetNameSubmit"
-                          :disable="!isValid" v-close-popup/>
+          <DialogButton :label="isNotArchived(newTabsetName) ? 'Add' : 'Restore Tabset'"
+                        type="submit"
+                        data-testid="newTabsetNameSubmit"
+                        :disable="!isValid" v-close-popup/>
         </q-card-actions>
 
       </q-card>
@@ -101,6 +103,7 @@ import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()
@@ -182,14 +185,6 @@ const submit = () => {
           const ts: Tabset = res.result.tabset
           ts.spaces.push(props.spaceId)
           useTabsetService().saveTabset(ts)
-        }
-        if (!addAllOpenTabs.value) {
-          TabsetService.createPendingFromBrowserTabs()
-        } else {
-          if (tabsStore.pendingTabset) {
-            // clear pending tabset - why necessary?
-            tabsStore.pendingTabset.tabs = []
-          }
         }
         if (!props.fromPanel) {
           router.push("/tabsets/" + res.result.tabsetId)

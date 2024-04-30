@@ -42,7 +42,7 @@ describe('CreateTabsetCommand', () => {
 
     const db = useDB(undefined).db
     await db.loadTabsets()
-    const tabsets = useTabsStore().tabsets
+    const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(1)
     expect(tabsets.get(executionResult.result.tabset.id)?.name).toBe("tabsetName")
   });
@@ -51,7 +51,7 @@ describe('CreateTabsetCommand', () => {
     await new CreateTabsetCommand("tabsetName1", []).execute()
     const executionResult = await new CreateTabsetCommand("tabsetName2", []).execute()
     await db.loadTabsets()
-    const tabsets = useTabsStore().tabsets
+    const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(2)
     expect(tabsets.get(executionResult.result.tabset.id)?.name).toBe("tabsetName2")
   });
@@ -65,7 +65,7 @@ describe('CreateTabsetCommand', () => {
   //   expect(executionResult.message).toBe("Existing Tabset 'tabsetName3' can be updated now")
   //
   //   await db.loadTabsets()
-  //   const tabsets = useTabsStore().tabsets
+  //   const tabsets = useTabsetsStore().tabsets
   //   expect(tabsets.size).toBe(1)
   //   expect(tabsets.get(executionResult.result.tabset.id)?.name).toBe("tabsetName3")
   // });
@@ -76,7 +76,7 @@ describe('CreateTabsetCommand', () => {
   //   expect(undoCommand).not.toBeUndefined()
   //   await undoCommand?.execute()
   //   await db.loadTabsets()
-  //   expect(useTabsStore().tabsets.size).toBe(0)
+  //   expect(useTabsetsStore().tabsets.size).toBe(0)
   // })
 
 

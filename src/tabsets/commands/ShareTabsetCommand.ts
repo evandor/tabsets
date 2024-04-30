@@ -2,7 +2,6 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {TabsetSharing} from "src/tabsets/models/Tabset";
-import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
 
 
 export class ShareTabsetCommand implements Command<any> {
@@ -21,8 +20,8 @@ export class ShareTabsetCommand implements Command<any> {
       .then(oldSharing => Promise.resolve(
         new ExecutionResult(
           oldSharing,
-          this.republish ? "The tabset has been republished" : "The tabset is shared now.",
-          new UnShareTabsetCommand(this.tabsetId)))
+          this.republish ? "The tabset has been republished" : "The tabset is shared now."))
+          //new UnShareTabsetCommand(this.tabsetId)))
       )
       .catch(err => Promise.reject(err))
   }

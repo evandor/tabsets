@@ -114,6 +114,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   fromPanel: {type: Boolean, default: true},
@@ -130,7 +131,7 @@ const switchTabsetModel = ref(null)
 const switchTabsetOptions = ref<string[]>([])
 
 watchEffect(() => {
-  allTabsetsButCurrent.value = _.sortBy(_.filter([...tabsStore.tabsets.values()] as Tabset[],
+  allTabsetsButCurrent.value = _.sortBy(_.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
     (tabset: Tabset) => tabset.id !== tabsStore.currentTabsetId), "name")
 })
 
@@ -153,7 +154,7 @@ const setModel = (val: any) => {
 }
 
 watchEffect(() => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
@@ -223,7 +224,7 @@ const switchTabset = (ts: any) => {
 }
 
 const tabsetsWithTypes = (types: TabsetType[]) => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   return _.sortBy(
     _.filter(tabsets, (ts: Tabset) =>
       types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),

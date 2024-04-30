@@ -29,7 +29,7 @@ export class CreateSessionCommand implements Command<object> {
 
   async execute(): Promise<ExecutionResult<object>> {
     try {
-      _.forEach([...useTabsStore().tabsets.values()], (ts: Tabset) => {
+      _.forEach([...useTabsetsStore().tabsets.values()], (ts: Tabset) => {
         if (ts.type === TabsetType.SESSION) {
           ts.type = TabsetType.DEFAULT
           useTabsetService().saveTabset(ts)

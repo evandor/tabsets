@@ -43,7 +43,7 @@ describe('AssociateWindowWithTabsetCommand', () => {
 
     const db = useDB(undefined).db
     await db.loadTabsets()
-    const tabsets = useTabsStore().tabsets
+    const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(1)
     expect(tabsets.get(tabsetId)?.name).toBe("existingTabset")
     expect(tabsets.get(tabsetId)?.window).toBe("newWindowName")

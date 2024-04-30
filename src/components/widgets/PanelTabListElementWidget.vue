@@ -395,6 +395,7 @@ import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode, isCurrentTab} = useUtils()
 const {handleSuccess} = useNotificationHandler()

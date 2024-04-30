@@ -59,6 +59,7 @@ import Analytics from "src/utils/google-analytics";
 import {useTabsStore} from "stores/tabsStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 const searchStore = useSearchStore()
@@ -76,7 +77,7 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  const tabsets = [...tabsStore.tabsets.values()]
+  const tabsets = [...useTabsetsStore().tabsets.values()]
   //console.log("tabsets", tabsets)
   tabsetIdents.value = _.map(tabsets, (t: Tabset) => {
     return {

@@ -23,7 +23,7 @@
 
       </template>
 
-      <q-separator inset v-if="useTabsStore().tabsets.size > 1"/>
+      <q-separator inset v-if="useTabsetsStore().tabsets.size > 1"/>
 
       <ContextMenuItem v-close-popup
                        v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
@@ -68,14 +68,14 @@
                          label="Open in window..."/>
       </template>
 
-      <ContextMenuItem v-if="useTabsStore().tabsets.size > 1"
+      <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 1"
                        v-close-popup
                        @was-clicked="focus(tabset)"
                        icon="filter_center_focus"
                        color="accent"
                        label="Focus on tabset"/>
 
-      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsStore().tabsets.size > 1">
+      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 1">
         <ContextMenuItem v-close-popup
                          @was-clicked="pin(tabset)"
                          icon="o_push_pin"
@@ -187,6 +187,7 @@ import {MarkTabsetDeletedCommand} from "src/tabsets/commands/MarkTabsetDeleted";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {NotificationType} from "src/services/ErrorHandler";
 import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 

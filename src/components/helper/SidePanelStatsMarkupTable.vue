@@ -74,6 +74,7 @@ import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import NavigationService from "src/services/NavigationService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const localstorage = useQuasar().localStorage
 
@@ -117,7 +118,7 @@ watch(() => useWindowsStore().currentChromeWindows, (a, b) => {
 const calcStatsRows = () => {
   return [
     {name: 'Tabs', count: useTabsetsStore().allTabsCount, snapshot: getFromSnapshot('Tabs')},
-    {name: 'Tabsets', count: useTabsStore().tabsets.size, snapshot: getFromSnapshot('Tabsets')},
+    {name: 'Tabsets', count: useTabsetsStore().tabsets.size, snapshot: getFromSnapshot('Tabsets')},
     {name: 'Spaces', count: useSpacesStore().spaces.size, snapshot: getFromSnapshot('Spaces')},
     {name: 'Bookmarks', count: useBookmarksStore().bookmarksCount, snapshot: getFromSnapshot('Bookmarks'), link:"https://docs.tabsets.net/bookmarks"},
     {name: 'Bookmark Folders', count: useBookmarksStore().foldersCount, snapshot: getFromSnapshot('Bookmark Folders')},

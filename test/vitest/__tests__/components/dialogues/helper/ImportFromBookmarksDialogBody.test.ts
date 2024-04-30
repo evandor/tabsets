@@ -108,7 +108,7 @@ describe('ImportFromBookmarksDialogBody', () => {
     await input.setValue("Tabset with Space ID")
     await wrapper.find("form").trigger("submit.prevent")
     await db.loadTabsets()
-    const tabsets = useTabsStore().tabsets
+    const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(1)
     // TODO
     // expect(tabsets.values().next().value.spaceId).toBe("17")
@@ -118,7 +118,7 @@ describe('ImportFromBookmarksDialogBody', () => {
 
 async function checkTabsetNamesInDb(db: PersistenceService, tabsetNames: string[]) {
   await db.loadTabsets()
-  const tabsets = useTabsStore().tabsets
+  const tabsets = useTabsetsStore().tabsets
   expect(tabsets.size).toBe(tabsetNames.length)
   let index = 0
   for (let [key, value] of tabsets) {

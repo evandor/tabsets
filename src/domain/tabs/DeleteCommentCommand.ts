@@ -4,6 +4,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {TabsetSharing} from "src/tabsets/models/Tabset";
 import _ from "lodash"
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 export class DeleteCommentCommand implements Command<any> {
 

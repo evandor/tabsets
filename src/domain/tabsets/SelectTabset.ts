@@ -8,6 +8,7 @@ import {useUtils} from "src/services/Utils";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode, sendMsg} = useUtils()
 
@@ -25,7 +26,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
     console.debug(this.toString())
     const tabsStore = useTabsStore()
 
-    const currentTabset = tabsStore.tabsets.get(tabsStore.currentTabsetId) as Tabset | undefined
+    const currentTabset = useTabsetsStore().tabsets.get(tabsStore.currentTabsetId) as Tabset | undefined
     if (currentTabset) {
       _.forEach(currentTabset.tabs as Tab[], (t: Tab) => t.selected = false)
     }

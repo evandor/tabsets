@@ -16,6 +16,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -54,7 +55,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
         delete r['groups' as keyof object]
         //console.log("r", ['groups' as keyof object])
-        tabsStore.addTabset(r)
+        useTabsetsStore().addTabset(r)
       }))
   }
 
@@ -62,7 +63,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     const ts = await this.db.get('tabsets', tabsetId) as Tabset | undefined
     if (ts) {
       console.log("reloaded tabset", ts.id, ts.tabs.length)
-      useTabsStore().tabsets.set(ts.id, ts)
+      useTabsetsStore().tabsets.set(ts.id, ts)
     } else {
       console.warn("could not reload tabset with id", tabsetId)
     }
@@ -361,7 +362,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private urlExistsInATabset(url: string): boolean {
-    for (let ts of [...useTabsStore().tabsets.values()]) {
+    for (let ts of [...useTabsetsStore().tabsets.values()]) {
       if (_.find(ts.tabs, t => t.url === url)) {
         return true;
       }

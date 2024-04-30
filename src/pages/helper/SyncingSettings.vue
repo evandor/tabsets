@@ -245,6 +245,7 @@ import {doc, updateDoc} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useTabsStore} from "stores/tabsStore";
 import {useUiStore} from "stores/uiStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {sendMsg} = useUtils()
 const {handleSuccess, handleError} = useNotificationHandler()

@@ -33,10 +33,10 @@
         <q-space/>
 
         <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
-                      v-if="tabsStore.tabsets.size > 1 || useSettingsStore().isEnabled('dev')"/>
+                      v-if="useTabsetsStore().tabsets.size > 1 || useSettingsStore().isEnabled('dev')"/>
 
         <Transition name="colorized-appear">
-          <div v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
+          <div v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
             <OpenTabsThresholdWidget/>
           </div>
         </Transition>
@@ -205,6 +205,7 @@ import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore"
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
 import {useAuthStore} from "stores/authStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const $q = useQuasar()
 const router = useRouter()

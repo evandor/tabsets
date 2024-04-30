@@ -374,6 +374,7 @@ import {SavePngCommand} from "src/domain/tabs/SavePng";
 import {SavePdfCommand} from "src/domain/tabs/SavePdf";
 import {useAuthStore} from "stores/authStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 

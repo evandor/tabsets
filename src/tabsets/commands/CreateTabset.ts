@@ -40,14 +40,14 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
                     return res
                 })
                 .then(res => {
-                        //   if (useTabsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
+                        //   if (useTabsetsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
                         //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
                         //         }
-                        if (useTabsStore().tabsets.size >= 15 &&
+                        if (useTabsetsStore().tabsets.size >= 15 &&
                             !usePermissionsStore().hasFeature(FeatureIdent.SPACES) &&
                             process.env.MODE === 'bex') {
                             useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
-                        // } else if (useTabsStore().tabsets.size >= 3 &&
+                        // } else if (useTabsetsStore().tabsets.size >= 3 &&
                         //     useTabsetsStore().allTabsCount > 10 &&
                         //     !usePermissionsStore().hasFeature(FeatureIdent.NEWEST_TABS) &&
                         //     process.env.MODE === 'bex') {

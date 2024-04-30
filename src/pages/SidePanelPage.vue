@@ -14,7 +14,7 @@
       enter-active-class="animated fadeIn slower delay-5s"
       leave-active-class="animated fadeOut">
       <div class="wrap2"
-           v-if="useTabsStore().tabsets.size === 0 && !useUiStore().appLoading">
+           v-if="useTabsetsStore().tabsets.size === 0 && !useUiStore().appLoading">
         <div class="row items-center text-grey-5">how to start?</div>
         <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
           <q-list>
@@ -134,7 +134,6 @@
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash"
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
@@ -146,7 +145,6 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {FeatureIdent} from "src/models/AppFeature";
-import {useWindowsStore} from "src/windows/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
@@ -161,6 +159,7 @@ import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vu
 import {useI18n} from 'vue-i18n'
 import SidePanelTabsetsExpansionList from "components/tabsets/SidePanelTabsetsExpansionList.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -230,7 +229,7 @@ watchEffect(() => {
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
+      _.filter([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
         if (currentSpace) {
           if (ts.spaces.indexOf(currentSpace.id) < 0) {
             return false
@@ -243,7 +242,7 @@ watchEffect(() => {
       getTabsetOrder, ["asc"])
   } else {
     tabsets.value = _.sortBy(
-      _.filter([...tabsStore.tabsets.values()] as Tabset[],
+      _.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
         (ts: Tabset) => ts.status !== TabsetStatus.DELETED
           && ts.status !== TabsetStatus.HIDDEN &&
           ts.status !== TabsetStatus.ARCHIVED),
@@ -353,7 +352,7 @@ if (inBexMode()) {
       console.log("reload-tabset message received")
       const tabsetId = message.data.tabsetId ?
         message.data.tabsetId :
-        useTabsetService().getCurrentTabset()?.id
+        useTabsetsStore().getCurrentTabset?.id
       useTabsetService().reloadTabset(tabsetId)
     } else if (message.name === 'reload-application') {
       AppService.restart("restarted=true")
@@ -390,7 +389,7 @@ const toolbarTitle = (tabsets: Tabset[]) => {
 }
 
 const suggestTabsetImport = () => {
-  const currentTabUrl = useTabsStore().currentChromeTab?.url
+  const currentTabUrl = useTabsStore2().currentChromeTab?.url
   if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/pwa/tabsets/")) {
     const urlSplit = currentTabUrl.split("/")
     const tabsetId = urlSplit[urlSplit.length - 1]
@@ -401,7 +400,7 @@ const suggestTabsetImport = () => {
 }
 
 const importSharedTabset = () => {
-  const currentTabUrl = useTabsStore().currentChromeTab?.url
+  const currentTabUrl = useTabsStore2().currentChromeTab?.url
   if (currentTabUrl) {
     console.log("Importing", currentTabUrl)
     const urlSplit = currentTabUrl.split("/")
@@ -420,7 +419,7 @@ const importSharedTabset = () => {
 const drop = (evt: any, folder: Tabset) => {
   console.log("drop", evt, folder)
   const tabToDrag = useUiStore().tabBeingDragged
-  const tabset = useTabsetService().getCurrentTabset()
+  const tabset = useTabsetsStore().getCurrentTabset as Tabset | undefined
   if (tabToDrag && tabset) {
     console.log("tabToDrag", tabToDrag)
     const moveToFolderId = folder.id

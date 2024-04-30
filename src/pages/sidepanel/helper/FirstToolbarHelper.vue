@@ -48,7 +48,7 @@
 
             <SidePanelToolbarButton
               v-if="showToggleSessionIcon()"
-              :color="existingSession ? (tabsStore.getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
+              :color="existingSession ? (useTabsetsStore().getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
               :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
               @click="toggleSessionState"
               :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>
@@ -120,6 +120,8 @@ import {useQuasar} from "quasar";
 import {useAuthStore} from "stores/authStore";
 import {SyncType} from "stores/appStore";
 import {useI18n} from 'vue-i18n'
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {t} = useI18n({useScope: 'global'})
 
@@ -184,17 +186,17 @@ const startSession = () => $q.dialog({
   componentProps: {replaceSession: false, inSidePanel: true}
 })
 
-const stopSession = () => {
-  const tabsetWithSession = _.filter([...tabsStore.tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION)
-  console.log("tabsetWithSession", tabsetWithSession)
-  if (tabsetWithSession && tabsetWithSession.length > 0) { // should be one at most
-    useCommandExecutor().executeFromUi(new StopSessionCommand(tabsetWithSession[0]))
-  }
-}
+// const stopSession = () => {
+//   const tabsetWithSession = _.filter([...useTabsetsStore().tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION)
+//   console.log("tabsetWithSession", tabsetWithSession)
+//   if (tabsetWithSession && tabsetWithSession.length > 0) { // should be one at most
+//     useCommandExecutor().executeFromUi(new StopSessionCommand(tabsetWithSession[0]))
+//   }
+// }
 
-const webClipActive = () => tabsStore.currentChromeTab
+const webClipActive = () => useTabsStore2().currentChromeTab
 
-const showSearchIcon = () => tabsStore.tabsets.size > 1
+const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 
 const showToggleSessionIcon = () =>
   useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
@@ -220,7 +222,7 @@ const openNewTabsetDialog = () => {
   $q.dialog({
     component: NewTabsetDialog,
     componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
+      tabsetId: useTabsetsStore().getCurrentTabset?.id,
       spaceId: useSpacesStore().space?.id,
       fromPanel: true
     }

@@ -203,7 +203,7 @@
     <q-tab-panel class="q-ma-none q-pa-none" name="tabset">
       <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
       <q-banner rounded class="text-primary q-ma-md" style="border: 1px solid #efefef"
-                v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
+                v-if="!tabsStore.currentTabsetId && useTabsetsStore().tabsets.size > 0">
         <div class="text-body2">
           Select an existing tabset from the list or create a new tabset.
         </div>
@@ -288,6 +288,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 import {useAuthStore} from "stores/authStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 const router = useRouter()

@@ -62,6 +62,7 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
@@ -75,7 +76,7 @@ const props = defineProps({
 })
 
 watchEffect(() => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
@@ -145,7 +146,7 @@ const switchTabset = (ts: any) => {
 }
 
 const tabsetsWithTypes = (types: TabsetType[]) => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   return _.sortBy(
     _.filter(tabsets, (ts: Tabset) =>
       types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),

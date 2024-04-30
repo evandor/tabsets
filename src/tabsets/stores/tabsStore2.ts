@@ -148,7 +148,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
   })
 
   const getCurrentChromeTab = computed(() => {
-    return (windowId: number) => {
+    return (windowId: number): chrome.tabs.Tab | undefined => {
       return currentChromeTabs.value.get(windowId)
     }
   })

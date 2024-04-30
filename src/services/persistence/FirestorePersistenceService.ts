@@ -227,7 +227,7 @@ class FirestorePersistenceService implements PersistenceService {
     try {
       const ts = await getDoc(tabsetDoc(tabsetId))
       console.log("reloaded tabset", ts.data())
-      useTabsStore().tabsets.set(ts.data()!['id'], ts.data() as Tabset)
+      useTabsetsStore().tabsets.set(ts.data()!['id'], ts.data() as Tabset)
     } catch (err) {
       console.warn("could not reload tabset with id", tabsetId, err)
     }
