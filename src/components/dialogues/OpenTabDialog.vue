@@ -73,7 +73,7 @@ const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
 })
 
 

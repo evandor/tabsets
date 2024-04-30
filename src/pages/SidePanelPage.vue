@@ -296,7 +296,7 @@ if (inBexMode()) {
       useUiStore().draggingTab(message.data.tabId, null as unknown as any)
     } else if (message.name === "note-changed") {
       // TODO needed?
-      const tabset = useTabsetService().getTabset(message.data.tabsetId) as Tabset
+      const tabset = useTabsetsStore().getTabset(message.data.tabsetId) as Tabset
       if (message.data.noteId) {
         console.log("updating note", message.data.noteId)
         const res = useTabsStore().getTabAndTabsetId(message.data.noteId)
@@ -394,8 +394,8 @@ const suggestTabsetImport = () => {
   if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/pwa/tabsets/")) {
     const urlSplit = currentTabUrl.split("/")
     const tabsetId = urlSplit[urlSplit.length - 1]
-    console.log("tabsetId", tabsetId, useTabsetService().getTabset(tabsetId))
-    return !useTabsetService().getTabset(tabsetId)
+    console.log("tabsetId", tabsetId, useTabsetsStore().getTabset(tabsetId))
+    return !useTabsetsStore().getTabset(tabsetId)
   }
   return false
 }

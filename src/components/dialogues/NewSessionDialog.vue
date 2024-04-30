@@ -84,7 +84,7 @@ const addAutomatically = ref(props.setEmptyByDefault)
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
 })
 
 const createNewTabset = () => {
@@ -110,7 +110,7 @@ const createNewTabset = () => {
 }
 
 const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
+  return (!hideWarning.value && useTabsetsStore().existingInTabset(newTabsetName.value)) ?
     "Hint: Tabset exists, but you can change it into a session" : ""
 }
 

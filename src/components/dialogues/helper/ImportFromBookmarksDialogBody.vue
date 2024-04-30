@@ -102,7 +102,7 @@ const deleteBookmarks = ref(false)
 const recursive = ref(false)
 
 const newTabsetDialogWarning = () => {
-  if (tabsStore.nameExistsInContextTabset(newTabsetName.value)) {
+  if (useTabsetsStore().existingInTabset(newTabsetName.value)) {
     return "Tabset " + newTabsetName.value + " already exists, items will be merged"
   }
   return ""

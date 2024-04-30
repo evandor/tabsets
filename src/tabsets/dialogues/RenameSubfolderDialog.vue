@@ -59,7 +59,7 @@ const newSubfolderNameExists = ref(false)
 const hideWarning = ref(false)
 
 watchEffect(() => {
-  newSubfolderNameExists.value = !!tabsStore.nameExistsInContextTabset(newSubfolderName.value);
+  newSubfolderNameExists.value = !!useTabsetsStore().existingInTabset(newSubfolderName.value);
 })
 
 const updateSubfolder = () => useCommandExecutor()

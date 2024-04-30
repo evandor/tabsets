@@ -106,7 +106,7 @@ const hideWarning = ref(false)
 const scheduleFor = ref(date.formatDate(new Date().getTime(), dateFormat))
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
 })
 
 const parseDate = (str: string): Date => {

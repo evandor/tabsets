@@ -116,7 +116,7 @@ watchEffect(async () => {
             //console.log("got tabobject1", tabObject)
             tab.value = tabObject.tab
             tabsetId.value = tabObject.tabsetId
-            tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
+            tabset.value = useTabsetsStore().getTabset(tabsetId.value) as Tabset | undefined
             title.value = tabObject.tab?.title || 'unknown'
 
             if (tab.value.longDescription) {
@@ -169,7 +169,7 @@ const saveWork = () => {
     console.log("setting original", title.value, sanitize(title.value))
     originalTitle.value = sanitize(title.value)
     if (tabsetId.value) {
-      const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
+      const tabset = useTabsetsStore().getTabset(tabsetId.value) as Tabset | undefined
       console.log("tabset", tabset, tab.value)
       if (tabset && tab.value) {
         //tab.value.description = description.value
@@ -191,7 +191,7 @@ const saveWork = () => {
         //newTab.parent = parentId.value
 
         // lesson learned: execute code here and send message only to update dependent parts
-        const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset
+        const tabset = useTabsetsStore().getTabset(tabsetId.value) as Tabset
         console.log("creating new note", newTab)
         //tabset.tabs.push(newTab)
         //useTabsetService().saveTabset(tabset)

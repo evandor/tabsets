@@ -19,7 +19,7 @@ export class DeleteCommentCommand implements Command<any> {
 
       tab.comments = _.filter(tab.comments, c => c.id !== this.commentId)
 
-      const tabset = useTabsetService().getTabset(tabData.tabsetId)
+      const tabset = useTabsetsStore().getTabset(tabData.tabsetId)
       if (tabset && tabset.sharedId) {
         tabset.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
       }

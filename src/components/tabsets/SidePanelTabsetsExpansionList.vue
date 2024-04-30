@@ -255,6 +255,7 @@ import TabsetService from "src/services/TabsetService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   tabsets: {type: Array as PropType<Array<Tabset>>, required: true}
@@ -398,8 +399,8 @@ const suggestTabsetImport = () => {
   if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/pwa/tabsets/")) {
     const urlSplit = currentTabUrl.split("/")
     const tabsetId = urlSplit[urlSplit.length - 1]
-    console.log("tabsetId", tabsetId, useTabsetService().getTabset(tabsetId))
-    return !useTabsetService().getTabset(tabsetId)
+    console.log("tabsetId", tabsetId, useTabsetsStore().getTabset(tabsetId))
+    return !useTabsetsStore().getTabset(tabsetId)
   }
   return false
 }
@@ -436,7 +437,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | u
       .then(() => {
         const promises: Promise<any>[] = []
         //console.log("selecteded tabset > ", tabsetId)
-        const selectedTabset = useTabsStore().getTabset(tabsetId)
+        const selectedTabset = useTabsetsStore().getTabset(tabsetId)
         if (selectedTabset) {
           handleHeadRequests(selectedTabset)
         }
@@ -554,7 +555,7 @@ const tooltipAlreadyInOtherTabsets = (tabsetName: string) => {
 }
 
 const openPublicShare = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
+  const ts = useTabsetsStore().getTabset(tabsetId)
   if (ts && ts.sharedId) {
     openURL(getPublicTabsetLink(ts))
   }
@@ -571,7 +572,7 @@ const getPublicTabsetLink = (ts: Tabset) => {
 }
 
 const copyPublicShareToClipboard = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
+  const ts = useTabsetsStore().getTabset(tabsetId)
   if (ts && ts.sharedId) {
     const link = getPublicTabsetLink(ts)
     useCommandExecutor().executeFromUi(new CopyToClipboardCommand(link))
@@ -631,7 +632,7 @@ const alreadyInTabset = () => {
 }
 
 const saveInTabset = (tabsetId: string, activeFolder: string | undefined) => {
-  const useTS: Tabset | undefined = useTabsetService().getTabset(tabsetId)
+  const useTS: Tabset | undefined = useTabsetsStore().getTabset(tabsetId)
   if (useTS) {
     // if (alreadyInTabset()) {
     //   return
@@ -643,7 +644,7 @@ const saveInTabset = (tabsetId: string, activeFolder: string | undefined) => {
 }
 
 const addURL = (tabsetId: string, activeFolder: string | undefined) => {
-  const useTS: Tabset | undefined = useTabsetService().getTabset(tabsetId)
+  const useTS: Tabset | undefined = useTabsetsStore().getTabset(tabsetId)
   if (useTS) {
     useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS, activeFolder))
   } else {

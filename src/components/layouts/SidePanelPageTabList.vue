@@ -96,7 +96,7 @@ const handleDragAndDrop = (event: any, column: TabsetColumn) => {
 
 watchEffect(() => {
   // TODO why was this done in the first place? Updates from where?
-  //const tabset = useTabsStore().getTabset(props.tabset?.id || "")
+  //const tabset = useTabsStore().useTabsetsStore(props.tabset?.id || "")
   if (props.tabset) {
     tabs.value = useTabsetService().tabsToShow(props.tabset)
   } else {

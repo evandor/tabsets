@@ -158,7 +158,7 @@ watchEffect(() => {
     //   init()
     // }
     //console.log("got tabset id", tabsetId.value)
-    tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
+    tabset.value = useTabsetsStore().getTabset(tabsetId.value) as Tabset | undefined
     useTabsetsStore().selectCurrentTabset(tabsetId.value)
   }
 })

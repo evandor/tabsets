@@ -207,7 +207,7 @@ const archiveTabset = (tabsetId: string) => useCommandExecutor().executeFromUi(n
 const showDetails = (tabsetId: string) => useUiStore().rightDrawerSetActiveTab(DrawerTabs.TABSET_DETAILS, {tabsetId})
 
 const stopSession = (tabsetId: string) => {
-  const tabset = useTabsetService().getTabset(tabsetId)
+  const tabset = useTabsetsStore().getTabset(tabsetId)
   if (tabset) {
     useCommandExecutor().executeFromUi(new StopSessionCommand(tabset))
   }
@@ -219,14 +219,14 @@ const removePublicShare = (tabsetId: string) => useCommandExecutor().executeFrom
 const publictabsetsPath = "https://tabsets.web.app/#/tabsets/"
 
 const openPublicShare = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
+  const ts = useTabsetsStore().getTabset(tabsetId)
   if (ts && ts.sharedId) {
     openURL(getPublicTabsetLink(ts))
   }
 }
 
 const copyPublicShareToClipboard = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
+  const ts = useTabsetsStore().getTabset(tabsetId)
   if (ts && ts.sharedId) {
     useCommandExecutor().executeFromUi(new CopyToClipboardCommand(getPublicTabsetLink(ts)))
   }

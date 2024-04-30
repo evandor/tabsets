@@ -45,7 +45,7 @@ describe('UpdateTabUrl', () => {
     expect(result.message).toBe("Tab updated")
     expect(result.result).toBe("https://skysail.io")
 
-    const tabsetFromDB = useTabsetService().getTabset(createTabsetResult.result.tabset.id)
+    const tabsetFromDB = useTabsetsStore().getTabset(createTabsetResult.result.tabset.id)
     expect(tabsetFromDB?.tabs[0].url).toBe("https://skysail.io")
   });
 
@@ -59,7 +59,7 @@ describe('UpdateTabUrl', () => {
         tab, "https://skysail.io", "newName").execute()
     await result.undoCommand?.execute()
 
-    const tabsetFromDB = useTabsetService().getTabset(createTabsetResult.result.tabset.id)
+    const tabsetFromDB = useTabsetsStore().getTabset(createTabsetResult.result.tabset.id)
     expect(tabsetFromDB?.tabs[0].url).toBe("https://www.skysail.io")
   });
 

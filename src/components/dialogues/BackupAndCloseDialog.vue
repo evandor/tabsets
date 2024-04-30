@@ -32,6 +32,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tab} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -51,7 +52,7 @@ const hideWarning = ref(false)
 const backupAndCloseTabs = () => {
   TabsetService.closeTrackedTabs()
     .then((tabsToBackup:chrome.tabs.Tab[]) => {
-      const backupTabset = useTabsetService().getTabset('BACKUP')
+      const backupTabset = useTabsetsStore().getTabset('BACKUP')
       if (backupTabset) {
         tabsToBackup.forEach(t => {
           const tab = new Tab(uid(), t)
@@ -63,7 +64,7 @@ const backupAndCloseTabs = () => {
 }
 
 const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
+  return (!hideWarning.value && useTabsetsStore().existingInTabset(newTabsetName.value)) ?
     "Hint: Tabset exists, but you can change it into a session" : ""
 }
 

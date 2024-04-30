@@ -219,6 +219,7 @@ import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -427,7 +428,7 @@ const suggestionsLabel = () => {
 }
 
 const openHelpView = () => {
-  const helpTabset = useTabsStore().getTabset("HELP")
+  const helpTabset = useTabsetsStore().getTabset("HELP")
   console.log("got helpTabset", helpTabset)
   if (helpTabset && helpTabset.status !== TabsetStatus.DELETED) {
     router.push("/sidepanel/tabsets/HELP")

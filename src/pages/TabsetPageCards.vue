@@ -138,14 +138,14 @@ function getOrder() {
   }
 }
 
-function tabsForGroup(groupId: number): Tab[] {
-  return _.orderBy(
-    _.filter(
-      tabsStore.getTabset(tabsetId.value)?.tabs,
-      // @ts-ignore
-      (t: Tab) => t?.groupId === groupId),
-    getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-}
+// function tabsForGroup(groupId: number): Tab[] {
+//   return _.orderBy(
+//     _.filter(
+//       useTabsetsStore().getTabset(tabsetId.value)?.tabs,
+//       // @ts-ignore
+//       (t: Tab) => t?.groupId === groupId),
+//     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+// }
 
 const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsetId.value))
 

@@ -318,7 +318,7 @@ watchEffect(() => {
     return
   }
   tabsetId.value = route?.params.tabsetId as string
-  tabset.value = useTabsetService().getTabset(tabsetId.value) || new Tabset(uid(), "empty", [])
+  tabset.value = useTabsetsStore().getTabset(tabsetId.value) || new Tabset(uid(), "empty", [])
   console.log("watch effect in tabsetpage", tabsetId.value)
   tab.value = route.query['tab'] ? route.query['tab'] as string : 'tabset'
 })

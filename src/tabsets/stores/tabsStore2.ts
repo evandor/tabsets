@@ -151,6 +151,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     getCurrentChromeTab,
     currentChromeTab,
     tabHistoryBack,
-    tabHistoryForward
+    tabHistoryForward,
+    chromeTabsHistoryNavigating
   }
 })

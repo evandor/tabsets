@@ -147,18 +147,18 @@ const checkIsValid = () => {
 }
 
 const isNotArchived = (val: string) => {
-  const existsInTabset = tabsStore.existingInTabset(val)
+  const existsInTabset = useTabsetsStore().existingInTabset(val)
   return !(existsInTabset && existsInTabset.status === TabsetStatus.ARCHIVED)
 }
 
 const doesNotExistYet = (val: string) => {
-  const existsInTabset = tabsStore.existingInTabset(val)
+  const existsInTabset = useTabsetsStore().existingInTabset(val)
   return !(existsInTabset && existsInTabset.status !== TabsetStatus.DELETED && existsInTabset.status !== TabsetStatus.ARCHIVED)
 }
 
 const submit = () => {
   console.log("submit", addAllOpenTabs.value, tabsStore2.browserTabs, windowModel.value)
-  const existsInTabset = tabsStore.existingInTabset(newTabsetName.value)
+  const existsInTabset = useTabsetsStore().existingInTabset(newTabsetName.value)
   if (existsInTabset && existsInTabset.status === TabsetStatus.ARCHIVED) {
     unarchiveTabset()
     useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
@@ -209,7 +209,7 @@ const createWindowOption = (val: any, done: any) => {
 }
 
 const unarchiveTabset = () => {
-  const archivedTabset = tabsStore.existingInTabset(newTabsetName.value)
+  const archivedTabset = useTabsetsStore().existingInTabset(newTabsetName.value)
   if (archivedTabset) {
     useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(archivedTabset.id))
       .then((res) => {

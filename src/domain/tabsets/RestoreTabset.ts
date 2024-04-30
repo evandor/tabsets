@@ -19,7 +19,7 @@ export class RestoreTabsetCommand implements Command<string> {
   async execute(): Promise<ExecutionResult<string>> {
     console.log("restoring from tabset", this.tabsetId)
     try {
-      const tabset = useTabsetService().getTabset(this.tabsetId)
+      const tabset = useTabsetsStore().getTabset(this.tabsetId)
       if (tabset) {
         console.log("found tabset for id", this.tabsetId)
         ChromeApi.restore(tabset, this.windowName, this.inNewWindow)

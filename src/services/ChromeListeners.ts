@@ -750,7 +750,7 @@ class ChromeListeners {
     console.log("addToTabset", currentTSId, newTab)
     addToTabsetId(currentTSId, newTab)
       .then(() => {
-        const ts = useTabsetService().getTabset(currentTSId)
+        const ts = useTabsetsStore().getTabset(currentTSId)
         if (ts) {
           useTabsetService().saveTabset(ts)
         }

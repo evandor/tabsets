@@ -52,6 +52,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {useSearchStore} from "src/stores/searchStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -79,7 +80,7 @@ const duration = ref(1)
 watchEffect(() => {
   if (tabsStore) {
     if (props.tabsetId !== '') {
-      duration.value = 1 + Math.floor((tabsStore.getTabset(props.tabsetId)?.tabs.length || 1) * 3 / 60)
+      duration.value = 1 + Math.floor((useTabsetsStore().getTabset(props.tabsetId)?.tabs.length || 1) * 3 / 60)
     } else {
       duration.value = 1 + Math.floor(tabsStore.allTabsCount * 3 / 60)
     }
@@ -87,11 +88,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
 })
 
 const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
+  return (!hideWarning.value && useTabsetsStore().existingInTabset(newTabsetName.value)) ?
     "Hint: Tabset exists, but you can add tabs" : ""
 }
 

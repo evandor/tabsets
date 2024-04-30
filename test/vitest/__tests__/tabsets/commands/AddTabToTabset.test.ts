@@ -43,7 +43,7 @@ describe('AddTabToTabsetCommand', () => {
     const result = await new AddTabToTabsetCommand(new Tab("tabId", skysailChromeTab), tabset).execute()
     expect(result.message).toBe("Tab was added")
 
-    const tabsetFromDB = useTabsetService().getTabset(tabset.id)
+    const tabsetFromDB = useTabsetsStore().getTabset(tabset.id)
     console.log("tabsetFromDB", tabsetFromDB)
     // @ts-ignore
     expect(useSearchStore().getIndex().size()).toBe(1)
@@ -59,7 +59,7 @@ describe('AddTabToTabsetCommand', () => {
     const result = await new AddTabToTabsetCommand(new Tab("tabId2", testDeChromeTab), tabset).execute()
     expect(result.message).toBe("Tab was added")
 
-    const tabsetFromDB = useTabsetService().getTabset("new Tabset")
+    const tabsetFromDB = useTabsetsStore().getTabset("new Tabset")
     console.log("tabsetFromDB", tabsetFromDB)
   });
 
@@ -72,7 +72,7 @@ describe('AddTabToTabsetCommand', () => {
     const result = await new AddTabToTabsetCommand(theTab, createdTabset).execute()
     expect(result.message).toBe("Tab was added")
 
-    const tabsetFromDB = useTabsetService().getTabset(createdTabset.id)!
+    const tabsetFromDB = useTabsetsStore().getTabset(createdTabset.id)!
     console.log("tabsetFromDB", tabsetFromDB)
     expect(tabsetFromDB.tabs.length).toBe(1)
     expect(tabsetFromDB.name).toBe("new Tabset2")
@@ -91,7 +91,7 @@ describe('AddTabToTabsetCommand', () => {
     const result = await new AddTabToTabsetCommand(theTab, createdTabset, subfolder).execute()
     expect(result.message).toBe("Tab was added")
 
-    const tabsetFromDB = useTabsetService().getTabset(createdTabset.id)!
+    const tabsetFromDB = useTabsetsStore().getTabset(createdTabset.id)!
     console.log("tabsetFromDB", tabsetFromDB)
     expect(tabsetFromDB.tabs.length).toBe(1)
     expect(tabsetFromDB.name).toBe("new Tabset2")

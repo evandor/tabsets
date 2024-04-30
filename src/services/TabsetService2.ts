@@ -133,7 +133,7 @@ export function useTabsetService() {
 
     function nameFrom(name: string): string {
       const nameCandidate = name + " - Copy"
-      const existsAlready = useTabsStore().existingInTabset(nameCandidate, useSpacesStore().space)
+      const existsAlready = useTabsetsStore().existingInTabset(nameCandidate, useSpacesStore().space)
       return existsAlready ? nameFrom(nameCandidate) : nameCandidate.replace(STRIP_CHARS_IN_USER_INPUT, '')
     }
 
@@ -216,11 +216,6 @@ export function useTabsetService() {
     return db.reloadTabset(tabsetId)
   }
 
-  const getCurrentTabset = (): Tabset | undefined => {
-    const tabsStore = useTabsStore()
-    return tabsStore.tabsets.get(tabsStore.currentTabsetId) as Tabset
-  }
-
   const resetSelectedTabs = () => {
     // const currentTabset = getCurrentTabset()
     // if (currentTabset) {
@@ -233,7 +228,10 @@ export function useTabsetService() {
     console.debug("selecting tabset", tabsetId)
     const tabsStore = useTabsStore()
     resetSelectedTabs()
-    tabsStore.currentTabsetId = tabsetId || null as unknown as string;
+    if (tabsetId) {
+      useTabsetsStore().selectCurrentTabset(tabsetId)
+    }
+    //tabsStore.currentTabsetId = tabsetId || null as unknown as string;
     ChromeApi.buildContextMenu("tabsetService 230")
     if (tabsetId) {
       localStorage.setItem("selectedTabset", tabsetId)
@@ -246,11 +244,11 @@ export function useTabsetService() {
     const tabset = getTabset(tabsetId)
     if (tabset) {
       const tabsStore = useTabsStore()
-      _.forEach(tabsStore.getTabset(tabsetId)?.tabs, (t: Tab) => {
+      _.forEach(useTabsetsStore().getTabset(tabsetId)?.tabs, (t: Tab) => {
         console.debug(t, "removing thumbnails")
         useThumbnailsService().removeThumbnailsFor(t?.url || '')
       })
-      tabsStore.deleteTabset(tabsetId)
+      useTabsetsStore().deleteTabset(tabsetId)
 
       // TODO in progress: NEW APPROACH
       await useTabsetsStore().deleteTabset(tabsetId)
@@ -285,7 +283,7 @@ export function useTabsetService() {
 
   const deleteFromTabset = (tabsetId: any, predicate: TabPredicate): Promise<number> => {
     console.log("deleting from tabset")
-    const ts = useTabsStore().getTabset(tabsetId)
+    const ts = useTabsetsStore().getTabset(tabsetId)
     if (ts) {
       const tabsCount = ts.tabs.length
       const tabsToKeep: Tab[] = _.filter(ts.tabs, (t: Tab) => !predicate(t))
@@ -340,7 +338,7 @@ export function useTabsetService() {
 
   const saveCurrentTabset = (): Promise<any> => {
     const tabsStore = useTabsStore()
-    const currentTabset = tabsStore.getCurrentTabset
+    const currentTabset = useTabsetsStore().getCurrentTabset as Tabset | undefined
     if (currentTabset) {
       //console.log("saving current tabset", currentTabset)
       return saveTabset(currentTabset)
@@ -608,7 +606,7 @@ export function useTabsetService() {
     return false;
   }
   const urlExistsInCurrentTabset = (url: string): boolean => {
-    const currentTabset = getCurrentTabset()
+    const currentTabset = useTabsetsStore().getCurrentTabset
     // console.log("testing exists in current tabset", currentTabset.id, url)
     if (currentTabset) {
       if (_.find(currentTabset.tabs, t => {
@@ -700,7 +698,6 @@ export function useTabsetService() {
     deleteFromTabset,
     deleteTabset,
     getTabset,
-    getCurrentTabset,
     selectTabset,
     saveTabset,
     saveCurrentTabset,

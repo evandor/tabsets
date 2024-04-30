@@ -198,7 +198,7 @@ const saveInTabset = () => {
   if (alreadyInTabset() || !tabsetId.value) {
     return
   }
-  const useTS = useTabsetService().getTabset(tabsetId.value)
+  const useTS = useTabsetsStore().getTabset(tabsetId.value)
   if (useTS) {
     useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
   } else {

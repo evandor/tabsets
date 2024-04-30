@@ -8,6 +8,7 @@ import {Tab, TabComment} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {Space} from "src/spaces/models/Space";
 
 /**
  * a pinia store for "Tabsets".
@@ -129,12 +130,12 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     }
 
 
-  // deleteTabset(tabsetId: string) {
-  //   this.tabsets.delete(tabsetId)
-  //   if (this.currentTabsetId === tabsetId) {
-  //     this.currentTabsetId = null as unknown as string
-  //   }
-  // },
+    // deleteTabset(tabsetId: string) {
+    //   this.tabsets.delete(tabsetId)
+    //   if (this.currentTabsetId === tabsetId) {
+    //     this.currentTabsetId = null as unknown as string
+    //   }
+    // },
 
     function selectCurrentTabset(tabsetId: string): Tabset | undefined {
       const found = _.find([...tabsets.value.values()] as Tabset[], k => {
@@ -153,7 +154,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       return undefined
     }
 
-    function unsetCurrentTabset():void {
+    function unsetCurrentTabset(): void {
       currentTabset.value = undefined
     }
 
@@ -170,6 +171,60 @@ export const useTabsetsStore = defineStore('tabsets', () => {
         return _.find(tabs, t => t.url === url)
       }
     })
+
+    const mostAccessedTabs = computed(() => {
+      const allTabs: Tab[] =
+        _.orderBy(
+          _.filter(
+            _.flatMap(
+              _.filter(
+                _.map([...tabsets.value.values()] as Tabset[], (ts: Tabset) => ts),
+                (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
+              (ts: Tabset) => ts.tabs), (t: Tab) => t.activatedCount > 1),
+          (t: Tab) => t.activatedCount, ['desc'])
+      return allTabs.slice(0, 12)
+    })
+
+    const getTabset = computed(() => {
+      return (tabsetId: string): Tabset | undefined => {
+        return tabsets.value.get(tabsetId) as Tabset | undefined
+      }
+    })
+
+  const existingInTabset = computed(() => {
+      return (searchName: string, space: Space = null as unknown as Space): Tabset | undefined => {
+        const trustedName = searchName.replace(STRIP_CHARS_IN_USER_INPUT, '')
+        return _.find([...tabsets.value.values()] as Tabset[], (ts: Tabset) => {
+          if (space === null) {
+            return ts.name === trustedName?.trim()
+          } else {
+            return ts.name === trustedName?.trim() && ts.spaces.indexOf(space.id) >= 0
+          }
+        })
+      }
+
+  })
+
+  // existingInTabset: (state) => {
+  // },
+
+  // getTabset: (state) => {
+    //   return (tabsetId: string): Tabset | undefined => {
+    //     return state.tabsets.get(tabsetId) as Tabset
+    //   }
+    // },
+    // const mostAccessedTabs(state): Tab[] {
+    //   const allTabs: Tab[] =
+    //     _.orderBy(
+    //       _.filter(
+    //         _.flatMap(
+    //           _.filter(
+    //             _.map([...this.tabsets.values()] as Tabset[], (ts: Tabset) => ts),
+    //             (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
+    //           (ts: Tabset) => ts.tabs), (t: Tab) => t.activatedCount > 1),
+    //       (t: Tab) => t.activatedCount, ['desc'])
+    //   return allTabs.slice(0, 12)
+    // },
 
     // currentTabsetName: (state): string | undefined => {
     //   const candidates = _.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)
@@ -197,7 +252,9 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       getCurrentTabs,
       getCurrentTabset,
       currentTabsetName,
-      tabForUrlInSelectedTabset
+      tabForUrlInSelectedTabset,
+      getTabset,
+      existingInTabset
     }
   }
 )

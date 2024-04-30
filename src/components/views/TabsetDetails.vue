@@ -33,5 +33,5 @@ const uiStore = useUiStore()
 const tabsetId = ref(uiStore.selectedTabsetId)
 const tabset = ref<Tabset | undefined>(undefined)
 
-watchEffect(() => tabset.value = tabsetId.value ? useTabsetService().getTabset(tabsetId.value) : undefined)
+watchEffect(() => tabset.value = tabsetId.value ? useTabsetsStore().getTabset(tabsetId.value) : undefined)
 </script>

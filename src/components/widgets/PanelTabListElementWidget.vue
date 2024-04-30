@@ -600,7 +600,7 @@ const unsetGroup = () => {
       const tabsetId = res.tabsetId
       tab.groupName = undefined
       tab.groupId = -1
-      const ts = useTabsetService().getTabset(tabsetId)
+      const ts = useTabsetsStore().getTabset(tabsetId)
       if (ts) {
         useTabsetService().saveTabset(ts)
       }
@@ -629,7 +629,7 @@ const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
       const tabsetId = res.tabsetId
       tab.groupName = group.title
       tab.groupId = group.id
-      const ts = useTabsetService().getTabset(tabsetId)
+      const ts = useTabsetsStore().getTabset(tabsetId)
       if (ts) {
         useTabsetService().saveTabset(ts)
       }

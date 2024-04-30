@@ -154,7 +154,7 @@ const start = async () => {
   //   return
   // }
 
-  //const exists = useTabsetService().getTabset(tabset.value.id)
+  //const exists = useTabsetsStore().getTabset(tabset.value.id)
   if (!maybeTabset.value) {
     console.log("shared tabset does not exist yet, creating...")
     const importedTS = tabset.value //new Tabset(tabset.value.id, tabset.value.name, tabset.value.tabs as Tab[])

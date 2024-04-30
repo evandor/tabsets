@@ -7,8 +7,6 @@ import ChromeApi from "src/services/ChromeApi";
 import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {Space} from "src/spaces/models/Space";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -40,11 +38,6 @@ export const useTabsStore = defineStore('tabs', {
      */
     tabsets: new Map<string, Tabset>(),
 
-    /**
-     * if the user opens a new tab, this will be stored here
-     */
-    //pendingTabset: null as unknown as Tabset,
-
 
     // use listeners? Might make sense to turn them off when restoring old tabset for example
     listenersOn: true
@@ -53,37 +46,20 @@ export const useTabsStore = defineStore('tabs', {
 
   getters: {
 
-    pinnedTabs(state): Tab[] {
-      return []
-    },
+    // pinnedTabs(state): Tab[] {
+    //   return []
+    // },
 
-    mostAccessedTabs(state): Tab[] {
-      const allTabs: Tab[] =
-        _.orderBy(
-          _.filter(
-            _.flatMap(
-              _.filter(
-                _.map([...this.tabsets.values()] as Tabset[], (ts: Tabset) => ts),
-                (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
-              (ts: Tabset) => ts.tabs), (t: Tab) => t.activatedCount > 1),
-          (t: Tab) => t.activatedCount, ['desc'])
-      return allTabs.slice(0, 12)
-    },
+
 
     // tabsCount(): number {
     //   return this.tabs.length
     // },
     // getChromeTabs: (state): chrome.tabs.Tab[] => state.tabs,
-    tabsetNames: (state) => _.map([...state.tabsets.keys()], key => {
-      const tabset = state.tabsets.get(key)
-      return tabset?.name || 'unknown'
-    }),
-    getTabset: (state) => {
-      return (tabsetId: string): Tabset | undefined => {
-        return state.tabsets.get(tabsetId) as Tabset
-      }
-    },
-
+    // tabsetNames: (state) => _.map([...state.tabsets.keys()], key => {
+    //   const tabset = state.tabsets.get(key)
+    //   return tabset?.name || 'unknown'
+    // }),
 
     tabsForUrl: (state): (url: string) => Tab[] => {
       return (url: string) => {
@@ -100,24 +76,12 @@ export const useTabsStore = defineStore('tabs', {
     },
 
     // Deprecated, use existingInTabset
-    nameExistsInContextTabset: (state) => {
-      return (searchName: string) => {
-        const existingNames = _.map([...state.tabsets.values()], ts => ts.name)
-        return _.find(existingNames, name => name === searchName?.trim())
-      }
-    },
-    existingInTabset: (state) => {
-      return (searchName: string, space: Space = null as unknown as Space): Tabset | undefined => {
-        const trustedName = searchName.replace(STRIP_CHARS_IN_USER_INPUT, '')
-        return _.find([...state.tabsets.values()] as Tabset[], (ts: Tabset) => {
-          if (space === null) {
-            return ts.name === trustedName?.trim()
-          } else {
-            return ts.name === trustedName?.trim() && ts.spaces.indexOf(space.id) >= 0
-          }
-        })
-      }
-    },
+    // nameExistsInContextTabset: (state) => {
+    //   return (searchName: string) => {
+    //     const existingNames = _.map([...state.tabsets.values()], ts => ts.name)
+    //     return _.find(existingNames, name => name === searchName?.trim())
+    //   }
+    // },
 
     getTabAndTabsetId: (state) => {
       return (tabId: string): TabAndTabsetId | undefined => {

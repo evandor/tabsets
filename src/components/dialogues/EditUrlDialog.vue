@@ -115,7 +115,7 @@ const extensionOptions = [
 ]
 
 watchEffect(() => {
-  newTabUrlExists.value = !!tabsStore.nameExistsInContextTabset(newTabUrl.value);
+  newTabUrlExists.value = !!useTabsetsStore().existingInTabset(newTabUrl.value);
 })
 
 watchEffect(() => {
@@ -146,7 +146,7 @@ const updateTab = () =>
 
 
 const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && newTabUrl.value !== props.tab.name && tabsStore.nameExistsInContextTabset(newTabUrl.value)) ?
+  return (!hideWarning.value && newTabUrl.value !== props.tab.name && useTabsetsStore().existingInTabset(newTabUrl.value)) ?
     "Tabset already exists" : ""
 }
 

@@ -22,7 +22,7 @@ export class CreateFolderCommand implements Command<string> {
 
   async execute(): Promise<ExecutionResult<string>> {
     try {
-      const tabset = useTabsetService().getTabset(this.tabsetId)!
+      const tabset = useTabsetsStore().getTabset(this.tabsetId)!
       if (!this.parentFolder) {
         const tabs = _.map(this.tabsToUse, (t: chrome.tabs.Tab) => new Tab(uid(), t))
         const newFolder = new Tabset(uid(), this.folderName, tabs)

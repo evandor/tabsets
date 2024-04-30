@@ -79,7 +79,7 @@ const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
 })
 
 const publishComment = () => {

@@ -91,6 +91,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -127,7 +128,7 @@ const detailOptions = [
 ]
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
 })
 
 watchEffect(() => {
@@ -153,7 +154,7 @@ const updateTabset = () =>
         new RenameTabsetCommand(props.tabsetId, newTabsetName.value, theColor.value, windowModel.value, detailOption.value))
 
 const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && newTabsetName.value !== props.tabsetName && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
+  return (!hideWarning.value && newTabsetName.value !== props.tabsetName && useTabsetsStore().existingInTabset(newTabsetName.value)) ?
       "Tabset already exists" : ""
 }
 

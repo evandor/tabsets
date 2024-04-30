@@ -237,7 +237,7 @@ const restoreInNewWindow = (tabsetId: string, windowName: string | undefined = u
   useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName))
 
 const startAutoSwitchingTab = (tabsetId: string) => {
-  const tabset = useTabsetService().getTabset(tabsetId)
+  const tabset = useTabsetsStore().getTabset(tabsetId)
   if (tabset && tabset.tabs?.length > 1 && tabset.tabs[0].url) {
     const tabs = tabset.tabs
     let tabIndex = 0
@@ -279,14 +279,14 @@ const unpin = (tabset: Tabset) =>
 const removePublicShare = (tabsetId: string, sharedId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId, sharedId))
 
 const openPublicShare = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
+  const ts = useTabsetsStore().getTabset(tabsetId)
   if (ts && ts.sharedId) {
     openURL(getPublicTabsetLink(ts))
   }
 }
 
 const copyPublicShareToClipboard = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
+  const ts = useTabsetsStore().getTabset(tabsetId)
   if (ts && ts.sharedId) {
     useCommandExecutor().executeFromUi(new CopyToClipboardCommand(getPublicTabsetLink(ts)))
   }

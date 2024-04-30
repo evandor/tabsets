@@ -9,7 +9,7 @@ class UndoCommand implements Command<TabsetStatus> {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    const tabset = useTabsetService().getTabset(this.tabsetId)
+    const tabset = useTabsetsStore().getTabset(this.tabsetId)
     if (tabset) {
       tabset.page = this.tabsetPage
       await useTabsetService().saveTabset(tabset)

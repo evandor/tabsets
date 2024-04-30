@@ -23,7 +23,7 @@ export class AddCommentCommand implements Command<any> {
       }
       console.log("pushing comment", comment)
       tab.comments.push(comment)
-      const tabset = useTabsetService().getTabset(tabData.tabsetId)
+      const tabset = useTabsetsStore().getTabset(tabData.tabsetId)
       if (tabset && tabset.sharedId) {
         tabset.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
         //MqttService.publishTabComment(tabset.sharedId, tabData.tab, comment)

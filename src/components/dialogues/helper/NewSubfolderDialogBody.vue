@@ -89,7 +89,7 @@ const checkIsValid = () => {
 }
 
 const doesNotExistYet = (val: string) => {
-  const existsInTabset = tabsStore.existingInTabset(val)
+  const existsInTabset = useTabsetsStore().existingInTabset(val)
   return !(existsInTabset && existsInTabset.status !== TabsetStatus.DELETED && existsInTabset.status !== TabsetStatus.ARCHIVED)
 }
 
