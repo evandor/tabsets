@@ -55,7 +55,6 @@ class IndexedDbTabsetsPersistence implements TabsetsPersistence {
   }
 
   async saveTabset(ts: Tabset): Promise<any> {
-    console.log("hier")
     return await this.db.put(this.STORE_IDENT, ts, ts.id)
   }
 

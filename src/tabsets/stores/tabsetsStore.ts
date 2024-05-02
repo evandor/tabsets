@@ -14,8 +14,7 @@ import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 /**
  * a pinia store for "Tabsets".
  *
- * Elements are persisted to the storage provided in the initialize function; the currently
- * selected space id is written to (and read from) local storage.
+ * Elements are persisted to the storage provided in the initialize function
  */
 
 export const useTabsetsStore = defineStore('tabsets', () => {
@@ -29,8 +28,6 @@ export const useTabsetsStore = defineStore('tabsets', () => {
      * a named list of tabsets managed by this extension.
      */
     const tabsets = ref<Map<string, Tabset>>(new Map<string, Tabset>())
-
-    //const tabsetsUpdated = ref(new Date().getTime())
 
     /**
      * the currently selected tabset's id if any. Storing the tabset itself leads to
@@ -48,6 +45,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       await storage.init()
       // TODO remove after version 0.4.12
       await storage.migrate()
+
       await storage.loadTabsets()
     }
 
@@ -278,38 +276,6 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       })
       return res
     })
-
-
-    // getTabset: (state) => {
-    //   return (tabsetId: string): Tabset | undefined => {
-    //     return state.tabsets.get(tabsetId) as Tabset
-    //   }
-    // },
-    // const mostAccessedTabs(state): Tab[] {
-    //   const allTabs: Tab[] =
-    //     _.orderBy(
-    //       _.filter(
-    //         _.flatMap(
-    //           _.filter(
-    //             _.map([...this.tabsets.values()] as Tabset[], (ts: Tabset) => ts),
-    //             (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
-    //           (ts: Tabset) => ts.tabs), (t: Tab) => t.activatedCount > 1),
-    //       (t: Tab) => t.activatedCount, ['desc'])
-    //   return allTabs.slice(0, 12)
-    // },
-
-    // currentTabsetName: (state): string | undefined => {
-    //   const candidates = _.filter([...state.tabsets.values()], ts => ts.id === state.currentTabsetId)
-    //   if (candidates.length > 0) {
-    //     return candidates[0].name
-    //   }
-    //   return undefined
-    // },
-    //
-    //   tabForUrlInSelectedTabset: (state): (url: string) => Tab | undefined => {
-    //   const tabs: Tab[] = state.tabsets.get(state.currentTabsetId)?.tabs as Tab[] || []
-    //   return (url: string) => _.find(tabs, t => t.url === url)
-    // },
 
     return {
       initialize,

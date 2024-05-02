@@ -331,10 +331,7 @@ export function useTabsetService() {
   const saveCurrentTabset = async (): Promise<any> => {
     const currentTabset = useTabsetsStore().getCurrentTabset as Tabset | undefined
     if (currentTabset) {
-      console.log("saving current tabset", currentTabset)
-      const res = await saveTabset(currentTabset)
-      console.log("saving current tabset done")
-      return res
+      return await saveTabset(currentTabset)
     }
     return Promise.reject("current tabset could not be found")
   }

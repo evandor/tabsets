@@ -104,7 +104,7 @@
 <script lang="ts" setup>
 
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, ref, UnwrapRef, watchEffect} from "vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -119,6 +119,7 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useI18n} from 'vue-i18n'
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {t} = useI18n()
 const router = useRouter()
