@@ -10,7 +10,8 @@ interface SpacesPersistence {
   addSpace(space: Space): Promise<any>
   deleteSpace(spaceId: string): void;
 
-  migrate(): any
+  // optional migration code for 0.4.11 to 0.5.0
+  migrate(): any;
 
   compactDb(): Promise<any>
 
