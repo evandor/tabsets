@@ -101,7 +101,7 @@
         </q-banner>
       </div>
 
-      <SidePanelTabsetsExpansionList :tabsets="tabsets"/>
+      <SidePanelTabsetsExpansionList :tabsets="tabsets as Tabset[]"/>
 
     </div>
 
@@ -132,13 +132,13 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
-import {LocalStorage, scroll} from "quasar";
+import {LocalStorage, scroll, uid} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -169,6 +169,7 @@ const router = useRouter()
 const tabsStore = useTabsStore()
 const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
+const randomKey = ref<string>(uid())
 
 const showSearchBox = ref(false)
 const user = ref<any>()
@@ -225,7 +226,20 @@ const getTabsetOrder =
     }
   ]
 
+function determineTabsets() {
+  const res = _.sortBy(
+    _.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
+      (ts: Tabset) => ts.status !== TabsetStatus.DELETED
+        && ts.status !== TabsetStatus.HIDDEN &&
+        ts.status !== TabsetStatus.ARCHIVED),
+    getTabsetOrder, ["asc"]);
+  console.log("determined tabsets", res)
+  return res
+}
+
 watchEffect(() => {
+
+//console.log("==== watch effect ====")
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
@@ -241,12 +255,7 @@ watchEffect(() => {
       }),
       getTabsetOrder, ["asc"])
   } else {
-    tabsets.value = _.sortBy(
-      _.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
-        (ts: Tabset) => ts.status !== TabsetStatus.DELETED
-          && ts.status !== TabsetStatus.HIDDEN &&
-          ts.status !== TabsetStatus.ARCHIVED),
-      getTabsetOrder, ["asc"])
+    tabsets.value = determineTabsets()
   }
 })
 

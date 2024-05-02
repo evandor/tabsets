@@ -311,9 +311,9 @@ export function useTabsetService() {
       if (rootTabset) {
 
         // TODO in progress: NEW APPROACH
-        await useTabsetsStore().saveTabset(rootTabset)
+        return await useTabsetsStore().saveTabset(rootTabset)
 
-        return db.saveTabset(rootTabset)
+        //return db.saveTabset(rootTabset)
       }
     }
     return Promise.reject("tabset id not set")
@@ -328,12 +328,13 @@ export function useTabsetService() {
   }
 
 
-  const saveCurrentTabset = (): Promise<any> => {
-    const tabsStore = useTabsStore()
+  const saveCurrentTabset = async (): Promise<any> => {
     const currentTabset = useTabsetsStore().getCurrentTabset as Tabset | undefined
     if (currentTabset) {
       console.log("saving current tabset", currentTabset)
-      return saveTabset(currentTabset)
+      const res = await saveTabset(currentTabset)
+      console.log("saving current tabset done")
+      return res
     }
     return Promise.reject("current tabset could not be found")
   }

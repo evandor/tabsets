@@ -30,7 +30,13 @@ export const useTabsetsStore = defineStore('tabsets', () => {
      */
     const tabsets = ref<Map<string, Tabset>>(new Map<string, Tabset>())
 
-    const currentTabset = ref<Tabset | undefined>(undefined)
+    //const tabsetsUpdated = ref(new Date().getTime())
+
+    /**
+     * the currently selected tabset's id if any. Storing the tabset itself leads to
+     * inconsistencies with the tabsets Map.
+     */
+    const currentTabsetId = ref<string | undefined>(undefined)
 
     /**
      * initialize store with
@@ -116,27 +122,19 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       // TODO markDuplicates(ts)
     }
 
-    function saveTabset(ts: Tabset) {
-      return storage.saveTabset(JSON.parse(JSON.stringify(ts)))
+    async function saveTabset(ts: Tabset) {
+      return await storage.saveTabset(JSON.parse(JSON.stringify(ts)))
     }
 
     function deleteTabset(tsId: string) {
       return storage.deleteTabset(tsId)
         .then((res) => {
-          if (currentTabset.value && currentTabset.value.id === tsId) {
-            currentTabset.value = undefined
+          if (currentTabsetId.value && currentTabsetId.value === tsId) {
+            currentTabsetId.value = undefined
           }
           return res
         })
     }
-
-
-    // deleteTabset(tabsetId: string) {
-    //   this.tabsets.delete(tabsetId)
-    //   if (this.currentTabsetId === tabsetId) {
-    //     this.currentTabsetId = null as unknown as string
-    //   }
-    // },
 
     function selectCurrentTabset(tabsetId: string): Tabset | undefined {
       const found = _.find([...tabsets.value.values()] as Tabset[], k => {
@@ -145,7 +143,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       })
       if (found) {
         // console.log("found", found)
-        currentTabset.value = found //this.tabsets.get(found) || new Tabset("", "", [])
+        currentTabsetId.value = found.id //this.tabsets.get(found) || new Tabset("", "", [])
 
         //ChromeApi.buildContextMenu("tabsStore")
         return found
@@ -156,20 +154,32 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     }
 
     function unsetCurrentTabset(): void {
-      currentTabset.value = undefined
+      currentTabsetId.value = undefined
     }
 
     // *** getters ***
 
-    const getCurrentTabs = computed(() => currentTabset.value ? currentTabset.value.tabs : [])
-    const getCurrentTabset = computed(() => currentTabset.value)
+    const getCurrentTabs = computed(() => {
+      if (currentTabsetId.value) {
+        return tabsets.value.get(currentTabsetId.value)?.tabs || []
+      }
+      return []
+    })
 
-    const currentTabsetName = computed(() => currentTabset.value ? currentTabset.value.name : undefined)
+    const getCurrentTabset = computed(() => {
+      return currentTabsetId.value ? tabsets.value.get(currentTabsetId.value) : undefined
+    })
+
+    const currentTabsetName = computed(() => {
+      return currentTabsetId.value ? tabsets.value.get(currentTabsetId.value)?.name : undefined
+    })
 
     const tabForUrlInSelectedTabset = computed(() => {
       return (url: string): Tab | undefined => {
-        const tabs: Tab[] = currentTabset.value ? currentTabset.value.tabs as Tab[] : []
-        return _.find(tabs, t => t.url === url)
+        if (currentTabsetId.value) {
+          const tabs: Tab[] = tabsets.value.get(currentTabsetId.value)?.tabs as Tab[] || []
+          return _.find(tabs, t => t.url === url)
+        }
       }
     })
 

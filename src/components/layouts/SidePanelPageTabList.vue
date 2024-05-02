@@ -30,6 +30,7 @@
       <SidePanelTabListHelper
         v-for="tab in tabs"
         :tab="tab as Tab"
+        :index="0"
         :type="props.type"
         :sorting="props.sorting"
         :preventDragAndDrop="true"
@@ -71,16 +72,22 @@ const props = defineProps({
 
 const tabs = ref<Tab[]>([])
 
-const handleDragAndDrop = (event: any, column: TabsetColumn) => {
+const handleDragAndDrop =  async (event: any, column: TabsetColumn) => {
   const {moved, added} = event
-  console.log("event!", event)
+  console.log("SidePanelPageTabList d&d event:", event)
   if (moved) {
     console.log(`moved event: '${moved.element.tab.id}' ${moved.oldIndex} -> ${moved.newIndex}`)
     const tabsInColumn = tabsForColumn()
     const movedElement: Tab = tabsInColumn[moved.oldIndex].tab
     const realNewIndex = tabsInColumn[moved.newIndex].index
     console.log(`             '${movedElement.id}' ${moved.oldIndex} -> ${realNewIndex}`)
-    TabsetService.moveTo(movedElement.id, realNewIndex, column)
+    await TabsetService.moveTo(movedElement.id, realNewIndex, column)
+    console.log("hier: ", props.tabset)
+    if (props.tabset) {
+      tabs.value = useTabsetService().tabsToShow(props.tabset)
+      console.log("tabs.value", _.map(tabs.value, t => t.url))
+    }
+
   }
   if (added) {
     console.log(`added event: '${added.element.tab.id}' ${added.oldIndex} -> ${added.newIndex}, ${column.title || column.id}`)
@@ -124,7 +131,7 @@ const getColumns = () => {
 }
 
 const tabsForColumn = (): IndexedTab[] =>
-    _.map(tabs.value as Tab[], (t: Tab, index: number) => new IndexedTab(index, t))
+  _.map(tabs.value as Tab[], (t: Tab, index: number) => new IndexedTab(index, t))
 
 
 </script>

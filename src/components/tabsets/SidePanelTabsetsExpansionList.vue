@@ -262,6 +262,8 @@ const props = defineProps({
   tabsets: {type: Array as PropType<Array<Tabset>>, required: true}
 })
 
+const emits = defineEmits(['re-render'])
+
 const {setVerticalScrollPosition} = scroll
 const {inBexMode, sanitize} = useUtils()
 const {handleSuccess, handleError} = useNotificationHandler()
@@ -481,10 +483,10 @@ const startDrag = (evt: any, folder: Tabset) => {
   console.log("evt.dataTransfer.getData('text/plain')", evt.dataTransfer.getData('text/plain'))
 }
 const enterDrag = (evt: any, folder: Tabset) => {
-  //console.log("enter drag", evt, folder)
+  console.log("enter drag", evt, folder)
 }
 const overDrag = (event: any, folder: Tabset) => {
-  //console.log("enter drag", event, folder)
+  console.log("enter drag", event, folder)
   event.preventDefault();
 }
 const endDrag = (evt: any, folder: Tabset) => {
