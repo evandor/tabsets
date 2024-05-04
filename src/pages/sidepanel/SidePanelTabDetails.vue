@@ -353,7 +353,7 @@ import {ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/services/Utils";
 import NavigationService from "src/services/NavigationService";
@@ -366,13 +366,15 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import MHtmlPage from "pages/MHtmlPage.vue";
 import MHtmlViewHelper from "pages/sidepanel/helper/MHtmlViewHelper.vue";
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import {SavePngCommand} from "src/domain/tabs/SavePng";
 import {SavePdfCommand} from "src/domain/tabs/SavePdf";
 import {useAuthStore} from "stores/authStore";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 
@@ -400,7 +402,7 @@ const tags = ref<string[]>([])
 watchEffect(() => {
   const tabId = route.params.tabId as unknown as string
   console.log("tabid", tabId)
-  const tabObject = useTabsStore().getTabAndTabsetId(tabId)
+  const tabObject = useTabsetsStore().getTabAndTabsetId(tabId)
       //.then((tabObject: TabAndTabsetId | undefined) => {
         if (tabObject) {
           tab.value = tabObject.tab
@@ -420,10 +422,10 @@ watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigi
 
 watchEffect(() => {
   if (tab.value) {
-    TabsetService.getThumbnailFor(tab.value)
+    useThumbnailsService().getThumbnailFor(tab.value.url)
         .then(data => {
           if (data) {
-            thumbnail.value = data.thumbnail
+            thumbnail.value = data
           } else {
             thumbnail.value = ''
           }

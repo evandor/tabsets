@@ -1,12 +1,11 @@
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
-import {HTMLSelection, Tab} from "src/models/Tab";
+import {HTMLSelection, Tab} from "src/tabsets/models/Tab";
 import {uid, useQuasar} from "quasar";
 import throttledQueue from 'throttled-queue';
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useSettingsStore} from "src/stores/settingsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
@@ -21,15 +20,16 @@ import "rangy/lib/rangy-serializer";
 import {useAuthStore} from "stores/authStore";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {
-  saveCurrentTabset,
   saveTabset,
   saveText,
   saveMetaLinksFor,
   saveLinksFor,
-  addToTabsetId,
-  saveThumbnailFor
+  addToTabsetId
 } = useTabsetService()
 
 const {sanitize, sendMsg, inBexMode} = useUtils()
@@ -39,13 +39,13 @@ async function setCurrentTab() {
 
   //console.debug("setting current tab", tabs)
   if (tabs && tabs[0]) {
-    useTabsStore().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
+    useTabsStore2().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
   } else {
     // Seems to be necessary when creating a new chrome group
     const tabs2 = await chrome.tabs.query({active: true})
     //console.log("setting current tab II", tabs2)
     if (tabs2 && tabs2[0]) {
-      useTabsStore().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
+      useTabsStore2().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
     }
   }
 }
@@ -227,8 +227,7 @@ class ChromeListeners {
 
   clearWorking() {
     if (this.inProgress) {
-      const tabsStore = useTabsStore()
-      tabsStore.loadTabs('onProgressStopped')
+      useTabsStore2().loadTabs('onProgressStopped')
     }
     this.inProgress = false
   }
@@ -255,7 +254,7 @@ class ChromeListeners {
     const tabsStore = useTabsStore()
 
     let foundSession = false
-    _.forEach([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
+    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
       if (ts.type === TabsetType.SESSION) {
         foundSession = true
         console.debug("pushing to", ts.id, tab)
@@ -264,7 +263,7 @@ class ChromeListeners {
     })
     if (!foundSession) {
       console.debug("pushing to pending", tab)
-      tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
+      //tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
     }
   }
 
@@ -303,12 +302,12 @@ class ChromeListeners {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
 
       // handle pending Tabset
-      this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
-      this.handleUpdateInjectScripts(tabsStore.pendingTabset as Tabset, info, chromeTab)
+      //this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
+      this.handleUpdateInjectScripts(info, chromeTab)
 
       // handle existing tabs
       if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-        const matchingTabs = useTabsStore().tabsForUrl(chromeTab.url || '')
+        const matchingTabs = useTabsetsStore().tabsForUrl(chromeTab.url || '')
         for (const t of matchingTabs) {
           // we care only about actually setting a group, not about removal
           if (info.groupId && info.groupId >= 0) {
@@ -316,7 +315,7 @@ class ChromeListeners {
             t.groupId = info.groupId
             t.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
             t.updated = new Date().getTime()
-            const tabset = tabsStore.tabsetFor(t.id)
+            const tabset = useTabsetsStore().tabsetFor(t.id)
             if (tabset) {
               await useTabsetService().saveTabset(tabset)
             }
@@ -326,7 +325,7 @@ class ChromeListeners {
 
       // handle sessions
       let foundSession = false
-      _.forEach([...tabsStore.tabsets.values()] as Tabset[], (ts: Tabset) => {
+      _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
         if (ts.type === TabsetType.SESSION) {
           foundSession = true
           this.handleUpdate(ts, chromeTab)
@@ -394,7 +393,7 @@ class ChromeListeners {
     }
   }
 
-  private handleUpdateInjectScripts(tabset: Tabset, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
+  private handleUpdateInjectScripts(info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
     // TODO ignoring urls !?
     // if (this.ignoreUrl(tab, info)) {
     //   return
@@ -411,7 +410,7 @@ class ChromeListeners {
     }
 
     if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-      const tabForUrl = useTabsStore().tabForUrlInSelectedTabset(tab.url || '')
+      const tabForUrl = useTabsetsStore().tabForUrlInSelectedTabset(tab.url || '')
       console.log("about to run annotationScript...", tabForUrl)
       if (tabForUrl) {
         chrome.scripting.executeScript({
@@ -472,9 +471,8 @@ class ChromeListeners {
   }
 
   onReplaced(n1: number, n2: number) {
-    const tabsStore = useTabsStore()
     console.log(`onReplaced: tab ${n1} replaced with ${n2}`)
-    tabsStore.loadTabs('onReplaced');
+    useTabsStore2().loadTabs('onReplaced');
   }
 
   async onActivated(info: chrome.tabs.TabActiveInfo) {
@@ -489,8 +487,8 @@ class ChromeListeners {
         console.warn("got runtime error:" + chrome.runtime.lastError);
       }
       const url = tab.url
-      _.forEach([...tabsStore.tabsets.keys()], key => {
-        const ts = tabsStore.tabsets.get(key)
+      _.forEach([...useTabsetsStore().tabsets.keys()], key => {
+        const ts = useTabsetsStore().tabsets.get(key)
         if (ts && ts.status !== TabsetStatus.DELETED) {
           // increasing hit count
           const hits = _.filter(ts.tabs, (t: Tab) => t.url === url) as Tab[]
@@ -511,9 +509,8 @@ class ChromeListeners {
 
   onMoved(number: number, info: chrome.tabs.TabMoveInfo) {
     this.eventTriggered()
-    const tabsStore = useTabsStore()
     console.debug(`onMoved: tab ${number} moved: ${JSON.stringify(info)}`)
-    tabsStore.loadTabs('onMoved');
+    useTabsStore2().loadTabs('onMoved');
   }
 
   onAttached(number: number, info: chrome.tabs.TabAttachInfo) {
@@ -538,8 +535,7 @@ class ChromeListeners {
     }
     console.debug(" <<< got message in ChromeListeners", request)
     if (request.msg === 'captureThumbnail') {
-      const screenShotWindow = useWindowsStore().screenshotWindow
-      this.handleCapture(sender, screenShotWindow, sendResponse)
+      // moved to thumbnailsService
     } else if (request.msg === 'html2text') {
       this.handleHtml2Text(request, sender, sendResponse)
     } else if (request.msg === 'html2links') {
@@ -702,7 +698,7 @@ class ChromeListeners {
     console.log("handleCaptureClipping", request, sender, request.tabsetId)
 
     const blob = await this.capture(request)
-    const currentTS = useTabsetService().getCurrentTabset()
+    const currentTS = useTabsetsStore().getCurrentTabset
 
     if (sender.tab && currentTS) {
       console.log("blob", blob)
@@ -719,7 +715,7 @@ class ChromeListeners {
 
   private async handleCaptureAnnotation(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     console.log("handleCaptureAnnotation", request, sender, request.tabsetId)
-    const currentTS = useTabsetService().getCurrentTabset()
+    const currentTS = useTabsetsStore().getCurrentTabset
     if (sender.tab && currentTS) {
       const url = sender.tab.url || ''
       const t = _.find(currentTS.tabs, t => t.url === url)
@@ -739,7 +735,7 @@ class ChromeListeners {
   }
 
   private async handleMessageWebsiteImage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    const currentTS = useTabsetService().getCurrentTabset()
+    const currentTS = useTabsetsStore().getCurrentTabset
     if (sender.tab && currentTS) {
       console.log("request", request)
       const newTab = new Tab(uid(), sender.tab)
@@ -750,97 +746,11 @@ class ChromeListeners {
     sendResponse({websiteImg: 'done'});
   }
 
-  private handleCapture(sender: chrome.runtime.MessageSender, windowId: number, sendResponse: any) {
-
-    if (!this.thumbnailsActive) {
-      console.log("capturing thumbnail: not active")
-      return
-    }
-
-    this.throttleOnePerSecond(async () => {
-      console.debug("capturing tab...")
-      const allUrlsPermission = usePermissionsStore().hasAllOrigins()
-      //chrome.permissions.getAll((res) => console.log("res", res))
-      if (allUrlsPermission) {
-        setTimeout(async () => {
-          const ctx = this
-          if (windowId != null) {
-            console.log("capturing thumbnail", windowId)
-            chrome.windows.get(windowId, {}, (w: chrome.windows.Window) => {
-              if (chrome.runtime.lastError) {
-                console.log("got error", chrome.runtime.lastError)
-                useWindowsStore().screenshotWindow = null as unknown as number
-                chrome.tabs.captureVisibleTab(
-                  {},
-                  function (dataUrl) {
-                    ctx.handleCaptureCallback(dataUrl, sender, sendResponse);
-                  }
-                );
-              } else {
-                chrome.tabs.captureVisibleTab(
-                  windowId,
-                  {},
-                  function (dataUrl) {
-                    ctx.handleCaptureCallback(dataUrl, sender, sendResponse);
-                  }
-                );
-              }
-            })
-          } else {
-            console.log("capturing thumbnail for window", windowId)
-            chrome.tabs.captureVisibleTab(
-              {},
-              function (dataUrl) {
-                ctx.handleCaptureCallback(dataUrl, sender, sendResponse);
-              }
-            );
-          }
-        }, 1000)
-      }
-
-    })
-
-  }
-
-  private handleCaptureCallback(dataUrl: string, sender: chrome.runtime.MessageSender, sendResponse: any) {
-    if (chrome.runtime.lastError) {
-      console.log("got error", chrome.runtime.lastError)
-      return
-    }
-    if (dataUrl === undefined) {
-      return
-    }
-    //console.log("capturing thumbnail for ", sender.tab?.id, Math.round(dataUrl.length / 1024) + "kB")
-
-    var img = new Image();
-
-    // https://stackoverflow.com/questions/19262141/resize-image-with-javascript-canvas-smoothly
-    img.onload = function () {
-
-      // set size proportional to image
-      //canvas.height = canvas.width * (img.height / img.width);
-
-      var oc = document.createElement('canvas')
-      var octx = oc.getContext('2d')
-
-      let quality = useSettingsStore().thumbnailQuality as number
-      oc.width = Math.round(img.width * 0.5 * quality / 100)
-      oc.height = Math.round(img.height * 0.5 * quality / 100)
-      // @ts-ignore
-      octx.drawImage(img, 0, 0, oc.width, oc.height);
-
-      //console.log(`capturing ${oc.width}x${oc.height} thumbnail for ${sender.tab?.id}, ${Math.round(oc.toDataURL().length / 1024)}kB`)
-      saveThumbnailFor(sender.tab, oc.toDataURL())
-      sendResponse({imgSrc: dataUrl});
-    }
-    img.src = dataUrl//"https://i.imgur.com/SHo6Fub.jpg";
-  }
-
   private addToTabset(currentTSId: string, newTab: Tab) {
     console.log("addToTabset", currentTSId, newTab)
     addToTabsetId(currentTSId, newTab)
       .then(() => {
-        const ts = useTabsetService().getTabset(currentTSId)
+        const ts = useTabsetsStore().getTabset(currentTSId)
         if (ts) {
           useTabsetService().saveTabset(ts)
         }

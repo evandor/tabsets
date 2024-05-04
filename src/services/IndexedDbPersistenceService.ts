@@ -3,10 +3,8 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {Space} from "src/spaces/models/Space";
-import {Tab} from "src/models/Tab";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
 import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
 import {uid} from "quasar";
@@ -15,12 +13,10 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/model
 import {useUiStore} from "src/stores/uiStore";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {Window} from "src/windows/models/Window";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
-import {Entity} from "src/models/Entity";
-import {Api} from "src/models/Api";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
@@ -59,7 +55,7 @@ class IndexedDbPersistenceService implements PersistenceService {
         }
         delete r['groups' as keyof object]
         //console.log("r", ['groups' as keyof object])
-        tabsStore.addTabset(r)
+        useTabsetsStore().addTabset(r)
       }))
   }
 
@@ -67,7 +63,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     const ts = await this.db.get('tabsets', tabsetId) as Tabset | undefined
     if (ts) {
       console.log("reloaded tabset", ts.id, ts.tabs.length)
-      useTabsStore().tabsets.set(ts.id, ts)
+      useTabsetsStore().tabsets.set(ts.id, ts)
     } else {
       console.warn("could not reload tabset with id", tabsetId)
     }
@@ -79,54 +75,6 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   deleteTabset(tabsetId: string): Promise<void> {
     return this.db.delete('tabsets', tabsetId)
-  }
-
-  async updateContent(url: string): Promise<object> {
-    const encodedUrl = btoa(url)
-
-    const objectStore = this.db.transaction("content", "readwrite").objectStore("content");
-    let cursor = await objectStore.openCursor()
-    let data = null
-    while (cursor) {
-      if (cursor.value.id === encodedUrl) {
-        data = cursor.value
-        data['expires'] = 0
-        objectStore.put(data, cursor.key)
-      }
-      cursor = await cursor.continue();
-    }
-    return Promise.resolve(data)
-  }
-
-  async updateThumbnail(url: string): Promise<void> {
-    const encodedUrl = btoa(url)
-    const tnObjectStore = this.db.transaction("thumbnails", "readwrite").objectStore("thumbnails");
-    let tnCursor = await tnObjectStore.openCursor()
-    while (tnCursor) {
-      //console.log("cursor", tnCursor.value, encodedUrl)
-      if (tnCursor.value.expires !== 0 && tnCursor.key === encodedUrl) {
-        const data = tnCursor.value
-        tnObjectStore.put({
-            expires: 0,
-            thumbnail: data.thumbnail
-          },
-          tnCursor.key)
-      }
-      tnCursor = await tnCursor.continue();
-    }
-  }
-
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
-    if (tab.url) {
-      const encodedTabUrl = btoa(tab.url)
-      return this.db.put('thumbnails', {
-        expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
-        thumbnail: thumbnail
-      }, encodedTabUrl)
-        .then(() => console.debug(new Tab(uid(), tab), `saved thumbnail for url ${tab.url}, ${Math.round(thumbnail.length / 1024)}kB`))
-        .catch(err => console.error(new Tab(uid(), tab), err))
-    }
-    return Promise.reject("no url provided or db not ready")
   }
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
@@ -195,51 +143,9 @@ class IndexedDbPersistenceService implements PersistenceService {
       .catch(err => console.log("err", err))
   }
 
-  getThumbnail(url: string): Promise<string> {
-    const encodedUrl = btoa(url)
-    return this.db.get('thumbnails', encodedUrl)
-  }
-
   getRequest(url: string): Promise<string> {
     const encodedUrl = btoa(url)
     return this.db.get('requests', encodedUrl)
-  }
-
-  getContent(url: string): Promise<object> {
-    const encodedUrl = btoa(url)
-    if (this.db) {
-      return this.db.get('content', encodedUrl)
-    }
-    return Promise.reject("db not ready (yet)")
-  }
-
-  deleteThumbnail(url: string): Promise<void> {
-    return this.db.delete('thumbnails', btoa(url))
-  }
-
-  deleteContent(url: string): Promise<void> {
-    return this.db.delete('content', btoa(url))
-  }
-
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<IDBValidKey> {
-    if (tab.url) {
-      const encodedTabUrl = btoa(tab.url)
-      return this.db.put('content', {
-        id: encodedTabUrl,
-        expires: new Date().getTime() + 1000 * 60 * EXPIRE_DATA_PERIOD_IN_MINUTES,
-        title,
-        url: tab.url,
-        content: text,
-        metas: metas,
-        tabsets: tabsetIds,
-        favIconUrl: tab.favIconUrl
-      }, encodedTabUrl)
-        .then((res) => {
-          // console.info(new Tab(uid(), tab), "saved content for url " + tab.url)
-          return res
-        })
-    }
-    return Promise.reject("tab.url missing")
   }
 
   getMetaLinks(url: string): Promise<object> {
@@ -264,9 +170,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  async cleanUpThumbnails(): Promise<void> {
-    return this.cleanUpExpired("thumbnails")
-  }
 
   async cleanUpRequests(): Promise<void> {
     return this.cleanUpExpired('requests')
@@ -298,35 +201,6 @@ class IndexedDbPersistenceService implements PersistenceService {
       }
       cursor = await cursor.continue();
     }
-  }
-
-  async cleanUpContent(): Promise<SearchDoc[]> {
-    const contentObjectStore = this.db.transaction("content", "readwrite").objectStore("content");
-    let contentCursor = await contentObjectStore.openCursor()
-    let result: SearchDoc[] = []
-    while (contentCursor) {
-      if (contentCursor.value.expires !== 0) {
-        const exists: boolean = this.urlExistsInATabset(atob(contentCursor.key.toString()))
-        if (exists) {
-          const data = contentCursor.value
-          data.expires = 0
-          contentObjectStore.put(data, contentCursor.key)
-          result.push(new SearchDoc(
-            data.id, "", data.title, data.url, data.description, "", data.content, [], '', data.favIconUrl
-          ))
-        } else {
-          if (contentCursor.value.expires < new Date().getTime()) {
-            contentObjectStore.delete(contentCursor.key)
-          }
-        }
-      }
-      contentCursor = await contentCursor.continue();
-    }
-    return Promise.resolve(result)
-  }
-
-  getContents(): Promise<any[]> {
-    return this.db.getAll('content')
   }
 
   async saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {
@@ -418,16 +292,16 @@ class IndexedDbPersistenceService implements PersistenceService {
                   console.log("creating db tabs")
                   db.createObjectStore('tabs');
                 }*/
-        if (!db.objectStoreNames.contains('thumbnails')) {
-          console.log("creating db thumbnails")
-          let store = db.createObjectStore('thumbnails');
-          store.createIndex("expires", "expires", {unique: false});
-        }
-        if (!db.objectStoreNames.contains('content')) {
-          console.log("creating db content")
-          let store = db.createObjectStore('content');
-          store.createIndex("expires", "expires", {unique: false});
-        }
+        // if (!db.objectStoreNames.contains('thumbnails')) {
+        //   console.log("creating db thumbnails")
+        //   let store = db.createObjectStore('thumbnails');
+        //   store.createIndex("expires", "expires", {unique: false});
+        // }
+        // if (!db.objectStoreNames.contains('content')) {
+        //   console.log("creating db content")
+        //   let store = db.createObjectStore('content');
+        //   store.createIndex("expires", "expires", {unique: false});
+        // }
         if (!db.objectStoreNames.contains('spaces')) {
           console.log("creating db spaces")
           db.createObjectStore('spaces');
@@ -488,7 +362,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   private urlExistsInATabset(url: string): boolean {
-    for (let ts of [...useTabsStore().tabsets.values()]) {
+    for (let ts of [...useTabsetsStore().tabsets.values()]) {
       if (_.find(ts.tabs, t => t.url === url)) {
         return true;
       }
@@ -546,37 +420,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     this.db.put('accounts', normalizedAccount, normalizedAccount.id)
   }
 
-  saveEntity(entity: Entity): void {
-    this.db.put('entities', entity, entity.id)
-  }
-
-  deleteEntity(entityId: string): Promise<void> {
-    return this.db.delete('entities', entityId)
-  }
-
-  async getEntities(): Promise<Entity[]> {
-    return await this.db.getAll('entities')
-  }
-
-  async findEntityById(id: string) {
-    return await this.db.get('entities', id)
-  }
-
-  saveApi(api: Api): void {
-    this.db.put('apis', api, api.id)
-  }
-
-  deleteApi(apiId: string): Promise<void> {
-    return this.db.delete('apis', apiId)
-  }
-
-  async getApis(): Promise<Api[]> {
-    return await this.db.getAll('apis')
-  }
-
-  async findApiById(id: string) {
-    return await this.db.get('apis', id)
-  }
 }
 
 export default new IndexedDbPersistenceService()

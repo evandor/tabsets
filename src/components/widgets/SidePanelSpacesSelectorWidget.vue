@@ -19,7 +19,7 @@ import NewSpaceDialog from "src/spaces/dialogues/NewSpaceDialog.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash";
 import {Space} from "src/spaces/models/Space";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 
 const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
@@ -30,7 +30,7 @@ const spaces = ref<object>(null as unknown as object)
 const spacesOptions = ref<object[]>([])
 
 watchEffect(() => {
-  if (useTabsStore().tabsets) {
+  if (useTabsetsStore().tabsets) {
     spacesOptions.value = _.map([...spacesStore.spaces.keys()], (key: string) => {
       const label = spacesStore.spaces.get(key)?.label || 'undef'
       return {id: key, label: label}

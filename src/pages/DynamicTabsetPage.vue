@@ -29,14 +29,14 @@
                       size="16px"/>
               <q-icon v-else size="16px"/>
 
-              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
+              <q-icon v-if="useTabsetsStore().tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
                       @click="markAsFavorite()"
                       class="q-ml-sm cursor-pointer"
                       color="warning" name="o_grade" size="20px">
                 <q-tooltip class="tooltip">Mark this tabset as a favorite one</q-tooltip>
               </q-icon>
 
-              <q-icon v-if="tabsStore.tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
+              <q-icon v-if="useTabsetsStore().tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
                       @click="markAsDefault()"
                       class="q-ml-sm cursor-pointer"
                       color="warning" name="grade" size="20px">
@@ -177,21 +177,22 @@ import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
-import {Tab} from "src/models/Tab";
-import RestoreTabsetDialog from "components/dialogues/RestoreTabsetDialog.vue";
+import {Tab} from "src/tabsets/models/Tab";
+import RestoreTabsetDialog from "src/tabsets/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import TabList from "components/layouts/TabList.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
-import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
-import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
+import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
+import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
+import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
+import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
 import {useUtils} from "src/services/Utils";
 import {api} from "boot/axios";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useSettingsStore} from "src/stores/settingsStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -289,7 +290,7 @@ function getOrder() {
 const update = (tabsetIdent: object) => {
   console.log("selected tabset now: ", tabsetIdent)
   tabsetname.value = tabsetIdent['label' as keyof object]
-  tabsStore.selectCurrentTabset(tabsetIdent['value' as keyof object])
+  useTabsetsStore().selectCurrentTabset(tabsetIdent['value' as keyof object])
 }
 
 const formatLength = (length: number, singular: string, plural: string) => {
@@ -302,15 +303,15 @@ const updateSelectionCount = () => {
   selectedCount.value = TabsetService.getSelectedPendingTabs().length
 }
 
-const filteredTabs = () => {
-  const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => true)
-  if (filter.value && filter.value.trim() !== '') {
-    return _.filter(noDupliatesTabs, (t: Tab) =>
-      (t?.url && t?.url.indexOf(filter.value) >= 0) ||
-      (t?.title && t?.title.indexOf(filter.value) >= 0))
-  }
-  return noDupliatesTabs
-}
+// const filteredTabs = () => {
+//   const noDupliatesTabs = _.filter(tabsStore.pendingTabset?.tabs, (t: Tab) => true)
+//   if (filter.value && filter.value.trim() !== '') {
+//     return _.filter(noDupliatesTabs, (t: Tab) =>
+//       (t?.url && t?.url.indexOf(filter.value) >= 0) ||
+//       (t?.title && t?.title.indexOf(filter.value) >= 0))
+//   }
+//   return noDupliatesTabs
+// }
 
 const restoreDialog = () => $q.dialog({component: RestoreTabsetDialog})
 const addUrlDialog = () => $q.dialog({component: AddUrlDialog})

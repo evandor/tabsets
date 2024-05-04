@@ -47,6 +47,10 @@ export const useSpacesStore = defineStore('spaces', () => {
     console.debug(" ...initializing spacesStore", ps.getServiceName())
     storage = ps
     await storage.init()
+
+    // TODO remove after version 0.4.12
+    await storage.migrate()
+
     await storage.loadSpaces()
   }
 

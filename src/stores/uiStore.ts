@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash"
 import {LocalStorage, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
@@ -13,6 +13,7 @@ import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
 } from "boot/constants";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
@@ -47,7 +48,7 @@ export class SidePanelView {
     () => usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS));
 
   static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist',
-    () => usePermissionsStore().hasFeature(FeatureIdent.TAGS) && useTabsStore().allTabsCount > 0);
+    () => usePermissionsStore().hasFeature(FeatureIdent.TAGS) && useTabsetsStore().allTabsCount > 0);
 
   static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
 
@@ -77,13 +78,6 @@ export class SidePanelView {
   static readonly MESSAGES = new SidePanelView('messages', '/sidepanel/messages')
 
   static readonly TABS_AS_TREE = new SidePanelView('tabsAsTree', '/sidepanel/tabsAsTree')
-
-  static readonly ENTITY_MANAGER = new SidePanelView('entityManager', '/sidepanel/entities',
-    () => usePermissionsStore().hasFeature(FeatureIdent.ENTITY_MANAGER))
-
-  static readonly API_MANAGER = new SidePanelView('apiManager', '/sidepanel/apis',
-    () => usePermissionsStore().hasFeature(FeatureIdent.API_MANAGER))
-
 
   private constructor(
     public readonly ident: string,
@@ -462,10 +456,6 @@ export const useUiStore = defineStore('ui', () => {
     leftDrawerOpen.value = !leftDrawerOpen.value
   }
 
-  function hideCurrentTabBox(b: boolean) {
-    showCurrentTabBox.value = !b
-  }
-
   function toggleToolbarFilter() {
     toolbarFilter.value = !toolbarFilter.value
     if (!toolbarFilter.value) {
@@ -593,7 +583,6 @@ export const useUiStore = defineStore('ui', () => {
     sidePanelActiveViewIs,
     toggleLeftDrawer,
     tabsetsExpanded,
-    hideCurrentTabBox,
     showCurrentTabBox,
     toolbarFilter,
     toggleToolbarFilter,

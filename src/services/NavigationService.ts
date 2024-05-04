@@ -11,6 +11,8 @@ import {Suggestion, SuggestionType} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {handleSuccess} = useNotificationHandler()
 
@@ -63,13 +65,13 @@ class NavigationService {
     if (process.env.MODE === "bex") {
       for (const url of withUrls) {
         // get all tabs with this url
-        const tabsForUrl = useTabsStore().tabsForUrl(url) || []
+        const tabsForUrl = useTabsetsStore().tabsForUrl(url) || []
         tabsForUrl.forEach(t => {
           if (t.httpInfo) {
             t.httpError = ''
             t.httpInfo = ''
 
-            const ts = useTabsStore().tabsetFor(t.id)
+            const ts = useTabsetsStore().tabsetFor(t.id)
             if (ts) {
               //console.log("saving tabset ", ts)
               useTabsetService().saveTabset(ts)
@@ -164,16 +166,16 @@ class NavigationService {
     if (forceCurrent) {
       return 'current'
     } else if (urls.length === 1) {
-      const tabs = useTabsStore().tabsForUrl(urls[0])
+      const tabs = useTabsetsStore().tabsForUrl(urls[0])
       if (tabs.length === 1) {
-        const tabAndTabsetId = useTabsStore().getTabAndTabsetId(tabs[0].id)
+        const tabAndTabsetId = useTabsetsStore().getTabAndTabsetId(tabs[0].id)
         if (tabAndTabsetId) {
-          return useTabsetService().getTabset(tabAndTabsetId.tabsetId)?.window || 'current'
+          return useTabsetsStore().getTabset(tabAndTabsetId.tabsetId)?.window || 'current'
         }
       }
-      return useTabsStore().getCurrentTabset?.window || 'current';
+      return useTabsetsStore().getCurrentTabset?.window || 'current';
     }
-    return useTabsStore().getCurrentTabset?.window || 'current';
+    return useTabsetsStore().getCurrentTabset?.window || 'current';
   }
 
   private handleGroup(group: string | undefined, useWindowId: number, r: chrome.tabs.Tab) {
@@ -232,19 +234,19 @@ class NavigationService {
   }
 
   backOneTab() {
-    const [tabId, url] = useTabsStore().tabHistoryBack()
+    const [tabId, url] = useTabsStore2().tabHistoryBack()
     this.openTab(tabId)
       .catch((err) => {
-        useTabsStore().chromeTabsHistoryNavigating = false
+        useTabsStore2().chromeTabsHistoryNavigating = false
         this.openOrCreateTab([url])
       })
   }
 
   forwardOneTab() {
-    const [tabId, url] = useTabsStore().tabHistoryForward()
+    const [tabId, url] = useTabsStore2().tabHistoryForward()
     this.openTab(tabId)
       .catch((err) => {
-        useTabsStore().chromeTabsHistoryNavigating = false
+        useTabsStore2().chromeTabsHistoryNavigating = false
         this.openOrCreateTab([url])
       })
   }

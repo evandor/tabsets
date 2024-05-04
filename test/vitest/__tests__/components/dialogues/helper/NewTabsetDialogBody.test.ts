@@ -5,10 +5,10 @@ import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useRouter} from "vue-router";
 import {Dialog, Notify} from "quasar";
-import NewTabsetDialogBody from "components/dialogues/helper/NewTabsetDialogBody.vue";
+import NewTabsetDialogBody from "src/tabsets/dialogues/helper/NewTabsetDialogBody.vue";
 import {useDB} from "src/services/usePersistenceService";
 import {useTabsStore} from "stores/tabsStore";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -85,7 +85,7 @@ describe('NewTabsetDialog', () => {
     await input.setValue("Tabset with Space ID")
     await wrapper.find("form").trigger("submit.prevent")
     await db.loadTabsets()
-    const tabsets = useTabsStore().tabsets
+    const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(1)
     // TODO
     // expect(tabsets.values().next().value.spaceId).toBe("17")
@@ -95,7 +95,7 @@ describe('NewTabsetDialog', () => {
 
 async function checkTabsetNamesInDb(db: PersistenceService, tabsetNames: string[]) {
   await db.loadTabsets()
-  const tabsets = useTabsStore().tabsets
+  const tabsets = useTabsetsStore().tabsets
   expect(tabsets.size).toBe(tabsetNames.length)
   let index = 0
   for (let [key, value] of tabsets) {

@@ -49,13 +49,13 @@
 
 <script setup lang="ts">
 
-import {Tab} from "src/models/Tab"
+import {Tab} from "src/tabsets/models/Tab"
 import NavigationService from "src/services/NavigationService"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
+import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils"
@@ -81,7 +81,7 @@ const alreadyInCurrentTabset = ref(false)
 
 const closeTab = (tab: chrome.tabs.Tab) => {
   NavigationService.closeChromeTab(tab)
-  tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== tab.url)
+  // tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== tab.url)
 }
 
 const self = chrome.runtime?.getURL("")

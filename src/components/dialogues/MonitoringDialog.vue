@@ -80,7 +80,7 @@ import {QForm, useDialogPluginComponent} from "quasar";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {MonitoringType} from "src/models/Monitor";
 import {UpdateMonitoringCommand} from "src/domain/monitoring/UpdateMonitoringCommand";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import DialogButton from "components/buttons/DialogButton.vue";

@@ -396,8 +396,9 @@ import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
-import {Tab} from "src/models/Tab";
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import {Tab} from "src/tabsets/models/Tab";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const tabsStore = useTabsStore()
 const notificationStore = useNotificationsStore()
@@ -437,7 +438,7 @@ onMounted(() => {
 watchEffect(() => {
   const tabId = route.params.id.toString() || ''
   console.log("got tabId", tabId)
-  const tabInfo = useTabsStore().getTabAndTabsetId(tabId)
+  const tabInfo = useTabsetsStore().getTabAndTabsetId(tabId)
   //.then((tabInfo: TabAndTabsetId | undefined) => {
   if (tabInfo) {
     console.log("got tab", tabInfo.tab)

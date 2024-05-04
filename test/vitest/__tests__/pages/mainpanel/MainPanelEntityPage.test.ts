@@ -60,7 +60,7 @@ describe('MainPanelEntityPage', () => {
 
   it('should be mounted', async () => {
     await IndexedDbPersistenceService.init("db")
-    useTabsStore().setCurrentChromeTab(skysailChromeTab)
+    useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     const wrapper = mount(MainPanelEntityPage);
     console.log("hier", wrapper.html())
     expect(wrapper.text()).toContain("Entity");

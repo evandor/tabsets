@@ -55,10 +55,11 @@ import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import TabList from "components/layouts/TabList.vue";
 import Analytics from "src/utils/google-analytics"
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute();
 const tabsStore = useTabsStore()
@@ -85,7 +86,7 @@ watchEffect(() => {
       _.filter(
         _.flatMap(
           _.filter(
-            _.map([...tabsStore.tabsets.values()],
+            _.map([...useTabsetsStore().tabsets.values()],
               (ts: Tabset) => ts),
             (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
           (ts: Tabset) => ts.tabs), (t: Tab) => true),

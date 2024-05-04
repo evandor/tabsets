@@ -117,12 +117,12 @@
 import {PropType, ref} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {Notify, useQuasar} from "quasar";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
 import NavigationService from "src/services/NavigationService";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
@@ -138,6 +138,7 @@ import _ from "lodash"
 import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -156,7 +157,7 @@ const theColor = ref<string | undefined>(undefined)
 async function tabToUse(tab: Tab) {
   let useTab: Tab = tab
   if (tab.placeholders?.templateId) {
-    const tabInfo = useTabsStore().getTabAndTabsetId(tab.placeholders?.templateId)
+    const tabInfo = useTabsetsStore().getTabAndTabsetId(tab.placeholders?.templateId)
     if (tabInfo) {
       useTab = tabInfo.tab
       console.log("useTab", useTab, tab.placeholders?.templateId)

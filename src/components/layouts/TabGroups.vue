@@ -70,8 +70,7 @@
 
             <q-item v-if="props.tabs.length === 0 &&
                       inBexMode() &&
-                      useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
-                      tabsStore.pendingTabset.tabs.length > 0">
+                      useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS">
               <div class="row fit q-ma-lg q-pa-lg text-subtitle2 text-grey-8">
                 You can drag and drop items from the "Tabs to add" view to add them to this tabset by clicking on the
                 icons
@@ -105,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {PropType, ref, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
@@ -115,7 +114,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabFromOpenTabsCommand} from "src/domain/commands/CreateTabFromOpenTabs";
+import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
@@ -123,7 +122,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import {CreateGroupCommand} from "src/domain/tabs/CreateGroup";
 import {RenameGroupCommand} from "src/domain/tabs/RenameGroup";
-import {TabsetColumn} from "src/models/TabsetColumn";
+import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {DeleteGroupCommand} from "src/domain/tabs/DeleteGroup";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants"
 import ChromeApi from "src/services/ChromeApi";

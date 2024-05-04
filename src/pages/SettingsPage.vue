@@ -1,7 +1,7 @@
 <template>
 
 
-  <q-toolbar v-if="tabsStore.tabsets.size > 0">
+  <q-toolbar v-if="useTabsetsStore().tabsets.size > 0">
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
@@ -421,8 +421,8 @@ import TabsetService from "src/services/TabsetService";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
+import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
@@ -458,6 +458,7 @@ import AccountSettings from "pages/helper/AccountSettings.vue";
 import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 const { t } = useI18n()
 
 const {sendMsg, inBexMode} = useUtils()
@@ -627,7 +628,7 @@ const downloadIndex = () => {
 const clearIndex = () => searchStore.init()
 
 const archivedTabsets = () => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status === TabsetStatus.ARCHIVED), ['name'])
 }
 

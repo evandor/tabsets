@@ -104,11 +104,11 @@
 <script lang="ts" setup>
 
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, ref, UnwrapRef, watchEffect} from "vue";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT} from "boot/constants";
 import Analytics from "src/utils/google-analytics";
 import DialogButton from "components/buttons/DialogButton.vue";
@@ -119,6 +119,7 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useI18n} from 'vue-i18n'
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {t} = useI18n()
 const router = useRouter()
@@ -191,7 +192,7 @@ watchEffect(() => {
 watchEffect(() => {
   // we might have been redirected here too early, redirecting
   // back as soon we know we actually do have some tabsets
-  if (useTabsStore().tabsets.size > 0) {
+  if (useTabsetsStore().tabsets.size > 0) {
     console.log("routing back! We have tabsets!")
     router.back()
   }

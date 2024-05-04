@@ -53,10 +53,11 @@ import {useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateSessionCommand} from "src/domain/commands/CreateSession";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -84,22 +85,22 @@ const addAutomatically = ref(props.setEmptyByDefault)
 const newTabsetNameIsValid = computed(() => newTabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(newTabsetName.value))
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
 })
 
 const createNewTabset = () => {
   hideWarning.value = true
-  const tabsToUse = addAutomatically.value ? tabsStore.tabs : []
+  const tabsToUse = addAutomatically.value ? useTabsStore().browserTabs : []
 
   useCommandExecutor()
     .executeFromUi(new CreateSessionCommand(newTabsetName.value, tabsToUse))
     .then((res) => {
-      if (!addAutomatically.value) {
-        TabsetService.createPendingFromBrowserTabs()
-      } else {
-        // clear pending tabset - why neccessary?
-        tabsStore.pendingTabset.tabs = []
-      }
+      // if (!addAutomatically.value) {
+      //   TabsetService.createPendingFromBrowserTabs()
+      // } else {
+      //   // clear pending tabset - why neccessary?
+      //   // tabsStore.pendingTabset.tabs = []
+      // }
       // router.push("/tabsets" + useTabsStore().currentTabsetId)
       if (!props.inSidePanel) {
         router.push("/tabsets/" + res.result.tabsetId )
@@ -110,7 +111,7 @@ const createNewTabset = () => {
 }
 
 const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && tabsStore.nameExistsInContextTabset(newTabsetName.value)) ?
+  return (!hideWarning.value && useTabsetsStore().existingInTabset(newTabsetName.value)) ?
     "Hint: Tabset exists, but you can change it into a session" : ""
 }
 

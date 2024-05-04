@@ -22,8 +22,8 @@
 
 <script setup lang="ts">
 
-import {Tab, TabSorting} from "src/models/Tab";
-import {Tabset, TabsetType} from "src/models/Tabset";
+import {Tab, TabSorting} from "src/tabsets/models/Tab";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {useUiStore} from "src/stores/uiStore";
 import {PropType} from "vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";

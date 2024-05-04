@@ -2,8 +2,7 @@
 
   <q-item v-if="props.tabs?.length === 0 &&
                       inBexMode() &&
-                      useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS &&
-                      tabsStore.pendingTabset?.tabs.length > 0">
+                      useUiStore().rightDrawer.activeTab === DrawerTabs.UNASSIGNED_TABS">
     <div class="row fit q-ma-lg q-pa-lg text-subtitle2 text-grey-8">
       You can drag and drop items from the "Tabs to add" view to add them to this tabset by clicking on the icons
     </div>
@@ -38,7 +37,7 @@
 import {DrawerTabs, useUiStore} from "stores/uiStore";
 import TabListElementWidget from "components/widgets/TabListElementWidget.vue";
 import {PropType, ref} from "vue";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {useUtils} from "src/services/Utils";
 import {useTabsStore} from "stores/tabsStore";
 

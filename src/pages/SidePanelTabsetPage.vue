@@ -88,8 +88,8 @@
 
 import {onMounted, ref, watchEffect} from "vue";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab, TabSorting} from "src/models/Tab";
-import {Tabset} from "src/models/Tabset";
+import {Tab, TabSorting} from "src/tabsets/models/Tab";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {useRoute} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {useUiStore} from "src/stores/uiStore";
@@ -101,11 +101,13 @@ import {uid, useQuasar} from "quasar";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabsetCommand"
+import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeature";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import NavigationService from "src/services/NavigationService";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 
@@ -131,7 +133,7 @@ watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
   tabset.value = useTabsStore().getTabset(tabsetId.value)
   if (tabset.value) {
-    useTabsStore().selectCurrentTabset(tabset.value.id)
+    useTabsetsStore().selectCurrentTabset(tabset.value.id)
   }
 })
 
@@ -152,7 +154,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 if (inBexMode() && chrome) {
@@ -196,7 +198,7 @@ const saveInTabset = () => {
   if (alreadyInTabset() || !tabsetId.value) {
     return
   }
-  const useTS = useTabsetService().getTabset(tabsetId.value)
+  const useTS = useTabsetsStore().getTabset(tabsetId.value)
   if (useTS) {
     useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), currentChromeTab.value), useTS))
   } else {
