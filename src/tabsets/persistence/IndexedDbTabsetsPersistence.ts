@@ -21,7 +21,7 @@ class IndexedDbTabsetsPersistence implements TabsetsPersistence {
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
-    console.debug(" about to initialize indexedDB")
+    console.debug(" about to initialize indexedDB (Tabsets)")
     const ctx = this
     return await openDB("tabsetsDB", 1, {
       // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore

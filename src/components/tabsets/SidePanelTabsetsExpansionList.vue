@@ -470,7 +470,11 @@ const calcFolders = (tabset: Tabset): Tabset[] => {
   return tabset.folders
 }
 
-const openPageNote = () => openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + useTabsetsStore().getCurrentTabset?.id || '' + "?tab=page"))
+const openPageNote = () => {
+  if (inBexMode()) {
+    openURL(chrome.runtime.getURL("/www/index.html#/tabsets/" + useTabsetsStore().getCurrentTabset?.id || '' + "?tab=page"))
+  }
+}
 
 const startDrag = (evt: any, folder: Tabset) => {
   console.log("start dragging", evt, folder)

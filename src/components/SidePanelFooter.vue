@@ -252,7 +252,6 @@ const tabsetsMangedWindows = ref<object[]>([])
 
 onMounted(() => {
   windowRows.value = calcWindowRows()
-  console.log("windowRows", windowRows.value.length)
 })
 
 watchEffect(() => {
