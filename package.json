@@ -35,9 +35,9 @@
     "test:specificTest:debug": "npx playwright test addFirstTabset --debug",
     "build pwa.prd & deploy to india032": "mv .env .env.tmp && cp .prd.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.tabsets.net && mv .env.tmp .env",
     "build pwa.dev & deploy to india032": "mv .env .env.tmp && cp .dev.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.tabsets.net && mv .env.tmp .env",
-    "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@calumk/editorjs-columns": "^0.3.1",

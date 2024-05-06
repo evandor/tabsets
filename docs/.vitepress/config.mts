@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Tabsets.net",
-  description: "Developer Documentation",
+  description: "description site",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
