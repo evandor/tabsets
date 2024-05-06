@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "Tabsets.net"
-  text: "description site"
-  tagline: My great project tagline
+  text: "Developer Documentation"
+  tagline: Tabsets - better bookmarks. A cross-browser extension to manage your URLs
   actions:
     - theme: brand
       text: Markdown Examples
@@ -13,6 +13,9 @@ hero:
     - theme: alt
       text: API Examples
       link: /api-examples
+    - theme: alt
+      text: Skysail
+      link: https://www.skysail.io
 
 features:
   - title: Feature A
