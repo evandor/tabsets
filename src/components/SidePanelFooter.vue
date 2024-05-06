@@ -194,7 +194,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import NavigationService from "src/services/NavigationService";
 import {openURL, uid, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";

@@ -9,7 +9,7 @@ import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
@@ -201,7 +201,7 @@ class ChromeApi {
               chrome.contextMenus.create({
                 id: 'save_to_currentTS',
                 parentId: 'tabset_extension',
-                title: 'Save to current Tabset (' + useTabsStore().currentTabsetName + ')',
+                title: 'Save to current Tabset (' + useTabsetsStore().currentTabsetName + ')',
                 documentUrlPatterns: ['https://*/*', 'https://*/'],
                 contexts: ['all']
               })
@@ -304,7 +304,10 @@ class ChromeApi {
             //   }
           } else if (e.menuItemId === 'save_to_currentTS') {
             const tabId = tab?.id || 0
-            this.executeAddToTS(tabId, useTabsStore().currentTabsetId)
+            const currentTsId = useTabsetsStore().currentTabsetId
+            if (currentTsId) {
+            this.executeAddToTS(tabId, currentTsId)
+            }
           } else if (e.menuItemId === 'annotate_website') {
             console.log("creating annotation JS", tab)
             if (tab && tab.id) {

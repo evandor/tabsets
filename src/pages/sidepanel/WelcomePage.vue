@@ -114,7 +114,7 @@ import Analytics from "src/utils/google-analytics";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {useAuthStore} from "stores/authStore";
 import {LocalStorage, openURL} from "quasar";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {AppFeatures} from "src/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {usePermissionsStore} from "stores/permissionsStore";

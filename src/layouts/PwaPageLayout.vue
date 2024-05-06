@@ -73,7 +73,7 @@ import ImportDialog from "components/dialogues/ImportDialog.vue";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore"
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
 

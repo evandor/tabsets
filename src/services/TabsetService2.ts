@@ -19,7 +19,7 @@ import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 import PersistenceService from "src/services/PersistenceService";
 import JsUtils from "src/utils/JsUtils";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useUiStore} from "stores/uiStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";

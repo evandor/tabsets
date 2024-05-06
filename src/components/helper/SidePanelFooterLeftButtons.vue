@@ -97,7 +97,7 @@
 </template>
 <script setup lang="ts">
 import {SidePanel, SidePanelView, useUiStore} from "stores/uiStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";

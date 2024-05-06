@@ -4,7 +4,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 import {useUtils} from "src/services/Utils";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import Analytics from "src/utils/google-analytics";

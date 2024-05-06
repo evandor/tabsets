@@ -100,7 +100,7 @@
 <script lang="ts" setup>
 
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";

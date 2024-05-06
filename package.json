@@ -34,7 +34,10 @@
     "test:specificTest": "npx playwright test addFirstTabset",
     "test:specificTest:debug": "npx playwright test addFirstTabset --debug",
     "build pwa.prd & deploy to india032": "mv .env .env.tmp && cp .prd.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.tabsets.net && mv .env.tmp .env",
-    "build pwa.dev & deploy to india032": "mv .env .env.tmp && cp .dev.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.tabsets.net && mv .env.tmp .env"
+    "build pwa.dev & deploy to india032": "mv .env .env.tmp && cp .dev.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.tabsets.net && mv .env.tmp .env",
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
   },
   "dependencies": {
     "@calumk/editorjs-columns": "^0.3.1",
@@ -115,6 +118,7 @@
     "electron-packager": "^17.1.1",
     "fake-indexeddb": "^5.0.1",
     "typescript": "^5.1.6",
+    "vitepress": "^1.1.4",
     "vitest": "^1.4.0",
     "workbox-build": "^7.0.0",
     "workbox-cacheable-response": "^7.0.0",

@@ -55,7 +55,7 @@ import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {ExecutionResult} from "src/domain/ExecutionResult";

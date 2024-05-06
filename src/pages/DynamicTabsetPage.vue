@@ -190,7 +190,7 @@ import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefau
 import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
 import {useUtils} from "src/services/Utils";
 import {api} from "boot/axios";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

@@ -39,7 +39,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import {useUtils} from "src/services/Utils"
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import TabGridWidget from "components/widgets/TabGridWidget.vue";
 
 const {inBexMode} = useUtils()

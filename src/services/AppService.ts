@@ -17,7 +17,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
 import {useAuthStore} from "stores/authStore";
@@ -31,6 +31,7 @@ import {useContentService} from "src/content/services/ContentService";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 function dbStoreToUse(st: SyncType) {
   const isAuthenticated = useAuthStore().isAuthenticated()
@@ -84,6 +85,9 @@ class AppService {
 
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
+
+    await useFeaturesStore().initialize(useDB().featuresIndexedDb)
+
     await ChromeListeners.initListeners()
 
     ChromeBookmarkListeners.initListeners()

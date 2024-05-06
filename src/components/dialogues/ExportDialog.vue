@@ -44,7 +44,7 @@ import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

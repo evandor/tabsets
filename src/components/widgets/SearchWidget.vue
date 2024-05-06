@@ -91,7 +91,7 @@ import {useQueryExecutor} from "src/services/QueryExecutor";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUiStore} from "src/stores/uiStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import JsUtils from "src/utils/JsUtils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";

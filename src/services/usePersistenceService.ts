@@ -9,6 +9,9 @@ import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabsetsPersistence";
 import FirestoreSpacesPersistence from "src/spaces/persistence/FirestoreSpacesPersistence";
+import FeaturesPersistence from "src/features/persistence/FeaturesPersistence";
+import IndexedDbFeaturesStorage from "src/features/persistence/IndexedDbFeaturesPersistence";
+import IndexedDbFeaturesPersistence from "src/features/persistence/IndexedDbFeaturesPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
@@ -20,6 +23,8 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   const tabsetsIndexedDb: TabsetsPersistence = IndexedDbTabsetsPersistence
   const tabsetsFirestoreDb: TabsetsPersistence = FirestoreTabsetsPersistence
 
+  const featuresIndexedDb: FeaturesPersistence = IndexedDbFeaturesPersistence
+
   var localDb = undefined as unknown as PersistenceService
   if (quasar) {
     localDb = new LocalStoragePersistenceService(quasar)
@@ -28,7 +33,8 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
   return {
     db, localDb, firestore, spacesIndexedDb, spacesFirestoreDb,
-    tabsetsIndexedDb, tabsetsFirestoreDb
+    tabsetsIndexedDb, tabsetsFirestoreDb,
+    featuresIndexedDb
   }
 
 }

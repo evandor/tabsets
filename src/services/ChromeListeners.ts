@@ -10,7 +10,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";

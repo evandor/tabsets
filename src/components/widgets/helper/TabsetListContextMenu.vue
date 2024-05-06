@@ -157,7 +157,7 @@
 
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {PropType, ref} from "vue";
 import {useUtils} from "src/services/Utils";
 import {useCommandExecutor} from "src/services/CommandExecutor";

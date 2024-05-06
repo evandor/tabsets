@@ -96,7 +96,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import TabsetService from "src/services/TabsetService";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useUtils} from "src/services/Utils";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";

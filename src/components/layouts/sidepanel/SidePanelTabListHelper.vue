@@ -28,7 +28,7 @@ import {useUiStore} from "src/stores/uiStore";
 import {PropType} from "vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},

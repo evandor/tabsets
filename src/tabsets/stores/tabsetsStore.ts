@@ -290,6 +290,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       getCurrentTabs,
       getCurrentTabset,
       currentTabsetName,
+      currentTabsetId,
       tabForUrlInSelectedTabset,
       getTabset,
       existingInTabset,

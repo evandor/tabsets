@@ -237,7 +237,7 @@ import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useUiStore} from "stores/uiStore";
 import _ from "lodash";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";

@@ -29,6 +29,7 @@ git submodule add -b main https://github.com/evandor/submodule-windows.git src/w
 git submodule add -b main https://github.com/evandor/submodule-suggestions.git src/suggestions
 git submodule add -b main https://github.com/evandor/submodule-thumbnails.git src/thumbnails
 git submodule add -b main https://github.com/evandor/submodule-content.git src/content
+git submodule add -b main https://github.com/evandor/submodule-features.git src/features
 ```
 
 ```bash
