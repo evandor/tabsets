@@ -3,8 +3,8 @@ import {Space} from "src/spaces/models/Space";
 import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {QVueGlobals, useQuasar} from "quasar";
-import {Tabset} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
+import {Tabset} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
 import {Notification} from "src/models/Notification";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
@@ -74,10 +74,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  cleanUpThumbnails(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
   compactDb(): Promise<any> {
     return Promise.resolve(undefined);
   }
@@ -94,16 +90,8 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  deleteThumbnail(url: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
   getContent(url: string): Promise<object> {
     return Promise.resolve({});
-  }
-
-  getContents(): Promise<any[]> {
-    return Promise.resolve([]);
   }
 
   getLinks(url: string): Promise<object> {
@@ -134,14 +122,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve([]);
   }
 
-  getThumbnail(url: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  loadSpaces(): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
   loadTabsets(): Promise<void> {
     return Promise.resolve(undefined);
   }
@@ -150,30 +130,7 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
-  saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  saveStats(date: string, dataset: object): void {
-  }
-
   saveTabset(tabset: Tabset): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
-  updateContent(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
-
-  updateThumbnail(url: string): Promise<void> {
     return Promise.resolve(undefined);
   }
 

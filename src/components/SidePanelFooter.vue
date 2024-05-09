@@ -190,11 +190,11 @@
 <script setup lang="ts">
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import NavigationService from "src/services/NavigationService";
 import {openURL, uid, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
@@ -203,7 +203,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash";
 import {SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
@@ -216,8 +216,10 @@ import {Window} from "src/windows/models/Window"
 import {useSettingsStore} from "stores/settingsStore";
 import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -250,7 +252,6 @@ const tabsetsMangedWindows = ref<object[]>([])
 
 onMounted(() => {
   windowRows.value = calcWindowRows()
-  console.log("windowRows", windowRows.value.length)
 })
 
 watchEffect(() => {
@@ -295,7 +296,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (currentChromeTabs.value[0]?.url) {
-    currentTabs.value = useTabsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
+    currentTabs.value = useTabsetsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
   }
 })
 
@@ -304,7 +305,7 @@ watchEffect(() => {
     return
   }
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 // watchEffect(() => {
@@ -372,7 +373,7 @@ watchEffect(() => {
   // adding potentially new windows from 'open in window' logic
   windowsToOpenOptions.value = []
   tabsetsMangedWindows.value = []
-  for (const ts of [...useTabsStore().tabsets.values()] as Tabset[]) {
+  for (const ts of [...useTabsetsStore().tabsets.values()] as Tabset[]) {
     if (ts.window && ts.window !== "current" && ts.window.trim() !== '') {
       tabsetsMangedWindows.value.push({label: ts.window, value: ts.id})
       const found = _.find(windowRows.value, (r: object) => ts.window === r['name' as keyof object])
@@ -426,7 +427,7 @@ const suggestionsLabel = () => {
 }
 
 const openHelpView = () => {
-  const helpTabset = useTabsStore().getTabset("HELP")
+  const helpTabset = useTabsetsStore().getTabset("HELP")
   console.log("got helpTabset", helpTabset)
   if (helpTabset && helpTabset.status !== TabsetStatus.DELETED) {
     router.push("/sidepanel/tabsets/HELP")

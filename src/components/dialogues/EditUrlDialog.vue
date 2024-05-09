@@ -74,11 +74,11 @@ import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
+import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
-import {Tab, UrlExtension} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
@@ -115,7 +115,7 @@ const extensionOptions = [
 ]
 
 watchEffect(() => {
-  newTabUrlExists.value = !!tabsStore.nameExistsInContextTabset(newTabUrl.value);
+  newTabUrlExists.value = !!useTabsetsStore().existingInTabset(newTabUrl.value);
 })
 
 watchEffect(() => {
@@ -146,7 +146,7 @@ const updateTab = () =>
 
 
 const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && newTabUrl.value !== props.tab.name && tabsStore.nameExistsInContextTabset(newTabUrl.value)) ?
+  return (!hideWarning.value && newTabUrl.value !== props.tab.name && useTabsetsStore().existingInTabset(newTabUrl.value)) ?
     "Tabset already exists" : ""
 }
 

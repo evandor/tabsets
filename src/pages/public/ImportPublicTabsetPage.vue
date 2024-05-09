@@ -49,7 +49,7 @@
 import {onMounted, ref} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {uid, useMeta} from "quasar";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useTabsetService} from "src/services/TabsetService2";
 import _ from "lodash"
@@ -106,7 +106,7 @@ onMounted(() => {
   if (shareId.value) {
     console.log("searching for tabset with shareId", shareId.value)
     maybeTabset.value = _.first(
-      _.filter([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.sharedId === shareId.value)
+      _.filter([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.sharedId === shareId.value)
     )
     // skip intro ?
     if (paramNotSet('a') && paramNotSet('n')) {
@@ -154,7 +154,7 @@ const start = async () => {
   //   return
   // }
 
-  //const exists = useTabsetService().getTabset(tabset.value.id)
+  //const exists = useTabsetsStore().getTabset(tabset.value.id)
   if (!maybeTabset.value) {
     console.log("shared tabset does not exist yet, creating...")
     const importedTS = tabset.value //new Tabset(tabset.value.id, tabset.value.name, tabset.value.tabs as Tab[])

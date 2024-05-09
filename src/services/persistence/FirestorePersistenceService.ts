@@ -4,9 +4,9 @@ import {Space} from "src/spaces/models/Space";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {SearchDoc} from "src/models/SearchDoc";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {MetaLink} from "src/models/MetaLink";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {RequestInfo} from "src/models/RequestInfo";
 import {Notification} from "src/models/Notification";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
@@ -86,46 +86,49 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   async saveTabset(tabset: Tabset): Promise<any> {
-    useUiStore().syncing = true
-    tabset.origin = this.installationId
-    console.log(`saving tabset ${tabset.id} in installation ${this.installationId}`)
-    await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
-    useUiStore().syncing = false
+    // noop, done in FirestoreTabsetsPersistence
+
+    // useUiStore().syncing = true
+    // tabset.origin = this.installationId
+    // console.log(`saving tabset ${tabset.id} in installation ${this.installationId}`)
+    // await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
+    // useUiStore().syncing = false
   }
 
   async deleteTabset(tabsetId: string): Promise<any> {
-    useUiStore().syncing = true
-    await deleteDoc(tabsetDoc(tabsetId))
-    useUiStore().syncing = false
+    // noop, done in FirestoreTabsetsPersistence
+    // useUiStore().syncing = true
+    // await deleteDoc(tabsetDoc(tabsetId))
+    // useUiStore().syncing = false
   }
 
   /**
    * === Spaces ========================================
    */
 
-  async loadSpaces(): Promise<any> {
-    useUiStore().syncing = true
-    LocalStorage.set("ui.spaces.lastUpdate", new Date().getTime());
-    (await getDocs(spacesCollection())).forEach((doc) => {
-      let newItem = doc.data() as Space
-      newItem.id = doc.id;
-      useSpacesStore().addSpace(newItem)
-    })
-    useUiStore().syncing = false
-    return Promise.resolve(undefined);
-  }
-
-  async addSpace(entity: Space): Promise<any> {
-    useUiStore().syncing = true
-    await setDoc(spaceDoc(entity.id), JSON.parse(JSON.stringify(entity)))
-    useUiStore().syncing = false
-  }
-
-  async deleteSpace(entityId: string) {
-    useUiStore().syncing = true
-    await deleteDoc(spaceDoc(entityId))
-    useUiStore().syncing = false
-  }
+  // async loadSpaces(): Promise<any> {
+  //   useUiStore().syncing = true
+  //   LocalStorage.set("ui.spaces.lastUpdate", new Date().getTime());
+  //   (await getDocs(spacesCollection())).forEach((doc) => {
+  //     let newItem = doc.data() as Space
+  //     newItem.id = doc.id;
+  //     useSpacesStore().addSpace(newItem)
+  //   })
+  //   useUiStore().syncing = false
+  //   return Promise.resolve(undefined);
+  // }
+  //
+  // async addSpace(entity: Space): Promise<any> {
+  //   useUiStore().syncing = true
+  //   await setDoc(spaceDoc(entity.id), JSON.parse(JSON.stringify(entity)))
+  //   useUiStore().syncing = false
+  // }
+  //
+  // async deleteSpace(entityId: string) {
+  //   useUiStore().syncing = true
+  //   await deleteDoc(spaceDoc(entityId))
+  //   useUiStore().syncing = false
+  // }
 
   /**
    * === ... ========================================
@@ -158,10 +161,6 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject(undefined);
   }
 
-  cleanUpThumbnails(): Promise<void> {
-    return Promise.reject(undefined);
-  }
-
   clear(name: string): any {
   }
 
@@ -172,19 +171,7 @@ class FirestorePersistenceService implements PersistenceService {
   deleteBlob(tabId: string, elementId: string): void {
   }
 
-  deleteContent(url: string): Promise<void> {
-    return Promise.reject(undefined);
-  }
-
   deleteGroupByTitle(title: string): Promise<void> {
-    return Promise.reject(undefined);
-  }
-
-  deleteMHtml(id: string): Promise<void> {
-    return Promise.reject(undefined);
-  }
-
-  deleteThumbnail(url: string): Promise<void> {
     return Promise.reject(undefined);
   }
 
@@ -200,27 +187,11 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject([]);
   }
 
-  getContent(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
-
-  getContents(): Promise<any[]> {
-    return Promise.resolve([]);
-  }
-
   getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
     return Promise.reject([]);
   }
 
   getLinks(url: string): Promise<object> {
-    return Promise.reject({});
-  }
-
-  getMHtml(url: string): Promise<object> {
-    return Promise.reject({});
-  }
-
-  getMHtmlInline(url: string): Promise<object> {
     return Promise.reject({});
   }
 
@@ -256,7 +227,7 @@ class FirestorePersistenceService implements PersistenceService {
     try {
       const ts = await getDoc(tabsetDoc(tabsetId))
       console.log("reloaded tabset", ts.data())
-      useTabsStore().tabsets.set(ts.data()!['id'], ts.data() as Tabset)
+      useTabsetsStore().tabsets.set(ts.data()!['id'], ts.data() as Tabset)
     } catch (err) {
       console.warn("could not reload tabset with id", tabsetId, err)
     }
@@ -269,10 +240,6 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined): Promise<any> {
-    return Promise.reject(undefined);
-  }
-
-  saveContent(tab: Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
     return Promise.reject(undefined);
   }
 
@@ -292,23 +259,8 @@ class FirestorePersistenceService implements PersistenceService {
     return Promise.reject(undefined);
   }
 
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
-    return this.indexedDB.saveThumbnail(tab, thumbnail)
-  }
-
-  setSuggestionState(id: string, state: SuggestionState): any {
-  }
-
-  updateContent(url: string): Promise<object> {
-    return Promise.reject({});
-  }
-
   updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
     return Promise.reject(undefined);
-  }
-
-  updateThumbnail(url: string): Promise<void> {
-    return this.indexedDB.updateThumbnail(url)
   }
 
   getAccount(accountId: string): Promise<Account> {

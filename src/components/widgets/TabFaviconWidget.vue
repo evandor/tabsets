@@ -18,7 +18,7 @@
          :height="props.height"
          :src="getFaviconUrl(tab as Tab)">
     <q-tooltip v-if="!props.preventDragAndDrop" class="tooltip">
-      drag and drop to reorder in tabset {{ useSettingsStore().isEnabled("dev") ? tab.id:''}}
+      drag and drop to reorder in tabset {{ useSettingsStore().isEnabled("dev") ? 'Tab#: ' + tab.id : ''}}
     </q-tooltip>
     <q-tooltip v-else class="tooltip">This is a sorted list, you cannot drag and drop</q-tooltip>
   </q-img>
@@ -28,7 +28,7 @@
 
 <script lang="ts" setup>
 
-import {Tab, UrlExtension} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {PropType} from "vue";
 import {useUtils} from "src/services/Utils";

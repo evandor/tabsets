@@ -32,6 +32,10 @@ yarn-error.log*
 *.njsproj
 *.sln
 
+# vitepress
+docs/.vitepress/dist
+docs/.vitepress/cache
+
 /config/.env.local
 /.env
 /releases/0.1.0/Packaged.tabsets.zip

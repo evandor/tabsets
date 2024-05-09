@@ -134,12 +134,9 @@
 import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {Notify, useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
-import {AppFeatures} from "src/models/AppFeatures";
-import {useSettingsStore} from "src/stores/settingsStore"
+import {AppFeatures, FeatureIdent, FeatureType} from "src/models/AppFeatures";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
@@ -148,10 +145,10 @@ import Command from "src/domain/Command";
 import NavigationService from "src/services/NavigationService";
 import {useUtils} from "src/services/Utils";
 import {useAuthStore} from "stores/authStore";
+import {Feature} from "src/features/models/Feature";
 
 const route = useRoute();
 const router = useRouter();
-const localStorage = useQuasar().localStorage
 const permissionsStore = usePermissionsStore()
 
 const title = ref('')
@@ -160,7 +157,7 @@ const {sendMsg} = useUtils()
 useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
 const feature = ref(null as unknown as string)
-const appFeature = ref<AppFeature | undefined>(undefined)
+const appFeature = ref<Feature | undefined>(undefined)
 
 const text: Map<string, object> = new Map()
 

@@ -37,14 +37,16 @@ import iDraw from 'idraw';
 import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute} from "vue-router";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsStore} from "stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import IDrawUtils from "src/utils/IDrawUtils";
 import {uid} from "quasar";
 import _ from "lodash"
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 
@@ -133,7 +135,7 @@ onMounted(() => {
     console.log('screenSelectElement: event = ', e.element);
     if (e.element.name.startsWith("tab-")) {
       const tabId = e.element.name.replace("tab-", "")
-      const tabData = useTabsStore().getTabAndTabsetId(tabId)
+      const tabData = useTabsetsStore().getTabAndTabsetId(tabId)
        //   .then((tabData: TabAndTabsetId | undefined) => {
             if (tabData) {
               selectedTab.value = tabData.tab
@@ -156,8 +158,8 @@ watchEffect(() => {
     //   init()
     // }
     //console.log("got tabset id", tabsetId.value)
-    tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
-    useTabsStore().selectCurrentTabset(tabsetId.value)
+    tabset.value = useTabsetsStore().getTabset(tabsetId.value) as Tabset | undefined
+    useTabsetsStore().selectCurrentTabset(tabsetId.value)
   }
 })
 

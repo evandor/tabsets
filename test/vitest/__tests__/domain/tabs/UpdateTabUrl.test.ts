@@ -3,9 +3,9 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import ChromeApi from "src/services/ChromeApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {AddTabToTabsetCommand} from "src/domain/tabs/AddTabToTabsetCommand"
-import {Tab} from "src/models/Tab";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
+import {Tab} from "src/tabsets/models/Tab";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
@@ -45,7 +45,7 @@ describe('UpdateTabUrl', () => {
     expect(result.message).toBe("Tab updated")
     expect(result.result).toBe("https://skysail.io")
 
-    const tabsetFromDB = useTabsetService().getTabset(createTabsetResult.result.tabset.id)
+    const tabsetFromDB = useTabsetsStore().getTabset(createTabsetResult.result.tabset.id)
     expect(tabsetFromDB?.tabs[0].url).toBe("https://skysail.io")
   });
 
@@ -59,7 +59,7 @@ describe('UpdateTabUrl', () => {
         tab, "https://skysail.io", "newName").execute()
     await result.undoCommand?.execute()
 
-    const tabsetFromDB = useTabsetService().getTabset(createTabsetResult.result.tabset.id)
+    const tabsetFromDB = useTabsetsStore().getTabset(createTabsetResult.result.tabset.id)
     expect(tabsetFromDB?.tabs[0].url).toBe("https://www.skysail.io")
   });
 

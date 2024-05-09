@@ -48,13 +48,14 @@
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {formatDistance} from "date-fns";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true}
@@ -91,7 +92,7 @@ const itemStyle = () => {
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
-  return await TabsetService.getThumbnailFor(tab)
+  return await useThumbnailsService().getThumbnailFor(tab.url)
 }
 
 watchEffect(() => {

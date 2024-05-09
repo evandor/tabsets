@@ -67,7 +67,7 @@ import EditorJS, {OutputData} from "@editorjs/editorjs";
 import EditorJsConfig from "src/utils/EditorJsConfig";
 import {openURL} from "quasar";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {DeleteTabsetDescriptionCommand} from "src/domain/tabsets/DeleteTabsetDescriptionCommand";
+import {DeleteTabsetDescriptionCommand} from "src/tabsets/commands/DeleteTabsetDescriptionCommand";
 import {useUiStore} from "stores/uiStore";
 
 const props = defineProps({

@@ -73,6 +73,8 @@ import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import NavigationService from "src/services/NavigationService";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const localstorage = useQuasar().localStorage
 
@@ -93,7 +95,7 @@ watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => 
   rows.value = calcStatsRows()
 })
 
-watch(() => useTabsStore().allTabsCount, (a,b) => {
+watch(() => useTabsetsStore().allTabsCount, (a,b) => {
   rows.value = calcStatsRows()
 })
 
@@ -105,7 +107,7 @@ watchEffect(() => {
   currentWindowName.value = res
 })
 
-watch(() => useTabsStore().tabsCount, (a, b) => {
+watch(() => useTabsStore2().tabsCount, (a, b) => {
   rows.value = calcStatsRows()
 })
 
@@ -115,8 +117,8 @@ watch(() => useWindowsStore().currentChromeWindows, (a, b) => {
 
 const calcStatsRows = () => {
   return [
-    {name: 'Tabs', count: useTabsStore().allTabsCount, snapshot: getFromSnapshot('Tabs')},
-    {name: 'Tabsets', count: useTabsStore().tabsets.size, snapshot: getFromSnapshot('Tabsets')},
+    {name: 'Tabs', count: useTabsetsStore().allTabsCount, snapshot: getFromSnapshot('Tabs')},
+    {name: 'Tabsets', count: useTabsetsStore().tabsets.size, snapshot: getFromSnapshot('Tabsets')},
     {name: 'Spaces', count: useSpacesStore().spaces.size, snapshot: getFromSnapshot('Spaces')},
     {name: 'Bookmarks', count: useBookmarksStore().bookmarksCount, snapshot: getFromSnapshot('Bookmarks'), link:"https://docs.tabsets.net/bookmarks"},
     {name: 'Bookmark Folders', count: useBookmarksStore().foldersCount, snapshot: getFromSnapshot('Bookmark Folders')},
@@ -126,7 +128,7 @@ const calcStatsRows = () => {
       snapshot: getFromSnapshot('Open Windows'),
       link: "https://docs.tabsets.net/windows-management"
     },
-    {name: 'Open Tabs', count: useTabsStore().tabs.length, snapshot: getFromSnapshot('Open Tabs')}
+    {name: 'Open Tabs', count: useTabsStore2().tabsCount, snapshot: getFromSnapshot('Open Tabs')}
   ]
 }
 
