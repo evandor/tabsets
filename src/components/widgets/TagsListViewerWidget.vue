@@ -58,10 +58,10 @@ import {ref, watchEffect} from "vue";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const emit = defineEmits(['tagSelected']);
 
@@ -75,7 +75,7 @@ const hoveredOver = (tag: string) => hoveredTag.value === tag
 watchEffect(() => {
   console.log("calculating tags")
   tags.value = new Map()
-  _.forEach([...tabsStore.tabsets.values()], (tabset: Tabset) => {
+  _.forEach([...useTabsetsStore().tabsets.values()], (tabset: Tabset) => {
     if (tabset.type === TabsetType.DEFAULT &&
         (tabset.status === TabsetStatus.DEFAULT || tabset.status === TabsetStatus.FAVORITE)) {
       _.forEach(tabset.tabs, (tab: Tab) => {

@@ -74,7 +74,7 @@
 
 <script setup lang="ts">
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import _ from "lodash";
 import {onMounted, ref, watch, watchEffect} from "vue"
 import TabsetService from "src/services/TabsetService";
@@ -161,23 +161,6 @@ const hasSelectable = () => userCanSelect.value = true
 
 const saveSelectedTabs = () => {
   TabsetService.saveSelectedPendingTabs()
-}
-
-const toggleInvert = (invert: boolean) => {
-  tabsStore.pendingTabset?.tabs.forEach(t => {
-    if (!useTabsetService().urlExistsInCurrentTabset(t.url || '')) {
-      t.selected = !t.selected
-      tabSelectionChanged({tabId: t.id, selected: t.selected})
-    }
-  })
-}
-
-const addOpenTabs = () => {
-  if (process.env.MODE !== 'bex') {
-    useTabsStore().pendingTabset = new Tabset("dummy", "dummy", [])
-  } else {
-    TabsetService.createPendingFromBrowserTabs()
-  }
 }
 
 const resetFilter = () => {

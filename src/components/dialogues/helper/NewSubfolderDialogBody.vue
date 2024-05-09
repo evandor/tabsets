@@ -54,12 +54,14 @@
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {QForm, useDialogPluginComponent} from "quasar";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {useUtils} from "src/services/Utils";
 import DialogButton from "components/buttons/DialogButton.vue";
-import {CreateFolderCommand} from "src/domain/tabsets/CreateFolderCommand";
+import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()
@@ -89,31 +91,17 @@ const checkIsValid = () => {
 }
 
 const doesNotExistYet = (val: string) => {
-  const existsInTabset = tabsStore.existingInTabset(val)
+  const existsInTabset = useTabsetsStore().existingInTabset(val)
   return !(existsInTabset && existsInTabset.status !== TabsetStatus.DELETED && existsInTabset.status !== TabsetStatus.ARCHIVED)
 }
 
 const submit = () => {
-  console.log("submit", addAllOpenTabs.value, tabsStore.tabs)
+  console.log("submit", addAllOpenTabs.value, useTabsStore2().browserTabs)
 
-  let tabsToUse = addAllOpenTabs.value ? tabsStore.tabs : []
+  let tabsToUse = addAllOpenTabs.value ? useTabsStore2().browserTabs : []
 
   useCommandExecutor()
     .executeFromUi(new CreateFolderCommand(newFolderName.value, tabsToUse, props.tabsetId, props.parentFolder))
-    .then((res) => {
-
-      if (!addAllOpenTabs.value) {
-       // TabsetService.createPendingFromBrowserTabs()
-      } else {
-        if (tabsStore.pendingTabset) {
-          // clear pending tabset - why necessary?
-         // tabsStore.pendingTabset.tabs = []
-        }
-      }
-      //useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
-      //router.push("/sidepanel?first=")
-    })
-
 }
 
 </script>

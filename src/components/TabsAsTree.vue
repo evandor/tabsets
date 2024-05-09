@@ -92,7 +92,7 @@ function createNodes(tabs: object[], level = 0): TreeNode[] {
 
 watchEffect(() => {
   const tabs: object[] = []
-  for (const ts of useTabsStore().tabsets.values()) {
+  for (const ts of useTabsetsStore().tabsets.values()) {
     for (const t of ts.tabs) {
       if (t.url) {
         try {

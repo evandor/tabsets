@@ -360,7 +360,7 @@ import {
   TabPreview,
   TabSorting,
   UrlExtension
-} from "src/models/Tab";
+} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -372,9 +372,9 @@ import {useTabsStore} from "src/stores/tabsStore";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 import _ from "lodash";
 import {formatDistance} from "date-fns";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useUtils} from "src/services/Utils";
 import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
@@ -394,6 +394,8 @@ import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode, isCurrentTab} = useUtils()
 const {handleSuccess} = useNotificationHandler()
@@ -459,7 +461,7 @@ onMounted(() => {
 })
 
 const thumbnailFor = async (tab: Tab): Promise<object> => {
-  return await TabsetService.getThumbnailFor(tab)
+  return await useThumbnailsService().getThumbnailFor(tab.url)
 }
 
 watchEffect(() => {
@@ -592,14 +594,14 @@ const matcherTooltip = () => {
 const unsetGroup = () => {
   if (props.tab) {
     props.tab.groupName = undefined
-    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+    const res = useTabsetsStore().getTabAndTabsetId(props.tab.id)
     //.then((res: TabAndTabsetId | undefined) => {
     if (res) {
       const tab = res.tab
       const tabsetId = res.tabsetId
       tab.groupName = undefined
       tab.groupId = -1
-      const ts = useTabsetService().getTabset(tabsetId)
+      const ts = useTabsetsStore().getTabset(tabsetId)
       if (ts) {
         useTabsetService().saveTabset(ts)
       }
@@ -621,14 +623,14 @@ const groupsWithout = (groupName: string): chrome.tabGroups.TabGroup[] =>
 const switchGroup = (group: chrome.tabGroups.TabGroup): void => {
   if (props.tab) {
     props.tab.groupName = group.title
-    const res = useTabsStore().getTabAndTabsetId(props.tab.id)
+    const res = useTabsetsStore().getTabAndTabsetId(props.tab.id)
     // .then((res: TabAndTabsetId | undefined) => {
     if (res) {
       const tab = res.tab
       const tabsetId = res.tabsetId
       tab.groupName = group.title
       tab.groupId = group.id
-      const ts = useTabsetService().getTabset(tabsetId)
+      const ts = useTabsetsStore().getTabset(tabsetId)
       if (ts) {
         useTabsetService().saveTabset(ts)
       }

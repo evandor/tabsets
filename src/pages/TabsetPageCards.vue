@@ -49,7 +49,7 @@ import TabGroups from "components/layouts/TabGroups.vue";
 import TabsExporter from "components/layouts/TabsExporter.vue";
 import {useTabsStore} from "src/stores/tabsStore";
 import {PropType, ref, watchEffect} from "vue";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";
 import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsCanvas from "components/layouts/TabsCanvas.vue";
@@ -58,7 +58,8 @@ import {useRoute} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import TabGrid from "components/layouts/TabGrid.vue";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const tabsStore = useTabsStore()
 const route = useRoute()
@@ -104,7 +105,7 @@ watchEffect(() => {
   tabsetId.value = route?.params.tabsetId as string
   if (tabsetId.value) {
     console.debug("got tabset id", tabsetId.value)
-    const ts = tabsStore.selectCurrentTabset(tabsetId.value)
+    const ts = useTabsetsStore().selectCurrentTabset(tabsetId.value)
   }
 })
 
@@ -137,14 +138,14 @@ function getOrder() {
   }
 }
 
-function tabsForGroup(groupId: number): Tab[] {
-  return _.orderBy(
-    _.filter(
-      tabsStore.getTabset(tabsetId.value)?.tabs,
-      // @ts-ignore
-      (t: Tab) => t?.groupId === groupId),
-    getOrder(), [orderDesc.value ? 'desc' : 'asc'])
-}
+// function tabsForGroup(groupId: number): Tab[] {
+//   return _.orderBy(
+//     _.filter(
+//       useTabsetsStore().getTabset(tabsetId.value)?.tabs,
+//       // @ts-ignore
+//       (t: Tab) => t?.groupId === groupId),
+//     getOrder(), [orderDesc.value ? 'desc' : 'asc'])
+// }
 
 const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsetId.value))
 

@@ -1,10 +1,11 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {Tab, TabComment} from "src/models/Tab";
+import {Tab, TabComment} from "src/tabsets/models/Tab";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tabset, TabsetSharing} from "src/models/Tabset";
+import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
 import {useUiStore} from "stores/uiStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 export class AddCommentCommand implements Command<any> {
 
@@ -13,7 +14,7 @@ export class AddCommentCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
 
-    const tabData = useTabsStore().getTabAndTabsetId(this.tabId)
+    const tabData = useTabsetsStore().getTabAndTabsetId(this.tabId)
     if (tabData && tabData.tab) {
       console.log("retrieved tabData", tabData)
       const tab = tabData.tab
@@ -23,7 +24,7 @@ export class AddCommentCommand implements Command<any> {
       }
       console.log("pushing comment", comment)
       tab.comments.push(comment)
-      const tabset = useTabsetService().getTabset(tabData.tabsetId)
+      const tabset = useTabsetsStore().getTabset(tabData.tabsetId)
       if (tabset && tabset.sharedId) {
         tabset.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
         //MqttService.publishTabComment(tabset.sharedId, tabData.tab, comment)

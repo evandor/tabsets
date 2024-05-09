@@ -203,7 +203,7 @@
     <q-tab-panel class="q-ma-none q-pa-none" name="tabset">
       <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
       <q-banner rounded class="text-primary q-ma-md" style="border: 1px solid #efefef"
-                v-if="!tabsStore.currentTabsetId && tabsStore.tabsets.size > 0">
+                v-if="!tabsStore.currentTabsetId && useTabsetsStore().tabsets.size > 0">
         <div class="text-body2">
           Select an existing tabset from the list or create a new tabset.
         </div>
@@ -274,21 +274,21 @@ import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {RenameTabsetCommand} from "src/domain/tabsets/RenameTabset";
-import {Tabset, TabsetType} from "src/models/Tabset";
-import {FeatureIdent} from "src/models/AppFeature";
+import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import JsUtils from "src/utils/JsUtils";
-import {UserLevel, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
-import DynamicTabsetPageCards from "pages/DynamicTabsetPageCards.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 import {useAuthStore} from "stores/authStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 const router = useRouter()
@@ -319,7 +319,7 @@ watchEffect(() => {
     return
   }
   tabsetId.value = route?.params.tabsetId as string
-  tabset.value = useTabsetService().getTabset(tabsetId.value) || new Tabset(uid(), "empty", [])
+  tabset.value = useTabsetsStore().getTabset(tabsetId.value) || new Tabset(uid(), "empty", [])
   console.log("watch effect in tabsetpage", tabsetId.value)
   tab.value = route.query['tab'] ? route.query['tab'] as string : 'tabset'
 })

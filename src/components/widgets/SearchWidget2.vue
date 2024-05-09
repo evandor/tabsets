@@ -20,7 +20,7 @@
 import {onMounted, ref, watchEffect} from "vue";
 import {useSearchStore} from "src/stores/searchStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 
 const props = defineProps({
   searchTerm: {type: String, default: ''},

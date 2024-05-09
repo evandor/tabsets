@@ -9,8 +9,9 @@ import SidePanelPage from "pages/SidePanelPage.vue";
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import {useQuasar} from "quasar";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 installQuasarPlugin();
 
@@ -72,7 +73,7 @@ describe('SidePanelPage', () => {
   })
 
   it('should be mounted', async () => {
-    useTabsStore().setCurrentChromeTab(skysailChromeTab)
+    useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     console.log("hier", wrapper.html())
     expect(wrapper.text()).toContain("My Tabsets");
     expect(wrapper.text()).not.toContain("search");
@@ -80,7 +81,7 @@ describe('SidePanelPage', () => {
 
   it('should show existing tabset', async () => {
     await new CreateTabsetCommand("existing Tabset", []).execute()
-    useTabsStore().setCurrentChromeTab(skysailChromeTab)
+    useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     const wrapper = mount(SidePanelPage);
     //console.log("hier", wrapper.html())
     //console.log("hier2", wrapper.text())

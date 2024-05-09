@@ -1,7 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {Tab} from "src/models/Tab";
-import {Tabset, TabsetSharing} from "src/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
+import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUtils} from "src/services/Utils";
 

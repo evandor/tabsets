@@ -2,15 +2,16 @@ import {defineStore} from 'pinia';
 import Fuse from 'fuse.js'
 import _ from "lodash"
 import {SearchDoc} from "src/models/SearchDoc";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsStore} from "src/stores/tabsStore";
 import {ref} from "vue";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import throttledQueue from "throttled-queue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {uid} from "quasar";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 function dummyPromise(timeout: number, tabToCloseId: number | undefined = undefined): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -130,7 +131,7 @@ export const useSearchStore = defineStore('search', () => {
   }
 
   function reindexTabset(tabsetId: string) {
-    const ts = useTabsStore().getTabset(tabsetId)
+    const ts = useTabsetsStore().getTabset(tabsetId)
     const values: Tabset[] = ts ? [ts] : []
     reindex(values)
   }
@@ -192,7 +193,7 @@ export const useSearchStore = defineStore('search', () => {
     console.debug(" populating search index from tabsets")
     const minimalIndex: SearchDoc[] = []
     //const res = fuse.value.remove((doc) => true)
-    _.forEach([...useTabsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
+    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
         tabset.tabs.forEach((tab: Tab) => {
           if (tab.url) {
             if (urlSet.has(tab.url)) {

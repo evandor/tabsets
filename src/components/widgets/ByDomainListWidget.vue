@@ -17,10 +17,11 @@
 import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {onMounted, ref, watchEffect} from "vue";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import Analytics from "src/utils/google-analytics";
 import _ from "lodash";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const emit = defineEmits(['domainSelected']);
 
@@ -40,7 +41,7 @@ watchEffect(() => {
           _.filter(
               _.flatMap(
                   _.filter(
-                      _.map([...tabsStore.tabsets.values()],
+                      _.map([...useTabsetsStore().tabsets.values()],
                           (ts: Tabset) => ts),
                       (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
                   (ts: Tabset) => ts.tabs), (t: Tab) => true),

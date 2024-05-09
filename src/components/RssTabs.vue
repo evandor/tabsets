@@ -32,15 +32,16 @@
 import {useTabsStore} from "src/stores/tabsStore"
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const tabsStore = useTabsStore()
 const router = useRouter()
 
 const rssTabs = ref<Tab[]>([])
 
-watchEffect(() => rssTabs.value = tabsStore.rssTabs)
+watchEffect(() => rssTabs.value = useTabsetsStore().rssTabs)
 
 
 const open = (tab: Tab) => {

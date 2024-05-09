@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {Notification} from "src/models/Notification"
 import _ from "lodash"
 import {ref} from "vue";

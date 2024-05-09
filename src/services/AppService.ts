@@ -17,7 +17,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
 import {useAuthStore} from "stores/authStore";
@@ -25,8 +25,13 @@ import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
 import FsPersistenceService from "src/services/persistence/FirestorePersistenceService";
-import {useEntitiesStore} from "stores/entitiesStore";
-import {useApisStore} from "stores/apisStore";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
+import {useContentService} from "src/content/services/ContentService";
+import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 function dbStoreToUse(st: SyncType) {
   const isAuthenticated = useAuthStore().isAuthenticated()
@@ -70,6 +75,8 @@ class AppService {
     const messagesStore = useMessagesStore()
     const searchStore = useSearchStore()
     const uiStore = useUiStore()
+    const tabsetsStore = useTabsetsStore()
+
     this.router = router
 
     uiStore.appLoading = "loading tabsets..."
@@ -78,6 +85,9 @@ class AppService {
 
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
+
+    await useFeaturesStore().initialize(useDB().featuresIndexedDb)
+
     await ChromeListeners.initListeners()
 
     ChromeBookmarkListeners.initListeners()
@@ -86,6 +96,8 @@ class AppService {
 
     settingsStore.initialize(quasar.localStorage);
     tabsStore.initialize().catch((err) => console.error("***" + err))
+
+    //tabsetsStore.initialize()
 
     searchStore.init().catch((err) => console.error(err))
 
@@ -98,7 +110,7 @@ class AppService {
     //useAuthStore().upsertAccount(account)
 
     await useNotificationsStore().initialize(useDB(undefined).db)
-    useSuggestionsStore().init(useDB(undefined).db)
+    useSuggestionsStore().init()
     await messagesStore.initialize(useDB(undefined).db)
 
     tabsetService.setLocalStorage(localStorage)
@@ -151,18 +163,25 @@ class AppService {
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsStore = useTabsStore()
-    const entitiesStore = useEntitiesStore()
-    const apisStore = useApisStore()
+    const tabsetsStore = useTabsetsStore()
 
-    const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
+    const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
+      useDB().spacesFirestoreDb : useDB().spacesIndexedDb
     await spacesStore.initialize(spacesPersistence)
     await useTabsetService().init(store, false)
 
-    await entitiesStore.initialize(store)
-    // await useEntitiesService().init(store)
+    const tabsetsPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
+      useDB().tabsetsFirestoreDb : useDB().tabsetsIndexedDb
+    await tabsetsStore.initialize(tabsetsPersistence)
+    //await useTabsetService().init(store, false)
 
-    await apisStore.initialize(store)
-    //await useApisStore().init(store)
+    await useTabsStore2().initialize()
+
+    const thumbnailsPersistence = IndexedDbThumbnailsPersistence
+      //store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
+    await useThumbnailsService().init(thumbnailsPersistence)
+
+    await useContentService().init(IndexedDbContentPersistence)
 
     ChromeApi.init(router)
 
@@ -179,8 +198,8 @@ class AppService {
     // tabsets not in bex mode means running on "pwa.tabsets.net"
     // probably running an import ("/imp/:sharedId")
     // we do not want to go to the welcome back
-    // console.log("checking for welcome page", tabsStore.tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated())
-    if (tabsStore.tabsets.size === 0 &&
+    // console.log("checking for welcome page", useTabsetsStore().tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated())
+    if (useTabsetsStore().tabsets.size === 0 &&
       quasar.platform.is.bex &&
       !useAuthStore().isAuthenticated() &&
       !router.currentRoute.value.path.startsWith("/fullpage") &&

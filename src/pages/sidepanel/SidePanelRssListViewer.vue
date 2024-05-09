@@ -49,14 +49,14 @@
 <script lang="ts" setup>
 
 import {onMounted, ref, watchEffect} from "vue";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useUtils} from "src/services/Utils";
 import _ from "lodash"
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateDynamicTabset} from "src/domain/commands/CreateDynamicTabset";
@@ -65,6 +65,7 @@ import PanelTabListElementWidget from "components/widgets/PanelTabListElementWid
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 import Analytics from "src/utils/google-analytics";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {handleError, handleSuccess} = useNotificationHandler()
 const {inBexMode} = useUtils()
@@ -83,7 +84,7 @@ onMounted(() => {
 })
 
 
-watchEffect(() => rssTabs.value = tabsStore.rssTabs)
+watchEffect(() => rssTabs.value = useTabsetsStore().rssTabs)
 
 
 const open = (tab: Tab) => {

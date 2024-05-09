@@ -91,10 +91,11 @@ import {useQueryExecutor} from "src/services/QueryExecutor";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUiStore} from "src/stores/uiStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import JsUtils from "src/utils/JsUtils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   fromPanel: {type: Boolean, default: false},
@@ -172,7 +173,7 @@ const filterFn = (val: string, update: any, abort: any) => {
     update(() => {
       //options.value = moreHits ? theHits.value.concat(new Hit()) : theHits.value
       let tabsetsAsHit: Hit[] = []
-      const tabsets = [...tabsStore.tabsets.values()]
+      const tabsets = [...useTabsetsStore().tabsets.values()]
       tabsets.forEach(ts => {
         if (ts.name.toLowerCase().indexOf(val.toLowerCase()) >= 0) {
           const pseudoHit = new Hit("tabset|" + ts.name,

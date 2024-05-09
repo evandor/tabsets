@@ -2,7 +2,7 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {Monitor, MonitoringType} from "src/models/Monitor";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 
 export class UpdateMonitoringCommand implements Command<any> {
 

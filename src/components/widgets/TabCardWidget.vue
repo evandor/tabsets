@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 
-import {Tab, UrlExtension} from "src/models/Tab"
+import {Tab, UrlExtension} from "src/tabsets/models/Tab"
 import TabsetService from "src/services/TabsetService"
 import {PropType, ref} from "vue"
 import NavigationService from "src/services/NavigationService"
@@ -78,6 +78,7 @@ import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand"
 import {useUtils} from "src/services/Utils"
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -96,7 +97,7 @@ const thumbnailFor = (tab: Tab): string => {
 }
 
 const loadThumbnail = (tab: Tab) => {
-  TabsetService.getThumbnailFor(tab)
+  useThumbnailsService().getThumbnailFor(tab.url)
       .then(data => {
         //console.log("loading tn for ", tab.url)
         const key = btoa(tab.url || '')

@@ -77,21 +77,19 @@ import {ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import _ from "lodash"
-import {AppFeatures} from "src/models/AppFeatures";
-import {AppFeature, FeatureIdent, FeatureType} from "src/models/AppFeature";
+import {AppFeatures, FeatureIdent, FeatureType} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {useQuasar} from "quasar";
+import {Feature} from "src/features/models/Feature";
 
-const tabsStore = useTabsStore()
 const router = useRouter()
 const route = useRoute()
-const selected = ref('')
-const selected2 = ref<AppFeature | undefined>(undefined)
+const selected2 = ref<Feature | undefined>(undefined)
 
 const features = ref(new AppFeatures().features)
 
 const featuresByType = (type: FeatureType) =>
-  _.filter(features.value, (f: AppFeature) => {
+  _.filter(features.value, (f: Feature) => {
     const typeAndModeMatch = f.type === type && !wrongMode(f)
     if (f.requires.length > 0) {
       let missingRequirement = false
@@ -110,16 +108,16 @@ const featuresByType = (type: FeatureType) =>
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 
-const iconColor2 = (f: AppFeature) => usePermissionsStore().hasFeature(f.ident) ? 'green' : 'grey'
+const iconColor2 = (f: Feature) => usePermissionsStore().hasFeature(f.ident) ? 'green' : 'grey'
 
-const showFeature2 = (f: AppFeature) => {
+const showFeature2 = (f: Feature) => {
   selected2.value = f
   route.path.startsWith('/mainpanel/') ?
     router.push("/mainpanel/features/" + f.ident.toLowerCase()) :
     router.push("/features/" + f.ident.toLowerCase())
 }
 
-const wrongMode = (f: AppFeature) => {
+const wrongMode = (f: Feature) => {
   if (f.useIn.indexOf('chrome_bex') >= 0) {
     if (useQuasar().platform.is.chrome) {
       return false

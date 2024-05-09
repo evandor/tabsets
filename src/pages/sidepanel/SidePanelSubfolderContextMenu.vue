@@ -27,13 +27,13 @@
 
 <script lang="ts" setup>
 
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {useQuasar} from "quasar";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
 import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
-import DeleteSubfolderDialog from "components/dialogues/DeleteSubfolderDialog.vue";
-import RenameSubfolderDialog from "components/dialogues/RenameSubfolderDialog.vue";
+import DeleteSubfolderDialog from "src/tabsets/dialogues/DeleteSubfolderDialog.vue";
+import RenameSubfolderDialog from "src/tabsets/dialogues/RenameSubfolderDialog.vue";
 
 const $q = useQuasar()
 

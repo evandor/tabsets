@@ -40,9 +40,10 @@
 import {ref, watchEffect} from "vue";
 import {date, useDialogPluginComponent, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {TabsetSharing} from "src/models/Tabset";
+import {TabsetSharing} from "src/tabsets/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddCommentCommand} from "src/domain/tabs/AddCommentCommand";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -65,7 +66,7 @@ const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!tabsStore.nameExistsInContextTabset(newTabsetName.value);
+  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
 })
 
 const publishComment = () => useCommandExecutor().executeFromUi(new AddCommentCommand(props.tabId, editor.value))

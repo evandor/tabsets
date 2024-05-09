@@ -1,10 +1,10 @@
 import {defineStore} from 'pinia';
 import {computed, ref} from "vue";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
-import {TabsetType} from "src/models/Tabset";
+import {TabsetType} from "src/tabsets/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AppFeatures} from "src/models/AppFeatures";
 import {useUtils} from "src/services/Utils";
@@ -149,7 +149,9 @@ export const usePermissionsStore = defineStore('permissions', () => {
       storage.saveActiveFeatures(activeFeatures.value)
       sendMsg('feature-deactivated', {feature: feature})
       new AppFeatures().getFeatures().forEach(f => {
-        if (f.requires.findIndex((r: FeatureIdent) => r === deactivatedIdent) >= 0) {
+        if (f.requires.findIndex((r: string) => {
+          return r === deactivatedIdent.toString()
+        }) >= 0) {
           console.log("need to deactivate as well:", f)
           deactivateRecursive(f.ident.toLowerCase())
         }

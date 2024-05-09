@@ -2,8 +2,9 @@ import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
-import {TabsetSharing} from "src/models/Tabset";
+import {TabsetSharing} from "src/tabsets/models/Tabset";
 import _ from "lodash"
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 export class DeleteCommentCommand implements Command<any> {
 
@@ -12,14 +13,14 @@ export class DeleteCommentCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
 
-    const tabData = useTabsStore().getTabAndTabsetId(this.tabId)
+    const tabData = useTabsetsStore().getTabAndTabsetId(this.tabId)
     if (tabData && tabData.tab) {
       console.log("retrieved tabData", tabData)
       const tab = tabData.tab
 
       tab.comments = _.filter(tab.comments, c => c.id !== this.commentId)
 
-      const tabset = useTabsetService().getTabset(tabData.tabsetId)
+      const tabset = useTabsetsStore().getTabset(tabData.tabsetId)
       if (tabset && tabset.sharedId) {
         tabset.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
       }

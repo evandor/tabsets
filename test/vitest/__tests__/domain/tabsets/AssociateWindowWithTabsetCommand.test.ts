@@ -2,7 +2,7 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {CreateTabsetCommand} from "src/domain/tabsets/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useDB} from "src/services/usePersistenceService";
 import {useTabsStore} from "stores/tabsStore";
 import PersistenceService from "src/services/PersistenceService";
@@ -43,7 +43,7 @@ describe('AssociateWindowWithTabsetCommand', () => {
 
     const db = useDB(undefined).db
     await db.loadTabsets()
-    const tabsets = useTabsStore().tabsets
+    const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(1)
     expect(tabsets.get(tabsetId)?.name).toBe("existingTabset")
     expect(tabsets.get(tabsetId)?.window).toBe("newWindowName")
