@@ -60,7 +60,7 @@ import {useRoute} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {useSearchStore} from "src/stores/searchStore";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
 import ChromeApi from "src/services/ChromeApi";

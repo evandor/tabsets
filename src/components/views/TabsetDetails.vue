@@ -25,13 +25,14 @@
 import {useUiStore} from "src/stores/uiStore";
 import {ref, watchEffect} from "vue";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import InfoItem from "components/views/helper/InfoItem.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const uiStore = useUiStore()
 
 const tabsetId = ref(uiStore.selectedTabsetId)
 const tabset = ref<Tabset | undefined>(undefined)
 
-watchEffect(() => tabset.value = tabsetId.value ? useTabsetService().getTabset(tabsetId.value) : undefined)
+watchEffect(() => tabset.value = tabsetId.value ? useTabsetsStore().getTabset(tabsetId.value) : undefined)
 </script>

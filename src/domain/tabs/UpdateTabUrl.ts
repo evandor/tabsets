@@ -1,7 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
-import {Tab, UrlExtension} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {useSearchStore} from "src/stores/searchStore";
 
 class UndoCommand implements Command<any> {

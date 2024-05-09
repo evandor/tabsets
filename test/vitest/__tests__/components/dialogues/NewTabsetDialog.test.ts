@@ -4,7 +4,7 @@ import {beforeEach, describe, expect, it} from 'vitest';
 import AddBookmarkFolderDialog from "components/dialogues/AddBookmarkFolderDialog.vue";
 import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {Dialog} from "quasar";
 
 installQuasarPlugin({plugins: {Dialog}})

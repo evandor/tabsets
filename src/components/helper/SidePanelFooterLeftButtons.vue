@@ -10,7 +10,7 @@
     <q-tooltip class="tooltip">{{ suggestionsLabel() }}</q-tooltip>
   </q-btn>
 
-  <q-btn v-if="useTabsStore().allTabsCount > 0"
+  <q-btn v-if="useTabsetsStore().allTabsCount > 0"
          icon="o_view_list"
          :size="props.size"
          class="q-my-xs q-ml-xs q-mr-none q-px-xs"
@@ -50,16 +50,6 @@
                                      icon="o_account_tree"
                                      :size="buttonSize"
                                      tooltip="Show a tree view of your tabs"/>
-        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.ENTITY_MANAGER"
-                                     label="Entity Manager"
-                                     icon="o_apps"
-                                     :size="buttonSize"
-                                     tooltip="Define your own Entities to manage"/>
-        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.API_MANAGER"
-                                     label="API Manager"
-                                     icon="o_apps"
-                                     :size="buttonSize"
-                                     tooltip="Access APIs"/>
 
         <!-- :disable="useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN)" -->
         <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.MAIN"
@@ -98,16 +88,16 @@
                              tooltip="List all your RSS feeds"/>
 
   <span class="q-ma-none"
-        v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets?.size > 0">
+        v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets?.size > 0">
             <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
-              <q-tooltip>{{ tabsStore.tabs?.length }} open tabs</q-tooltip>
+              <q-tooltip>{{ useTabsStore2().browserTabs?.length }} open tabs</q-tooltip>
             </OpenTabsThresholdWidget>
           </span>
 
 </template>
 <script setup lang="ts">
 import {SidePanel, SidePanelView, useUiStore} from "stores/uiStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
@@ -117,6 +107,8 @@ import {ref, watchEffect} from "vue";
 import {SuggestionState} from "src/suggestions/models/Suggestion";
 import {useMessagesStore} from "stores/messagesStore";
 import SidePanelFooterViewMenuItem from "components/helper/SidePanelFooterViewMenuItem.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "../../tabsets/stores/tabsStore2";
 
 const props = defineProps({
   showSuggestionIcon: {type: Boolean, required: true},

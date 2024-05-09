@@ -19,7 +19,7 @@ describe('CurrentTabElementHelper', () => {
 
   it('should be mounted from chrome tab', async () => {
     await IndexedDbPersistenceService.init("db")
-    useTabsStore().setCurrentChromeTab(skysailChromeTab)
+    useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     const wrapper = mount(CurrentTabElementHelper);
     expect(wrapper.text()).toContain("www.skysail.io");
     expect(wrapper.text()).toContain("title");

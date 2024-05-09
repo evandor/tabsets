@@ -57,17 +57,18 @@ import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {ref} from "vue";
 import {useQuasar} from "quasar";
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUtils} from "src/services/Utils";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore"
 import SpacesSelectorWidget from "src/spaces/widgets/SpacesSelectorWidget.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()
@@ -92,7 +93,7 @@ $q.loadingBar.setDefaults({
 })
 
 const tabsets = ():Tabset[] => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
@@ -115,7 +116,7 @@ const tabsets = ():Tabset[] => {
 }
 
 const tabsetsWithTypes = (types: TabsetType[]) => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   return _.sortBy(
     _.filter(tabsets, (ts: Tabset) =>
       types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),

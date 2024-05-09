@@ -110,6 +110,8 @@ import ByDomainList from "components/ByDomainList.vue";
 import OpenTabsView from "components/views/OpenTabsView.vue";
 import SavedPdfs from "components/SavedPdfs.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const route = useRoute()
 
@@ -126,10 +128,10 @@ const showOnlyFolders = ref(true)
 watchEffect(() => tab.value = useUiStore().rightDrawer.activeTab)
 
 watchEffect(() => {
-  openTabsCountRatio.value = Math.min((tabsStore.tabs?.length || 0) / settingsStore.thresholds['max' as keyof object], 1)
+  openTabsCountRatio.value = Math.min((useTabsStore2().browserTabs?.length || 0) / settingsStore.thresholds['max' as keyof object], 1)
 })
 
-watchEffect(() => rssTabsCount.value = tabsStore.rssTabs?.length)
+watchEffect(() => rssTabsCount.value = useTabsetsStore().rssTabs?.length)
 
 const toggleShowOnlyFolders = () => {
   console.log("****")

@@ -91,11 +91,12 @@ import {useUtils} from "src/services/Utils";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useTabsStore} from "stores/tabsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   hit: {type: Hit, required: true},
@@ -189,7 +190,7 @@ const open = (hit: Hit) => {
   if (hit.id.startsWith("tabset|")) {
     const tabsetId = hit.tabsets[0]
     if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
-      const tabset = useTabsetService().getTabset(tabsetId)
+      const tabset = useTabsetsStore().getTabset(tabsetId)
       const spaceId =  (tabset && tabset.spaces.length > 0) ? tabset.spaces[0] : undefined
       console.log("selecting tabset/space", tabsetId, spaceId)
       useCommandExecutor().execute(new SelectTabsetCommand(tabsetId, spaceId))

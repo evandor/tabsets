@@ -86,7 +86,7 @@ export const useGroupsStore = defineStore('groups', () => {
     await useGroupsStore().persistGroup(group)
 
     // update the group names for matching group ids
-    for (const ts of [...useTabsStore().tabsets.values()]) {
+    for (const ts of [...useTabsetsStore().tabsets.values()]) {
       let matchForTabset = false
       for (const t of ts.tabs) {
         for (const g of groups) {

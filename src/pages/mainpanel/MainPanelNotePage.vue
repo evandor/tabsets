@@ -48,10 +48,10 @@ import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {uid, useMeta, useQuasar} from "quasar";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab, UrlExtension} from "src/models/Tab";
+import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {useUtils} from "src/services/Utils";
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 //import 'regenerator-runtime/runtime'
@@ -61,7 +61,8 @@ import EditorJsConfig from "src/utils/EditorJsConfig";
 
 import './editorjs/linkTool.css';
 import {v5 as uuidv5} from "uuid";
-import {TabAndTabsetId} from "src/models/TabAndTabsetId";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -109,14 +110,14 @@ watchEffect(async () => {
   closeOnSave.value = route.query.closeOnSave ? route.query.edit === "true" : false
 
   if (noteId.value) {
-    const tabObject = useTabsStore().getTabAndTabsetId(noteId.value)
+    const tabObject = useTabsetsStore().getTabAndTabsetId(noteId.value)
         //.then((tabObject: TabAndTabsetId | undefined) => {
 
           if (tabObject) {
             //console.log("got tabobject1", tabObject)
             tab.value = tabObject.tab
             tabsetId.value = tabObject.tabsetId
-            tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
+            tabset.value = useTabsetsStore().getTabset(tabsetId.value) as Tabset | undefined
             title.value = tabObject.tab?.title || 'unknown'
 
             if (tab.value.longDescription) {
@@ -169,7 +170,7 @@ const saveWork = () => {
     console.log("setting original", title.value, sanitize(title.value))
     originalTitle.value = sanitize(title.value)
     if (tabsetId.value) {
-      const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
+      const tabset = useTabsetsStore().getTabset(tabsetId.value) as Tabset | undefined
       console.log("tabset", tabset, tab.value)
       if (tabset && tab.value) {
         //tab.value.description = description.value
@@ -191,7 +192,7 @@ const saveWork = () => {
         //newTab.parent = parentId.value
 
         // lesson learned: execute code here and send message only to update dependent parts
-        const tabset = useTabsetService().getTabset(tabsetId.value) as Tabset
+        const tabset = useTabsetsStore().getTabset(tabsetId.value) as Tabset
         console.log("creating new note", newTab)
         //tabset.tabs.push(newTab)
         //useTabsetService().saveTabset(tabset)

@@ -15,13 +15,15 @@ import 'regenerator-runtime/runtime'
 import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {useUtils} from "src/services/Utils";
-import {Tabset, TabsetSharing} from "src/models/Tabset";
+import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 
 import EditorJsConfig from "src/utils/EditorJsConfig";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
@@ -41,8 +43,8 @@ watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
   if (tabsetId.value) {
     console.debug("got tabset id", tabsetId.value)
-    tabset.value = useTabsetService().getTabset(tabsetId.value) as Tabset | undefined
-    tabsStore.selectCurrentTabset(tabsetId.value)
+    tabset.value = useTabsetsStore().getTabset(tabsetId.value) as Tabset | undefined
+    useTabsetsStore().selectCurrentTabset(tabsetId.value)
 
     if (tabset.value && !editorJS2) { // && !editorJS2.isReady) {
       // @ts-ignore

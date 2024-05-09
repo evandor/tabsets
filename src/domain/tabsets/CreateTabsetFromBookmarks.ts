@@ -1,7 +1,7 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsetService} from "src/services/TabsetService2";
-import {DeleteTabsFromTabsetCommand} from "src/domain/commands/DeleteTabsFromTabsetCommand";
+import {DeleteTabsFromTabsetCommand} from "src/tabsets/commands/DeleteTabsFromTabsetCommand";
 
 export enum OrgLevel {
   SPACE = "SPACE",

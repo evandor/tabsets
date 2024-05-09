@@ -51,8 +51,8 @@
 
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
-import {Tabset} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
+import {Tabset} from "src/tabsets/models/Tabset";
+import {Tab} from "src/tabsets/models/Tab";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {formatDistance} from "date-fns";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
@@ -61,6 +61,7 @@ import {onMounted} from "vue";
 import Analytics from "src/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const tabsStore = useTabsStore()
 
@@ -70,7 +71,7 @@ onMounted(() => {
 
 const newestTabs = ():Tab[] =>
   _.take(_.orderBy(
-    _.flatMap([...tabsStore.tabsets.values()] as Tabset[],
+    _.flatMap([...useTabsetsStore().tabsets.values()] as Tabset[],
       (tabset: Tabset) =>
         _.flatMap(tabset.tabs)),
     (t: Tab) => t.created, "desc"), 100)

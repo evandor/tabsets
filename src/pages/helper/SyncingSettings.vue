@@ -173,7 +173,7 @@
       </div>
       <div class="col-7">
 
-        <q-banner rounded style="border: 1px solid orange" v-if="useTabsStore().allTabsCount > 0">
+        <q-banner rounded style="border: 1px solid orange" v-if="useTabsetsStore().allTabsCount > 0">
           <div class="text-body2">
             <div class="row">
               <div>If you want to keep your current (local) tabsets, please follow these steps:</div>
@@ -245,6 +245,7 @@ import {doc, updateDoc} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useTabsStore} from "stores/tabsStore";
 import {useUiStore} from "stores/uiStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {sendMsg} = useUtils()
 const {handleSuccess, handleError} = useNotificationHandler()

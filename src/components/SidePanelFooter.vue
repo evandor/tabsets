@@ -190,11 +190,11 @@
 <script setup lang="ts">
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import NavigationService from "src/services/NavigationService";
 import {openURL, uid, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
@@ -203,7 +203,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash";
 import {SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
@@ -216,8 +216,10 @@ import {Window} from "src/windows/models/Window"
 import {useSettingsStore} from "stores/settingsStore";
 import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -250,7 +252,6 @@ const tabsetsMangedWindows = ref<object[]>([])
 
 onMounted(() => {
   windowRows.value = calcWindowRows()
-  console.log("windowRows", windowRows.value.length)
 })
 
 watchEffect(() => {
@@ -295,7 +296,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (currentChromeTabs.value[0]?.url) {
-    currentTabs.value = useTabsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
+    currentTabs.value = useTabsetsStore().tabsForUrl(currentChromeTabs.value[0].url) || []
   }
 })
 
@@ -304,7 +305,7 @@ watchEffect(() => {
     return
   }
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 // watchEffect(() => {
@@ -345,32 +346,34 @@ watch(() => useWindowsStore().currentChromeWindows, (newWindows, oldWindows) => 
 
 //console.log("====>: chrome.runtime.onMessage.hasListeners(windowsUpdatedListener)", chrome.runtime.onMessage.hasListener(windowsUpdatedListener))
 //chrome.runtime.onMessage.addListener(windowsUpdatedListener)
-chrome.windows.onCreated.addListener((w: chrome.windows.Window) => updateWindows())
-chrome.windows.onRemoved.addListener((wId: number) => updateWindows())
+if (inBexMode()) {
+  chrome.windows.onCreated.addListener((w: chrome.windows.Window) => updateWindows())
+  chrome.windows.onRemoved.addListener((wId: number) => updateWindows())
 
 
-chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
-  //console.log("***here we are", tabId, removeInfo)
-  useWindowsStore().setup('got window-updated message')
-    .then(() => windowRows.value = calcWindowRows())
-    .catch((err) => handleError(err))
-})
+  chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
+    //console.log("***here we are", tabId, removeInfo)
+    useWindowsStore().setup('got window-updated message')
+      .then(() => windowRows.value = calcWindowRows())
+      .catch((err) => handleError(err))
+  })
 
 
-chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-  useWindowsStore().setup('got window-updated message')
-    .then(() => windowRows.value = calcWindowRows())
-    .catch((err) => {
-      console.log("could not yet calcWindowRows: " + err)
-      //handleError(err)
-    })
-})
+  chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+    useWindowsStore().setup('got window-updated message')
+      .then(() => windowRows.value = calcWindowRows())
+      .catch((err) => {
+        console.log("could not yet calcWindowRows: " + err)
+        //handleError(err)
+      })
+  })
+}
 
 watchEffect(() => {
   // adding potentially new windows from 'open in window' logic
   windowsToOpenOptions.value = []
   tabsetsMangedWindows.value = []
-  for (const ts of [...useTabsStore().tabsets.values()] as Tabset[]) {
+  for (const ts of [...useTabsetsStore().tabsets.values()] as Tabset[]) {
     if (ts.window && ts.window !== "current" && ts.window.trim() !== '') {
       tabsetsMangedWindows.value.push({label: ts.window, value: ts.id})
       const found = _.find(windowRows.value, (r: object) => ts.window === r['name' as keyof object])
@@ -385,7 +388,7 @@ watchEffect(() => {
 //const openOptionsPage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/settings'));
 //const openOptionsPage = () => window.open('#/mainpanel/settings');
 const openOptionsPage = () => {
-  ($q.platform.is.cordova || $q.platform.is.capacitor) ?
+  ($q.platform.is.cordova || $q.platform.is.capacitor || !$q.platform.is.bex) ?
     //Browser.open({ url: 'http://capacitorjs.com/' }).catch((err) => console.log("error", err)) :
     router.push("/settings") :
     NavigationService.openOrCreateTab([chrome.runtime.getURL('www/index.html#/mainpanel/settings')], undefined, [], true, true)
@@ -424,7 +427,7 @@ const suggestionsLabel = () => {
 }
 
 const openHelpView = () => {
-  const helpTabset = useTabsStore().getTabset("HELP")
+  const helpTabset = useTabsetsStore().getTabset("HELP")
   console.log("got helpTabset", helpTabset)
   if (helpTabset && helpTabset.status !== TabsetStatus.DELETED) {
     router.push("/sidepanel/tabsets/HELP")

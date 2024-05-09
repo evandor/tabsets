@@ -53,7 +53,7 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
-import {Tabset, TabsetSharing, TabsetStatus} from "src/models/Tabset";
+import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
 import SidePanelTabsetsExpansionList from "components/tabsets/SidePanelTabsetsExpansionList.vue";
@@ -66,7 +66,7 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  const tabsets: Tabset[] = [...useTabsStore().tabsets.values()] as Tabset[]
+  const tabsets: Tabset[] = [...useTabsetsStore().tabsets.values()] as Tabset[]
   sharedTabsets.value = _.filter(tabsets, (ts: Tabset) => ts.sharing !== undefined && ts.sharing !== TabsetSharing.UNSHARED && ts.status !== TabsetStatus.DELETED)
 })
 

@@ -135,17 +135,17 @@
 import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
-import {Tabset, TabsetStatus, TabsetType} from "src/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/services/Utils";
 import {uid, useQuasar} from "quasar";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {FeatureIdent} from "src/models/AppFeatures";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import NewSpaceDialog from "src/spaces/dialogues/NewSpaceDialog.vue";
 import NavigationService from "src/services/NavigationService";
-import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
+import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
@@ -156,6 +156,8 @@ import SpaceHeader from "pages/sidepanel/helper/SpaceHeader.vue";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 
@@ -222,8 +224,8 @@ watchEffect(() => {
 
 async function getTabsetsForSpaces() {
   let res: Map<string, Tabset[]> = new Map()
-  //console.log("===>", [...useTabsStore().tabsets.values()][0].spaces)
-  _.forEach([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
+  //console.log("===>", [...useTabsetsStore().tabsets.values()][0].spaces)
+  _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
     if (ts.status !== TabsetStatus.DELETED) {
       _.forEach(ts.spaces, (spaceId: string) => {
         if (res.has(spaceId)) {
@@ -264,12 +266,12 @@ watchEffect(() => {
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
 })
 
 watchEffect(() => {
-  if (useTabsStore().tabsets) {
-    tabsetNameOptions.value = _.map([...useTabsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
+  if (useTabsetsStore().tabsets) {
+    tabsetNameOptions.value = _.map([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
       return {
         label: ts.name,
         value: ts.id
@@ -289,7 +291,7 @@ if (inBexMode()) {
 }
 
 const tabsetsWithoutSpaces = (): Tabset[] => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
       ts.spaces.length === 0 &&
       ts.type !== TabsetType.SPECIAL &&

@@ -54,7 +54,7 @@ import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import _ from "lodash"
 import {uid} from "quasar";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
 
@@ -82,10 +82,10 @@ onMounted(() => {
     webview.addEventListener('did-start-loading', (a: any, b: any) => {
       console.log("loading", a.srcElement.src)
       src.value = a.srcElement.src
-      const pendingTabs:Tab[] = useTabsStore().pendingTabset.tabs
-      if (pendingTabs.findIndex((t:Tab) => t.url === a.srcElement.src) < 0) {
-        pendingTabs.push(new Tab(uid(),  ChromeApi.createChromeTabObject(a.srcElement.src, a.srcElement.src,"")))
-      }
+      // const pendingTabs:Tab[] = useTabsStore().pendingTabset.tabs
+      // if (pendingTabs.findIndex((t:Tab) => t.url === a.srcElement.src) < 0) {
+      //   pendingTabs.push(new Tab(uid(),  ChromeApi.createChromeTabObject(a.srcElement.src, a.srcElement.src,"")))
+      // }
     })
     // @ts-ignore
     webview.addEventListener('did-stop-loading', (a:any,b:any) => {

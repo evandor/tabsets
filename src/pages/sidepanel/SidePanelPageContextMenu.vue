@@ -23,7 +23,7 @@
 
       </template>
 
-      <q-separator inset v-if="useTabsStore().tabsets.size > 1"/>
+      <q-separator inset v-if="useTabsetsStore().tabsets.size > 1"/>
 
       <ContextMenuItem v-close-popup
                        v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
@@ -68,14 +68,14 @@
                          label="Open in window..."/>
       </template>
 
-      <ContextMenuItem v-if="useTabsStore().tabsets.size > 1"
+      <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 1"
                        v-close-popup
                        @was-clicked="focus(tabset)"
                        icon="filter_center_focus"
                        color="accent"
                        label="Focus on tabset"/>
 
-      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsStore().tabsets.size > 1">
+      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 1">
         <ContextMenuItem v-close-popup
                          @was-clicked="pin(tabset)"
                          icon="o_push_pin"
@@ -159,34 +159,35 @@
 <script lang="ts" setup>
 
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
-import {Tabset, TabsetSharing, TabsetStatus} from "src/models/Tabset";
+import {FeatureIdent} from "src/models/AppFeatures";
+import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useSettingsStore} from "stores/settingsStore";
 import {useSearchStore} from "stores/searchStore";
 import NavigationService from "src/services/NavigationService";
-import EditTabsetDialog from "components/dialogues/EditTabsetDialog.vue";
+import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import {LocalStorage, openURL, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
-import {MarkTabsetAsFavoriteCommand} from "src/domain/tabsets/MarkTabsetAsFavorite";
-import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
-import DeleteTabsetDialog from "components/dialogues/DeleteTabsetDialog.vue";
+import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
+import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
+import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
-import {UnShareTabsetCommand} from "src/domain/tabsets/UnShareTabsetCommand"
+import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
 import {useTabsetService} from "src/services/TabsetService2";
-import {Tab} from "src/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
-import ShareTabsetPubliclyDialog from "components/dialogues/ShareTabsetPubliclyDialog.vue";
-import {MarkTabsetAsArchivedCommand} from "src/domain/tabsets/MarkTabsetAsArchived";
+import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
+import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
 import {useTabsStore} from "stores/tabsStore";
 import NewWindowDialog from "src/windows/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
-import {MarkTabsetDeletedCommand} from "src/domain/tabsets/MarkTabsetDeleted";
+import {MarkTabsetDeletedCommand} from "src/tabsets/commands/MarkTabsetDeleted";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {NotificationType} from "src/services/ErrorHandler";
 import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 
@@ -237,7 +238,7 @@ const restoreInNewWindow = (tabsetId: string, windowName: string | undefined = u
   useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName))
 
 const startAutoSwitchingTab = (tabsetId: string) => {
-  const tabset = useTabsetService().getTabset(tabsetId)
+  const tabset = useTabsetsStore().getTabset(tabsetId)
   if (tabset && tabset.tabs?.length > 1 && tabset.tabs[0].url) {
     const tabs = tabset.tabs
     let tabIndex = 0
@@ -279,14 +280,14 @@ const unpin = (tabset: Tabset) =>
 const removePublicShare = (tabsetId: string, sharedId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId, sharedId))
 
 const openPublicShare = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
+  const ts = useTabsetsStore().getTabset(tabsetId)
   if (ts && ts.sharedId) {
     openURL(getPublicTabsetLink(ts))
   }
 }
 
 const copyPublicShareToClipboard = (tabsetId: string) => {
-  const ts = useTabsetService().getTabset(tabsetId)
+  const ts = useTabsetsStore().getTabset(tabsetId)
   if (ts && ts.sharedId) {
     useCommandExecutor().executeFromUi(new CopyToClipboardCommand(getPublicTabsetLink(ts)))
   }
