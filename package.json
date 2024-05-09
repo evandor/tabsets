@@ -37,7 +37,8 @@
     "build pwa.dev & deploy to india032": "mv .env .env.tmp && cp .dev.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.tabsets.net && mv .env.tmp .env",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "info": "yarn list > docs/yarn.list.txt && quasar info > docs/quasar.info.txt"
   },
   "dependencies": {
     "@calumk/editorjs-columns": "^0.3.1",
@@ -70,7 +71,7 @@
     "pinia": "^2.0.11",
     "pixelmatch": "^5.3.0",
     "pngjs": "^7.0.0",
-    "quasar": "2.15.4",
+    "quasar": "^2.15.4",
     "rangy": "^1.3.1",
     "regenerator-runtime": "^0.14.1",
     "sanitize-html": "^2.10.0",
