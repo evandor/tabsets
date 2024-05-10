@@ -12,7 +12,7 @@ jobs:
 #          submodules: 'true'
 
       - name: Merge chrome-extension -> firefox-extension
-        uses: devmasx/merge-branch@v1.3.1
+        uses: devmasx/merge-branch@v1.4.0
         with:
           type: now
           from_branch: chrome-extension
@@ -27,7 +27,7 @@ jobs:
 #          submodules: 'true'
 
       - name: Merge chrome-extension -> edge-extension
-        uses: devmasx/merge-branch@v1.3.1
+        uses: devmasx/merge-branch@v1.4.0
         with:
           type: now
           from_branch: chrome-extension
@@ -42,7 +42,7 @@ jobs:
 #          submodules: 'true'
 
       - name: Merge chrome-extension -> opera-extension
-        uses: devmasx/merge-branch@v1.3.1
+        uses: devmasx/merge-branch@v1.4.0
         with:
           type: now
           from_branch: chrome-extension
