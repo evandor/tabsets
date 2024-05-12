@@ -1,14 +1,13 @@
 import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useDB} from "src/services/usePersistenceService";
-import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import ChromeApi from "src/services/ChromeApi";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
+import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 
 installQuasarPlugin();
 
@@ -95,7 +94,8 @@ describe('WindowsStore', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbPersistenceService.init("db")
+    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbWindowsPersistence.init()
     db = useDB(undefined).tabsetsIndexedDb
     await useTabsetService().init(db)
   })

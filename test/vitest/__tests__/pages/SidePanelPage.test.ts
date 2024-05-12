@@ -11,6 +11,9 @@ import {useQuasar} from "quasar";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
+import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 installQuasarPlugin();
 
@@ -24,7 +27,7 @@ describe('SidePanelPage', () => {
   const skysailChromeTab = ChromeApi.createChromeTabObject(
     "title", "https://www.skysail.io/some-subpage", "favicon")
 
-  let db = null as unknown as PersistenceService
+  let db = null as unknown as TabsetsPersistence;
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
 
   beforeAll(() => {
@@ -37,8 +40,9 @@ describe('SidePanelPage', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbPersistenceService.init("db")
-    db = useDB(undefined).db
+    await IndexedDbTabsetsPersistence.init()
+    db = useDB(undefined).tabsetsIndexedDb
+    await useTabsetsStore().initialize(db)
     // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))
     await useTabsetService().init(db)
 
