@@ -133,7 +133,6 @@
 <script lang="ts" setup>
 
 import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
-import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
@@ -163,7 +162,6 @@ const {inBexMode} = useUtils()
 
 const $q = useQuasar()
 const router = useRouter()
-const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
@@ -260,13 +258,13 @@ watchEffect(async () => {
 })
 
 watchEffect(() => {
-  openTabs.value = useTabsStore().tabs
-  currentTabset.value = useTabsStore().getCurrentTabset
+  openTabs.value = useTabsStore2().browserTabs
+  currentTabset.value = useTabsetsStore().getCurrentTabset
 })
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().getCurrentChromeTab
 })
 
 watchEffect(() => {

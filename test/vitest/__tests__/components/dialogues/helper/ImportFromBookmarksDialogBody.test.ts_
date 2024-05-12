@@ -7,7 +7,6 @@ import {useRouter} from "vue-router";
 import {Dialog, Notify} from "quasar";
 import NewTabsetDialogBody from "src/tabsets/dialogues/helper/NewTabsetDialogBody.vue";
 import {useDB} from "src/services/usePersistenceService";
-import {useTabsStore} from "stores/tabsStore";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -15,7 +14,6 @@ import ImportFromBookmarksDialogBody from "components/dialogues/helper/ImportFro
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import ChromeApi from "src/services/ChromeApi";
 import {Bookmark} from "src/bookmarks/models/Bookmark";
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 
 installQuasarPlugin({plugins: {Dialog, Notify}})
 

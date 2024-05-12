@@ -14,7 +14,6 @@
 
 <script setup lang="ts">
 
-import {useTabsStore} from "stores/tabsStore";
 import {uid, useQuasar} from "quasar";
 import {onMounted, ref, watchEffect} from "vue";
 import {Hit} from "src/models/Hit";

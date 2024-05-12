@@ -57,7 +57,6 @@
 <script lang="ts" setup>
 
 import {SidePanelView, useUiStore} from "stores/uiStore";
-import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";

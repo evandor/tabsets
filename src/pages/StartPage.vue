@@ -14,7 +14,6 @@
 
 <script setup lang="ts">
 import {useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
 import {useRouter} from "vue-router";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

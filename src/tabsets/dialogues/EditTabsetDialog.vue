@@ -81,7 +81,6 @@
 
 import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent} from "quasar";
-import {useTabsStore} from "stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
 import {useNotificationHandler} from "src/services/ErrorHandler";

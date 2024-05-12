@@ -36,7 +36,6 @@
 <script setup lang="ts">
 import {onMounted, ref, watchEffect} from 'vue';
 import {useRoute, useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {useSearchStore} from "src/stores/searchStore";
 import {Tabset} from "src/tabsets/models/Tabset";
@@ -44,9 +43,6 @@ import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
 import {Hit} from "src/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
@@ -55,12 +51,6 @@ import Analytics from "src/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-
-const route = useRoute()
-const tabsStore = useTabsStore()
-const searchStore = useSearchStore()
-
-const router = useRouter()
 
 const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
@@ -76,7 +66,7 @@ const newSearch = (term: string) => {
   if (term && term.trim() !== '') {
     const results: Tab[] = []
 
-    _.forEach([...useTabsetsStore().tabsets.values()], (tabset: Tabset) => {
+    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(term) >= 0) {
           console.log("found tab", term, tab.tags)

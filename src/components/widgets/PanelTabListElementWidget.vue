@@ -368,7 +368,6 @@ import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
-import {useTabsStore} from "src/stores/tabsStore";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 import _ from "lodash";
 import {formatDistance} from "date-fns";

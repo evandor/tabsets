@@ -1,11 +1,8 @@
 import {IDBPDatabase, openDB, deleteDB} from "idb";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
-import {Tab} from "src/tabsets/models/Tab";
-import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
@@ -46,7 +43,6 @@ class IndexedDbPersistenceService implements PersistenceService {
 
   async loadTabsets(): Promise<any> {
     console.log(" loading tabsets indexeddb")
-    const tabsStore = useTabsStore()
     return await this.db.getAll('tabsets')
       .then((res: any) => res.forEach((r: Tabset) => {
         // make sure some fields are correctly initialized even for old(er) tabsets

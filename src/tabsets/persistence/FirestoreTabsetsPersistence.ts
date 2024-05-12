@@ -7,7 +7,6 @@ import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {LocalStorage} from "quasar";
 import {APP_INSTALLATION_ID} from "boot/constants";
-import {useUiStore} from "stores/uiStore";
 
 const STORE_IDENT = 'tabsets';
 
@@ -43,7 +42,7 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     console.log("loading tabsets", this.getServiceName());
     // useUiStore().syncing = true
     const docs = await getDocs(tabsetsCollection())
-    docs.forEach((doc) => {
+    docs.forEach((doc:any) => {
       let newItem = doc.data() as Tabset
       newItem.id = doc.id;
       useTabsetsStore().setTabset(newItem)
@@ -73,6 +72,9 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     //useUiStore().syncing = true
     await deleteDoc(tabsetDoc(tabsetId))
     //useUiStore().syncing = false
+  }
+
+  clear(name: string): void {
   }
 
 

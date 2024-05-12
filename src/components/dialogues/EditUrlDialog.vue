@@ -70,7 +70,6 @@
 <script lang="ts" setup>
 
 import {computed, PropType, ref, watchEffect} from "vue";
-import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";

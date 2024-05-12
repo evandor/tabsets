@@ -10,7 +10,6 @@ import tabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
 import ChromeApi from "src/services/ChromeApi";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
@@ -69,7 +68,6 @@ class AppService {
     this.initialized = true
 
     const appStore = useAppStore()
-    const tabsStore = useTabsStore()
     const settingsStore = useSettingsStore()
     const bookmarksStore = useBookmarksStore()
     const messagesStore = useMessagesStore()
@@ -95,7 +93,7 @@ class AppService {
     await BookmarksService.init()
 
     settingsStore.initialize(quasar.localStorage);
-    tabsStore.initialize().catch((err) => console.error("***" + err))
+    //tabsetsStore.initialize().catch((err) => console.error("***" + err))
 
     //tabsetsStore.initialize()
 
@@ -162,18 +160,18 @@ class AppService {
     const spacesStore = useSpacesStore()
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
-    const tabsStore = useTabsStore()
     const tabsetsStore = useTabsetsStore()
 
     const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
       useDB().spacesFirestoreDb : useDB().spacesIndexedDb
     await spacesStore.initialize(spacesPersistence)
-    await useTabsetService().init(store, false)
+
+    //await useTabsetService().init(store, false)
 
     const tabsetsPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
       useDB().tabsetsFirestoreDb : useDB().tabsetsIndexedDb
     await tabsetsStore.initialize(tabsetsPersistence)
-    //await useTabsetService().init(store, false)
+    await useTabsetService().init(tabsetsPersistence, false)
 
     await useTabsStore2().initialize()
 

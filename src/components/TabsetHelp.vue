@@ -30,7 +30,6 @@
 
 <script setup lang="ts">
 
-import {useTabsStore} from "src/stores/tabsStore"
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {Tab} from "src/tabsets/models/Tab";

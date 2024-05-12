@@ -101,7 +101,6 @@ import {FeatureIdent} from "src/models/AppFeatures";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
 import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {useTabsStore} from "stores/tabsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
 import {SuggestionState} from "src/suggestions/models/Suggestion";
@@ -118,7 +117,6 @@ const props = defineProps({
 const emits = defineEmits(['wasClicked'])
 
 const permissionsStore = usePermissionsStore()
-const tabsStore = useTabsStore()
 
 const buttonSize = ref('15px')
 const unreadMessagesCount = ref(0)

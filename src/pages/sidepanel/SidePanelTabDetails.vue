@@ -361,12 +361,8 @@ import {useSearchStore} from "src/stores/searchStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeatures";
-import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
-import MHtmlPage from "pages/MHtmlPage.vue";
-import MHtmlViewHelper from "pages/sidepanel/helper/MHtmlViewHelper.vue";
-import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";

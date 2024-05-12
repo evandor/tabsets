@@ -52,7 +52,6 @@
 <script setup lang="ts">
 import {ref, watchEffect} from 'vue';
 import {useMeta, useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
 import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
@@ -79,8 +78,6 @@ import ToolbarButton from "components/widgets/ToolbarButton.vue";
 
 const $q = useQuasar()
 const router = useRouter()
-const tabsStore = useTabsStore()
-const searchStore = useSearchStore()
 
 const leftDrawerOpen = ref($q.screen.gt.lg)
 

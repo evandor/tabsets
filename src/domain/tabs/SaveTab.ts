@@ -4,9 +4,8 @@ import {Tab} from "src/tabsets/models/Tab";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {Tabset} from "src/tabsets/models/Tabset";
-import {useTabsetService} from "src/services/TabsetService2";
-import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
+import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -30,7 +29,6 @@ export class SaveTabCommand implements Command<any> {
         if (this.tab.chromeTabId) {
             const currentTab = await ChromeApi.getCurrentTab()
             console.log("capturing", typeof this.tab, currentTab)
-            console.log("***", useTabsStore().getChromeTabs)
             // TODO cannot return from "saveAsHTML" as the callback cannot be turned into a promise
             chrome.pageCapture.saveAsMHTML({tabId: currentTab.id || 0},
                 (html: Blob | undefined) => {
