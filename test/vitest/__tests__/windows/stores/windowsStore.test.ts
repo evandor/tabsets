@@ -7,8 +7,6 @@ import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import ChromeApi from "src/services/ChromeApi";
-import IndexedDbWindowsStorage from "src/windows/persistence/IndexedDbWindowsPersistence";
-import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
 
 installQuasarPlugin();
 
