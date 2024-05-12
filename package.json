@@ -120,6 +120,7 @@
     "electron-packager": "^17.1.1",
     "fake-indexeddb": "^5.0.1",
     "typescript": "^5.1.6",
+    "vitepress": "^1.1.4",
     "vitest": "^1.4.0",
     "workbox-build": "^7.0.0",
     "workbox-cacheable-response": "^7.0.0",
