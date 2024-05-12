@@ -37,6 +37,7 @@ describe('NewTabsetDialog', () => {
     await IndexedDbTabsetsPersistence.init()
     db = useDB(undefined).tabsetsIndexedDb
     await useTabsetService().init(db)
+    await useTabsetsStore().initialize(db)
     wrapper = mount(NewTabsetDialogBody, {props: {}});
 
     input = wrapper.find('[data-testid=newTabsetName]')

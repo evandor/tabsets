@@ -179,12 +179,12 @@ const submit = () => {
       .executeFromUi(new CreateTabsetCommand(newTabsetName.value, tabsToUse, windowModel.value, theColor.value))
       .then((res) => {
         if (props.spaceId) {
-          const ts: Tabset = res.result.tabset
+          const ts: Tabset = res.result?.tabset
           ts.spaces.push(props.spaceId)
           useTabsetService().saveTabset(ts)
         }
         if (!props.fromPanel) {
-          router.push("/tabsets/" + res.result.tabsetId)
+          router.push("/tabsets/" + res.result?.tabsetId)
         } else {
           useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
           router.push("/sidepanel?first=")
