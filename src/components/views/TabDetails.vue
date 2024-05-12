@@ -219,7 +219,6 @@ import {useSearchStore} from "src/stores/searchStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeatures";
-import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";

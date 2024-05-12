@@ -379,7 +379,6 @@
 </template>
 
 <script setup lang="ts">
-import {useTabsStore} from "src/stores/tabsStore"
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useRoute, useRouter} from "vue-router";
 import {onMounted, reactive, ref, watchEffect} from "vue";
@@ -389,22 +388,15 @@ import {date} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash"
 import {useUtils} from "src/services/Utils";
-import {useUiStore} from "src/stores/uiStore";
 import {openURL} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
-import {useTabsetService} from "src/services/TabsetService2";
 import Analytics from "src/utils/google-analytics";
 import {Tab} from "src/tabsets/models/Tab";
-import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const tabsStore = useTabsStore()
-const notificationStore = useNotificationsStore()
-const featuresStore = useSettingsStore()
 const searchStore = useSearchStore()
-const router = useRouter()
 const route = useRoute()
 
 const {formatDate} = useUtils()

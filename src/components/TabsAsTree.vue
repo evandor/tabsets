@@ -24,7 +24,6 @@
 <script setup lang="ts">
 
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 import {ref, watch, watchEffect} from "vue";
 import {uid, useQuasar} from "quasar";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";

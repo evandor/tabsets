@@ -14,7 +14,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {onMounted, ref, watchEffect} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
@@ -24,9 +23,6 @@ import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const emit = defineEmits(['domainSelected']);
-
-const tabsStore = useTabsStore()
-const router = useRouter()
 
 const groupedTabs = ref<Map<String, Tab[]>>(new Map())
 
@@ -41,7 +37,7 @@ watchEffect(() => {
           _.filter(
               _.flatMap(
                   _.filter(
-                      _.map([...useTabsetsStore().tabsets.values()],
+                      _.map([...useTabsetsStore().tabsets.values()] as Tabset[],
                           (ts: Tabset) => ts),
                       (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
                   (ts: Tabset) => ts.tabs), (t: Tab) => true),

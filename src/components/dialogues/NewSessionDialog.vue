@@ -51,10 +51,7 @@
 import {computed, ref, watchEffect} from "vue";
 import {useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
-import TabsetService from "src/services/TabsetService";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateSessionCommand} from "src/domain/commands/CreateSession";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -73,9 +70,7 @@ const props = defineProps({
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
 const router = useRouter()
-const $q = useQuasar()
 
 const newTabsetName = ref('Session ' + new Date().getDate() + '.' + (new Date().getMonth() + 1))
 const newTabsetNameExists = ref(false)

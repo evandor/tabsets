@@ -47,12 +47,9 @@ import TabList from "components/layouts/TabList.vue";
 import TabTable from "components/layouts/TabTable.vue";
 import TabGroups from "components/layouts/TabGroups.vue";
 import TabsExporter from "components/layouts/TabsExporter.vue";
-import {useTabsStore} from "src/stores/tabsStore";
 import {PropType, ref, watchEffect} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";
-import PageForTabset from "components/layouts/PageForTabset.vue";
-import TabsCanvas from "components/layouts/TabsCanvas.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {useRoute} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -61,7 +58,6 @@ import TabGrid from "components/layouts/TabGrid.vue";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const tabsStore = useTabsStore()
 const route = useRoute()
 
 const highlightUrl = ref('')

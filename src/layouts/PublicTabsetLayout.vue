@@ -52,7 +52,6 @@
 <script setup lang="ts">
 import {ref, watchEffect} from 'vue';
 import {useMeta, useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
 import {useRoute, useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"

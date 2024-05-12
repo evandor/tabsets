@@ -62,6 +62,10 @@ class IndexedDbTabsetsPersistence implements TabsetsPersistence {
     return this.db.delete(this.STORE_IDENT, tabsetId)
   }
 
+  clear(name: string) {
+    this.db.clear(name).catch((e) => console.warn(e))
+  }
+
   async migrate() {
     // 0.4.11 - 0.5.0
     const oldDB = await openDB("db")

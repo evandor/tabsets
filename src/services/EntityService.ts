@@ -1,7 +1,4 @@
-import {useTabsStore} from "src/stores/tabsStore";
 import PersistenceService from "src/services/PersistenceService";
-import {Entity} from "src/models/Entity";
-import {uid} from "quasar";
 
 let db: PersistenceService = null as unknown as PersistenceService
 

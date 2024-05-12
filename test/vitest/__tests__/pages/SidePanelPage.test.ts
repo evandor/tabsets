@@ -2,7 +2,6 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {mount, VueWrapper} from '@vue/test-utils';
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
-import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import SidePanelPage from "pages/SidePanelPage.vue";

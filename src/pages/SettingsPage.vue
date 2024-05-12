@@ -413,7 +413,6 @@
 </template>
 
 <script setup lang="ts">
-import {useTabsStore} from "src/stores/tabsStore"
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {LocalStorage, useQuasar} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
@@ -463,7 +462,6 @@ const { t } = useI18n()
 
 const {sendMsg, inBexMode} = useUtils()
 
-const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
 

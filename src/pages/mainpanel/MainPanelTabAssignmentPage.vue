@@ -79,7 +79,6 @@
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useRoute} from "vue-router";
-import {useTabsStore} from "stores/tabsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {Notify, QForm} from "quasar";
 import {useCommandExecutor} from "src/services/CommandExecutor";

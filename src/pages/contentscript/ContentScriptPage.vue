@@ -37,13 +37,13 @@
 <script lang="ts" setup>
 import {useUtils} from "src/services/Utils";
 import {onMounted, ref, watchEffect} from "vue";
-import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
 import {Tabset} from "src/tabsets/models/Tabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {sendMsg} = useUtils()
 
@@ -54,10 +54,10 @@ const comment = ref('')
 
 onMounted(() => chrome.tabs.getCurrent().then((t: chrome.tabs.Tab | undefined) => currentChromeTab.value = t))
 
-watchEffect(() => selectedTabset.value = useTabsetService().getCurrentTabset())
+watchEffect(() => selectedTabset.value = useTabsetsStore().getCurrentTabset)
 
 const closeContentScriptFrame = (close: boolean) => {
-  console.log("closeContentScriptFrame...", useTabsetService().getCurrentTabset())
+  console.log("closeContentScriptFrame...", useTabsetsStore().getCurrentTabset)
   if (close) {
     window.parent.postMessage({height:"40px", width:"30px", top:"80px", right:"0px"}, "*");
   } else {
@@ -72,7 +72,7 @@ const closeContentScriptFrame = (close: boolean) => {
 }
 
 const alreadyInTabset = () =>
-  (currentChromeTab.value?.url && useTabsStore().getCurrentTabset) ?
+  (currentChromeTab.value?.url && useTabsetsStore().getCurrentTabset) ?
     useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url) :
     false
 

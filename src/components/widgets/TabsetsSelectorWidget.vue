@@ -46,7 +46,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "src/stores/tabsStore";
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
@@ -64,7 +63,6 @@ import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
 const router = useRouter()
 const $q = useQuasar()
@@ -100,13 +98,13 @@ watchEffect(() => {
   })
 })
 
-const tabsetLabel = () => !tabsStore.currentTabsetName ? 'no tabset selected' : tabsStore.currentTabsetName
+const tabsetLabel = () => !useTabsetsStore().currentTabsetName ? 'no tabset selected' : useTabsetsStore().currentTabsetName
 
 const openNewTabsetDialog = () => {
   $q.dialog({
     component: NewTabsetDialog,
     componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
+      tabsetId: useTabsetsStore().currentTabsetId,
       fromPanel: props.fromPanel
     }
   })
@@ -116,8 +114,8 @@ const deleteTabsetDialog = () => {
   $q.dialog({
     component: DeleteTabsetDialog,
     componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
-      tabsetName: tabsStore.currentTabsetName
+      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetName: useTabsetsStore().currentTabsetName
     }
   })
 }
@@ -126,8 +124,8 @@ const openEditTabsetDialog = () => {
   $q.dialog({
     component: EditTabsetDialog,
     componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
-      tabsetName: tabsStore.currentTabsetName,
+      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetName: useTabsetsStore().currentTabsetName,
       fromPanel: props.fromPanel
     }
   })

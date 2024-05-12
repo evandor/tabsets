@@ -21,9 +21,6 @@
 
 import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
-import _ from "lodash"
-import TabsetService from "src/services/TabsetService";
 import Analytics from "src/utils/google-analytics";
 
 const route = useRoute()

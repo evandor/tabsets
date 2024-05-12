@@ -30,7 +30,6 @@
 
 <script setup lang="ts">
 
-import {useTabsStore} from "src/stores/tabsStore"
 import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {SavedBlob} from "src/models/SavedBlob";

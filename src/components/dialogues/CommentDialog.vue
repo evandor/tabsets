@@ -39,7 +39,6 @@
 
 import {ref, watchEffect} from "vue";
 import {date, useDialogPluginComponent, useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
 import {TabsetSharing} from "src/tabsets/models/Tabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddCommentCommand} from "src/domain/tabs/AddCommentCommand";

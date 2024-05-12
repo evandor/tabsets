@@ -46,7 +46,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
