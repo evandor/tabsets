@@ -133,7 +133,6 @@
 <script lang="ts" setup>
 
 import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
@@ -166,7 +165,6 @@ const {t} = useI18n({locale: navigator.language, useScope: "global"})
 const {inBexMode} = useUtils()
 
 const router = useRouter()
-const tabsStore = useTabsStore()
 const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
 const randomKey = ref<string>(uid())

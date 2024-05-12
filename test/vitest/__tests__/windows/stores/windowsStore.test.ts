@@ -7,6 +7,8 @@ import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import ChromeApi from "src/services/ChromeApi";
+import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
+import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 
 installQuasarPlugin();
 
@@ -68,7 +70,7 @@ async function setupMocks(currentWindow: any) {
     }
   };
 
-  vi.stubGlobal('chrome', chromeMock);
+  //vi.stubGlobal('chrome', chromeMock);
         vi.stubGlobal('browser', chromeMock);
 
 async function setupStores() {
@@ -78,7 +80,7 @@ async function setupStores() {
 
 describe('WindowsStore', () => {
 
-  let db = null as unknown as PersistenceService
+  let db = null as unknown as TabsetsPersistence
   let windowsDb = IndexedDbWindowsPersistence
 
   const tab1 = ChromeApi.createChromeTabObject("skysail", "https://www.skysail.io")
@@ -94,7 +96,7 @@ describe('WindowsStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
-    db = useDB(undefined).db
+    db = useDB(undefined).tabsetsIndexedDb
     await useTabsetService().init(db)
   })
 

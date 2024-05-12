@@ -73,7 +73,6 @@
 </template>
 
 <script setup lang="ts">
-import {useTabsStore} from "src/stores/tabsStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 import _ from "lodash";
 import {onMounted, ref, watch, watchEffect} from "vue"
@@ -85,8 +84,6 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Window} from "src/windows/models/Window";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
 import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
-
-const tabsStore = useTabsStore()
 
 const useSelection = ref(false)
 const invert = ref(false)

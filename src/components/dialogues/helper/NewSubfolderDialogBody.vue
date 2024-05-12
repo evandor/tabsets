@@ -51,7 +51,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {QForm, useDialogPluginComponent} from "quasar";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";

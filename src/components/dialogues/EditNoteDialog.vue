@@ -68,7 +68,6 @@ import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {date, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

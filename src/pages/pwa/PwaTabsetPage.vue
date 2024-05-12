@@ -1,7 +1,7 @@
 <template>
 
   <!-- toolbar -->
-  <q-toolbar class="text-primary" v-if="!tabsStore.currentTabsetId">
+  <q-toolbar class="text-primary" v-if="!useTabsetsStore().currentTabsetId">
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
@@ -24,7 +24,7 @@
               class="text-primary text-weight-bold cursor-pointer"
               @mouseenter="showEditButton = true"
               @mouseout="showEditButton = false">
-                  {{ tabsStore.currentTabsetName }}
+                  {{ useTabsetsStore().currentTabsetName }}
                 <span
                   v-if="tabset.sharedId"
                   class="text-caption">shared by {{
@@ -82,9 +82,9 @@
         <!--        <q-separator vertical dark inset />-->
         <!--        <span>{{ useUiStore().tabsFilter }}</span>-->
         <q-btn
-          v-if="tabsStore.currentTabsetId !== '' &&
-                  tabsStore.getTabset(tabsStore.currentTabsetId) &&
-                  tabsStore.getCurrentTabset?.tabs?.length > 10 &&
+          v-if="useTabsetsStore().currentTabsetId !== '' &&
+                  useTabsetsStore().getTabset(useTabsetsStore().currentTabsetId) &&
+                  useTabsetsStore().getCurrentTabset?.tabs?.length > 10 &&
                   $q.screen.gt.xs"
           flat
           :text-color="useUiStore().tabsFilter ? 'secondary' : 'primary'"
@@ -104,9 +104,9 @@
           </q-tooltip>
         </q-btn>
 
-        <q-icon v-if="tabsStore.currentTabsetId !== '' &&
+        <q-icon v-if="useTabsetsStore().currentTabsetId !== '' &&
           tabset?.type !== TabsetType.DYNAMIC &&
-          tabsStore.getTabset(tabsStore.currentTabsetId)"
+          useTabsetsStore().getTabset(useTabsetsStore().currentTabsetId)"
                 class="cursor-pointer" size="22px" color="warning"
                 name="add_circle" @click="addUrlDialog">
           <q-tooltip
@@ -128,7 +128,7 @@
 
   <!--  <q-banner rounded class="bg-amber-1 text-black q-ma-md"-->
   <q-banner rounded class="text-primary q-ma-md" style="border: 1px solid #efefef"
-            v-if="!tabsStore.currentTabsetId && useTabsetsStore().tabsets.size > 0">
+            v-if="!useTabsetsStore().currentTabsetId && useTabsetsStore().tabsets.size > 0">
     <div class="text-body2">
       Select an existing tabset from the list or create a new tabset.
     </div>
@@ -175,7 +175,6 @@
 import {onMounted, onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {date, openURL, uid, useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
 import TabsetService from "src/services/TabsetService";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -199,7 +198,6 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 const router = useRouter()
-const tabsStore = useTabsStore()
 const permissionsStore = usePermissionsStore()
 
 const $q = useQuasar()
@@ -290,7 +288,7 @@ watchEffect(() => {
 })
 
 
-const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(tabsStore.currentTabsetId, newValue))
+//const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(useTabsetsStore().currentTabsetId, newValue))
 
 const setFilter = (newValue: string) => {
   console.log("filter", newValue)
@@ -309,7 +307,7 @@ const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSorting
 
 const toggleOrder = () => orderDesc.value = !orderDesc.value
 
-const showSorting = () => tabsStore.getCurrentTabs.length > 10 && $q.screen.gt.xs
+const showSorting = () => useTabsetsStore().getCurrentTabs.length > 10 && $q.screen.gt.xs
 
 </script>
 

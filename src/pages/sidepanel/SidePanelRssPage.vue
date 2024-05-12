@@ -63,11 +63,6 @@
 import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {date, useQuasar} from "quasar";
-import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
-import _ from "lodash"
-import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/tabsets/models/Tab";
-import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {extract} from "@extractus/feed-extractor";
 import NavigationService from "src/services/NavigationService";
@@ -76,13 +71,7 @@ import Analytics from "src/utils/google-analytics";
 
 const route = useRoute();
 const router = useRouter();
-const localStorage = useQuasar().localStorage
-const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
 
-const tabsetname = ref(tabsStore.currentTabsetName)
-const filter = ref('')
-const $q = useQuasar()
 
 const encodedUrl = ref()
 const title = ref()

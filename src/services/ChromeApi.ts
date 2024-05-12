@@ -1,6 +1,5 @@
 import {Tabset} from "src/tabsets/models/Tabset";
 import {CLEANUP_PERIOD_IN_MINUTES, MONITORING_PERIOD_IN_MINUTES} from "boot/constants";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
@@ -16,12 +15,11 @@ import {MonitoringType} from "src/models/Monitor";
 import {Router} from "vue-router";
 
 import "rangy/lib/rangy-serializer";
-import {useTabsetService} from "src/services/TabsetService2";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsetService} from "src/services/TabsetService2";
 
-const {urlExistsInATabset} = useTabsetService()
 
 function runHousekeeping() {
   //housekeeping()
@@ -113,8 +111,8 @@ class ChromeApi {
       (alarm: chrome.alarms.Alarm) => {
         if (alarm.name === "housekeeping") {
           runHousekeeping()
-          runThumbnailsHousekeeping(urlExistsInATabset)
-          runContentHousekeeping(urlExistsInATabset)
+          runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
+          runContentHousekeeping(useTabsetService().urlExistsInATabset)
         } else if (alarm.name === "monitoring") {
           if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING)) {
             checkMonitors(router)
@@ -160,7 +158,6 @@ class ChromeApi {
     }
 
     console.log(" building context menu", caller)
-    const tabsStore = useTabsStore()
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
         () => {

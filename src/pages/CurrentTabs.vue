@@ -8,7 +8,6 @@
 <script setup lang="ts">
 
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 
 const router = useRouter()
 const tabsStore = useTabsStore()

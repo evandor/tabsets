@@ -1,5 +1,4 @@
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash";
 import {HTMLSelection, Tab} from "src/tabsets/models/Tab";
 import {uid, useQuasar} from "quasar";
@@ -23,6 +22,7 @@ import {SidePanelView, useUiStore} from "stores/uiStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 
 const {
   saveTabset,
@@ -244,14 +244,13 @@ class ChromeListeners {
   }
 
   onCreated(tab: chrome.tabs.Tab) {
-    if (!useTabsStore().listenersOn) {
-      console.debug(`onCreated: tab ${tab.id}: >>> listeners off, returning <<<`)
-      return
-    }
+    // if (!useTabsStore().listenersOn) {
+    //   console.debug(`onCreated: tab ${tab.id}: >>> listeners off, returning <<<`)
+    //   return
+    // }
     this.eventTriggered()
     console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`, tab)
     //sendMsg('window-updated', {initiated: "ChromeListeners#onCreated"})
-    const tabsStore = useTabsStore()
 
     let foundSession = false
     _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
@@ -281,10 +280,10 @@ class ChromeListeners {
     }
 
 
-    if (!useTabsStore().listenersOn) {
-      console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
-      return
-    }
+    // if (!useTabsStore().listenersOn) {
+    //   console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
+    //   return
+    // }
 
     // set current chrome tab in tabsStore
     await setCurrentTab()
@@ -296,7 +295,6 @@ class ChromeListeners {
     }
 
     this.eventTriggered()
-    const tabsStore = useTabsStore()
 
     if (!info.status || (Object.keys(info).length > 1)) {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
@@ -477,7 +475,6 @@ class ChromeListeners {
 
   async onActivated(info: chrome.tabs.TabActiveInfo) {
     this.eventTriggered()
-    const tabsStore = useTabsStore()
     console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
 
     await setCurrentTab()

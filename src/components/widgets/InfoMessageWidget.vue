@@ -24,7 +24,6 @@
 
 <script lang="ts" setup>
 import {useUiStore} from "src/stores/uiStore";
-import {useTabsStore} from "src/stores/tabsStore";
 
 const props = defineProps({
   ident: {type: String, required: true},
@@ -37,7 +36,6 @@ const props = defineProps({
   forceDisplay: {type: Boolean, default: false}
 })
 const uiStore = useUiStore()
-const tabsStore = useTabsStore()
 
 const hideMessage = (ident: string) => useUiStore().hideInfoMessage(ident)
 

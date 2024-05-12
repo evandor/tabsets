@@ -180,7 +180,6 @@ import {Tab} from "src/tabsets/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
 import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
-import {useTabsStore} from "stores/tabsStore";
 import NewWindowDialog from "src/windows/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
 import {MarkTabsetDeletedCommand} from "src/tabsets/commands/MarkTabsetDeleted";

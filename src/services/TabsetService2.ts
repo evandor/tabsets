@@ -1,9 +1,7 @@
 import {STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";
 import {uid} from "quasar";
-import {NewOrReplacedTabset} from "src/models/NewOrReplacedTabset";
 import {useSearchStore} from "src/stores/searchStore";
 import ChromeApi from "src/services/ChromeApi";
 import {TabPredicate} from "src/domain/Types";
@@ -16,32 +14,31 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {Space} from "src/spaces/models/Space";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
-import PersistenceService from "src/services/PersistenceService";
 import JsUtils from "src/utils/JsUtils";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
-import {RequestInfo} from "src/models/RequestInfo";
 import {useUiStore} from "stores/uiStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
 import {MonitoringType} from "src/models/Monitor";
-import {BlobType} from "src/models/SavedBlob";
 import {TabInFolder} from "src/tabsets/models/TabInFolder";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
+import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 
-let db: PersistenceService = null as unknown as PersistenceService
+let db: TabsetsPersistence = null as unknown as TabsetsPersistence
 
 export function useTabsetService() {
 
-  const init = async (providedDb: PersistenceService,
+  const init = async (providedDb: TabsetsPersistence,
                       doNotInitSearchIndex: boolean = false) => {
     console.log(" ...initializing tabsetService2 as", providedDb.getServiceName())
     db = providedDb
 
-    useTabsStore().clearTabsets()
+   // useTabsStore().clearTabsets()
 
     await db.loadTabsets()
     if (!doNotInitSearchIndex) {
@@ -205,7 +202,8 @@ export function useTabsetService() {
   }
 
   const reloadTabset = async (tabsetId: string) => {
-    return db.reloadTabset(tabsetId)
+    //return db.reloadTabset(tabsetId)
+    throw new Error("not implemented")
   }
 
   const resetSelectedTabs = () => {
@@ -459,17 +457,17 @@ export function useTabsetService() {
 
   const saveMetaLinksFor = (tab: chrome.tabs.Tab, metaLinks: MetaLink[]) => {
     if (tab && tab.url) {
-      db.saveMetaLinks(tab.url, metaLinks)
-        //.then(() => console.debug("added meta links"))
-        .catch(err => console.log("err", err))
+      // db.saveMetaLinks(tab.url, metaLinks)
+      //   //.then(() => console.debug("added meta links"))
+      //   .catch(err => console.log("err", err))
     }
   }
 
   const saveLinksFor = (tab: chrome.tabs.Tab, links: any) => {
     if (tab && tab.url) {
-      db.saveLinks(tab.url, links)
-        //.then(() => console.debug("added links"))
-        .catch(err => console.log("err", err))
+      // db.saveLinks(tab.url, links)
+      //   //.then(() => console.debug("added links"))
+      //   .catch(err => console.log("err", err))
     }
   }
 
@@ -532,12 +530,12 @@ export function useTabsetService() {
   }
 
   const saveBlob = (tab: chrome.tabs.Tab | undefined, blob: Blob): Promise<string> => {
-    if (tab && tab.url) {
-      const id: string = uid()
-      return db.saveBlob(id, tab.url, blob, BlobType.PNG, '')
-        .then(() => Promise.resolve(id))
-        .catch(err => Promise.reject(err))
-    }
+    // if (tab && tab.url) {
+    //   const id: string = uid()
+    //   return db.saveBlob(id, tab.url, blob, BlobType.PNG, '')
+    //     .then(() => Promise.resolve(id))
+    //     .catch(err => Promise.reject(err))
+    // }
     return Promise.reject("no tab or tab url")
   }
 
@@ -545,13 +543,13 @@ export function useTabsetService() {
     return Promise.reject("not implemented")//db.getBlob(blobId)
   }
 
-  const saveRequestFor = (url: string, requestInfo: RequestInfo) => {
-    if (url) {
-      db.saveRequest(url, requestInfo)
-        .then(() => console.debug("added request"))
-        .catch(err => console.log("err", err))
-    }
-  }
+  // const saveRequestFor = (url: string, requestInfo: RequestInfo) => {
+  //   if (url) {
+  //     db.saveRequest(url, requestInfo)
+  //       .then(() => console.debug("added request"))
+  //       .catch(err => console.log("err", err))
+  //   }
+  // }
 
   const removeContentFor = (url: string): Promise<any> => {
     return useContentService().deleteContent(url)

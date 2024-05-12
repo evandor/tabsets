@@ -96,7 +96,6 @@
 import {ref, watch, watchEffect} from "vue";
 import RssTabs from "src/components/RssTabs.vue"
 import {useRoute, useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import Features from "components/Features.vue";
@@ -115,7 +114,6 @@ import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const route = useRoute()
 
-const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 
 const openTabsCountRatio = ref(0)

@@ -30,7 +30,6 @@ import {computed, ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {uid, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -51,10 +50,6 @@ const props = defineProps({
   })
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
-
-const tabsStore = useTabsStore()
-const router = useRouter()
-const $q = useQuasar()
 
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)

@@ -30,7 +30,6 @@ import {Tab} from "src/tabsets/models/Tab";
 import {PropType, ref} from "vue";
 import {useQuasar} from "quasar";
 import _ from "lodash"
-import {useTabsStore} from "src/stores/tabsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";

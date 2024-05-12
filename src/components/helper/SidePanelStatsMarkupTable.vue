@@ -69,7 +69,6 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {date, useQuasar} from "quasar";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {useTabsStore} from "stores/tabsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import NavigationService from "src/services/NavigationService";

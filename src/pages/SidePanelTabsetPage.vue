@@ -87,7 +87,6 @@
 <script lang="ts" setup>
 
 import {onMounted, ref, watchEffect} from "vue";
-import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, TabSorting} from "src/tabsets/models/Tab";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {useRoute} from "vue-router";

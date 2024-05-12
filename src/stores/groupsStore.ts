@@ -3,7 +3,6 @@ import {ref} from "vue";
 import {useUtils} from "src/services/Utils";
 import PersistenceService from "src/services/PersistenceService";
 import _ from "lodash"
-import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
 /**

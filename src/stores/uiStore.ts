@@ -5,7 +5,6 @@ import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash"
 import {LocalStorage, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
-import {useTabsStore} from "stores/tabsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Toast, ToastType} from "src/models/Toast";

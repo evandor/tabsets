@@ -72,22 +72,17 @@ import {PropType, ref, watchEffect} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {openURL, useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
-import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
-import {Tab} from "src/tabsets/models/Tab";
-import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useUiStore} from "src/stores/uiStore";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {useTabsStore} from "src/bookmarks/stores/tabsStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const router = useRouter()
-const tabsStore = useTabsStore()
 
-const $q = useQuasar();
-const activeTabset = ref<string | undefined>(tabsStore.currentTabsetId)
+const activeTabset = ref<string | undefined>(useTabsetsStore().currentTabsetId)
 const hoveredTab = ref<string | undefined>(undefined)
 
 const props = defineProps({
@@ -97,7 +92,7 @@ const props = defineProps({
 })
 
 watchEffect(() => {
-  activeTabset.value = tabsStore.currentTabsetId
+  activeTabset.value = useTabsetsStore().currentTabsetId
 })
 
 const selectTS = (tabset: Tabset) => {
@@ -121,8 +116,9 @@ const selectTS = (tabset: Tabset) => {
 
 const onDrop = (evt: DragEvent, tabsetId: string) => {
   const tabId = useUiStore().droppingTab()
-  if (evt.dataTransfer && tabId) {
-    useCommandExecutor().executeFromUi(new MoveToTabsetCommand(tabId, tabsetId, tabsStore.currentTabsetId, evt.shiftKey))
+  const currenTabsetId = useTabsetsStore().currentTabsetId
+  if (evt.dataTransfer && tabId && currenTabsetId) {
+    useCommandExecutor().executeFromUi(new MoveToTabsetCommand(tabId, tabsetId, currenTabsetId, evt.shiftKey))
   }
 }
 

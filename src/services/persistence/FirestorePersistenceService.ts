@@ -13,13 +13,13 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
 import {collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc} from "firebase/firestore";
-import {useTabsStore} from "stores/tabsStore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {LocalStorage} from "quasar";
 import {APP_INSTALLATION_ID} from "boot/constants";
 import {useDB} from "src/services/usePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useUiStore} from "stores/uiStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 function tabsetDoc(tabsetId: string) {
   return doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, "tabsets", tabsetId)
@@ -79,7 +79,7 @@ class FirestorePersistenceService implements PersistenceService {
     docs.forEach((doc) => {
       let newItem = doc.data() as Tabset
       newItem.id = doc.id;
-      useTabsStore().addTabset(newItem)
+      useTabsetsStore().addTabset(newItem)
     })
     useUiStore().syncing = false
     return Promise.resolve(undefined);

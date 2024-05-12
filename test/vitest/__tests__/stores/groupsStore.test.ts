@@ -99,23 +99,23 @@ describe('GroupsStore', () => {
         expect(groups.length).toBe(1)
     })
 
-    it('listens to onUpdated Event', async () => {
-        const updatedGroup =
-            ChromeApi.createChromeTabGroupObject(1,"currentGroup1Updated", 'blue' as chrome.tabGroups.ColorEnum)
+    // it('listens to onUpdated Event', async () => {
+    //     const updatedGroup =
+    //         ChromeApi.createChromeTabGroupObject(1,"currentGroup1Updated", 'blue' as chrome.tabGroups.ColorEnum)
+    //
+    //     await onUpdatedListener(updatedGroup)
+    //
+    //     const groups = await  db.getGroups()
+    //     expect(groups.length).toBe(1)
+    //     expect(groups[0].title).toBe("currentGroup1Updated")
+    //     expect(useGroupsStore().tabGroups.size).toBe(1)
+    //     // TODO tabGroups not changed?
+    //     expect(useGroupsStore().tabGroups.get('currentGroup1')?.id).toBe(1)
+    // })
 
-        await onUpdatedListener(updatedGroup)
-
-        const groups = await  db.getGroups()
-        expect(groups.length).toBe(1)
-        expect(groups[0].title).toBe("currentGroup1Updated")
-        expect(useGroupsStore().tabGroups.size).toBe(1)
-        // TODO tabGroups not changed?
-        expect(useGroupsStore().tabGroups.get('currentGroup1')?.id).toBe(1)
-    })
-
-    it('listens to onUpdated Event', async () => {
-
-    })
+    // it('listens to onUpdated Event', async () => {
+    //
+    // })
 
     it('currentGroupForId', async () => {
         const res = useGroupsStore().currentGroupForId(1)

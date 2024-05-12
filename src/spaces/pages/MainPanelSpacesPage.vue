@@ -60,7 +60,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {onMounted, ref, watchEffect} from "vue"
 import _ from "lodash"
@@ -72,7 +71,6 @@ import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const spacesStore = useSpacesStore()
-const tabsStore = useTabsStore()
 const checked = ref<boolean[][]>([[]])
 const spaces = ref<object[]>([])
 const sortedSpaces = ref<Space[]>([])
@@ -149,7 +147,7 @@ const initialPagination = {
 const updateSpaces = (spaceIndex: number, tabsetIndex: number) => {
   console.log("updated", checked.value[spaceIndex][tabsetIndex], spaceIndex, tabsetIndex)
 
-  const tabset: Tabset = sortedTabsets.value[tabsetIndex]
+  const tabset: Tabset = sortedTabsets.value[tabsetIndex] as Tabset
   const space: Space = sortedSpaces.value[spaceIndex]
   const set: boolean = checked.value[spaceIndex][tabsetIndex]
 

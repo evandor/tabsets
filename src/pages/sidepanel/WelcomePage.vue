@@ -105,7 +105,6 @@
 
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {onMounted, ref, UnwrapRef, watchEffect} from "vue";
-import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";

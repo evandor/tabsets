@@ -189,7 +189,6 @@
 </template>
 <script setup lang="ts">
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
-import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
@@ -220,6 +219,7 @@ import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 

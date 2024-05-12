@@ -74,7 +74,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "src/stores/tabsStore";
 import {useSettingsStore} from "src/stores/settingsStore";
 import TabsetService from "src/services/TabsetService"
 import {ref, watch, watchEffect} from "vue";
@@ -90,7 +89,6 @@ import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue"
 import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const tabsStore = useTabsStore()
 const settingsStore = useSettingsStore()
 const router = useRouter()
 const $q = useQuasar()

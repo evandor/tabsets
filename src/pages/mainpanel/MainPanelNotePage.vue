@@ -47,7 +47,6 @@ import 'regenerator-runtime/runtime'
 import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {uid, useMeta, useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
 import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {useUtils} from "src/services/Utils";
 import {useTabsetService} from "src/services/TabsetService2";

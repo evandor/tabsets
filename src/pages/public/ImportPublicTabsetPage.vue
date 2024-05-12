@@ -53,7 +53,6 @@ import {Tabset} from "src/tabsets/models/Tabset";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useTabsetService} from "src/services/TabsetService2";
 import _ from "lodash"
-import {useTabsStore} from "stores/tabsStore";
 import {doc, getDoc, collectionGroup, query, where, getDocs} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useAuthStore} from "stores/authStore";

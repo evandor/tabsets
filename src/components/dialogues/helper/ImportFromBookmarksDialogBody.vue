@@ -63,7 +63,6 @@
 import {ref} from "vue";
 import {QForm, useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";

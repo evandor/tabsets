@@ -98,7 +98,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "src/stores/tabsStore";
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
@@ -120,7 +119,6 @@ const props = defineProps({
   fromPanel: {type: Boolean, default: true},
   useAsTabsetsSwitcher: {type: Boolean, default: false}
 })
-const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
 const router = useRouter()
 const $q = useQuasar()

@@ -35,7 +35,6 @@
 
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {useCommandExecutor} from "src/services/CommandExecutor";
@@ -51,9 +50,6 @@ defineEmits([
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const {sendMsg} = useUtils()
-
-const tabsStore = useTabsStore()
-const router = useRouter()
 
 const props = defineProps({
   inSidePanel: {type: Boolean, default: false}

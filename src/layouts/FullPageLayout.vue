@@ -197,7 +197,6 @@
 <script setup lang="ts">
 import {ref, watchEffect} from 'vue';
 import {useMeta, useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
 import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
@@ -227,7 +226,6 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const $q = useQuasar()
 const router = useRouter()
-const tabsStore = useTabsStore()
 
 const leftDrawerOpen = ref($q.screen.gt.lg)
 
