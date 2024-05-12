@@ -11,6 +11,12 @@ import {useDB} from "src/services/usePersistenceService";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
 import {useSearchStore} from "stores/searchStore";
 import PersistenceService from "src/services/PersistenceService";
+import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
+import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import ContentPersistence from "src/content/persistence/ContentPersistence";
+import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
+import {useContentService} from "src/content/services/ContentService";
 
 installQuasarPlugin();
 
@@ -20,13 +26,17 @@ describe('UpdateTabUrl', () => {
 
   const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
 
-  let db = null as unknown as PersistenceService
+  let db = null as unknown as TabsetsPersistence
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbPersistenceService.init("db")
-    db = useDB(undefined).db
+    //await IndexedDbPersistenceService.init("db")
+    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbContentPersistence.init()
+    await useContentService().init(IndexedDbContentPersistence)
+    db = useDB(undefined).tabsetsIndexedDb
     await useTabsetService().init(db)
+    await useTabsetsStore().initialize(db)
     await useSearchStore().init()
   })
 
@@ -41,7 +51,7 @@ describe('UpdateTabUrl', () => {
     await new AddTabToTabsetCommand(tab, tabset).execute()
 
     const result = await new UpdateTabUrlCommand(
-        tab, "https://skysail.io", "newName").execute()
+        tab, "https://skysail.io", "newName", "").execute()
     expect(result.message).toBe("Tab updated")
     expect(result.result).toBe("https://skysail.io")
 
@@ -56,7 +66,7 @@ describe('UpdateTabUrl', () => {
     await new AddTabToTabsetCommand(tab, tabset).execute()
 
     const result = await new UpdateTabUrlCommand(
-        tab, "https://skysail.io", "newName").execute()
+        tab, "https://skysail.io", "newName", "").execute()
     await result.undoCommand?.execute()
 
     const tabsetFromDB = useTabsetsStore().getTabset(createTabsetResult.result.tabset.id)

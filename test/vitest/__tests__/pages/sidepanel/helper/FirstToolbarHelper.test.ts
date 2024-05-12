@@ -6,6 +6,8 @@ import ChromeApi from "src/services/ChromeApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 installQuasarPlugin();
 
@@ -43,6 +45,7 @@ describe('FirstToolbarHelper', () => {
 
   it('should be mounted', async () => {
     await IndexedDbPersistenceService.init("db")
+    await IndexedDbTabsetsPersistence.init()
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     const wrapper = mount(FirstToolbarHelper);
     console.log("hier", wrapper.html())

@@ -3,6 +3,8 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsetService} from "src/services/TabsetService2";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
+import {useTabsStore} from "src/bookmarks/stores/tabsStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 export class AssociateWindowWithTabsetCommand implements Command<string> {
 
@@ -16,7 +18,7 @@ export class AssociateWindowWithTabsetCommand implements Command<string> {
     async execute(): Promise<ExecutionResult<string>> {
         try {
             const trustedWindowName = this.windowName.replace(STRIP_CHARS_IN_USER_INPUT, '')
-            const tabset = useTabsStore().getTabset(this.tabsetId)
+            const tabset = useTabsetsStore().getTabset(this.tabsetId)
             if (tabset) {
                 tabset.window = trustedWindowName
                 await useTabsetService().saveTabset(tabset)
