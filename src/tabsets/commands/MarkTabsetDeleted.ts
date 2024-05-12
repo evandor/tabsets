@@ -5,7 +5,6 @@ import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefau
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
-import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUtils} from "src/services/Utils";
 

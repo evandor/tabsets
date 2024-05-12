@@ -14,7 +14,6 @@
 import 'regenerator-runtime/runtime'
 import {ref, watchEffect} from "vue";
 import {useRoute} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {useUtils} from "src/services/Utils";
 import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
@@ -22,12 +21,10 @@ import EditorJS, {OutputData} from "@editorjs/editorjs";
 
 import EditorJsConfig from "src/utils/EditorJsConfig";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {formatDate, sendMsg, sanitize} = useUtils()
 
-const tabsStore = useTabsStore()
 const route = useRoute()
 
 const tab = ref<Tab | undefined>(undefined)

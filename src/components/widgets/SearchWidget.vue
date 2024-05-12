@@ -80,7 +80,6 @@
 </template>
 
 <script lang="ts" setup>
-import {useTabsStore} from "src/stores/tabsStore";
 import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useSearchStore} from "src/stores/searchStore";
 import {Hit} from "src/models/Hit";
@@ -88,10 +87,7 @@ import {useRoute, useRouter} from "vue-router";
 import NavigationService from "src/services/NavigationService";
 import {SearchIndexQuery} from "src/domain/queries/SearchIndexQuery";
 import {useQueryExecutor} from "src/services/QueryExecutor";
-import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUiStore} from "src/stores/uiStore";
-import {FeatureIdent} from "src/models/AppFeatures";
 import JsUtils from "src/utils/JsUtils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
@@ -103,7 +99,6 @@ const props = defineProps({
   searchHits: {type: Number, required: false}
 })
 
-const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
 const search = ref(props.searchTerm)
 const typed = ref('')

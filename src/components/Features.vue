@@ -72,7 +72,6 @@
 
 <script setup lang="ts">
 
-import {useTabsStore} from "src/stores/tabsStore"
 import {ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";

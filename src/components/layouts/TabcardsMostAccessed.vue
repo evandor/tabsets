@@ -20,7 +20,6 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import TabCardWidget from "src/components/widgets/TabCardWidget.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash"
-import {useTabsStore} from "src/stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 
 const $q = useQuasar()

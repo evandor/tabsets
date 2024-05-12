@@ -102,7 +102,6 @@
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
@@ -135,7 +134,6 @@ const props = defineProps({
 
 const $q = useQuasar()
 const router = useRouter()
-const tabsStore = useTabsStore()
 const permissionsStore = usePermissionsStore()
 
 const searching = ref(false)

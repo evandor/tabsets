@@ -35,7 +35,6 @@ import {computed, ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {uid, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import normalizeUrl from 'normalize-url';
@@ -64,10 +63,6 @@ const url = ref<string>(props.providedUrl)
 const {normalize} = useUtils()
 
 const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
-
-const tabsStore = useTabsStore()
-const router = useRouter()
-const $q = useQuasar()
 
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)

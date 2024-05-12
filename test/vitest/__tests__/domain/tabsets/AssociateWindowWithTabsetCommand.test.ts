@@ -4,7 +4,6 @@ import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useDB} from "src/services/usePersistenceService";
-import {useTabsStore} from "stores/tabsStore";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {AssociateWindowWithTabsetCommand} from "src/domain/tabsets/AssociateWindowWithTabsetCommand";

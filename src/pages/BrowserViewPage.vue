@@ -53,10 +53,6 @@
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import _ from "lodash"
-import {uid} from "quasar";
-import {Tab} from "src/tabsets/models/Tab";
-import {useTabsStore} from "stores/tabsStore";
-import ChromeApi from "src/services/ChromeApi";
 
 const route = useRoute()
 const router = useRouter()

@@ -1,0 +1,59 @@
+import {defineStore} from 'pinia';
+import _, {forEach} from 'lodash'
+import {LocalStorage, uid, useQuasar} from "quasar";
+import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
+
+function markDuplicates(tabset: Tabset) {
+  //console.log("marking duplicates in tabset", tabset.id)
+  const urls = new Set<string>()
+  const duplicates = new Set<string>()
+  _.forEach(tabset.tabs, t => {
+    if (urls.has((t.url || 'undefined') + '-' + t.image)) {
+      duplicates.add(t.url || 'undefined')
+    } else {
+      urls.add((t.url || 'undefined') + '-' + t.image)
+    }
+  })
+  //console.log("found duplicates", urls, duplicates)
+  // _.forEach(tabset.tabs, t => {
+  //   t.isDuplicate = duplicates.has(t.url || 'undefined');
+  // })
+}
+
+export const useTabsStore = defineStore('tabs', {
+  state: () => ({
+
+    /**
+     * a named list of tabsets managed by this extension.
+     */
+   // tabsets: new Map<string, Tabset>(),
+
+
+    // use listeners? Might make sense to turn them off when restoring old tabset for example
+    listenersOn: true
+
+  }),
+
+  getters: {
+
+
+
+
+  },
+
+  actions: {
+    async initialize() {
+      console.debug(" ...initializing tabsStore")
+
+      //this.pendingTabset = new Tabset("pending", "pending", [], [])
+    },
+
+
+
+
+
+    clearTabsets() {
+      //this.tabsets = new Map<string, Tabset>()
+    }
+  }
+});

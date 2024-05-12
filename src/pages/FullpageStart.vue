@@ -15,7 +15,6 @@
 <script setup lang="ts">
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 import {onMounted} from "vue";
 import Analytics from "src/utils/google-analytics";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

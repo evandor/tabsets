@@ -53,7 +53,6 @@
 
 import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {ref} from "vue";
 import {useQuasar} from "quasar";
@@ -70,21 +69,9 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import SpacesSelectorWidget from "src/spaces/widgets/SpacesSelectorWidget.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const router = useRouter()
-const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
 const spacesStore = useSpacesStore()
-const notificationStore = useNotificationsStore()
-const permissonsStore = usePermissionsStore()
 
 const $q = useQuasar();
-const localStorage = $q.localStorage
-
-const {inBexMode} = useUtils()
-
-const newTabsetName = ref('')
-const merge = ref(false)
-const splitterModel = ref(350)
 
 $q.loadingBar.setDefaults({
   color: 'green',

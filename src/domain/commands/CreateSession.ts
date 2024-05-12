@@ -3,7 +3,6 @@ import {ExecutionResult} from "src/domain/ExecutionResult";
 import {DeleteTabsetCommand} from "src/tabsets/commands/DeleteTabset";
 import {useTabsetService} from "src/services/TabsetService2";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 
 class UndoCommand implements Command<object> {

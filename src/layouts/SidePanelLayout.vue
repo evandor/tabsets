@@ -17,14 +17,9 @@
 
 import {ref, watchEffect} from "vue";
 import SidePanelFooter from "components/SidePanelFooter.vue";
-import {useTabsStore} from "src/stores/tabsStore";
 import {useMeta, useQuasar} from "quasar";
-import SidePanelWelcomeFooter from "components/SidePanelWelcomeFooter.vue";
-
-const tabsStore = useTabsStore()
 
 const location = ref('')
-
 
 useMeta(() => {
   //console.debug("using meta...")

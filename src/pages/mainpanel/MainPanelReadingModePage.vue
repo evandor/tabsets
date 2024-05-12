@@ -66,7 +66,6 @@
 <script lang="ts" setup>
 
 import {useRoute} from "vue-router";
-import {useTabsStore} from "stores/tabsStore";
 import {onMounted, ref, watchEffect} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
 import {Readability} from "@mozilla/readability";

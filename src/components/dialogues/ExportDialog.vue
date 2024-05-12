@@ -40,7 +40,6 @@ import {ref, watchEffect} from "vue";
 import TabsetService from "src/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 
 import {useDialogPluginComponent} from 'quasar'
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -56,7 +55,6 @@ defineEmits([
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
 const router = useRouter()
 const $q = useQuasar()
 

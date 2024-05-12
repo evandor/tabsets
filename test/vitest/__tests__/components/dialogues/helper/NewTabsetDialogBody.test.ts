@@ -7,7 +7,6 @@ import {useRouter} from "vue-router";
 import {Dialog, Notify} from "quasar";
 import NewTabsetDialogBody from "src/tabsets/dialogues/helper/NewTabsetDialogBody.vue";
 import {useDB} from "src/services/usePersistenceService";
-import {useTabsStore} from "stores/tabsStore";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";

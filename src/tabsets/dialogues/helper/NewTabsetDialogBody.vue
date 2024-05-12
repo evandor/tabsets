@@ -84,7 +84,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
 import {useRouter} from "vue-router";
 import {QForm, useDialogPluginComponent} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
@@ -93,7 +92,6 @@ import {ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/services/TabsetService2";
-import TabsetService from "src/services/TabsetService";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
@@ -115,7 +113,6 @@ const props = defineProps({
   fromPanel: {type: Boolean, default: false}
 })
 
-const tabsStore = useTabsStore()
 const tabsStore2 = useTabsStore2()
 const router = useRouter()
 

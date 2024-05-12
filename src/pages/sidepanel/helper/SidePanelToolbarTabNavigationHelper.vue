@@ -20,8 +20,6 @@
 <script setup lang="ts">
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
-import {useTabsStore} from "stores/tabsStore";
 import NavigationService from "src/services/NavigationService";
-import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 </script>

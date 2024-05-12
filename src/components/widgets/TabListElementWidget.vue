@@ -148,7 +148,6 @@ import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
-import {useTabsStore} from "src/stores/tabsStore";
 import {useRouter} from "vue-router";
 import _ from "lodash";
 import CommentDialog from "components/dialogues/CommentDialog.vue";

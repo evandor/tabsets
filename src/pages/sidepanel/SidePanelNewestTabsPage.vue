@@ -49,7 +49,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "stores/tabsStore";
 import _ from "lodash"
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
@@ -62,8 +61,6 @@ import Analytics from "src/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-
-const tabsStore = useTabsStore()
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelNewestTabsPage', document.location.href);

@@ -4,9 +4,10 @@ import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useDB} from "src/services/usePersistenceService";
-import {useTabsStore} from "stores/tabsStore";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 
 installQuasarPlugin();
 
@@ -14,13 +15,14 @@ vi.mock('vue-router')
 
 describe('CreateTabsetCommand', () => {
 
-  let db = null as unknown as PersistenceService
+  let db = null as unknown as IndexedDbTabsetsPersistence
 
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
-    db = useDB(undefined).db
-    await useTabsetService().init(db)
+    db = useDB().tabsetsIndexedDb//useDB(undefined).db
+    //await useTabsetService().init(db)
+    await useTabsetsStore().initialize(db)
   })
 
   afterEach(async() => {
@@ -37,7 +39,6 @@ describe('CreateTabsetCommand', () => {
     const executionResult = await new CreateTabsetCommand("tabsetName", []).execute()
     expect(executionResult.result.replaced).toBe(false)
     expect(executionResult.result.tabset.name).toBe("tabsetName")
-    expect(executionResult.result.merged).toBe(true)
     expect(executionResult.message).toBe("Tabset created")
 
     const db = useDB(undefined).db

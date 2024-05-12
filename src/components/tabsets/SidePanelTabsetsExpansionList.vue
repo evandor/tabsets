@@ -228,7 +228,6 @@
 <script lang="ts" setup>
 
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
-import {useTabsStore} from "stores/tabsStore";
 import {useTabsetService} from "src/services/TabsetService2";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 import SidePanelSubfolderContextMenu from "pages/sidepanel/SidePanelSubfolderContextMenu.vue";

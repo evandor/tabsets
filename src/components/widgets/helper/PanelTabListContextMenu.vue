@@ -127,7 +127,6 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import EditUrlDialog from "components/dialogues/EditUrlDialog.vue";
-import {useTabsStore} from "stores/tabsStore";
 import {PlaceholdersType} from "src/models/Placeholders";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {UpdateTabColorCommand} from "src/domain/tabs/UpdateTabColor";

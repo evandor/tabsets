@@ -174,7 +174,6 @@ import TabThumbs from "src/components/layouts/TabThumbs.vue";
 import TabColumns from "src/components/layouts/TabColumns.vue";
 import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
 import _ from "lodash"
-import {useTabsStore} from "src/stores/tabsStore";
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/tabsets/models/Tab";

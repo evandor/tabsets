@@ -1,6 +1,5 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
 import {Tab} from "src/tabsets/models/Tab";
 import {useUiStore} from "src/stores/uiStore";
@@ -24,7 +23,6 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
   // TODO this return the old currentTabset - why? needed?
   async execute(): Promise<ExecutionResult<Tabset | undefined>> {
     console.debug(this.toString())
-    const tabsStore = useTabsStore()
 
     const currentTabset = useTabsetsStore().tabsets.get(tabsStore.currentTabsetId) as Tabset | undefined
     if (currentTabset) {

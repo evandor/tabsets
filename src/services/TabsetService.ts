@@ -1,4 +1,3 @@
-import {useTabsStore} from "src/stores/tabsStore";
 import {LocalStorage, uid} from "quasar";
 import ChromeApi from "src/services/ChromeApi";
 import _ from "lodash";
@@ -54,39 +53,6 @@ class TabsetService {
     const candidates = _.filter(tabsStore.browserTabs, (t: chrome.tabs.Tab) => t?.url === tabUrl)
     return candidates.length > 0 ? candidates[0].id : undefined
   }
-
-  // saveAllPendingTabs(onlySelected: boolean = false): Promise<void> {
-  //   const tabsStore = useTabsStore()
-  //   const currentTabset = useTabsetService().getCurrentTabset
-  //   let successful = 0
-  //   let failed = 0
-  //
-  //   if (currentTabset) {
-  //     _.forEach(
-  //       tabsStore.pendingTabset.tabs as Tab[],
-  //       t => {
-  //         if (t?.chromeTabId) {
-  //           if (!onlySelected || (onlySelected && t.selected)) {
-  //             //currentTabset.tabs.push(t)
-  //             this.saveToCurrentTabset(t)
-  //               .then(() => successful += 1)
-  //               .catch(() => failed += 1)
-  //           }
-  //         } else {
-  //           console.log("got tab with missing data", t)
-  //         }
-  //       })
-  //
-  //     if (!onlySelected) {
-  //       tabsStore.pendingTabset.tabs = []
-  //     } else {
-  //       _.remove(tabsStore.pendingTabset.tabs, {selected: true});
-  //     }
-  //     return saveTabset(currentTabset)
-  //       .then(() => Promise.resolve())
-  //   }
-  //   return Promise.reject("no current tabset set")
-  // }
 
   saveSelectedPendingTabs() {
    // this.saveAllPendingTabs(true)
@@ -181,35 +147,7 @@ class TabsetService {
     return saveCurrentTabset()
   }
 
-  // createPendingFromBrowserTabs() {
-  //   console.log(`createPendingFromBrowserTabs`)
-  //   const tabsStore = useTabsStore()
-  //   if (tabsStore.pendingTabset) {
-  //     tabsStore.pendingTabset.tabs = []
-  //     const urlSet = new Set<string>()
-  //     _.forEach(useTabsStore().browserTabs, t => {
-  //       if (t.url) {
-  //         if (!urlSet.has(t.url) && !t.url.startsWith("chrome")) {
-  //           urlSet.add(t.url)
-  //           tabsStore.addToPendingTabset(new Tab(uid(), t))
-  //           //tabsStore.pendingTabset.tabs.push(new Tab(uid(), t))
-  //         }
-  //       }
-  //     })
-  //   }
-  // }
-
-  // getSelectedPendingTabs(): Tab[] {
-  //   const tabsStore = useTabsStore()
-  //   const ts = tabsStore.pendingTabset
-  //   if (ts) {
-  //     return _.filter(ts.tabs as Tab[], t => t.selected)
-  //   }
-  //   return []
-  // }
-
   moveToTabset(tabId: string, toTabsetId: string, copy: boolean = false): Promise<any> {
-    const tabsStore = useTabsStore()
     const tabset = useTabsetsStore().tabsetFor(tabId)
     if (tabset) {
       const tabIndex = _.findIndex(tabset.tabs, {id: tabId})
@@ -247,7 +185,6 @@ class TabsetService {
   exportData(exportAs: string, appVersion: string = "0.0.0"): Promise<any> {
     console.log("exporting as ", exportAs)
 
-    const tabsStore = useTabsStore()
     const spacesStore = useSpacesStore()
 
     let data = ''
@@ -302,8 +239,6 @@ class TabsetService {
 
   importData(json: string) {
     console.log("importing from json")
-    const tabsStore = useTabsStore()
-    const spacesStore = useSpacesStore()
     let data = JSON.parse(json)
     let tabsets = data.tabsets || data
     let spaces = data.spaces || []
