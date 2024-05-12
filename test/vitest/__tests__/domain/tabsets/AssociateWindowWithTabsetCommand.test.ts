@@ -8,6 +8,9 @@ import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {AssociateWindowWithTabsetCommand} from "src/domain/tabsets/AssociateWindowWithTabsetCommand";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
+import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 
 installQuasarPlugin();
 
@@ -15,13 +18,14 @@ vi.mock('vue-router')
 
 describe('AssociateWindowWithTabsetCommand', () => {
 
-  let db = null as unknown as PersistenceService
+  let db = null as unknown as TabsetsPersistence
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbPersistenceService.init("db")
-    db = useDB(undefined).db
+    await IndexedDbTabsetsPersistence.init()
+    db = useDB(undefined).tabsetsIndexedDb
     await useTabsetService().init(db)
+    await useTabsetsStore().initialize(db)
   })
 
   afterEach(async() => {
@@ -40,7 +44,7 @@ describe('AssociateWindowWithTabsetCommand', () => {
     expect(executionResult.result).toBe(tabsetId)
     expect(executionResult.message).toBe("Window set to 'newWindowName'")
 
-    const db = useDB(undefined).db
+    const db = useDB(undefined).tabsetsIndexedDb
     await db.loadTabsets()
     const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(1)
