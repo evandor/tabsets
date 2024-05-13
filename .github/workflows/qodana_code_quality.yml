@@ -11,13 +11,17 @@ on:
 jobs:
   qodana:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
           fetch-depth: 0
       - name: 'Qodana Scan'
-        uses: JetBrains/qodana-action@v2023.2
+        uses: JetBrains/qodana-action@v2024.1
         with:
           args: --baseline,qodana.sarif.json
         env:
