@@ -2794,7 +2794,7 @@
 │  ├─ @idraw/core@^0.3.1
 │  └─ @idraw/util@^0.3.1
 ├─ ieee754@1.2.1
-├─ immutable@4.3.5
+├─ immutable@4.3.6
 ├─ import-meta-resolve@4.1.0
 ├─ inflight@1.0.6
 │  ├─ once@^1.3.0
@@ -3430,7 +3430,7 @@
 │     └─ yargs-parser@^21.1.1
 ├─ qs@6.11.0
 │  └─ side-channel@^1.0.4
-├─ quasar@2.16.2
+├─ quasar@2.16.3
 ├─ query-selector-shadow-dom@1.0.1
 ├─ queue-microtask@1.2.3
 ├─ queue-tick@1.0.1
@@ -3439,7 +3439,6 @@
 ├─ randombytes@2.1.0
 │  └─ safe-buffer@^5.1.0
 ├─ range-parser@1.2.1
-├─ rangy@1.3.1
 ├─ raw-body@2.5.2
 │  ├─ bytes@3.1.2
 │  ├─ http-errors@2.0.0

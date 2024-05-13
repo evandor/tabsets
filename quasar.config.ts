@@ -1,29 +1,22 @@
 /* eslint-env node */
 
-/*
- * This file runs in a Node context (it's NOT transpiled by Babel), so use only
- * the ES6 features that are supported by your Node version. https://node.green/
- */
-
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 
-const { configure } = require('quasar/wrappers');
-const path = require('path');
-const fs = require("fs");
+import { configure } from 'quasar/wrappers';
+//const path = require('path');
+import { fileURLToPath } from 'node:url';
 
-module.exports = configure(function (ctx) {
+export default configure((ctx:any) => {
 
-  require('dotenv').config()
+  //require('dotenv').config()
 
   //console.log("======>", path.resolve(__dirname, './src/i18n/**'))
 
   return {
-
-
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
-    //preFetch: true,
+    // preFetch: true,
 
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
@@ -41,7 +34,7 @@ module.exports = configure(function (ctx) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      // 'mdi-v5',
+      // 'mdi-v7',
       // 'fontawesome-v6',
       'eva-icons',
       // 'themify',
@@ -56,8 +49,8 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
       target: {
-        browser: [ 'es2020', 'edge88', 'firefox78', 'chrome87' ],
-        node: 'node16'
+        browser: [ 'es2022', 'firefox115', 'chrome115', 'safari14' ],
+        node: 'node18'
       },
 
       viteVuePluginOptions: {
@@ -77,34 +70,7 @@ module.exports = configure(function (ctx) {
 
       //publicPath: '/www/',
       // analyze: true,
-      env: {
-        BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
-        BACKEND_URL: process.env.BACKEND_URL,
-
-        TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
-        TABSETS_STAGE: process.env.STAGE,
-
-        COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
-        COUCHDB_URL: process.env.COUCHDB_URL,
-
-        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
-        STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
-        STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
-        STRIPE_SYNC_PRODUCT_LINK: process.env.STRIPE_SYNC_PRODUCT_LINK,
-
-        LOCALE: process.env.LOCALE,
-
-        USE_FIREBASE: process.env.FIREBASE_ACTIVE || false,
-
-        FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
-        FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
-        FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-        FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
-        FIREBASE_MESSAGING_SENDER_ID:process.env.FIREBASE_MESSAGING_SENDER_ID,
-        FIREBASE_MESSAGING_KEY: process.env.FIREBASE_MESSAGING_KEY,
-        FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
-        FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL
-      },
+      env: require('dotenv').config().parsed,
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -133,9 +99,9 @@ module.exports = configure(function (ctx) {
       // viteVuePluginOptions: {},
 
       vitePlugins: [
-        ['@intlify/unplugin-vue-i18n/vite', {
-          include: [path.resolve(__dirname, './src/i18n/**')],
-        }],
+        // ['@intlify/unplugin-vue-i18n/vite', {
+        //   include: [path.resolve(__dirname, './src/i18n/**')],
+        // }],
         ['vite-plugin-package-version' ,{}]
       ]
     },
@@ -180,11 +146,12 @@ module.exports = configure(function (ctx) {
     //   rootComponent: 'src/App.vue',
     //   router: 'src/router/index',
     //   store: 'src/store/index',
-    //   registerServiceWorker: 'src-pwa/register-service-worker',
-    //   serviceWorker: 'src-pwa/custom-service-worker',
+    //   pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+    //   pwaServiceWorker: 'src-pwa/custom-service-worker',
     //   pwaManifestFile: 'src-pwa/manifest.json',
     //   electronMain: 'src-electron/electron-main',
     //   electronPreload: 'src-electron/electron-preload'
+    //   bexManifestFile: 'src-bex/manifest.json
     // },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
@@ -233,15 +200,22 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/configuring-electron
     electron: {
-      // extendElectronMainConf (esbuildConf)
-      // extendElectronPreloadConf (esbuildConf)
+      // extendElectronMainConf (esbuildConf) {},
+      // extendElectronPreloadConf (esbuildConf) {},
 
+      // extendPackageJson (json) {},
+
+      // Electron preload scripts (if any) from /src-electron, WITHOUT file extension
+      preloadScripts: [ 'electron-preload' ],
+
+      // specify the debugging port to use for the Electron app when running in development mode
       inspectPort: 5858,
 
       bundler: 'builder', // 'packager' or 'builder'
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
+
         // OS X / Mac App Store
         // appBundleId: '',
         // appCategoryType: '',
@@ -279,8 +253,7 @@ module.exports = configure(function (ctx) {
         'content-script-tab-helper',
         'content-script-thumbnails',
         'clipping',
-        'annotation',
-        'highlight-annotations'
+  //      'highlight-annotations'
       ],
       css: ['clipping.css']
 
