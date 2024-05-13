@@ -14,7 +14,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
 import {Router} from "vue-router";
 
-import "rangy/lib/rangy-serializer";
+//import "rangy/lib/rangy-serializer";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -549,10 +549,10 @@ class ChromeApi {
   }
 
   executeAnnotationJS(tabId: number) {
-    chrome.scripting.executeScript({
-      target: {tabId: tabId},
-      files: ['annotation.js']
-    });
+    // chrome.scripting.executeScript({
+    //   target: {tabId: tabId},
+    //   files: ['annotation.js']
+    // });
   }
 
   async executeMoveToWindow(tabId: number, windowId: number) {

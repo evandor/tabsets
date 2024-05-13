@@ -24,7 +24,7 @@ class FirebaseServices {
 
   init() {
 
-    if (process.env.USE_FIREBASE != "true") {
+    if (process.env.USE_FIREBASE !== "true") {
       return
     }
     console.log("initializing FirebaseServices")
