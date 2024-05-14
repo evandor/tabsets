@@ -33,6 +33,14 @@ git submodule add -b main https://github.com/evandor/submodule-content.git src/c
 git submodule add -b main https://github.com/evandor/submodule-features.git src/features
 ```
 
+if you run into problems (e.g. src/bookmarks already exists, but is empty), run this:
+
+```
+rm src/bookmarks
+git rm --cached src/bookmarks
+```
+
+
 ```bash
 yarn install
 ```
