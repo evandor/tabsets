@@ -45,3 +45,13 @@ features:
 * Dark Mode (experimental)
 * All data remains on your computer - no backend communication whatsoever
 * Open source
+
+---
+
+## Submodules
+
+Git Submodules are used to share code between some apps and browser applications.
+
+### Features
+
+https://evandor.github.io/submodule-features/
