@@ -146,7 +146,7 @@ watchEffect(async () => {
       activateNotifications.value = false
     }
   } else if (!activateNotifications.value && feature) {
-    usePermissionsStore().deactivateFeature('notifications')
+    useFeaturesStore().deactivateFeature('notifications')
   }
 })
 
@@ -155,10 +155,10 @@ function setFeature(featureIdent: FeatureIdent, val: UnwrapRef<boolean>) {
   console.log("feeature", feature)
   if (val && feature) {
     console.log("activating", featureIdent)
-    usePermissionsStore().activateFeature(featureIdent.toLowerCase())
+    useFeaturesStore().activateFeature(featureIdent.toLowerCase())
   } else if (!val && feature) {
     console.log("deactivateing", featureIdent)
-    usePermissionsStore().deactivateFeature(featureIdent.toLowerCase())
+    useFeaturesStore().deactivateFeature(featureIdent.toLowerCase())
   }
 }
 

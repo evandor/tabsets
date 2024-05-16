@@ -108,7 +108,7 @@
         <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && useAuthStore().isAuthenticated()">
+        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && useAuthStore().isAuthenticated()">
           <q-btn
               @click.stop="savePng(tab as Tab)"
               flat round color="primary" size="11px" icon="image"
@@ -120,7 +120,7 @@
           </q-btn>
         </template>
 
-        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PDF)">
+        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PDF)">
           <q-btn
               @click.stop="savePdf(tab)"
               flat round color="primary" size="11px" icon="o_picture_as_pdf"
@@ -132,7 +132,7 @@
           </q-btn>
         </template>
 
-        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB)">
+        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB)">
           <q-btn
               @click.stop="saveTab(tab)"
               flat round color="primary" size="11px" icon="save"
@@ -175,7 +175,7 @@
     </q-expansion-item>
 
 <!--    <q-expansion-item label="Archived Snapshots"-->
-<!--                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB) && tab?.mhtmls?.length > 0"-->
+<!--                      v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB) && tab?.mhtmls?.length > 0"-->
 <!--                      :default-opened="true">-->
 <!--      <q-card>-->
 <!--        <q-card-section>-->
@@ -187,7 +187,7 @@
 <!--    </q-expansion-item>-->
 
     <q-expansion-item label="Archived Images"
-                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pngs.length > 0">
+                      v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pngs.length > 0">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="png in pngs">
@@ -198,7 +198,7 @@
     </q-expansion-item>
 
     <q-expansion-item label="Archived PDFs"
-                      v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pdfs.length > 0">
+                      v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pdfs.length > 0">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="pdf in pdfs">
@@ -371,6 +371,7 @@ import {useAuthStore} from "stores/authStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 

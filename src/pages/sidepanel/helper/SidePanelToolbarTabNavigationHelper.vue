@@ -1,5 +1,5 @@
 <template>
-  <template v-if="usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS)">
+  <template v-if="useFeaturesStore().hasFeature(FeatureIdent.OPEN_TABS)">
     <SidePanelToolbarButton
         icon="chevron_left"
         tooltip="Back to last tab"
@@ -22,4 +22,5 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import NavigationService from "src/services/NavigationService";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 </script>

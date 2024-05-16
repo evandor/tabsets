@@ -12,6 +12,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {TabsetType} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {sendMsg} = useUtils()
 
@@ -40,16 +41,16 @@ export class CreateTabsetCommand implements Command<SaveOrReplaceResult> {
                     return res
                 })
                 .then(res => {
-                        //   if (useTabsetsStore().tabsets.size === 5 && !usePermissionsStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
+                        //   if (useTabsetsStore().tabsets.size === 5 && !useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS) && process.env.MODE === 'bex') {
                         //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE))
                         //         }
                         if (useTabsetsStore().tabsets.size >= 15 &&
-                            !usePermissionsStore().hasFeature(FeatureIdent.SPACES) &&
+                            !useFeaturesStore().hasFeature(FeatureIdent.SPACES) &&
                             process.env.MODE === 'bex') {
                             useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE))
                         // } else if (useTabsetsStore().tabsets.size >= 3 &&
                         //     useTabsetsStore().allTabsCount > 10 &&
-                        //     !usePermissionsStore().hasFeature(FeatureIdent.NEWEST_TABS) &&
+                        //     !useFeaturesStore().hasFeature(FeatureIdent.NEWEST_TABS) &&
                         //     process.env.MODE === 'bex') {
                         //     useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_NEWEST_TABS_FEATURE))
                         }

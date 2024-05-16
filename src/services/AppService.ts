@@ -84,7 +84,7 @@ class AppService {
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
 
-    await useFeaturesStore().initialize(useDB().featuresIndexedDb)
+    await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
 
     await ChromeListeners.initListeners()
 
@@ -183,7 +183,7 @@ class AppService {
 
     ChromeApi.init(router)
 
-    if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+    if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
       await groupsStore.initialize(useDB(undefined).db)
       groupsStore.initListeners()
     }

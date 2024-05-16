@@ -51,7 +51,7 @@
           <!--          <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
 
           <q-btn
-            v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+            v-if="useFeaturesStore().hasFeature(FeatureIdent.NOTES)"
             @click.stop="startTabsetNote()"
             class="q-mx-xs q-pa-xs cursor-pointer"
             icon="o_add_circle"
@@ -107,6 +107,7 @@ import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import NavigationService from "src/services/NavigationService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 

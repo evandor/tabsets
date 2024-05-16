@@ -88,7 +88,7 @@
                              tooltip="List all your RSS feeds"/>
 
   <span class="q-ma-none"
-        v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets?.size > 0">
+        v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets?.size > 0">
             <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
               <q-tooltip>{{ useTabsStore2().browserTabs?.length }} open tabs</q-tooltip>
             </OpenTabsThresholdWidget>
@@ -108,6 +108,7 @@ import {useMessagesStore} from "stores/messagesStore";
 import SidePanelFooterViewMenuItem from "components/helper/SidePanelFooterViewMenuItem.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "../../tabsets/stores/tabsStore2";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const props = defineProps({
   showSuggestionIcon: {type: Boolean, required: true},

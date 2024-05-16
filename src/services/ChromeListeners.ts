@@ -23,6 +23,7 @@ import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {
   saveTabset,
@@ -191,7 +192,7 @@ class ChromeListeners {
       chrome.commands.onCommand.addListener(this.onCommandListener);
 
       // TODO removed listeners as well?
-      if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
+      if (useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
         chrome.notifications.onButtonClicked.addListener(
           (notificationId, buttonIndex) => {
             runOnNotificationClick(notificationId, buttonIndex);
@@ -304,7 +305,7 @@ class ChromeListeners {
       this.handleUpdateInjectScripts(info, chromeTab)
 
       // handle existing tabs
-      if (usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+      if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
         const matchingTabs = useTabsetsStore().tabsForUrl(chromeTab.url || '')
         for (const t of matchingTabs) {
           // we care only about actually setting a group, not about removal
@@ -407,7 +408,7 @@ class ChromeListeners {
       return
     }
 
-    if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+    if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
       const tabForUrl = useTabsetsStore().tabForUrlInSelectedTabset(tab.url || '')
       console.log("about to run annotationScript...", tabForUrl)
       if (tabForUrl) {
@@ -422,13 +423,13 @@ class ChromeListeners {
 
     const scripts: string[] = []
 
-    //if (usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)) {
+    //if (useFeaturesStore().hasFeature(FeatureIdent.THUMBNAILS)) {
     scripts.push("content-script-thumbnails.js")
     //}
-    if (usePermissionsStore().hasFeature(FeatureIdent.TAB_HELPER)) {
+    if (useFeaturesStore().hasFeature(FeatureIdent.TAB_HELPER)) {
       scripts.push("content-script-tab-helper.js")
     }
-    if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+    if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
       scripts.push("highlight-annotations.js")
     }
     scripts.push("content-script.js")
@@ -618,7 +619,7 @@ class ChromeListeners {
       saveMetaLinksFor(sender.tab, request.links)
       saveLinksFor(sender.tab, request.anchors)
 
-      if (usePermissionsStore().hasFeature(FeatureIdent.RSS)) {
+      if (useFeaturesStore().hasFeature(FeatureIdent.RSS)) {
         request.links.forEach((metaLink: MetaLink) => {
           if ("application/rss+xml" === metaLink.type) {
             console.log("hier!!!", metaLink)

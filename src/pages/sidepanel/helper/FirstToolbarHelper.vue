@@ -4,7 +4,7 @@
       <div class="row q-ma-none q-pa-none">
 
         <!-- we have spaces -->
-        <div v-if="permissionsStore.hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
+        <div v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
 
           <!-- spaces and no back button -->
 
@@ -121,6 +121,7 @@ import {SyncType} from "stores/appStore";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {t} = useI18n({useScope: 'global'})
 
@@ -198,21 +199,21 @@ const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 
 const showToggleSessionIcon = () =>
   useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) &&
+  useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) &&
   !searching.value
 
 const showCreateClipButton = () =>
   useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive() &&
+  useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive() &&
   !searching.value
 
 const showCreateClipButtonInActive = () =>
   useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive() &&
+  useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive() &&
   !searching.value
 
 const newTabsetTooltip = () =>
-  usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
+  useFeaturesStore().hasFeature(FeatureIdent.SPACES) ?
     (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
     t('add_new_tabset')
 
