@@ -3,13 +3,13 @@
 layout: home
 
 hero:
-  name: "Tabsets.net!"
+  name: "Tabsets.net"
   text: "Developer Documentation"
   tagline: Tabsets - better bookmarks. A cross-browser extension to manage your URLs
   actions:
     - theme: brand
       text: Initial Setup
-      link: /docs/setup
+      link: /setup
     - theme: brand
       text: Features
       link: /features
@@ -55,8 +55,3 @@ Git Submodules are used to share code between some apps and browser applications
 ### Features
 
 https://evandor.github.io/submodule-features/
-
-
-<!--@include: ./src/features/docs/feature.md-->
-
-
