@@ -80,6 +80,7 @@ import {AppFeatures, FeatureIdent, FeatureType} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {useQuasar} from "quasar";
 import {Feature} from "src/features/models/Feature";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const router = useRouter()
 const route = useRoute()
@@ -93,7 +94,7 @@ const featuresByType = (type: FeatureType) =>
     if (f.requires.length > 0) {
       let missingRequirement = false
       f.requires.forEach((requirement: FeatureIdent) => {
-        if (!usePermissionsStore().hasFeature(requirement)) {
+        if (!useFeaturesStore().hasFeature(requirement)) {
           missingRequirement = true
         }
       })
@@ -107,7 +108,7 @@ const featuresByType = (type: FeatureType) =>
 //@ts-ignore
 const appVersion = import.meta.env.PACKAGE_VERSION
 
-const iconColor2 = (f: Feature) => usePermissionsStore().hasFeature(f.ident) ? 'green' : 'grey'
+const iconColor2 = (f: Feature) => useFeaturesStore().hasFeature(f.ident) ? 'green' : 'grey'
 
 const showFeature2 = (f: Feature) => {
   selected2.value = f

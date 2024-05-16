@@ -256,6 +256,7 @@ import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const props = defineProps({
   tabsets: {type: Array as PropType<Array<Tabset>>, required: true}
@@ -388,7 +389,7 @@ const headerStyle = (tabset: Tabset) => {
     tabsetOpened ?
       'border:0 solid grey;border-radius:4px;opacity:30%;' :
       'border:0 solid grey;border-radius:4px;'
-  if (tabset.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
+  if (tabset.color && useFeaturesStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
     style = style + 'border-left:4px solid ' + tabset.color
   } else {
     style = style + 'border-left:4px solid #f5f5f5'

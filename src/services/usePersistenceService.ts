@@ -1,5 +1,5 @@
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {QVueGlobals, useQuasar} from "quasar";
+import {LocalStorage, QVueGlobals, useQuasar} from "quasar";
 import {LocalStoragePersistenceService} from "src/services/storage/LocalStoragePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import FsPersistentService from "src/services/persistence/FirestorePersistenceService";
@@ -11,6 +11,7 @@ import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabset
 import FirestoreSpacesPersistence from "src/spaces/persistence/FirestoreSpacesPersistence";
 import FeaturesPersistence from "src/features/persistence/FeaturesPersistence";
 import IndexedDbFeaturesPersistence from "src/features/persistence/IndexedDbFeaturesPersistence";
+import {LocalStorageFeaturesPersistence} from "src/features/persistence/LocalStorageFeaturesPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
@@ -24,16 +25,18 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
   const featuresIndexedDb: FeaturesPersistence = IndexedDbFeaturesPersistence
 
-  var localDb = undefined as unknown as PersistenceService
+  let localDb = undefined as unknown as PersistenceService
+  let featuresLocalStorage: FeaturesPersistence = undefined as unknown as FeaturesPersistence
   if (quasar) {
     localDb = new LocalStoragePersistenceService(quasar)
+    featuresLocalStorage = new LocalStorageFeaturesPersistence(quasar)
   }
-  var firestore = FsPersistentService
+  let firestore = FsPersistentService
 
   return {
     db, localDb, firestore, spacesIndexedDb, spacesFirestoreDb,
     tabsetsIndexedDb, tabsetsFirestoreDb,
-    featuresIndexedDb
+    featuresIndexedDb,featuresLocalStorage
   }
 
 }

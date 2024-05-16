@@ -12,7 +12,7 @@
             </div>
           </q-card-section>
 
-          <q-card-section class="q-pt-none" v-if="usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) &&
+          <q-card-section class="q-pt-none" v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) &&
               (!tab.monitor || tab.monitor?.type === MonitoringType.NONE)">
             <div class="q-ma-none q-pa-none">
 
@@ -90,6 +90,7 @@ import {NoOpCommand} from "src/domain/commands/NoOpCommand";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash"
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -118,7 +119,7 @@ watchEffect(() => {
 const setMonitoring = (type: MonitoringType) => {
   if (type === MonitoringType.CONTENT_HASH && agree.value &&
       usePermissionsStore().hasPermission('pageCapture') &&
-      usePermissionsStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG)) {
+      useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG)) {
     useCommandExecutor()
         .execute(snapshot.value ?
             new SavePngCommand(props.tab, "monitoring start") :

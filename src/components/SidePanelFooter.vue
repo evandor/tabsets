@@ -74,7 +74,7 @@
         &nbsp;
       </div>
       <div v-else class="col text-right">
-        <q-btn icon="o_help" v-if="usePermissionsStore().hasFeature(FeatureIdent.HELP)"
+        <q-btn icon="o_help" v-if="useFeaturesStore().hasFeature(FeatureIdent.HELP)"
                :class="rightButtonClass()"
                flat
                :size="getButtonSize()"
@@ -130,7 +130,7 @@
             </q-list>
           </q-menu>
         </span>
-        <q-btn v-else-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
+        <q-btn v-else-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)"
                icon="o_open_in_new"
                :class="rightButtonClass()"
                flat
@@ -282,7 +282,7 @@ watchEffect(() => {
     (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
       _.findIndex(suggestions, s => {
         return s.state === SuggestionState.NEW ||
-          (s.state === SuggestionState.NOTIFICATION && !usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS))
+          (s.state === SuggestionState.NOTIFICATION && !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
       }) >= 0)
 
   showSuggestionIcon.value =

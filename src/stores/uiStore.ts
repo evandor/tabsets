@@ -13,6 +13,7 @@ import {
   SHARING_AVATAR_IDENT,
 } from "boot/constants";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",
@@ -44,26 +45,26 @@ export class SidePanelView {
   static readonly MAIN = new SidePanelView('main', '/sidepanel');
 
   static readonly TABS_LIST = new SidePanelView('tabsList', '/sidepanel/tabslist',
-    () => usePermissionsStore().hasFeature(FeatureIdent.OPEN_TABS));
+    () => useFeaturesStore().hasFeature(FeatureIdent.OPEN_TABS));
 
   static readonly TAGS_LIST = new SidePanelView('tagsList', '/sidepanel/tagslist',
-    () => usePermissionsStore().hasFeature(FeatureIdent.TAGS) && useTabsetsStore().allTabsCount > 0);
+    () => useFeaturesStore().hasFeature(FeatureIdent.TAGS) && useTabsetsStore().allTabsCount > 0);
 
   static readonly TAG = new SidePanelView('tag', '/sidepanel/tags');
 
   static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList',
-    () => usePermissionsStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN));
+    () => useFeaturesStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN));
 
   static readonly SHARED_TABSETS_LIST = new SidePanelView('sharedTsList', '/sidepanel/sharedTsList',
-    () => usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING));
+    () => useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING));
 
   static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist',
-    () => usePermissionsStore().hasFeature(FeatureIdent.RSS));
+    () => useFeaturesStore().hasFeature(FeatureIdent.RSS));
 
   static readonly NEWEST_TABS_LIST = new SidePanelView('newestList', '/sidepanel/newestList');
 
   static readonly TOP_10_TABS_LIST = new SidePanelView('top10List', '/sidepanel/top10List',
-    () => usePermissionsStore().hasFeature(FeatureIdent.TOP10));
+    () => useFeaturesStore().hasFeature(FeatureIdent.TOP10));
 
   static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks',
     () => true) //&& useRoute()?.path !== "/sidepanel/welcome");
@@ -72,7 +73,7 @@ export class SidePanelView {
     () => true);
 
   static readonly TAGS_VIEWER = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
-    () => usePermissionsStore().hasFeature(FeatureIdent.TAGS));
+    () => useFeaturesStore().hasFeature(FeatureIdent.TAGS));
 
   static readonly MESSAGES = new SidePanelView('messages', '/sidepanel/messages')
 

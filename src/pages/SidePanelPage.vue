@@ -111,7 +111,7 @@
       <FirstToolbarHelper
         :showSearchBox="showSearchBox">
 
-        <template v-slot:title v-if="permissionsStore && permissionsStore.hasFeature(FeatureIdent.SPACES)">
+        <template v-slot:title v-if="permissionsStore && useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
           <div class="text-subtitle1" @click.stop="router.push('/sidepanel/spaces')">
             <q-btn flat no-caps :label="toolbarTitle(tabsets as Tabset[])"/>
             <q-tooltip :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
@@ -159,6 +159,7 @@ import {useI18n} from 'vue-i18n'
 import SidePanelTabsetsExpansionList from "components/tabsets/SidePanelTabsetsExpansionList.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -238,7 +239,7 @@ function determineTabsets() {
 watchEffect(() => {
 
 //console.log("==== watch effect ====")
-  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
       _.filter([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
@@ -385,7 +386,7 @@ function checkKeystroke(e: KeyboardEvent) {
 }
 
 const toolbarTitle = (tabsets: Tabset[]) => {
-  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     const spaceName = useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
     return tabsets.length > 6 ?
       spaceName + ' (' + tabsets.length.toString() + ')' :

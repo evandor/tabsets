@@ -7,8 +7,8 @@ import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/suggestions/models/Suggestion";
 import {useTabsetService} from "src/services/TabsetService2";
-import ChromeApi from "src/services/ChromeApi";
 import {useDB} from "src/services/usePersistenceService";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 class UndoCommand implements Command<boolean> {
 
@@ -34,7 +34,7 @@ export class GrantPermissionCommand implements Command<boolean> {
         if (granted) {
           console.log("granted permission", this.permission)
           if ("bookmarks" === this.permission) {
-            usePermissionsStore().activateFeature('bookmarks')
+            useFeaturesStore().activateFeature('bookmarks')
             useBookmarksStore().loadBookmarks()
               .then(() => {
                 // TabsetService.init()
@@ -43,9 +43,9 @@ export class GrantPermissionCommand implements Command<boolean> {
               })
             useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
 //          } else if ("history" === this.permission) {
-//            usePermissionsStore().activateFeature('history')
+//            useFeaturesStore().activateFeature('history')
           } else if ("notifications" === this.permission) {
-            usePermissionsStore().activateFeature('notifications')
+            useFeaturesStore().activateFeature('notifications')
           // } else if ("contextMenus" === this.permission) {
           //   //usePermissionsStore().grantPermission("notifications")
           //   ChromeApi.buildContextMenu()
@@ -56,7 +56,7 @@ export class GrantPermissionCommand implements Command<boolean> {
             new UndoCommand(this.permission))
         } else {
           console.log("permission was not granted", this.permission)
-          usePermissionsStore().deactivateFeature(this.permission)
+          useFeaturesStore().deactivateFeature(this.permission)
           return new ExecutionResult(granted, "Permission was not added")
         }
       })

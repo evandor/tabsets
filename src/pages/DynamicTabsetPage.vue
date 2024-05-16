@@ -80,7 +80,7 @@
           <q-tooltip>Sorting descending or ascending, currently {{ orderDesc }}</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
                @click="setView('grid')"
                style="width:14px"
                class="q-mr-sm" size="8px"
@@ -91,7 +91,7 @@
         </q-btn>
 
         <!-- default view, no need to show if there is no alternative -->
-        <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
                @click="setView('list')"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -101,7 +101,7 @@
           <q-tooltip>Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <q-btn v-if="usePermissionsStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
+        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS)"
                @click="setView('canvas')"
                style="width:14px"
                class="q-mr-sm" size="10px"
@@ -192,14 +192,9 @@ import {api} from "boot/axios";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const route = useRoute();
-const router = useRouter();
-const localStorage = useQuasar().localStorage
-const tabsStore = useTabsStore()
-const tabGroupsStore = useTabGroupsStore()
-const featuresStore = useSettingsStore()
-const permissionsStore = usePermissionsStore()
 
 const {inBexMode} = useUtils()
 
