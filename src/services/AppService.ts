@@ -93,9 +93,6 @@ class AppService {
     await BookmarksService.init()
 
     settingsStore.initialize(quasar.localStorage);
-    //tabsetsStore.initialize().catch((err) => console.error("***" + err))
-
-    //tabsetsStore.initialize()
 
     searchStore.init().catch((err) => console.error(err))
 
@@ -108,7 +105,7 @@ class AppService {
     //useAuthStore().upsertAccount(account)
 
     await useNotificationsStore().initialize(useDB(undefined).db)
-    useSuggestionsStore().init()
+    await useSuggestionsStore().init()
     await messagesStore.initialize(useDB(undefined).db)
 
     tabsetService.setLocalStorage(localStorage)
@@ -128,9 +125,9 @@ class AppService {
 
       await FsPersistenceService.init()
 
-      await this.initCoreSerivces(quasar, persistenceStore, this.router)
+      await this.initCoreSerivces(quasar, persistenceStore, this.router, syncType)
     } else {
-      await this.initCoreSerivces(quasar, useDB().db, this.router)
+      await this.initCoreSerivces(quasar, useDB().db, this.router, SyncType.NONE)
     }
 
     useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
@@ -156,17 +153,14 @@ class AppService {
     useAuthStore().setAuthRequest(null as unknown as string)
   }
 
-  private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router) {
+  private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router, syncType: SyncType) {
     const spacesStore = useSpacesStore()
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsetsStore = useTabsetsStore()
 
-    const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
-      useDB().spacesFirestoreDb : useDB().spacesIndexedDb
-    await spacesStore.initialize(spacesPersistence)
 
-    //await useTabsetService().init(store, false)
+    await spacesStore.initialize(syncType, useAuthStore().isAuthenticated())
 
     const tabsetsPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
       useDB().tabsetsFirestoreDb : useDB().tabsetsIndexedDb
