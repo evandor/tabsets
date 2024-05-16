@@ -1,7 +1,7 @@
 import _ from "lodash"
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
-import {Feature} from "src/features/models/Feature";
+import {Feature} from "src/features/src/models/Feature";
 
 export enum FeatureIdent {
   //BOOKMARKS = "BOOKMARKS", -- active by default now
