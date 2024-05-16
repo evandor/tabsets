@@ -4,7 +4,8 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Tabsets.net",
   description: "description site",
-  base: '/tabsets/',
+  base: '/tabsets/', // needed for github pages
+  srcDir: '../', // need to place the main index.md file on top to be able to reference relative paths
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
