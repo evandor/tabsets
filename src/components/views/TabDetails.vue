@@ -220,7 +220,7 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore"
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const {inBexMode} = useUtils()

@@ -109,7 +109,7 @@
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Show Stats</q-tooltip>
         </q-btn>
 
-        <span v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP) && useAuthStore().isAuthenticated()">
+        <span v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP) && useAuthStore().isAuthenticated()">
           <q-icon
             name="o_open_in_new"
             :class="rightButtonClass()"
@@ -209,10 +209,8 @@ import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
-import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
 import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
 import {Window} from "src/windows/models/Window"
-import {useSettingsStore} from "stores/settingsStore";
 import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
@@ -220,6 +218,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
