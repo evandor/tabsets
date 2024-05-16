@@ -9,8 +9,8 @@ import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabsetsPersistence";
 import FirestoreSpacesPersistence from "src/spaces/persistence/FirestoreSpacesPersistence";
-import FeaturesPersistence from "src/features/src/persistence/FeaturesPersistence";
-import IndexedDbFeaturesPersistence from "src/features/src/persistence/IndexedDbFeaturesPersistence";
+import FeaturesPersistence from "src/features/persistence/FeaturesPersistence";
+import IndexedDbFeaturesPersistence from "src/features/persistence/IndexedDbFeaturesPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
