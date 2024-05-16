@@ -19,6 +19,7 @@ import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsetService} from "src/services/TabsetService2";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 
 function runHousekeeping() {
@@ -114,7 +115,7 @@ class ChromeApi {
           runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
           runContentHousekeeping(useTabsetService().urlExistsInATabset)
         } else if (alarm.name === "monitoring") {
-          if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING)) {
+          if (useFeaturesStore().hasFeature(FeatureIdent.MONITORING)) {
             checkMonitors(router)
           }
         } else {
@@ -129,7 +130,7 @@ class ChromeApi {
       }
     )
 
-    if (usePermissionsStore().hasAllOrigins() && usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+    if (usePermissionsStore().hasAllOrigins() && useFeaturesStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
       this.startWebRequestListener()
     } else {
       this.stopWebRequestListener()
@@ -176,7 +177,7 @@ class ChromeApi {
               // documentUrlPatterns: ['https://*/*', 'https://*/'],
               //   contexts: ['all']
               // })
-              if (usePermissionsStore().hasFeature(FeatureIdent.WEBSITE_CLIP)) {
+              if (useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP)) {
                 console.debug(" > context menu: website_clip")
                 chrome.contextMenus.create({
                   id: 'website_clip',
@@ -216,7 +217,7 @@ class ChromeApi {
                 // rest of logic in windowsStore
               }
 
-              if (usePermissionsStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+              if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
                 console.debug(" > context menu: annotate_website")
                 chrome.contextMenus.create({
                   id: 'annotate_website',

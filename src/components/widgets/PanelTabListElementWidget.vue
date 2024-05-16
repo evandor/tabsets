@@ -107,7 +107,7 @@
           <template v-if="props.tab.extension !== UrlExtension.NOTE">
             <short-url @click.stop="gotoTab()"
                        :url="props.tab.url" :hostname-only="!useUiStore().showFullUrls"/>
-            <q-icon v-if="props.tab.matcher && usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
+            <q-icon v-if="props.tab.matcher && useFeaturesStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)"
                     @click.stop="openTabAssignmentPage(props.tab)"
                     name="o_settings">
               <q-tooltip class="tooltip">{{ matcherTooltip() }}</q-tooltip>
@@ -220,7 +220,7 @@
               <span> | </span>
             </template>
 
-            <template v-if="groupName && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS)">
+            <template v-if="groupName && useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)">
               Group <em>{{ groupName }}</em>
               <q-icon name="arrow_drop_down" class="q-mr-none" size="xs" color="text-grey-5"/>
               <q-menu :offset="[0,10]">
@@ -395,6 +395,7 @@ import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode, isCurrentTab} = useUtils()
 const {handleSuccess} = useNotificationHandler()

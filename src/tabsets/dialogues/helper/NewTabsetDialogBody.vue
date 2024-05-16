@@ -61,7 +61,7 @@
           />
         </q-card-section>
 
-        <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)"
+        <q-card-section v-if="useFeaturesStore().hasFeature(FeatureIdent.COLOR_TAGS)"
                         :style="isNotArchived(newTabsetName) ? '':'opacity: 0.2'">
           Assign Color (optional)
           <div class="row q-pa-xs q-mt-none q-pl-sm q-gutter-sm">
@@ -102,6 +102,7 @@ import DialogButton from "components/buttons/DialogButton.vue";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()

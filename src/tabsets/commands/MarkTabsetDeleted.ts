@@ -35,9 +35,9 @@ export class MarkTabsetDeletedCommand implements Command<Tabset> {
         console.log("deleting", tabset.type, tabset.status, tabset.id, useTabsStore().currentTabsetId)
         if (tabset.type === TabsetType.SPECIAL && tabset.id === "BACKUP") {
           //console.log("deactivating")
-          usePermissionsStore().deactivateFeature(FeatureIdent.BACKUP.toLowerCase())
+          useFeaturesStore().deactivateFeature(FeatureIdent.BACKUP.toLowerCase())
         } else if (tabset.type === TabsetType.SPECIAL && tabset.id === "IGNORE") {
-          usePermissionsStore().deactivateFeature(FeatureIdent.IGNORE.toLowerCase())
+          useFeaturesStore().deactivateFeature(FeatureIdent.IGNORE.toLowerCase())
         }
         if (this.tabsetId === useTabsStore().currentTabsetId || useTabsStore().currentTabsetId === null) {
           useTabsetService().selectTabset(undefined)

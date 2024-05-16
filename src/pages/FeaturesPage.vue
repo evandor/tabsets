@@ -146,6 +146,7 @@ import NavigationService from "src/services/NavigationService";
 import {useUtils} from "src/services/Utils";
 import {useAuthStore} from "stores/authStore";
 import {Feature} from "src/features/models/Feature";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const route = useRoute();
 const router = useRouter();
@@ -466,7 +467,7 @@ watchEffect(() => {
 
 const hasFeature = () => {
   if (appFeature.value) {
-    return permissionsStore.hasFeature(appFeature.value.ident)
+    return useFeaturesStore().hasFeature(appFeature.value.ident)
   }
   return false;
 }
@@ -502,13 +503,14 @@ const grant = (ident: string) => {
 }
 
 const revoke = (ident: string) => {
-  if (appFeature.value && appFeature.value.deactivateCommand) {
-    console.log("revoking1", ident, appFeature.value.deactivateCommand)
-    useCommandExecutor().execute(appFeature.value.deactivateCommand)
-      .then(() => permissionsStore.deactivateFeature(ident))
+  if (appFeature.value && appFeature.value.deactivateCommands) {
+    console.log("revoking1", ident, appFeature.value.deactivateCommands)
+    // TODO multiple commands?
+    useCommandExecutor().execute(appFeature.value.deactivateCommands[0])
+      .then(() => useFeaturesStore().deactivateFeature(ident))
   } else {
     console.log("revoking2", ident)
-    permissionsStore.deactivateFeature(ident)
+    useFeaturesStore().deactivateFeature(ident)
   }
 }
 
@@ -536,7 +538,7 @@ const getDependentFeatures = (rootFeature: string, onlyActive: boolean = false):
   return dependentFeatures
 }
 
-const isActive = (f: AppFeature) => usePermissionsStore().hasFeature(f.ident)
+const isActive = (f: Feature) => useFeaturesStore().hasFeature(f.ident)
 
 const needsAccountAndUserNotLoggedIn = (): boolean => {
   if (!text.get(feature.value)?.needsAccount) {

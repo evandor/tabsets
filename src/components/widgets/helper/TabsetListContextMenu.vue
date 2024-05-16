@@ -80,8 +80,8 @@
 
       </q-item>
 
-      <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"/>
-      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
+      <q-separator v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)"/>
+      <q-item v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)"
               clickable>
         <q-item-section>Spaces</q-item-section>
         <q-item-section side>
@@ -180,6 +180,7 @@ import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 

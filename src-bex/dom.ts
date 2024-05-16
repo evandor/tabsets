@@ -5,7 +5,7 @@ import detectQuasar from "app/src-bex/dom/detect-quasar";
 
 export default bexDom((bridge) => {
     //console.log("bexDom", bridge)
-    //if (!usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+    //if (!useFeaturesStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
     // bridge.on('initDomScripts', ({ data, respond }) => {
     //   console.log("tabsets: got event initDomScripts")
     // })

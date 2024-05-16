@@ -21,7 +21,7 @@
                        ]"
                    data-testid="newTabsetName"/>
 
-          <template v-if="props.foldersCount > 0 && usePermissionsStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
+          <template v-if="props.foldersCount > 0 && useFeaturesStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
             <q-checkbox
               v-model="recursive" label="Recursively"/>&nbsp;
             <q-icon name="help" color="primary" size="1em">
@@ -74,6 +74,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {sendMsg} = useUtils()
 

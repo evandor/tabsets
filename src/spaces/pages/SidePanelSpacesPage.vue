@@ -97,7 +97,7 @@
 
           <q-btn flat color="black" @click="router.push('/sidepanel')"
                  no-caps
-                 :label="usePermissionsStore().hasFeature(FeatureIdent.SPACES) ? 'Spaces' : 'Tabset List'"/>
+                 :label="useFeaturesStore().hasFeature(FeatureIdent.SPACES) ? 'Spaces' : 'Tabset List'"/>
           <q-tooltip :delay="1000" class="tooltip">Click to return to Tabsets View</q-tooltip>
 
         </template>
@@ -157,6 +157,7 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {useTabsetService} from "src/services/TabsetService2";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 
@@ -197,7 +198,7 @@ const onMessageListener = async (message: any, sender: any, sendResponse: any) =
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelSpacesPage', document.location.href);
-  if (!usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+  if (!useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     router.push("/sidepanel")
     return
   }

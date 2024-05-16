@@ -52,7 +52,7 @@
         />
       </q-card-section>
 
-      <q-card-section v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)">
+      <q-card-section v-if="useFeaturesStore().hasFeature(FeatureIdent.COLOR_TAGS)">
         Assign Color (optional)
 
         <div class="row q-pa-xs q-mt-none q-pl-sm q-gutter-sm">
@@ -91,6 +91,7 @@ import {FeatureIdent} from "src/models/AppFeatures";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

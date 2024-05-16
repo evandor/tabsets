@@ -38,32 +38,32 @@
       <!--      <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">-->
       <!--        <q-item-section>&bull; Close duplicated open tabs</q-item-section>-->
       <!--      </q-item>-->
-      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP)"
+      <q-item v-if="useFeaturesStore().hasFeature(FeatureIdent.BACKUP)"
               clickable v-close-popup
               @click="backupAndClose">
         <q-item-section>&bull; Backup and close current tabs...</q-item-section>
       </q-item>
       <q-item
-        :disable="useTabsStore().browserTabs.length <= 1"
+        :disable="useTabsStore2().browserTabs.length <= 1"
         clickable v-close-popup @click="TabsetService.closeAllTabs()">
-        <q-item-section>&bull; Close all other tabs ({{useTabsStore().browserTabs.length - 1}})</q-item-section>
+        <q-item-section>&bull; Close all other tabs ({{useTabsStore2().browserTabs.length - 1}})</q-item-section>
       </q-item>
       <q-separator/>
       <q-item disable v-if="showSpecialTabsets()">
         Use special tabsets:
       </q-item>
-      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && existingSession"
+      <q-item v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) && existingSession"
               clickable v-close-popup
               @click="replaceSession">
         <q-item-section>&bull; Replace existing Session...</q-item-section>
       </q-item>
-      <q-item v-else-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !existingSession"
+      <q-item v-else-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) && !existingSession"
               clickable v-close-popup
               @click="startSession">
         <q-item-section>&bull; Start a new Session...</q-item-section>
       </q-item>
-      <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"/>
-      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"
+      <q-separator v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"/>
+      <q-item v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"
               clickable v-close-popup @click="router.push('/settings')">
         <q-item-section>Change Settings</q-item-section>
       </q-item>
@@ -88,6 +88,8 @@ import {FeatureIdent} from "src/models/AppFeatures";
 import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
 import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const settingsStore = useSettingsStore()
 const router = useRouter()
@@ -154,5 +156,5 @@ const startSession = () => $q.dialog({component: NewSessionDialog, componentProp
 const replaceSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: true}})
 const backupAndClose = () => $q.dialog({component: BackupAndCloseDialog})
 
-const showSpecialTabsets = () => usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)
+const showSpecialTabsets = () => useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)
 </script>

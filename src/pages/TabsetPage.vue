@@ -102,7 +102,7 @@
           <q-tooltip class="tooltip">Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
 
-        <!--        <q-btn v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
+        <!--        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
         <!--               @click="setView('table')"-->
         <!--               style="width:14px"-->
         <!--               class="q-mr-xs" size="10px"-->
@@ -113,7 +113,7 @@
         <!--        </q-btn>-->
 
         <!--        <q-btn-->
-        <!--            v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
+        <!--            v-if="useFeaturesStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"-->
         <!--            @click="setView('canvas')"-->
         <!--            style="width:14px"-->
         <!--            class="q-mr-sm" size="10px"-->
@@ -124,7 +124,7 @@
         <!--        </q-btn>-->
 
         <q-btn
-          v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
           @click="setView('exporter')"
           style="width:14px"
           class="q-mr-sm" size="10px"
