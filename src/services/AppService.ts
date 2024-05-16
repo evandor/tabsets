@@ -30,7 +30,7 @@ import {useContentService} from "src/content/services/ContentService";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
-import {useFeaturesStore} from "src/features/src/stores/featuresStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 function dbStoreToUse(st: SyncType) {
   const isAuthenticated = useAuthStore().isAuthenticated()
