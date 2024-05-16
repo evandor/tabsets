@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: "Tabsets.net!"
+  name: "Tabsets.net"
   text: "Developer Documentation"
   tagline: Tabsets - better bookmarks. A cross-browser extension to manage your URLs
   actions:
@@ -13,9 +13,9 @@ hero:
     - theme: brand
       text: Features
       link: /features
-#    - theme: alt
-#      text: API Examples
-#      link: /api-examples
+    - theme: alt
+      text: Submodules Documentation
+      link: /docs/vitepress/submodules
 #    - theme: alt
 #      text: Skysail
 #      link: https://www.skysail.io
