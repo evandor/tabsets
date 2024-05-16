@@ -94,7 +94,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({

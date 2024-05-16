@@ -73,7 +73,7 @@ import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {openURL, useQuasar} from "quasar";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
 import {useUiStore} from "src/stores/uiStore";

@@ -362,7 +362,6 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore"
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
@@ -371,6 +370,7 @@ import {SavePdfCommand} from "src/domain/tabs/SavePdf";
 import {useAuthStore} from "stores/authStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 
 const {inBexMode} = useUtils()
 
@@ -526,7 +526,7 @@ watchEffect(() => {
 })
 
 const saveTab = (tab: Tab | undefined) =>
-    useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
+    useCommandExecutor().execute(new SaveTabCommand(useTabsetsStore().getCurrentTabset, tab))
 
 const savePng = (tab: Tab | undefined) => {
   if (tab) {
