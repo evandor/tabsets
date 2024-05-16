@@ -102,7 +102,7 @@ import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import _ from "lodash";
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";

@@ -238,7 +238,6 @@ import _ from "lodash";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {Tab} from "src/tabsets/models/Tab";
 import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
@@ -256,6 +255,7 @@ import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 
 const props = defineProps({
   tabsets: {type: Array as PropType<Array<Tabset>>, required: true}
