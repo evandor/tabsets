@@ -145,7 +145,7 @@ import Command from "src/domain/Command";
 import NavigationService from "src/services/NavigationService";
 import {useUtils} from "src/services/Utils";
 import {useAuthStore} from "stores/authStore";
-import {Feature} from "src/features/src/models/Feature";
+import {Feature} from "src/features/models/Feature";
 
 const route = useRoute();
 const router = useRouter();

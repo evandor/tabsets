@@ -79,7 +79,7 @@ import _ from "lodash"
 import {AppFeatures, FeatureIdent, FeatureType} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {useQuasar} from "quasar";
-import {Feature} from "src/features/src/models/Feature";
+import {Feature} from "src/features/models/Feature";
 
 const router = useRouter()
 const route = useRoute()
