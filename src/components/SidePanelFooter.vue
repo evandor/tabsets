@@ -504,10 +504,6 @@ const logout = () => {
     .catch(() => {
       //this.handleError(error)
     })
-    .finally(() => {
-      console.log("cleaning up after logout")
-      //useTabsetService().init(useDB(undefined).db, useDB(undefined).pouchDb)
-    })
 }
 
 const calcWindowRows = (): WindowHolder[] => {

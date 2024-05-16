@@ -6,6 +6,9 @@ import PersistenceService from "src/services/PersistenceService";
 import {LocalStorage, uid} from "quasar";
 import throttledQueue from "throttled-queue";
 import SpacesPersistence from "src/spaces/persistence/SpacesPersistence";
+import {useDB} from "src/services/usePersistenceService";
+import {useAuthStore} from "stores/authStore";
+import {SyncType} from "stores/appStore";
 
 /**
  * a pinia store for "Spaces".
@@ -43,9 +46,20 @@ export const useSpacesStore = defineStore('spaces', () => {
    * initialize store with
    * @param ps a persistence storage
    */
-  async function initialize(ps: SpacesPersistence) {
-    console.debug(" ...initializing spacesStore", ps.getServiceName())
-    storage = ps
+  async function initialize(syncType: SyncType, isAuthenticated: boolean) {
+
+    if (!isAuthenticated) {
+      console.debug("%not authenticated", "font-weight:bold")
+      storage = useDB(undefined).spacesIndexedDb
+    } else if (syncType === SyncType.FIRESTORE) {
+      console.debug("%csyncType " + syncType, "font-weight:bold")
+      storage = useDB(undefined).spacesFirestoreDb
+    } else {
+      console.debug("%cfallback, syncType " + syncType, "font-weight:bold")
+      storage = useDB().spacesIndexedDb
+    }
+
+    console.debug(" ...initializing spacesStore", storage.getServiceName())
     await storage.init()
 
     // TODO remove after version 0.4.12
