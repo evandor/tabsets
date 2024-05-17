@@ -91,8 +91,6 @@ const props = defineProps({
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const bookmarksStore = useBookmarksStore()
-const tabsStore = useTabsStore()
-const router = useRouter()
 const $q = useQuasar()
 
 const theForm = ref<QForm>(null as unknown as QForm)

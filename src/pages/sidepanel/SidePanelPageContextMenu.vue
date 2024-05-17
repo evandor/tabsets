@@ -353,21 +353,4 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
   })
 }
 
-const removeWindow = () => {
-  const ts = useTabsStore().getCurrentTabset
-  if (ts) {
-    ts.window = 'current'
-    useTabsetService().saveTabset(ts)
-  }
-}
-
-const openNewWindowDialog = () => {
-  $q.dialog({
-    component: NewWindowDialog,
-    componentProps: {
-      tabsetId: useTabsStore().currentTabsetId
-    }
-  })
-}
-
 </script>

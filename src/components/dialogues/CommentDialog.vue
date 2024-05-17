@@ -57,10 +57,6 @@ const editor = ref('')
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
-const $q = useQuasar()
-
-const dateFormat = "YYYY-MM-DD HH:mm"
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 

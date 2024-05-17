@@ -59,13 +59,8 @@ const {normalize} = useUtils()
 
 const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
-const router = useRouter()
-const $q = useQuasar()
-
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
-const hideWarning = ref(false)
 
 watchEffect(() => {
   newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
@@ -76,13 +71,6 @@ const createNewUrl = () => {
   let useUrl = normalize(url.value)
   console.log("normalizing url", url.value, useUrl)
   chrome.tabs.create({url: useUrl})
-  // const tab = new Tab(uid(), null as unknown as chrome.tabs.Tab)
-  // tab.created = new Date().getTime()
-  // tab.chromeTab = ChromeApi.createChromeTabObject(useUrl, useUrl, null as unknown as string)
-  // tab.extension = tab.determineUrlExtension(tab.chromeTab)
-  // TabsetService.saveToCurrentTabset(tab)
-  //   .then((res) => useTabsetService().saveCurrentTabset())
-  // useUiStore().setIgnoreKeypress(false)
   onDialogOK()
 }
 

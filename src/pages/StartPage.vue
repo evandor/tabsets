@@ -21,8 +21,6 @@ const $q = useQuasar()
 const router = useRouter()
 
 let timer
-const tabsStore = useTabsStore()
-
 
 $q.loading.show({
   message: 'Initializing tabsets. Please hang on...'

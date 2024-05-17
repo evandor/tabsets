@@ -53,8 +53,8 @@ import NewSpaceDialog from "src/spaces/dialogues/NewSpaceDialog.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash";
 import {Space} from "src/spaces/models/Space";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
 const router = useRouter()
 const $q = useQuasar()
@@ -82,7 +82,7 @@ const openNewSpaceDialog = () => {
   $q.dialog({
     component: NewSpaceDialog,
     componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
+      tabsetId: useTabsetsStore().currentTabsetId,
       fromPanel: props.fromPanel
     }
   })

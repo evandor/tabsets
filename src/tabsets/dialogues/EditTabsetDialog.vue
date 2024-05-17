@@ -109,8 +109,6 @@ const props = defineProps({
 const {handleError} = useNotificationHandler()
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
-
 const newTabsetName = ref(props.tabsetName)
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)

@@ -40,15 +40,6 @@ import {useRoute} from "vue-router";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const {inBexMode} = useUtils()
-
-const $q = useQuasar()
-const tabsStore = useTabsStore()
-const route = useRoute()
-
-const highlightUrl = ref('')
-const tabsetId = ref(null as unknown as string)
-
 const props = defineProps({
   tabset: {type: Object as PropType<Tabset>, required: true}
 })
@@ -78,7 +69,7 @@ function currentTabs(): Tab[] {
     // return _.orderBy(results, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
     return results
   } else {
-    return tabsStore.getCurrentTabs
+    return useTabsetsStore().getCurrentTabs
   }
 
 }
