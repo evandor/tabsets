@@ -1,8 +1,5 @@
 
-
-### readme
-
-<!--@include: ../../src/features/docs/readme.md-->
+<!--@include: ../../src/features/docs/intro.md-->
 
 ### Installation
 
