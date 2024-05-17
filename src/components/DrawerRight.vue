@@ -98,7 +98,6 @@ import RssTabs from "src/components/RssTabs.vue"
 import {useRoute, useRouter} from "vue-router";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
-import Features from "components/Features.vue";
 import BookmarksTree from "src/bookmarks/components/BookmarksTree.vue";
 import TabDetails from "components/views/TabDetails.vue";
 import TabsetHelp from "components/TabsetHelp.vue";
@@ -111,6 +110,7 @@ import SavedPdfs from "components/SavedPdfs.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import Features from "src/features/components/Features.vue";
 
 const route = useRoute()
 
