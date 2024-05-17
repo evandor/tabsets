@@ -10,6 +10,7 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
+      { text: 'Install as Extension', link: 'https://docs.tabsets.net/installation' },
       { text: 'User Documentation', link: 'https://docs.tabsets.net' }
     ],
 
@@ -25,6 +26,11 @@ export default defineConfig({
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/evandor/tabsets' }
-    ]
+    ],
+
+    footer: {
+      message: 'Released under the MIT License.',
+      copyright: 'Copyright © 2021-PRESENT Skysail Consulting',
+    },
   }
 })

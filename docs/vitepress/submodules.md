@@ -9,10 +9,19 @@ to use, change and delete bookmarks and folders.
 
 This submodule is active by default in tabsets.net.
 
-[features](./bookmarks.md)
+[bookmarks](bookmarks.md)
 
 ## Features
 
+The Features Submodule provides the logic to conditionally activate (or deactivate) logic based on
+the user's choice.
+
 [features](./features.md)
+
+## Content
+
+## Suggestions
+
+## Thumbnails
 
 ## Windows
