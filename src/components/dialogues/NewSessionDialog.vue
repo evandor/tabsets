@@ -55,6 +55,7 @@ import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {CreateSessionCommand} from "src/domain/commands/CreateSession";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 defineEmits([
   // REQUIRED; need to specify some events that your
@@ -85,7 +86,7 @@ watchEffect(() => {
 
 const createNewTabset = () => {
   hideWarning.value = true
-  const tabsToUse = addAutomatically.value ? useTabsStore().browserTabs : []
+  const tabsToUse = addAutomatically.value ? useTabsStore2().browserTabs : []
 
   useCommandExecutor()
     .executeFromUi(new CreateSessionCommand(newTabsetName.value, tabsToUse))

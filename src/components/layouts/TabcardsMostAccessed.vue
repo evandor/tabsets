@@ -22,11 +22,6 @@ import {useQuasar} from "quasar";
 import _ from "lodash"
 import {useTabsetService} from "src/services/TabsetService2";
 
-const $q = useQuasar()
-const tabsStore = useTabsStore()
-
-const {saveCurrentTabset} = useTabsetService()
-
 const props = defineProps({
   tabs: {
     type: Array as PropType<Array<Tab>>,
@@ -38,7 +33,6 @@ const props = defineProps({
   }
 })
 
-const thumbnails = ref<Map<string, string>>(new Map())
 const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
 
 </script>

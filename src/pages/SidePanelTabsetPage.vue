@@ -131,7 +131,7 @@ onMounted(() => {
 
 watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
-  tabset.value = useTabsStore().getTabset(tabsetId.value)
+  tabset.value = useTabsetsStore().getTabset(tabsetId.value)
   if (tabset.value) {
     useTabsetsStore().selectCurrentTabset(tabset.value.id)
   }
@@ -148,13 +148,13 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  openTabs.value = useTabsStore().tabs
-  currentTabset.value = useTabsStore().getCurrentTabset
+  openTabs.value = useTabsStore2().browserTabs
+  currentTabset.value = useTabsetsStore().getCurrentTabset
 })
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
 if (inBexMode() && chrome) {
@@ -188,7 +188,7 @@ const toggleOrder = () => descending.value = !descending.value
 const preventDragAndDrop = (sorting: TabSorting) => $q.platform.is.mobile || sorting !== TabSorting.CUSTOM
 
 const alreadyInTabset = () => {
-  if (currentChromeTab.value?.url && useTabsStore().getCurrentTabset) {
+  if (currentChromeTab.value?.url && useTabsetsStore().getCurrentTabset) {
     return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
   }
   return false

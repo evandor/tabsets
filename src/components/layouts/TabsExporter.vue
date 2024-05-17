@@ -61,13 +61,7 @@ import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOp
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-
-const {inBexMode} = useUtils()
-
-const $q = useQuasar()
-const tabsStore = useTabsStore()
-
-const {saveCurrentTabset} = useTabsetService()
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   tabs: {
@@ -86,21 +80,16 @@ const props = defineProps({
 
 const tab = ref('simple')
 
-const thumbnails = ref<Map<string, string>>(new Map())
-const tabAsTab = (tab: Tab): Tab => tab as unknown as Tab
-
 const showButtonsProp = ref<Map<string, boolean>>(new Map())
-
-const showButtons = (tabId: string, show: boolean) => showButtonsProp.value.set(tabId, show)
 
 function adjustIndex(element: any, tabs: Tab[]) {
   //console.log("filtered", tabs)
   if (element.newIndex === 0) { // first element
     //console.log(" 0 - searching for ", tabs[0].id)
-    return _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[0].id)
+    return _.findIndex(useTabsetsStore().getCurrentTabs, t => t.id === tabs[0].id)
   } else {
     //console.log(" 1 - searching for ", tabs[element.newIndex - 1].id)
-    return 1 + _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
+    return 1 + _.findIndex(useTabsetsStore().getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
   }
 }
 
@@ -120,7 +109,7 @@ const handleDragAndDrop = (event: any) => {
         }
         break;
       case 'pinnedTabs':
-        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.pinned)
+        const filteredTabs: Tab[] = _.filter(use.getCurrentTabs, (t: Tab) => t.pinned)
         if (filteredTabs.length > 0) {
           useIndex = adjustIndex(moved, filteredTabs);
         }

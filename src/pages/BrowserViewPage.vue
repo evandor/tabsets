@@ -53,6 +53,7 @@
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import _ from "lodash"
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 const router = useRouter()
@@ -78,10 +79,6 @@ onMounted(() => {
     webview.addEventListener('did-start-loading', (a: any, b: any) => {
       console.log("loading", a.srcElement.src)
       src.value = a.srcElement.src
-      // const pendingTabs:Tab[] = useTabsStore().pendingTabset.tabs
-      // if (pendingTabs.findIndex((t:Tab) => t.url === a.srcElement.src) < 0) {
-      //   pendingTabs.push(new Tab(uid(),  ChromeApi.createChromeTabObject(a.srcElement.src, a.srcElement.src,"")))
-      // }
     })
     // @ts-ignore
     webview.addEventListener('did-stop-loading', (a:any,b:any) => {
@@ -109,7 +106,7 @@ watch(() => webviewRef.value, (a: any, b: any) => {
 
 watchEffect(async () => {
   tabId.value = route.params.tabId as string
-  const found = _.find(useTabsStore().getCurrentTabs, t => t.id === route.params.tabId)
+  const found = _.find(useTabsetsStore().getCurrentTabs, t => t.id === route.params.tabId)
   console.log("tabid set to ", tabId.value, found)
   if (found && found.url && webviewRef.value) {
     console.log("found", found.url)

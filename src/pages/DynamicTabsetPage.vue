@@ -19,8 +19,8 @@
               class="text-primary text-weight-bold cursor-pointer"
               @mouseenter="showEditButton = true"
               @mouseout="showEditButton = false">
-              {{ tabsStore.currentTabsetName }}
-               <q-popup-edit :model-value="tabsStore.getCurrentTabset?.name" v-slot="scope"
+              {{ useTabsetsStore().currentTabsetName }}
+               <q-popup-edit :model-value="useTabsetsStore().getCurrentTabset?.name" v-slot="scope"
                              @update:model-value="val => setNewName(  val)">
                  <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
                </q-popup-edit>
@@ -29,21 +29,21 @@
                       size="16px"/>
               <q-icon v-else size="16px"/>
 
-              <q-icon v-if="useTabsetsStore().tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.DEFAULT"
+              <q-icon v-if="useTabsetsStore().tabsets.size > 9 && useTabsetsStore().getCurrentTabset?.status === TabsetStatus.DEFAULT"
                       @click="markAsFavorite()"
                       class="q-ml-sm cursor-pointer"
                       color="warning" name="o_grade" size="20px">
                 <q-tooltip class="tooltip">Mark this tabset as a favorite one</q-tooltip>
               </q-icon>
 
-              <q-icon v-if="useTabsetsStore().tabsets.size > 9 && tabsStore.getCurrentTabset?.status === TabsetStatus.FAVORITE"
+              <q-icon v-if="useTabsetsStore().tabsets.size > 9 && useTabsetsStore().getCurrentTabset?.status === TabsetStatus.FAVORITE"
                       @click="markAsDefault()"
                       class="q-ml-sm cursor-pointer"
                       color="warning" name="grade" size="20px">
                 <q-tooltip class="tooltip">Undo marking this tabset as favorite</q-tooltip>
               </q-icon>
 
-              <q-icon v-if="tabsStore.getCurrentTabs?.length > 0 && inBexMode()"
+              <q-icon v-if="useTabsetsStore().getCurrentTabs?.length > 0 && inBexMode()"
                       @click="restoreDialog"
                       class="q-ml-md cursor-pointer"
                       color="primary" name="o_open_in_browser" size="20px">
@@ -71,7 +71,7 @@
         </q-btn>
 
         <q-btn v-if="showSorting()"
-               :disable="tabsStore.getCurrentTabset?.sorting === 'custom'"
+               :disable="useTabsetsStore().getCurrentTabset?.sorting === 'custom'"
                @click="toggleOrder()"
                style="width:14px"
                class="q-mr-xl" size="10px"
@@ -84,8 +84,8 @@
                @click="setView('grid')"
                style="width:14px"
                class="q-mr-sm" size="8px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'grid'"
-               :outline="tabsStore.getCurrentTabset?.view === 'grid'"
+               :flat="useTabsetsStore().getCurrentTabset?.view !== 'grid'"
+               :outline="useTabsetsStore().getCurrentTabset?.view === 'grid'"
                icon="grid_on">
           <q-tooltip>Use grid layout to visualize your tabs</q-tooltip>
         </q-btn>
@@ -95,8 +95,8 @@
                @click="setView('list')"
                style="width:14px"
                class="q-mr-sm" size="10px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'list'"
-               :outline="tabsStore.getCurrentTabset?.view === 'list'"
+               :flat="useTabsetsStore().getCurrentTabset?.view !== 'list'"
+               :outline="useTabsetsStore().getCurrentTabset?.view === 'list'"
                icon="o_list">
           <q-tooltip>Use the list layout to visualize your tabs</q-tooltip>
         </q-btn>
@@ -105,8 +105,8 @@
                @click="setView('canvas')"
                style="width:14px"
                class="q-mr-sm" size="10px"
-               :flat="tabsStore.getCurrentTabset?.view !== 'canvas'"
-               :outline="tabsStore.getCurrentTabset?.view === 'canvas'"
+               :flat="useTabsetsStore().getCurrentTabset?.view !== 'canvas'"
+               :outline="useTabsetsStore().getCurrentTabset?.view === 'canvas'"
                icon="o_shape_line">
           <q-tooltip>Use the canvas freestyle layout to visualize your tabs</q-tooltip>
         </q-btn>
@@ -148,7 +148,7 @@
     <q-card>
       <q-card-section>
 
-        <TabList v-if="tabsStore.getCurrentTabset?.view === 'list'"
+        <TabList v-if="useTabsetsStore().getCurrentTabset?.view === 'list'"
                  group="otherTabs"
                  :tabs="dynamicTabset?.tabs || []"/>
 
@@ -198,7 +198,7 @@ const route = useRoute();
 
 const {inBexMode} = useUtils()
 
-const tabsetname = ref(tabsStore.currentTabsetName)
+const tabsetname = ref(useTabsetsStore().currentTabsetName)
 const filter = ref('')
 const $q = useQuasar()
 
@@ -265,8 +265,8 @@ const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new 
 
 
 function getOrder() {
-  if (tabsStore.getCurrentTabset) {
-    switch (tabsStore.getCurrentTabset?.sorting) {
+  if (useTabsetsStore().getCurrentTabset) {
+    switch (useTabsetsStore().getCurrentTabset?.sorting) {
       case 'alphabeticalUrl':
         return (t: Tab) => t.url?.replace("https://", "").replace("http://", "").toUpperCase()
         break
@@ -318,17 +318,17 @@ const setAsNewTabPage = () => {
 const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
 
 const specialView = (): boolean =>
-  tabsStore.getCurrentTabset?.view === 'kanban' || tabsStore.getCurrentTabset?.view === 'canvas'
+  useTabsetsStore().getCurrentTabset?.view === 'kanban' || useTabsetsStore().getCurrentTabset?.view === 'canvas'
 
-const markAsFavorite = () => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabsStore.currentTabsetId))
-const markAsDefault = () => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabsStore.currentTabsetId))
-const archiveTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabsStore.currentTabsetId))
+const markAsFavorite = () => useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(useTabsetsStore().currentTabsetId))
+const markAsDefault = () => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(useTabsetsStore().currentTabsetId))
+const archiveTabset = () => useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(useTabsetsStore().currentTabsetId))
 
 const toggleSorting = () => TabsetService.toggleSorting(tabsetId.value)
 const toggleOrder = () => orderDesc.value = !orderDesc.value
 
 const sortingInfo = (): string => {
-  switch (tabsStore.getCurrentTabset?.sorting) {
+  switch (useTabsetsStore().getCurrentTabset?.sorting) {
     case 'custom':
       return ", sorted by Index" + (orderDesc.value ? ', descending' : '')
       break
@@ -344,7 +344,7 @@ const sortingInfo = (): string => {
   }
 }
 
-const showSorting = () => tabsStore.getCurrentTabs.length > 10
+const showSorting = () => useTabsetsStore().getCurrentTabs.length > 10
 
 </script>
 

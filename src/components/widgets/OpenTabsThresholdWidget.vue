@@ -18,7 +18,7 @@
       track-color="grey-3"
       class="q-ml-xs">
     </q-circular-progress>
-    <q-tooltip class="tooltip">Open Tabs: {{useTabsStore().tabs.length}} - click to manage</q-tooltip>
+    <q-tooltip class="tooltip">Open Tabs: {{useTabsStore2().browserTabs.length}} - click to manage</q-tooltip>
   </span>
   <q-menu :offset="[0, 15]">
     <q-list style="min-width: 200px">
@@ -112,18 +112,18 @@ if (!inBexMode()) {
 }
 
 watchEffect(() => {
-  openTabsCountRatio.value = Math.min(useTabsStore().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1)
+  openTabsCountRatio.value = Math.min(useTabsStore2().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1)
   //console.log("threshold", settingsStore.thresholds['max' as keyof object])
-  openTabsCountRatio2.value = Math.round(100 * Math.min(useTabsStore().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1))
+  openTabsCountRatio2.value = Math.round(100 * Math.min(useTabsStore2().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1))
 })
 
-watch(() => useTabsStore().browserTabs.length, (after: number, before: number) => {
+watch(() => useTabsStore2().browserTabs.length, (after: number, before: number) => {
   if (inBexMode()) {
     TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
   }
 })
 
-watch(() => tabsStore.getCurrentTabs.length, (after: number, before: number) => {
+watch(() => useTabsetsStore().getCurrentTabs.length, (after: number, before: number) => {
   if (inBexMode()) {
     TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
   }
@@ -138,12 +138,12 @@ watch(() => tabsStore.getCurrentTabs.length, (after: number, before: number) => 
 //watchEffect(() => TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res))
 
 const showThresholdBar = () =>
-  useTabsStore().browserTabs.length >= settingsStore.thresholds['min' as keyof object]
+  useTabsStore2().browserTabs.length >= settingsStore.thresholds['min' as keyof object]
 
 const thresholdStyle = () =>
   "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
 
-const thresholdLabel = () => useTabsStore().browserTabs.length + " open tabs"
+const thresholdLabel = () => useTabsStore2().browserTabs.length + " open tabs"
 
 const showOpenTabs = () =>
   useUiStore().rightDrawerSetActiveTab(DrawerTabs.UNASSIGNED_TABS)
