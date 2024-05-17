@@ -6,11 +6,14 @@ hero:
   name: "Tabsets.net"
   text: "Developer Documentation"
   tagline: Tabsets - better bookmarks. A cross-browser extension to manage your URLs
+  image:
+    src: /public/icons/favicon-128x128.png
+    alt: Vitest
   actions:
     - theme: brand
-      text: Initial Setup
+      text: Get Started
       link: /docs/setup
-    - theme: brand
+    - theme: alt
       text: Features
       link: /features
     - theme: alt
