@@ -24,6 +24,8 @@
 
   <div class="row fit greyBorderTop"></div>
 
+  {{ useFeaturesStore().activeFeatures }}
+  <hr>
   <InfoMessageWidget
     :probability="1"
     ident="featuresPage_overview"
@@ -35,7 +37,7 @@
     <div class="col-7">
       <div class="text-h6">{{ text.get(feature)?.name }}</div>
       <div>
-        Status: {{ hasFeature() ? 'active' : 'inactive' }}
+        Status: {{ featureActive ? 'active' : 'inactive' }}
         <span v-if="needsAccountAndUserNotLoggedIn()" class="text-warning"> - You need a (free) account to use this feature</span>
       </div>
     </div>
@@ -51,7 +53,7 @@
 
     <div class="col-12 q-my-lg" v-if="needsAccountAndUserNotLoggedIn()">
       Click on the login icon in the sidepanel to sign up for an account:<br><br>
-      <q-img src="signup.png" width="100px" />
+      <q-img src="signup.png" width="100px"/>
     </div>
 
     <div class="col-12 q-my-sm">
@@ -103,7 +105,7 @@
 
     <div class="col-12 q-my-md" v-if="text.get(feature)?.img">
       <div>
-          <q-img :src="text.get(feature)?.img" :width="text.get(feature)?.img_width || '250px'"/>
+        <q-img :src="text.get(feature)?.img" :width="text.get(feature)?.img_width || '250px'"/>
       </div>
     </div>
 
@@ -131,10 +133,9 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watchEffect} from 'vue'
+import {onMounted, ref, watch, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {Notify, useQuasar} from "quasar";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AppFeatures, FeatureIdent, FeatureType} from "src/models/AppFeatures";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
@@ -150,7 +151,6 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const route = useRoute();
 const router = useRouter();
-const permissionsStore = usePermissionsStore()
 
 const title = ref('')
 const {sendMsg} = useUtils()
@@ -159,6 +159,7 @@ useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
 const feature = ref(null as unknown as string)
 const appFeature = ref<Feature | undefined>(undefined)
+const featureActive = ref(false)
 
 const text: Map<string, object> = new Map()
 
@@ -175,20 +176,6 @@ text.set(FeatureIdent.OPENTABS_THRESHOLD.toLowerCase(), {
   img: 'open_tabs_warning.png',
   permissions: []
 })
-// text.set(FeatureIdent.BOOKMARKS.toLowerCase(), {
-//   name: 'Bookmarks',
-//   img: 'bookmarks.png',
-//   description: 'The Bookmarks Feature lets you access the browsers bookmarks to view (or delete) them and to turn them into tabsets if you wish. Futhermore, the search will ' +
-//     'take the URLs and titles of your bookmarks into account as well.',
-//   permissions: ['bookmarks']
-// })
-// text.set(FeatureIdent.DETAILS.toLowerCase(), {
-//   name: 'Tab and Tabset Details',
-//   img: 'details.png',
-//   description: 'When clicking on a tab, a detail view will open providing you with meta information about the tab.',
-//   activatedMsg: 'Now open a tabset and select a tab by clicking somewhere outside of the text',
-//   permissions: []
-// })
 text.set(FeatureIdent.GROUP_BY_DOMAIN.toLowerCase(), {
   name: 'Group By Domain',
   img: 'groupedByDomain.png',
@@ -446,6 +433,7 @@ watchEffect(() => {
     if (f) {
       appFeature.value = new AppFeatures().getFeature(f)
       if (appFeature.value) {
+        featureActive.value = useFeaturesStore().hasFeature(appFeature.value.ident as FeatureIdent)
         switch (appFeature.value.type) {
           case FeatureType.EXPERIMENTAL:
             title.value = "Experimental Feature"
@@ -465,9 +453,22 @@ watchEffect(() => {
   }
 )
 
-const hasFeature = () => {
+watchEffect(() => {
+  console.log("=!!!", useFeaturesStore().count)
+})
+
+watch(() => useFeaturesStore().count, (currentValue, oldValue) => {
+  console.log("watvhingh!!", currentValue, oldValue)
   if (appFeature.value) {
-    return useFeaturesStore().hasFeature(appFeature.value.ident)
+    featureActive.value = useFeaturesStore().hasFeature(appFeature.value.ident as FeatureIdent)
+  }
+})
+
+const hasFeature = () => {
+  if (appFeature.value && appFeature.value.ident) {
+    const ident: FeatureIdent = FeatureIdent[appFeature.value.ident as keyof typeof FeatureIdent]
+    console.log("===>", ident, useFeaturesStore().hasFeature(ident))
+    return useFeaturesStore().hasFeature(ident)
   }
   return false;
 }
@@ -527,18 +528,21 @@ const permissionText = (f: any) => {
 
 }
 
-const getDependentFeatures = (rootFeature: string, onlyActive: boolean = false): AppFeature[] => {
+const getDependentFeatures = (rootFeature: string, onlyActive: boolean = false): Feature[] => {
   const featureIdent = rootFeature.toUpperCase() as FeatureIdent
-  const dependentFeatures: AppFeature[] = []
+  const dependentFeatures: Feature[] = []
   new AppFeatures().getFeatures().forEach(appFeature => {
-    if (appFeature.requires.findIndex((r: FeatureIdent) => r === featureIdent && (onlyActive ? isActive(appFeature) : true)) >= 0) {
+    if (appFeature.requires.findIndex((requirementAsString: string) => {
+      const r: FeatureIdent = FeatureIdent[requirementAsString as keyof typeof FeatureIdent]
+      return r === featureIdent && (onlyActive ? isActive(appFeature) : true)
+    }) >= 0) {
       dependentFeatures.push(appFeature)
     }
   })
   return dependentFeatures
 }
 
-const isActive = (f: Feature) => useFeaturesStore().hasFeature(f.ident)
+const isActive = (f: Feature) => useFeaturesStore().hasFeature(FeatureIdent[f.ident as keyof typeof FeatureIdent])
 
 const needsAccountAndUserNotLoggedIn = (): boolean => {
   if (!text.get(feature.value)?.needsAccount) {
