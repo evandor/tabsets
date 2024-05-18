@@ -29,7 +29,7 @@
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"
-             v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
+             v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
       <q-tab name="search" label="Search Engine" v-if="useSettingsStore().isEnabled('dev')"/>
       <q-tab name="importExport" label="Import/Export"/>
       <q-tab name="internals" label="Internals" v-if="useSettingsStore().isEnabled('dev')"/>
@@ -102,7 +102,7 @@
       </div>
 
       <div class="row items-baseline q-ma-md q-gutter-md"
-           v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
+           v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
         <div class="col-3">
           Tab Switching Time in seconds
         </div>
@@ -133,7 +133,7 @@
       </div>
 
       <div class="row items-baseline q-ma-md q-gutter-md"
-           v-if="usePermissionsStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
+           v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
         <div class="col-3">
           Warning Thresholds
         </div>
@@ -458,6 +458,7 @@ import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 const { t } = useI18n()
 
 const {sendMsg, inBexMode} = useUtils()

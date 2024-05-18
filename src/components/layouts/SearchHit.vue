@@ -94,8 +94,9 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const props = defineProps({
   hit: {type: Hit, required: true},
@@ -188,7 +189,7 @@ const isTabsetHit = (hit: Hit) => hit.id.startsWith('tabset|')
 const open = (hit: Hit) => {
   if (hit.id.startsWith("tabset|")) {
     const tabsetId = hit.tabsets[0]
-    if (usePermissionsStore().hasFeature(FeatureIdent.SPACES)) {
+    if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
       const tabset = useTabsetsStore().getTabset(tabsetId)
       const spaceId =  (tabset && tabset.spaces.length > 0) ? tabset.spaces[0] : undefined
       console.log("selecting tabset/space", tabsetId, spaceId)

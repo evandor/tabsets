@@ -39,7 +39,7 @@ export class RevokePermissionCommand implements Command<boolean> {
           // TabsetService.init()
         })
     }
-    usePermissionsStore().deactivateFeature(this.permission)
+    useFeaturesStore().deactivateFeature(this.permission)
     return usePermissionsStore().revokePermission(this.permission)
       .then(() => {
 

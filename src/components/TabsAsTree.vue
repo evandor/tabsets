@@ -119,7 +119,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  bookmarksPermissionGranted.value = true// permissionsStore.hasFeature(FeatureIdent.BOOKMARKS)
+  bookmarksPermissionGranted.value = true// useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS)
   useBookmarksStore().loadBookmarks()
 })
 

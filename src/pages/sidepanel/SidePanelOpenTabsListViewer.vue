@@ -84,6 +84,8 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Window} from "src/windows/models/Window";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
 import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const useSelection = ref(false)
 const invert = ref(false)
@@ -101,7 +103,7 @@ const rows = ref<object[]>([])
 onMounted(async () => {
   Analytics.firePageViewEvent('SidePanelOpenTabsListViewer', document.location.href);
   rows.value = await calcWindowRows()
-  tabsForCurrentWindow.value = filteredTabs(useTabsStore().tabs)
+  tabsForCurrentWindow.value = filteredTabs(useTabsStore2().browserTabs)
 })
 
 browser.windows.onCreated.addListener(async (w: browser.windows.Window) => rows.value = await calcWindowRows())
@@ -117,11 +119,11 @@ const filteredTabs = (tabs: chrome.tabs.Tab[]) => {
 }
 
 watchEffect(() => {
-  tabsForCurrentWindow.value = filteredTabs(useTabsStore().tabs)
+  tabsForCurrentWindow.value = filteredTabs(useTabsStore2().browserTabs)
 })
 
 watchEffect(() => {
-  tabs.value = useTabsStore().tabs
+  tabs.value = useTabsStore2().browserTabs
   const filterTerm = useUiStore().toolbarFilterTerm.toLowerCase()
   if (filterTerm.length > 0) {
     tabs.value = _.filter(tabs.value, (t: chrome.tabs.Tab) =>
@@ -135,8 +137,8 @@ watchEffect(() => {
 })
 
 const addTooltip = () => useSelection.value ?
-  `Add ${tabSelection.value.size} tab(s) to ${tabsStore.currentTabsetName}` :
-  `Add all tabs to ${tabsStore.currentTabsetName}`
+  `Add ${tabSelection.value.size} tab(s) to ${useTabsetsStore().currentTabsetName}` :
+  `Add all tabs to ${useTabsetsStore().currentTabsetName}`
 
 const addLabel = () => 'add'
 const checkboxLabel = () => useSelection.value ? '' : 'use selection'

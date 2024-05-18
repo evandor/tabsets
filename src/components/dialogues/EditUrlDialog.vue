@@ -83,6 +83,7 @@ import DialogButton from "components/buttons/DialogButton.vue";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useSettingsStore} from "stores/settingsStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -94,8 +95,6 @@ const props = defineProps({
 
 const {handleError} = useNotificationHandler()
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
-
-const tabsStore = useTabsStore()
 
 const newTabUrl = ref(props.tab.url || '')
 const newTabName = ref(props.tab.name || props.tab.title)

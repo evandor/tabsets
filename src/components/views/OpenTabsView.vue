@@ -5,14 +5,14 @@
             <div class="col-12 q-ma-none q-pa-none q-pt-lg">
 
               <InfoMessageWidget
-                  v-if="tabsStore.currentTabsetId && tabs.length > 0 && !userCanSelect"
+                  v-if="useTabsetsStore().currentTabsetId && tabs.length > 0 && !userCanSelect"
                   :probability="1"
                   css-class="q-pa-sm q-gutter-sm"
                   force-display
                   ident="unassignedAndOpenTabs_userCannotSelect"
                   hint="Tabs with grey background are already contained in the current tabset."/>
 
-              <div v-if="tabsStore.currentTabsetId && tabs.length > 1 && userCanSelect"
+              <div v-if="useTabsetsStore().currentTabsetId && tabs.length > 1 && userCanSelect"
                    class="q-ma-none" style="border: 1px dotted grey; border-radius: 3px">
                 <div class="row">
                   <div class="col-6 q-pa-xs">
@@ -97,9 +97,9 @@ import {useUiStore} from "src/stores/uiStore";
 import Analytics from "src/utils/google-analytics";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-
-const tabsStore = useTabsStore()
-const route = useRoute()
+import {useTabsStore} from "src/bookmarks/stores/tabsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const useSelection = ref(false)
 const invert = ref(false)
@@ -113,7 +113,7 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  tabs.value = useTabsStore().tabs
+  tabs.value = useTabsStore2().browserTabs
   const filterTerm = useUiStore().toolbarFilterTerm.toLowerCase()
   if (filterTerm.length > 0) {
     tabs.value = _.filter(tabs.value, (t: chrome.tabs.Tab) =>
@@ -127,8 +127,8 @@ watchEffect(() => {
 })
 
 const addTooltip = () => useSelection.value ?
-    `Add ${tabSelection.value.size} tab(s) to ${tabsStore.currentTabsetName}` :
-    `Add all tabs to ${tabsStore.currentTabsetName}`
+    `Add ${tabSelection.value.size} tab(s) to ${useTabsetsStore().currentTabsetName}` :
+    `Add all tabs to ${useTabsetsStore().currentTabsetName}`
 
 const addLabel = () => 'add'
 const checkboxLabel = () => useSelection.value ? '' : 'use selection'

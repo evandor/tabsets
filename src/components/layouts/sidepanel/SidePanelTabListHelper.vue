@@ -29,6 +29,7 @@ import {PropType} from "vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -55,7 +56,7 @@ const startDrag = (evt: any, tab: Tab) => {
 
 const itemStyle = () => {
   let style = ""
-  if (props.tab.color && usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
+  if (props.tab.color && useFeaturesStore().hasFeature(FeatureIdent.COLOR_TAGS)) {
     style = style + 'border-left:3px solid ' + props.tab.color + ';border-radius:4px;'
   }
   return style

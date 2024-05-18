@@ -12,7 +12,7 @@
                        icon="o_description"
                        label="Tabset Description..."/>
 
-      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
+      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
 
         <q-separator inset />
 
@@ -26,7 +26,7 @@
       <q-separator inset v-if="useTabsetsStore().tabsets.size > 1"/>
 
       <ContextMenuItem v-close-popup
-                       v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+                       v-if="useFeaturesStore().hasFeature(FeatureIdent.NOTES)"
                        @was-clicked="startTabsetNote(tabset)"
                        icon="o_add_circle"
                        label="Create Note"/>
@@ -43,7 +43,7 @@
           </q-item-section>
           <q-menu anchor="top end" self="top start">
             <q-list>
-              <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)"
+              <q-item v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)"
                       dense clickable v-close-popup @click="startAutoSwitchingTab(tabset.id)">
                 <q-item-section>switching tab</q-item-section>
               </q-item>
@@ -91,7 +91,7 @@
 
       </template>
 
-      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
+      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
         tabset.status === TabsetStatus.DEFAULT">
         <ContextMenuItem
           v-close-popup
@@ -103,7 +103,7 @@
 
       <q-separator inset/>
 
-      <ContextMenuItem v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING) && (tabset.sharing === TabsetSharing.UNSHARED || !tabset.sharing)"
+      <ContextMenuItem v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING) && (tabset.sharing === TabsetSharing.UNSHARED || !tabset.sharing)"
                        v-close-popup
                        @was-clicked="shareTabsetPubliclyDialog(tabset)"
                        icon="ios_share"
@@ -129,7 +129,7 @@
         <q-tooltip class="tooltip-small">Delete Shared Link</q-tooltip>
       </ContextMenuItem>
 
-      <q-separator inset v-if="usePermissionsStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />
+      <q-separator inset v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />
 
       <template v-if="useSettingsStore().isEnabled('dev')">
         <ContextMenuItem v-close-popup
@@ -187,6 +187,7 @@ import {SidePanelView, useUiStore} from "stores/uiStore";
 import {NotificationType} from "src/services/ErrorHandler";
 import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {inBexMode} = useUtils()
 
@@ -348,23 +349,6 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
       sharedId: tabset.sharedId,
       tabsetName: tabset.name,
       republish: republish
-    }
-  })
-}
-
-const removeWindow = () => {
-  const ts = useTabsStore().getCurrentTabset
-  if (ts) {
-    ts.window = 'current'
-    useTabsetService().saveTabset(ts)
-  }
-}
-
-const openNewWindowDialog = () => {
-  $q.dialog({
-    component: NewWindowDialog,
-    componentProps: {
-      tabsetId: useTabsStore().currentTabsetId
     }
   })
 }

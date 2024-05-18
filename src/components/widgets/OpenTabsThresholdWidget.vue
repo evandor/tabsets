@@ -18,7 +18,7 @@
       track-color="grey-3"
       class="q-ml-xs">
     </q-circular-progress>
-    <q-tooltip class="tooltip">Open Tabs: {{useTabsStore().tabs.length}} - click to manage</q-tooltip>
+    <q-tooltip class="tooltip">Open Tabs: {{useTabsStore2().browserTabs.length}} - click to manage</q-tooltip>
   </span>
   <q-menu :offset="[0, 15]">
     <q-list style="min-width: 200px">
@@ -38,32 +38,32 @@
       <!--      <q-item clickable v-close-popup @click="TabsetService.closeDuplictedOpenTabs()">-->
       <!--        <q-item-section>&bull; Close duplicated open tabs</q-item-section>-->
       <!--      </q-item>-->
-      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP)"
+      <q-item v-if="useFeaturesStore().hasFeature(FeatureIdent.BACKUP)"
               clickable v-close-popup
               @click="backupAndClose">
         <q-item-section>&bull; Backup and close current tabs...</q-item-section>
       </q-item>
       <q-item
-        :disable="useTabsStore().browserTabs.length <= 1"
+        :disable="useTabsStore2().browserTabs.length <= 1"
         clickable v-close-popup @click="TabsetService.closeAllTabs()">
-        <q-item-section>&bull; Close all other tabs ({{useTabsStore().browserTabs.length - 1}})</q-item-section>
+        <q-item-section>&bull; Close all other tabs ({{useTabsStore2().browserTabs.length - 1}})</q-item-section>
       </q-item>
       <q-separator/>
       <q-item disable v-if="showSpecialTabsets()">
         Use special tabsets:
       </q-item>
-      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && existingSession"
+      <q-item v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) && existingSession"
               clickable v-close-popup
               @click="replaceSession">
         <q-item-section>&bull; Replace existing Session...</q-item-section>
       </q-item>
-      <q-item v-else-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !existingSession"
+      <q-item v-else-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) && !existingSession"
               clickable v-close-popup
               @click="startSession">
         <q-item-section>&bull; Start a new Session...</q-item-section>
       </q-item>
-      <q-separator v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"/>
-      <q-item v-if="usePermissionsStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"
+      <q-separator v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"/>
+      <q-item v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) && !props.inSidePanel"
               clickable v-close-popup @click="router.push('/settings')">
         <q-item-section>Change Settings</q-item-section>
       </q-item>
@@ -88,6 +88,8 @@ import {FeatureIdent} from "src/models/AppFeatures";
 import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
 import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const settingsStore = useSettingsStore()
 const router = useRouter()
@@ -110,18 +112,18 @@ if (!inBexMode()) {
 }
 
 watchEffect(() => {
-  openTabsCountRatio.value = Math.min(useTabsStore().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1)
+  openTabsCountRatio.value = Math.min(useTabsStore2().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1)
   //console.log("threshold", settingsStore.thresholds['max' as keyof object])
-  openTabsCountRatio2.value = Math.round(100 * Math.min(useTabsStore().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1))
+  openTabsCountRatio2.value = Math.round(100 * Math.min(useTabsStore2().browserTabs.length / settingsStore.thresholds['max' as keyof object], 1))
 })
 
-watch(() => useTabsStore().browserTabs.length, (after: number, before: number) => {
+watch(() => useTabsStore2().browserTabs.length, (after: number, before: number) => {
   if (inBexMode()) {
     TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
   }
 })
 
-watch(() => tabsStore.getCurrentTabs.length, (after: number, before: number) => {
+watch(() => useTabsetsStore().getCurrentTabs.length, (after: number, before: number) => {
   if (inBexMode()) {
     TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res)
   }
@@ -136,12 +138,12 @@ watch(() => tabsStore.getCurrentTabs.length, (after: number, before: number) => 
 //watchEffect(() => TabsetService.trackedTabsCount().then((res) => trackedTabsCount.value = res))
 
 const showThresholdBar = () =>
-  useTabsStore().browserTabs.length >= settingsStore.thresholds['min' as keyof object]
+  useTabsStore2().browserTabs.length >= settingsStore.thresholds['min' as keyof object]
 
 const thresholdStyle = () =>
   "color: hsl(" + (120 - Math.round(120 * openTabsCountRatio.value)) + " 80% 50%)"
 
-const thresholdLabel = () => useTabsStore().browserTabs.length + " open tabs"
+const thresholdLabel = () => useTabsStore2().browserTabs.length + " open tabs"
 
 const showOpenTabs = () =>
   useUiStore().rightDrawerSetActiveTab(DrawerTabs.UNASSIGNED_TABS)
@@ -154,5 +156,5 @@ const startSession = () => $q.dialog({component: NewSessionDialog, componentProp
 const replaceSession = () => $q.dialog({component: NewSessionDialog, componentProps: {replaceSession: true}})
 const backupAndClose = () => $q.dialog({component: BackupAndCloseDialog})
 
-const showSpecialTabsets = () => usePermissionsStore().hasFeature(FeatureIdent.SESSIONS)
+const showSpecialTabsets = () => useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)
 </script>

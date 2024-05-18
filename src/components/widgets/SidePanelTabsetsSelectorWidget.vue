@@ -11,11 +11,11 @@
     <q-menu :offset="[0,0]">
       <q-list dense>
 
-        <q-item disable v-if="tabsetsOptions.length > 0 && usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+        <q-item disable v-if="tabsetsOptions.length > 0 && useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
           {{ useSpacesStore().space?.label ? 'Tabsets of ' + useSpacesStore().space.label : 'Tabsets w/o Space' }}
         </q-item>
         <q-item disable
-                v-else-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+                v-else-if="!useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
           Switch to other Tabset:
         </q-item>
         <q-item v-if="allTabsetsButCurrent.length > 10">
@@ -46,7 +46,7 @@
           {{ ts.name }}
         </q-item>
 
-        <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES) && !useAsTabsetsSwitcher">
+        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES) && !useAsTabsetsSwitcher">
           <q-separator/>
           <q-item clickable @click.stop="router.push('/sidepanel/spaces')">
             Switch Space...
@@ -61,7 +61,7 @@
         </template>
 
         <template
-          v-if="usePermissionsStore().hasFeature(FeatureIdent.BACKUP) || usePermissionsStore().hasFeature(FeatureIdent.IGNORE)">
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.BACKUP) || useFeaturesStore().hasFeature(FeatureIdent.IGNORE)">
           <q-separator/>
           <q-item disable>
             Special Tabsets
@@ -102,7 +102,7 @@ import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import _ from "lodash";
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -114,6 +114,7 @@ import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const props = defineProps({
   fromPanel: {type: Boolean, default: true},
@@ -153,7 +154,7 @@ const setModel = (val: any) => {
 
 watchEffect(() => {
   let tabsets = [...useTabsetsStore().tabsets.values()]
-  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
     } else {

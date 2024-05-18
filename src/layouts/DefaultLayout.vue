@@ -10,7 +10,7 @@
             src="favicon.ico" height="32px" width="32px">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-img>
-          <q-toolbar-title v-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
+          <q-toolbar-title v-if="!useFeaturesStore().hasFeature(FeatureIdent.SPACES)"
             @click.stop="goHome()" class="cursor-pointer"
             style="min-width:200px" shrink>
             {{ title() }}
@@ -36,7 +36,7 @@
                       v-if="useTabsetsStore().tabsets.size > 1 || useSettingsStore().isEnabled('dev')"/>
 
         <Transition name="colorized-appear">
-          <div v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
+          <div v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
             <OpenTabsThresholdWidget/>
           </div>
         </Transition>
@@ -205,6 +205,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
 import {useAuthStore} from "stores/authStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const $q = useQuasar()
 const router = useRouter()

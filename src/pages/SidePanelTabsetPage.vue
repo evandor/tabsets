@@ -51,7 +51,7 @@
           <!--          <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>-->
 
           <q-btn
-            v-if="usePermissionsStore().hasFeature(FeatureIdent.NOTES)"
+            v-if="useFeaturesStore().hasFeature(FeatureIdent.NOTES)"
             @click.stop="startTabsetNote()"
             class="q-mx-xs q-pa-xs cursor-pointer"
             icon="o_add_circle"
@@ -101,12 +101,11 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
-import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
-import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import NavigationService from "src/services/NavigationService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {inBexMode} = useUtils()
 
@@ -130,7 +129,7 @@ onMounted(() => {
 
 watchEffect(() => {
   tabsetId.value = route.params.tabsetId as string
-  tabset.value = useTabsStore().getTabset(tabsetId.value)
+  tabset.value = useTabsetsStore().getTabset(tabsetId.value)
   if (tabset.value) {
     useTabsetsStore().selectCurrentTabset(tabset.value.id)
   }
@@ -147,13 +146,13 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  openTabs.value = useTabsStore().tabs
-  currentTabset.value = useTabsStore().getCurrentTabset
+  openTabs.value = useTabsStore2().browserTabs
+  currentTabset.value = useTabsetsStore().getCurrentTabset
 })
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
 if (inBexMode() && chrome) {
@@ -187,7 +186,7 @@ const toggleOrder = () => descending.value = !descending.value
 const preventDragAndDrop = (sorting: TabSorting) => $q.platform.is.mobile || sorting !== TabSorting.CUSTOM
 
 const alreadyInTabset = () => {
-  if (currentChromeTab.value?.url && useTabsStore().getCurrentTabset) {
+  if (currentChromeTab.value?.url && useTabsetsStore().getCurrentTabset) {
     return useTabsetService().urlExistsInCurrentTabset(currentChromeTab.value.url)
   }
   return false

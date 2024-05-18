@@ -74,7 +74,7 @@
         &nbsp;
       </div>
       <div v-else class="col text-right">
-        <q-btn icon="o_help" v-if="usePermissionsStore().hasFeature(FeatureIdent.HELP)"
+        <q-btn icon="o_help" v-if="useFeaturesStore().hasFeature(FeatureIdent.HELP)"
                :class="rightButtonClass()"
                flat
                :size="getButtonSize()"
@@ -109,7 +109,7 @@
           <q-tooltip class="tooltip" anchor="top left" self="bottom left">Show Stats</q-tooltip>
         </q-btn>
 
-        <span v-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP) && useAuthStore().isAuthenticated()">
+        <span v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP) && useAuthStore().isAuthenticated()">
           <q-icon
             name="o_open_in_new"
             :class="rightButtonClass()"
@@ -130,7 +130,7 @@
             </q-list>
           </q-menu>
         </span>
-        <q-btn v-else-if="usePermissionsStore().hasFeature(FeatureIdent.STANDALONE_APP)"
+        <q-btn v-else-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)"
                icon="o_open_in_new"
                :class="rightButtonClass()"
                flat
@@ -209,10 +209,8 @@ import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
-import SidePanelWindowMarkupTable from "components/helper/SidePanelWindowMarkupTable.vue";
 import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
 import {Window} from "src/windows/models/Window"
-import {useSettingsStore} from "stores/settingsStore";
 import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
@@ -220,6 +218,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -283,7 +282,7 @@ watchEffect(() => {
     (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
       _.findIndex(suggestions, s => {
         return s.state === SuggestionState.NEW ||
-          (s.state === SuggestionState.NOTIFICATION && !usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS))
+          (s.state === SuggestionState.NOTIFICATION && !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
       }) >= 0)
 
   showSuggestionIcon.value =
@@ -504,10 +503,6 @@ const logout = () => {
     })
     .catch(() => {
       //this.handleError(error)
-    })
-    .finally(() => {
-      console.log("cleaning up after logout")
-      //useTabsetService().init(useDB(undefined).db, useDB(undefined).pouchDb)
     })
 }
 

@@ -39,7 +39,7 @@
           <!--            duplicate-->
           <!--            <q-tooltip class="tooltip">This tab has a duplicate inside this tabset and could be deleted</q-tooltip>-->
           <!--          </q-chip>-->
-          <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
+          <span v-if="useTabsetsStore().getCurrentTabset?.sorting === 'alphabeticalTitle'">
             <q-icon name="arrow_right" size="16px"/>
           </span>
           {{ nameOrTitle(props.tab) }}
@@ -67,7 +67,7 @@
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
            @click.stop="open(props.tab)">
 
-        <span v-if="useTabsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
+        <span v-if="useTabsetsStore().getCurrentTabset?.sorting === 'alphabeticalUrl'">
           <q-icon name="arrow_right" size="16px"/>
         </span>
         <short-url :url="props.tab?.url" :hostname-only="true"/>
@@ -155,6 +155,7 @@ import {useUiStore} from "stores/uiStore";
 import PwaCommentDialog from "components/dialogues/PwaCommentDialog.vue";
 import {SHARING_AVATAR_IDENT} from "boot/constants";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -229,7 +230,7 @@ const itemStyle = (tab: Tab) => {
 }
 
 const deleteTab = (tab: Tab) => {
-  const tabset = useTabsStore().getTabset(props.tabsetId)
+  const tabset = useTabsetsStore().getTabset(props.tabsetId)
   if (tabset) {
     return useCommandExecutor().executeFromUi(new DeleteTabCommand(tab, tabset))
   }

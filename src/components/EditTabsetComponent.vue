@@ -6,11 +6,11 @@
 <script setup lang="ts">
 
 import {useRouter} from "vue-router";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const router = useRouter()
-const tabsStore = useTabsStore()
 
-router.push("/tabsets/" + tabsStore.currentTabsetId)
+router.push("/tabsets/" + useTabsetsStore().currentTabsetId)
 
 // watchEffect(() => {
 //   const highlight = route.query['highlight'] as unknown as string

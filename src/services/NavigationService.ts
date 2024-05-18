@@ -12,6 +12,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {FeatureIdent} from "src/models/AppFeatures";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {handleSuccess} = useNotificationHandler()
 
@@ -126,7 +127,7 @@ class NavigationService {
             }, (tab: chrome.tabs.Tab) => {
               chrome.windows.update(useWindowId, {focused: true})
 
-              if (!usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+              if (!useFeaturesStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
                 setTimeout(() => {
                   // check potential redirect
                   chrome.tabs.get(tab.id || 0, (potentiallyChangedTab: chrome.tabs.Tab) => {
@@ -179,7 +180,7 @@ class NavigationService {
   }
 
   private handleGroup(group: string | undefined, useWindowId: number, r: chrome.tabs.Tab) {
-    if (group && usePermissionsStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabs?.group) {
+    if (group && useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS) && chrome?.tabs?.group) {
       console.log("handling current Group", group)
       const optionalGroup = useGroupsStore().currentGroupForName(group)
       if (!optionalGroup) {

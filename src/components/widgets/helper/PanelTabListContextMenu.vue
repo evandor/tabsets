@@ -34,7 +34,7 @@
         </q-item>
       </template>
 
-      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.MONITORING)">
+      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.MONITORING)">
         <q-item :clickable="props.tab?.placeholders === undefined || props.tab?.monitor !== undefined"
                 v-close-popup @click.stop="monitoringDialog(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
@@ -60,7 +60,7 @@
       <!--        </q-item-section>-->
       <!--      </q-item>-->
 
-      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)">
+      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)">
         <q-separator inset/>
         <q-item clickable v-close-popup @click.stop="assignTab(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
@@ -72,7 +72,7 @@
         </q-item>
       </template>
 
-      <template v-if="usePermissionsStore().hasFeature(FeatureIdent.COLOR_TAGS)">
+      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.COLOR_TAGS)">
         <q-separator inset/>
         <q-item clickable v-close-popup @click.stop="setColor(props['tab' as keyof object])">
           <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
@@ -138,6 +138,7 @@ import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 

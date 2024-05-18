@@ -27,7 +27,7 @@
           color="primary"
           label="Back to tabsets"
           class="q-mr-md"
-          @click="router.push('/tabsets/' + useTabsStore().currentTabsetId )"
+          @click="router.push('/tabsets/' + useTabsetsStore().currentTabsetId )"
         >
           <q-tooltip>Back to tabsets</q-tooltip>
         </q-btn>
@@ -55,6 +55,7 @@ import {date} from "quasar"
 import _ from "lodash"
 import TabsetService from "src/services/TabsetService";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 const router = useRouter()
@@ -79,7 +80,7 @@ onMounted(() => {
 watchEffect(async () => {
   tabId.value = route.params.tabId as string
   console.log("checking tabId", tabId.value)
-  const found = _.find(useTabsStore().getCurrentTabs, t => t.id === route.params.tabId)
+  const found = _.find(useTabsetsStore().getCurrentTabs, t => t.id === route.params.tabId)
   console.log("found", found)
   if (found && found.url) {
     title.value = found.title || 'unknown'
@@ -98,11 +99,5 @@ watchEffect(async () => {
 })
 
 const openInNewTab = () => console.log("not implemented")
-
-const iFrameStyle = () => {
-  const v = "overflow:hidden;height:" + (window.innerHeight - 80) + "px;width:100%;border:0px"
-  console.log("v", v)
-  return v
-}
 
 </script>

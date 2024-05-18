@@ -220,8 +220,9 @@ import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore"
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
 
@@ -343,7 +344,7 @@ watchEffect(() => {
   }
 })
 
-const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(useTabsStore().getCurrentTabset, tab))
+const saveTab = (tab: Tab) => useCommandExecutor().execute(new SaveTabCommand(useTabsetsStore().getCurrentTabset, tab))
 
 const updatedTags = (val: string[]) => {
   const tab = useUiStore().getSelectedTab

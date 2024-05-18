@@ -14,10 +14,9 @@ export function useNotificationHandler() {
 
   const handleError = (err: any, type: NotificationType = NotificationType.TOAST) => {
     const errorMsg = err ? err.toString() : 'unknown error'
-    console.log("showing error message: ", errorMsg)
+    console.warn("showing error message: ", errorMsg)
     console.trace()
 
-    //logtail.error(error ? error.toString() : 'unknown error', error)
     error(errorMsg /** todo pass actual error */)
 
     switch (type) {

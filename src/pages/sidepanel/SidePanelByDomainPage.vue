@@ -49,11 +49,8 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute();
 const router = useRouter();
-const localStorage = useQuasar().localStorage
-const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
 
-const tabsetname = ref(tabsStore.currentTabsetName)
+const tabsetname = ref(useTabsetsStore().currentTabsetName)
 const filter = ref('')
 const $q = useQuasar()
 

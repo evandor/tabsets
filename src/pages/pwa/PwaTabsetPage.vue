@@ -69,7 +69,7 @@
 
 
         <q-btn
-          v-if="permissionsStore.hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.EXPERIMENTAL_VIEWS) && tabset?.tabs.length > 0"
           @click="setView('exporter')"
           style="width:14px"
           class="q-mr-sm" size="10px"

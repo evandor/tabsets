@@ -9,6 +9,8 @@ import {useSearchStore} from "stores/searchStore";
 import {uid} from "quasar";
 import {useUiStore} from "stores/uiStore";
 import {Tabset} from "src/tabsets/models/Tabset";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {saveCurrentTabset} = useTabsetService()
 
@@ -31,15 +33,14 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    const tabsStore = useTabsStore()
     console.info(this.tab, 'adding tab by d&d')
     //console.log("tabs", tabsStore.getCurrentTabs)
-    const exists = _.findIndex(tabsStore.getCurrentTabs, t => t.url === this.tab.url) >= 0
+    const exists = _.findIndex(useTabsetsStore().getCurrentTabs, t => t.url === this.tab.url) >= 0
 
     let useIndex = this.newIndex
     console.log("exists", exists)
 
-    const currentTabset: Tabset | undefined = useTabsStore().getCurrentTabset
+    const currentTabset: Tabset | undefined = useTabsetsStore().getCurrentTabset
 
     if (!exists) {
       if (!this.tab.tags) {
@@ -51,16 +52,19 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
           if (this.tab.url) {
             useUiStore().clearHighlights()
             useUiStore().addHighlight(this.tab.url)
-            // useSearchStore().update(this.tab.url, 'name', this.newName)
-            useSearchStore().addToIndex(uid(), "", this.tab.title || '',
-              this.tab.url, "", "", [tabsStore.currentTabsetId], this.tab.favIconUrl || '')
+            const currentTsId = useTabsetsStore().currentTabsetId
+            if (currentTsId) {
+              // useSearchStore().update(this.tab.url, 'name', this.newName)
+              useSearchStore().addToIndex(uid(), "", this.tab.title || '',
+                this.tab.url, "", "", [currentTsId], this.tab.favIconUrl || '')
+            }
           }
           return res
         })
         .then((res) => {
-          if (tabsStore.pendingTabset) {
-            tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== this.tab.url)
-          }
+          // if (tabsStore.pendingTabset) {
+          //   tabsStore.pendingTabset.tabs = _.filter(tabsStore.pendingTabset.tabs, t => t.url !== this.tab.url)
+          // }
         })
         .then((res) => {
 
@@ -83,10 +87,10 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
           }
         })
     } else {
-      const oldIndex = _.findIndex(useTabsStore().getCurrentTabs, t => t.id === this.tab.id)
+      const oldIndex = _.findIndex(useTabsetsStore().getCurrentTabs, t => t.id === this.tab.id)
       if (oldIndex >= 0) {
-        const tab = tabsStore.getCurrentTabs.splice(oldIndex, 1)[0];
-        tabsStore.getCurrentTabs.splice(useIndex, 0, tab);
+        const tab = useTabsetsStore().getCurrentTabs.splice(oldIndex, 1)[0];
+        useTabsetsStore().getCurrentTabs.splice(useIndex, 0, tab);
       }
       return saveCurrentTabset()
         .then(result => new ExecutionResult(

@@ -15,7 +15,6 @@ import {Space} from "src/spaces/models/Space";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 import JsUtils from "src/utils/JsUtils";
-import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useUiStore} from "stores/uiStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
@@ -28,6 +27,7 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 let db: TabsetsPersistence = null as unknown as TabsetsPersistence
 
@@ -171,7 +171,6 @@ export function useTabsetService() {
    * @param merge if true, the old values and the new ones will be merged.
    */
   const saveOrReplaceFromBookmarks = async (name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false, dryRun = false): Promise<object> => {
-    const tabsStore = useTabsStore()
     const now = new Date().getTime()
     const tabs = _.map(_.filter(bms, bm => bm.url !== undefined), c => {
       const tab = new Tab(uid(), ChromeApi.createChromeTabObject(c.title, c.url || '', ""))
@@ -410,7 +409,7 @@ export function useTabsetService() {
             } else {
               t.contentHash = ""
             }
-            if (usePermissionsStore().hasFeature(FeatureIdent.MONITORING) &&
+            if (useFeaturesStore().hasFeature(FeatureIdent.MONITORING) &&
               t.monitor && t.monitor.type === MonitoringType.CONTENT_HASH) {
               if (oldContentHash && oldContentHash !== '' &&
                 t.contentHash !== oldContentHash &&
@@ -427,7 +426,7 @@ export function useTabsetService() {
                 suggestion.state = SuggestionState.NOTIFICATION
                 useSuggestionsStore().addSuggestion(suggestion)
                   .then(() => {
-                    if (usePermissionsStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
+                    if (useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
                       chrome.notifications.create(id, {
                         title: "Tabset Extension Message",
                         type: "basic",

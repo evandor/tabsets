@@ -10,7 +10,7 @@
               src="favicon.ico" height="32px" width="32px">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-img>
-          <q-toolbar-title v-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
+          <q-toolbar-title v-if="!useFeaturesStore().hasFeature(FeatureIdent.SPACES)"
                            @click.stop="goHome()" class="cursor-pointer"
                            style="min-width:200px" shrink>
             {{ title() }}
@@ -27,7 +27,7 @@
               name="menu" size="18px" @click="toggleLeftDrawer">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-icon>
-          <template v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+          <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
             <SpacesSelectorWidget class="q-mx-md"/>
           </template>
         </template>
@@ -77,6 +77,7 @@ import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore"
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const $q = useQuasar()
 const router = useRouter()

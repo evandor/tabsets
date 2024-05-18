@@ -6,7 +6,7 @@
         <div class="row fit">
           <div class="col-xs-12 col-md-6">
             <q-toolbar-title>
-              <div class="row justify-start items-baseline" v-if="usePermissionsStore().hasFeature(FeatureIdent.SPACES)">
+              <div class="row justify-start items-baseline" v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
                 <SpacesSelectorWidget />
               </div>
               <div class="row justify-start items-baseline" v-else>
@@ -24,7 +24,7 @@
                 class="tooltip"
                 :delay="200"
                 anchor="center left" self="center right">
-                {{ usePermissionsStore().hasFeature(FeatureIdent.SPACES) ?
+                {{ useFeaturesStore().hasFeature(FeatureIdent.SPACES) ?
                   'Click here to add a new tabset to the current Space':
                   'Click here to add a new tabset'}}
               </q-tooltip>
@@ -68,6 +68,7 @@ import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore"
 import SpacesSelectorWidget from "src/spaces/widgets/SpacesSelectorWidget.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const spacesStore = useSpacesStore()
 
@@ -81,7 +82,7 @@ $q.loadingBar.setDefaults({
 
 const tabsets = ():Tabset[] => {
   let tabsets = [...useTabsetsStore().tabsets.values()]
-  if (usePermissionsStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
     } else {

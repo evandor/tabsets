@@ -90,7 +90,7 @@ import {useQueryExecutor} from "src/services/QueryExecutor";
 import {useUiStore} from "src/stores/uiStore";
 import JsUtils from "src/utils/JsUtils";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {SelectTabsetCommand} from "src/domain/tabsets/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({

@@ -38,6 +38,7 @@ import {RenameWindowCommand} from "src/windows/commands/RenameWindow";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {RenameFolderCommand} from "src/tabsets/commands/RenameFolderCommand";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -50,8 +51,6 @@ const props = defineProps({
 })
 
 const {dialogRef, onDialogOK, onDialogHide, onDialogCancel} = useDialogPluginComponent()
-
-const tabsStore = useTabsStore()
 
 const newSubfolderName = ref(props.name)
 const newSubfolderNameExists = ref(false)

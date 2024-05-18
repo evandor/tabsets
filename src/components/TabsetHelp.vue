@@ -34,14 +34,14 @@ import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {Tab} from "src/tabsets/models/Tab";
 import TabsetService from "src/services/TabsetService";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const tabsStore = useTabsStore()
 const router = useRouter()
 
 const tabs = ref<Tab[]>([])
 
 watchEffect(() => {
-  tabs.value = tabsStore.getCurrentTabs
+  tabs.value = useTabsetsStore().getCurrentTabs
 })
 
 
