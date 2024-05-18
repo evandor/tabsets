@@ -2,63 +2,8 @@ import _ from "lodash"
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {Feature} from "src/features/models/Feature";
+import {FeatureIdent, FeatureType} from "src/models/FeatureIdent";
 
-export enum FeatureIdent {
-  //BOOKMARKS = "BOOKMARKS", -- active by default now
-  //PAGE_MARKER = "PAGE_MARKER",
-  // SAVE_TAB = "SAVE_TAB", // As MHTML
-  SAVE_TAB_AS_PDF = "SAVE_TAB_AS_PDF", // not active yet
-  SAVE_TAB_AS_PNG = "SAVE_TAB_AS_PNG",
-  GROUP_BY_DOMAIN = "GROUP_BY_DOMAIN",
-  OPENTABS_THRESHOLD = "OPENTABS_THRESHOLD",
-  EXPERIMENTAL_VIEWS = "EXPERIMENTAL_VIEWS",
-  RSS = "RSS",
-  SESSIONS = "SESSIONS",
-  SPACES = "SPACES",
-  HELP = "HELP",
-  TOP10 = "TOP10",
-  OPEN_TABS = "OPEN_TABS",
-  //NEWEST_TABS = "NEWEST_TABS",
-  // THUMBNAILS = "THUMBNAILS", // active by default
-  DYNAMIC = "DYNAMIC",
-  WINDOWS = "WINDOWS",
-  SCHEDULED = "SCHEDULED",
-  OLD_TABS = "OLD_TABS",
-  BACKUP = "BACKUP",
-  IGNORE = "IGNORE",
-  //TABSET_PAGE = "TABSET_PAGE", -- default now
-  NOTES = "NOTES",
-  TAGS = "TAGS",
-  SIDE_PANEL = "SIDE_PANEL",
-  WEBSITE_CLIP = "WEBSITE_CLIP",
-  STANDALONE_APP = "STANDALONE_APP",
-  //AI_MODULE = "AI_MODULE",
-  //CATEGORIZATION = "CATEGORIZATION",
-  NOTIFICATIONS = "NOTIFICATIONS",
-  ANNOTATIONS = "ANNOTATIONS",
-  //CONTEXT_MENUS = "CONTEXT_MENUS",
-  ARCHIVE_TABSET = "ARCHIVE_TABSET",
-  //WINDOW_MANAGEMENT = "WINDOW_MANAGEMENT",
-  COLOR_TAGS = "COLOR_TAGS",
-  ADVANCED_TAB_MANAGEMENT = "ADVANCED_TAB_MANAGEMENT",
-  ANALYSE_TABS = "ANALYSE_TABS",
-  TAB_GROUPS = "TAB_GROUPS",
-  MONITORING = "MONITORING",
-  TAB_HELPER = "TAB_HELPER",
-  AUTO_TAB_SWITCHER = "AUTO_TAB_SWITCHER",
-  TABS_AS_TREE = "TABS_AS_TREE",
-  TABSET_SUBFOLDER = "TABSET_SUBFOLDER",
-  TABSETS_SHARING = "TABSETS_SHARING",
-  WINDOWS_MANAGEMENT = "WINDOWS_MANAGEMENT"
-}
-
-export enum FeatureType {
-  RECOMMENDED = "RECOMMENDED",
-  OPTIONAL = "OPTIONAL",
-  EXPERIMENTAL = "EXPERIMENTAL",
-  PLANNED = "PLANNED",
-  DISABLED = "DISABLED"
-}
 
 
 export class AppFeatures {

@@ -182,7 +182,7 @@ import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";

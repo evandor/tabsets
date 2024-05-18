@@ -137,7 +137,6 @@ import {onMounted, ref, watch, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {Notify, useQuasar} from "quasar";
 import {useCommandExecutor} from "src/services/CommandExecutor";
-import {AppFeatures, FeatureIdent, FeatureType} from "src/models/AppFeatures";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
@@ -148,6 +147,8 @@ import {useUtils} from "src/services/Utils";
 import {useAuthStore} from "stores/authStore";
 import {Feature} from "src/features/models/Feature";
 import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {FeatureIdent, FeatureType} from "src/models/FeatureIdent";
+import {AppFeatures} from "src/models/AppFeatures";
 
 const route = useRoute();
 const router = useRouter();

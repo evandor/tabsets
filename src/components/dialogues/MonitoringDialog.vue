@@ -82,7 +82,7 @@ import {MonitoringType} from "src/models/Monitor";
 import {UpdateMonitoringCommand} from "src/domain/monitoring/UpdateMonitoringCommand";
 import {Tab} from "src/tabsets/models/Tab";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {SavePngCommand} from "src/domain/tabs/SavePng";
 import {useTabsetService} from "src/services/TabsetService2";

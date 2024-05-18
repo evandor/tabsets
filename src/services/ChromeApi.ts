@@ -8,7 +8,7 @@ import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";

@@ -87,7 +87,7 @@ import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

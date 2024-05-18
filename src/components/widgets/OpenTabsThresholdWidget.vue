@@ -84,7 +84,7 @@ import {useQuasar} from "quasar";
 import _ from "lodash"
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
 import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
