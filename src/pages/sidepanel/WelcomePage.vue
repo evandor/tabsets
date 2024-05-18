@@ -116,9 +116,9 @@ import {LocalStorage, openURL} from "quasar";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {AppFeatures} from "src/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {usePermissionsStore} from "stores/permissionsStore";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {t} = useI18n()
 const router = useRouter()
@@ -126,7 +126,6 @@ const router = useRouter()
 const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
-const activateBookmarks = ref(false)
 const activateNotifications = ref(false)
 const activateFullPageApp = ref(false)
 const login = ref(false)
