@@ -34,7 +34,7 @@ import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import {useRoute} from "vue-router";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
