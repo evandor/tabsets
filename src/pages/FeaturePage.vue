@@ -10,7 +10,7 @@
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
-import {useCounterStore} from "stores/counterStore";
+import {useCounterStore} from "stores/linkedCounterStore";
 
 const count = ref(1)
 

@@ -88,7 +88,7 @@ import {FeatureIdent} from "src/models/AppFeatures";
 import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
 import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 
 const settingsStore = useSettingsStore()
