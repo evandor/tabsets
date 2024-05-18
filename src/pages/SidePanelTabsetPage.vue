@@ -101,7 +101,7 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import NavigationService from "src/services/NavigationService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

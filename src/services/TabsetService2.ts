@@ -15,7 +15,7 @@ import {Space} from "src/spaces/models/Space";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 import JsUtils from "src/utils/JsUtils";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {useUiStore} from "stores/uiStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";

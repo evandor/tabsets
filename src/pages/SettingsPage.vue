@@ -431,7 +431,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import {useUtils} from "src/services/Utils";

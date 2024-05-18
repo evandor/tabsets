@@ -360,7 +360,7 @@ import NavigationService from "src/services/NavigationService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";

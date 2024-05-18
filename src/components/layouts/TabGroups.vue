@@ -118,7 +118,7 @@ import TabListElementWidget from "src/components/widgets/TabListElementWidget.vu
 import {useUtils} from "src/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {CreateGroupCommand} from "src/domain/tabs/CreateGroup";
 import {RenameGroupCommand} from "src/domain/tabs/RenameGroup";
 import {TabsetColumn} from "src/tabsets/models/TabsetColumn";

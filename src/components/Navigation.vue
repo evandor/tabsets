@@ -64,7 +64,7 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUtils} from "src/services/Utils";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import SpacesSelectorWidget from "src/spaces/widgets/SpacesSelectorWidget.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

@@ -16,7 +16,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSearchStore} from "stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
 import {useAuthStore} from "stores/authStore";
