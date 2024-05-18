@@ -74,7 +74,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {sendMsg} = useUtils()
 

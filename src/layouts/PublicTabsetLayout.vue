@@ -77,7 +77,7 @@ import {FeatureIdent} from "src/models/AppFeatures";
 import {useSettingsStore} from "src/stores/settingsStore"
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const $q = useQuasar()
 const router = useRouter()

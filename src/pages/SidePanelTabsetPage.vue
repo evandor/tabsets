@@ -101,13 +101,11 @@ import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
-import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
-import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import NavigationService from "src/services/NavigationService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {inBexMode} = useUtils()
 

@@ -91,7 +91,7 @@ import {FeatureIdent} from "src/models/AppFeatures";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

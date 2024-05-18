@@ -458,7 +458,7 @@ import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 const { t } = useI18n()
 
 const {sendMsg, inBexMode} = useUtils()

@@ -102,7 +102,7 @@ import DialogButton from "components/buttons/DialogButton.vue";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 const {inBexMode} = useUtils()

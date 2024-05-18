@@ -147,7 +147,7 @@ import NavigationService from "src/services/NavigationService";
 import {useUtils} from "src/services/Utils";
 import {useAuthStore} from "stores/authStore";
 import {Feature} from "src/features/models/Feature";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const route = useRoute();
 const router = useRouter();
