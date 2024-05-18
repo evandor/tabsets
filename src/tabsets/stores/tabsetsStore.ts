@@ -157,11 +157,11 @@ export const useTabsetsStore = defineStore('tabsets', () => {
 
     // *** getters ***
 
-    const getCurrentTabs = computed(() => {
+    const getCurrentTabs = computed(():Tab[] => {
       if (currentTabsetId.value) {
-        return tabsets.value.get(currentTabsetId.value)?.tabs || []
+        return tabsets.value.get(currentTabsetId.value)?.tabs as Tab[] || []
       }
-      return []
+      return [] as Tab[]
     })
 
     const getCurrentTabset = computed((): Tabset | undefined => {

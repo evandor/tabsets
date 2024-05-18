@@ -46,6 +46,7 @@ import {date} from "quasar"
 import _ from "lodash"
 import TabsetService from "src/services/TabsetService";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 const router = useRouter()
@@ -69,7 +70,7 @@ onMounted(() => {
 
 watchEffect(async () => {
   tabId.value = route.params.tabId as string
-  const found = _.find(useTabsStore().getCurrentTabs, t => t.id === route.params.tabId)
+  const found = _.find(useTabsetsStore().getCurrentTabs, t => t.id === route.params.tabId)
   if (found && found.url) {
     title.value = found.title || 'unknown'
     const request = await TabsetService.getRequestForUrl(found.url)

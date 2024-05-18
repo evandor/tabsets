@@ -65,16 +65,11 @@ const props = defineProps({
   sharedId: {type: String, required: false}
 })
 
-const $q = useQuasar()
-
 const editor = ref('')
 const author = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) || '')
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
-
-const dateFormat = "YYYY-MM-DD HH:mm"
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
 
@@ -83,7 +78,6 @@ watchEffect(() => {
 })
 
 const publishComment = () => {
-  //$q.localStorage.set('sharing.author', author.value)
   useUiStore().sharingAuthor = author.value
   useCommandExecutor().executeFromUi(new AddCommentCommand(props.tabId, editor.value))
 }

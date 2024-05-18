@@ -1,7 +1,5 @@
 import Command from "src/domain/Command";
 import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useTabsetService} from "src/services/TabsetService2";
-import {useTabsStore} from "src/stores/tabsStore";
 import ChromeApi from "src/services/ChromeApi";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

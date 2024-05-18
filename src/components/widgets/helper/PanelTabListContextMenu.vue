@@ -138,7 +138,7 @@ import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/domain/ExecutionResult";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 

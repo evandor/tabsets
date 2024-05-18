@@ -7,6 +7,8 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUtils} from "src/services/Utils";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {sendMsg} = useUtils()
 
@@ -32,14 +34,14 @@ export class MarkTabsetDeletedCommand implements Command<Tabset> {
   async execute(): Promise<ExecutionResult<Tabset>> {
     return TabsetService.markAsDeleted(this.tabsetId)
       .then((tabset) => {
-        console.log("deleting", tabset.type, tabset.status, tabset.id, useTabsStore().currentTabsetId)
+        console.log("deleting", tabset.type, tabset.status, tabset.id, useTabsetsStore().currentTabsetId)
         if (tabset.type === TabsetType.SPECIAL && tabset.id === "BACKUP") {
           //console.log("deactivating")
           useFeaturesStore().deactivateFeature(FeatureIdent.BACKUP.toLowerCase())
         } else if (tabset.type === TabsetType.SPECIAL && tabset.id === "IGNORE") {
           useFeaturesStore().deactivateFeature(FeatureIdent.IGNORE.toLowerCase())
         }
-        if (this.tabsetId === useTabsStore().currentTabsetId || useTabsStore().currentTabsetId === null) {
+        if (this.tabsetId === useTabsetsStore().currentTabsetId || useTabsetsStore().currentTabsetId === null) {
           useTabsetService().selectTabset(undefined)
         }
         return tabset

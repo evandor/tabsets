@@ -66,10 +66,7 @@ const props = defineProps({
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
-const router = useRouter()
-const $q = useQuasar()
 
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)

@@ -95,14 +95,11 @@ const editor = ref(props.note)
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
-const router = useRouter()
 const $q = useQuasar()
 
 const dateFormat = "YYYY-MM-DD HH:mm"
 const newTabsetName = ref('')
 const newTabsetNameExists = ref(false)
-const hideWarning = ref(false)
 const scheduleFor = ref(date.formatDate(new Date().getTime(), dateFormat))
 
 watchEffect(() => {

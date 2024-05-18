@@ -71,9 +71,6 @@ const props = defineProps({
   parentFolder: {type: String, required: false}
 })
 
-const tabsStore = useTabsStore()
-const router = useRouter()
-
 const newFolderName = ref(props.name)
 const isValid = ref(false)
 const addAllOpenTabs = ref(false)

@@ -74,7 +74,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/AppFeatures";
 import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {sendMsg} = useUtils()
 
@@ -91,8 +91,6 @@ const props = defineProps({
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
 const bookmarksStore = useBookmarksStore()
-const tabsStore = useTabsStore()
-const router = useRouter()
 const $q = useQuasar()
 
 const theForm = ref<QForm>(null as unknown as QForm)

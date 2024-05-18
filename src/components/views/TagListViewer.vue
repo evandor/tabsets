@@ -27,11 +27,7 @@ import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import SearchHit from "components/layouts/SearchHit.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const tabsStore = useTabsStore()
-
-const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
-const showReindexDialog = ref(false)
 
 onMounted(() => {
   Analytics.firePageViewEvent('TagListViewer', document.location.href);
@@ -43,7 +39,7 @@ const newSearch = (term: string) => {
   if (term && term.trim() !== '') {
     const results: Tab[] = []
 
-    _.forEach([...useTabsetsStore().tabsets.values()], (tabset: Tabset) => {
+    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(term) >= 0) {
           console.log("found tab", term, tab.tags)

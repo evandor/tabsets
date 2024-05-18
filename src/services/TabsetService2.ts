@@ -27,7 +27,7 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 let db: TabsetsPersistence = null as unknown as TabsetsPersistence
 
@@ -171,7 +171,6 @@ export function useTabsetService() {
    * @param merge if true, the old values and the new ones will be merged.
    */
   const saveOrReplaceFromBookmarks = async (name: string, bms: chrome.bookmarks.BookmarkTreeNode[], merge: boolean = false, dryRun = false): Promise<object> => {
-    const tabsStore = useTabsStore()
     const now = new Date().getTime()
     const tabs = _.map(_.filter(bms, bm => bm.url !== undefined), c => {
       const tab = new Tab(uid(), ChromeApi.createChromeTabObject(c.title, c.url || '', ""))

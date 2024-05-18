@@ -7,7 +7,9 @@
       :size="props.size">
     <q-tooltip class="tooltip" v-if="props.tooltip">{{props.tooltip}}</q-tooltip>
   </q-btn>
+
 </template>
+
 <script setup lang="ts">
 
 const props = defineProps({
@@ -15,4 +17,5 @@ const props = defineProps({
   tooltip: {type: String, required: false},
   size: {type: String, default: "13px"}
 })
+
 </script>

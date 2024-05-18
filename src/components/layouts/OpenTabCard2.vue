@@ -36,8 +36,8 @@
                 class="q-mr-sm"
                 :class="alreadyInCurrentTabset ? '' : 'cursor-pointer'" size="xs"
                 @click="addToCurrentTabset">
-          <q-tooltip class="tooltip" v-if="alreadyInCurrentTabset">This tab has already been added to {{tabsStore.currentTabsetName}}</q-tooltip>
-          <q-tooltip class="tooltip" v-else>Click here to add the tab to your current tabset {{tabsStore.currentTabsetName}}</q-tooltip>
+          <q-tooltip class="tooltip" v-if="alreadyInCurrentTabset">This tab has already been added to {{useTabsetsStore().currentTabsetName}}</q-tooltip>
+          <q-tooltip class="tooltip" v-else>Click here to add the tab to your current tabset {{useTabsetsStore().currentTabsetName}}</q-tooltip>
         </q-icon>
         <q-icon name="close" class="cursor-pointer" @click="closeTab(chromeTab)" size="xs">
           <q-tooltip class="tooltip">Close this tab in the browser</q-tooltip>
@@ -62,6 +62,7 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {PropType, ref, watch, watchEffect} from "vue";
 import ChromeApi from "src/services/ChromeApi";
 import {uid} from "quasar";
+import {useTabsetsStore} from "../../tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   chromeTab: {type: Object as PropType<chrome.tabs.Tab>, required: true},
@@ -72,8 +73,6 @@ const props = defineProps({
 const emits = defineEmits(['selectionChanged', 'addedToTabset', 'hasSelectable'])
 
 const {isCurrentTab} = useUtils()
-
-const tabsStore = useTabsStore()
 
 const showIcons = ref(false)
 const alreadyInCurrentTabset = ref(false)

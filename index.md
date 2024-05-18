@@ -5,17 +5,20 @@ layout: home
 hero:
   name: "Tabsets.net"
   text: "Developer Documentation"
-  tagline: Tabsets - better bookmarks. A cross-browser extension to manage your URLs
+  tagline: Tabsets - better bookmarks. A cross-browser extension to manage your URLs collaboratively
+  image:
+    src: /public/icons/favicon-128x128.png
+    alt: Vitest
   actions:
     - theme: brand
-      text: Initial Setup
+      text: Get Started
       link: /docs/setup
-    - theme: brand
-      text: Features
-      link: /features
+    - theme: alt
+      text: Concepts
+      link: /concepts
     - theme: alt
       text: Submodules Documentation
-      link: /docs/vitepress/submodules
+      link: /docs/submodules/
 #    - theme: alt
 #      text: Skysail
 #      link: https://www.skysail.io

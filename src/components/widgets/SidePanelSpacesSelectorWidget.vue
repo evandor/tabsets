@@ -19,10 +19,9 @@ import {useQuasar} from "quasar";
 import _ from "lodash";
 import {Space} from "src/spaces/models/Space";
 import {Tabset} from "src/tabsets/models/Tabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
-const router = useRouter()
 const $q = useQuasar()
 
 const spaces = ref<object>(null as unknown as object)
@@ -69,7 +68,7 @@ const switchSpace = (s: any) => {
     $q.dialog({
       component: NewSpaceDialog,
       componentProps: {
-        tabsetId: tabsStore.currentTabsetId,
+        tabsetId: useTabsetsStore().currentTabsetId,
         fromPanel: true
       }
     })

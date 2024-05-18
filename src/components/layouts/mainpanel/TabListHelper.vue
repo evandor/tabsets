@@ -51,8 +51,6 @@ const props = defineProps({
 
 const {inBexMode} = useUtils()
 
-const tabsStore = useTabsStore()
-
 const showDetails = (tab: Tab) => {
   useUiStore().setSelectedTab(tab)
   useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAB_DETAILS)

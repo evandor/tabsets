@@ -39,10 +39,6 @@ defineEmits([
 
 const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
 
-const tabsStore = useTabsStore()
-const router = useRouter()
-const $q = useQuasar()
-
 const newTabsetName = ref( 'Session ' + new Date().getDate() + '.' + (new Date().getMonth() + 1) )
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)

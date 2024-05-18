@@ -167,6 +167,8 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     tabHistoryBack,
     tabHistoryForward,
     chromeTabsHistoryNavigating,
+    chromeTabsHistoryPosition,
+    chromeTabsHistory,
     removeTab
   }
 })

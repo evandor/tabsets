@@ -187,7 +187,7 @@ import {SidePanelView, useUiStore} from "stores/uiStore";
 import {NotificationType} from "src/services/ErrorHandler";
 import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {inBexMode} = useUtils()
 
@@ -349,23 +349,6 @@ const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) =
       sharedId: tabset.sharedId,
       tabsetName: tabset.name,
       republish: republish
-    }
-  })
-}
-
-const removeWindow = () => {
-  const ts = useTabsStore().getCurrentTabset
-  if (ts) {
-    ts.window = 'current'
-    useTabsetService().saveTabset(ts)
-  }
-}
-
-const openNewWindowDialog = () => {
-  $q.dialog({
-    component: NewWindowDialog,
-    componentProps: {
-      tabsetId: useTabsStore().currentTabsetId
     }
   })
 }

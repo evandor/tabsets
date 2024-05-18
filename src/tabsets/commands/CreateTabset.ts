@@ -12,7 +12,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {TabsetType} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const {sendMsg} = useUtils()
 

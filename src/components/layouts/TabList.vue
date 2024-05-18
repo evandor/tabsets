@@ -43,6 +43,7 @@ import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOp
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import TabListHelper from "components/layouts/mainpanel/TabListHelper.vue";
 import {useQuasar} from "quasar";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const $q = useQuasar()
 
@@ -61,10 +62,10 @@ function adjustIndex(element: any, tabs: Tab[]) {
   //console.log("filtered", tabs)
   if (element.newIndex === 0) { // first element
     //console.log(" 0 - searching for ", tabs[0].id)
-    return _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[0].id)
+    return _.findIndex(useTabsetsStore().getCurrentTabs, t => t.id === tabs[0].id)
   } else {
     //console.log(" 1 - searching for ", tabs[element.newIndex - 1].id)
-    return 1 + _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
+    return 1 + _.findIndex(useTabsetsStore().getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
   }
 }
 

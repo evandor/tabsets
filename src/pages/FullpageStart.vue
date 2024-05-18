@@ -23,7 +23,6 @@ const $q = useQuasar()
 const router = useRouter()
 
 let timer
-const tabsStore = useTabsStore()
 
 onMounted(() => {
   Analytics.firePageViewEvent('FullPageStart', document.location.href);

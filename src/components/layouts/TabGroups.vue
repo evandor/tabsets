@@ -125,13 +125,9 @@ import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {DeleteGroupCommand} from "src/domain/tabs/DeleteGroup";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants"
 import ChromeApi from "src/services/ChromeApi";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {inBexMode} = useUtils()
-
-const $q = useQuasar()
-const tabsStore = useTabsStore()
-
-const {saveCurrentTabset} = useTabsetService()
 
 const props = defineProps({
   tabs: {type: Array as PropType<Array<Tab>>, required: true},
@@ -143,16 +139,16 @@ const props = defineProps({
 const tabsetGroups = ref<TabsetColumn[]>( [])
 
 watchEffect(() => {
-  console.log("watching!", tabsStore.getCurrentTabset?.columns)
-  const defaultGroupExists = _.filter(tabsStore.getCurrentTabset?.columns || [], (g: Group) => g.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED).length > 0
+  console.log("watching!", useTabsetsStore().getCurrentTabset?.columns)
+  const defaultGroupExists = _.filter(useTabsetsStore().getCurrentTabset?.columns || [], (g: Group) => g.id === SPECIAL_ID_FOR_NO_GROUP_ASSIGNED).length > 0
   console.log("defaultGorupExists", defaultGroupExists)
   tabsetGroups.value = []
   if (!defaultGroupExists) {
     tabsetGroups.value = [new TabsetColumn(SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, "no group")]
   }
-  if (tabsStore.getCurrentTabset?.columns) {
+  if (useTabsetsStore().getCurrentTabset?.columns) {
     console.log("tabsetGroups", tabsetGroups.value)
-    tabsetGroups.value.push(...tabsStore.getCurrentTabset.columns)
+    tabsetGroups.value.push(...useTabsetsStore().getCurrentTabset.columns)
   }
   console.log("tabsetGroups2", tabsetGroups.value)
 })
@@ -172,10 +168,10 @@ function adjustIndex(element: any, tabs: Tab[]) {
   //console.log("filtered", tabs)
   if (element.newIndex === 0) { // first element
     //console.log(" 0 - searching for ", tabs[0].id)
-    return _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[0].id)
+    return _.findIndex(useTabsetsStore().getCurrentTabs, t => t.id === tabs[0].id)
   } else {
     //console.log(" 1 - searching for ", tabs[element.newIndex - 1].id)
-    return 1 + _.findIndex(tabsStore.getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
+    return 1 + _.findIndex(useTabsetsStore().getCurrentTabs, t => t.id === tabs[element.newIndex - 1].id)
   }
 }
 
@@ -190,13 +186,13 @@ const handleDragAndDrop = (event: any, group: TabsetColumn) => {
     switch (props.group) {
       case 'otherTabs':
         // @ts-ignore
-        const unpinnedNoGroup: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => !t.pinned && t.groupId === -1)
+        const unpinnedNoGroup: Tab[] = _.filter(useTabsetsStore().getCurrentTabs, (t: Tab) => !t.pinned && t.groupId === -1)
         if (unpinnedNoGroup.length > 0) {
           useIndex = adjustIndex(moved, unpinnedNoGroup);
         }
         break;
       case 'pinnedTabs':
-        const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.pinned)
+        const filteredTabs: Tab[] = _.filter(useTabsetsStore().getCurrentTabs, (t: Tab) => t.pinned)
         if (filteredTabs.length > 0) {
           useIndex = adjustIndex(moved, filteredTabs);
         }
@@ -205,7 +201,7 @@ const handleDragAndDrop = (event: any, group: TabsetColumn) => {
         if (props.group.startsWith('groupedTabs_')) {
           const groupId = props.group.split('_')[1]
           // @ts-ignore
-          const filteredTabs: Tab[] = _.filter(tabsStore.getCurrentTabs, (t: Tab) => t.groupId === parseInt(groupId))
+          const filteredTabs: Tab[] = _.filter(useTabsetsStore().getCurrentTabs, (t: Tab) => t.groupId === parseInt(groupId))
           if (filteredTabs.length > 0) {
             useIndex = adjustIndex(moved, filteredTabs);
           }
@@ -248,18 +244,18 @@ const showDetails = (tab: Tab) => {
 }
 const setNewName = (newValue: string) => {
   if (tabsStore?.getCurrentTabset) {
-    useCommandExecutor().executeFromUi(new CreateGroupCommand(tabsStore.getCurrentTabset, newValue))
+    useCommandExecutor().executeFromUi(new CreateGroupCommand(useTabsetsStore().getCurrentTabset, newValue))
   }
 }
 const rename = (groupId: string, newValue: string) => {
   if (tabsStore?.getCurrentTabset) {
-    useCommandExecutor().executeFromUi(new RenameGroupCommand(tabsStore.getCurrentTabset, groupId, newValue))
+    useCommandExecutor().executeFromUi(new RenameGroupCommand(useTabsetsStore().getCurrentTabset, groupId, newValue))
   }
 }
 
 const deleteGroup = (g: TabsetColumn) => {
   if (tabsStore?.getCurrentTabset) {
-    useCommandExecutor().executeFromUi(new DeleteGroupCommand(tabsStore.getCurrentTabset, g.id))
+    useCommandExecutor().executeFromUi(new DeleteGroupCommand(useTabsetsStore().getCurrentTabset, g.id))
       .then(() => {
         tabsetGroups.value = _.filter(tabsetGroups.value, group => group.id !== g.id)
       })

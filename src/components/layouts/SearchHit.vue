@@ -96,7 +96,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useCommandExecutor} from "src/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useFeaturesStore} from "stores/linkedFeaturesStore";
 
 const props = defineProps({
   hit: {type: Hit, required: true},
