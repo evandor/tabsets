@@ -146,7 +146,7 @@ import NavigationService from "src/services/NavigationService";
 import {useUtils} from "src/services/Utils";
 import {useAuthStore} from "stores/authStore";
 import {Feature} from "src/features/models/Feature";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent, FeatureType} from "src/models/FeatureIdent";
 import {AppFeatures} from "src/models/AppFeatures";
 
