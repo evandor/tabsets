@@ -118,7 +118,7 @@ import {AppFeatures} from "src/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {t} = useI18n()
 const router = useRouter()

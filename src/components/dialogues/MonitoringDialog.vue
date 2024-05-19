@@ -90,7 +90,7 @@ import {NoOpCommand} from "src/domain/commands/NoOpCommand";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash"
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits

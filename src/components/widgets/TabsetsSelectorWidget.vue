@@ -62,7 +62,7 @@ import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const spacesStore = useSpacesStore()
 const router = useRouter()
