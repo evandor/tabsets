@@ -24,8 +24,6 @@
 
   <div class="row fit greyBorderTop"></div>
 
-  {{ useFeaturesStore().activeFeatures }}
-  <hr>
   <InfoMessageWidget
     :probability="1"
     ident="featuresPage_overview"
@@ -35,7 +33,7 @@
   <div class="row q-ma-lg">
 
     <div class="col-7">
-      <div class="text-h6">{{ text.get(feature)?.name }}</div>
+      <div class="text-h6">{{ appFeature?.name }}</div>
       <div>
         Status: {{ featureActive ? 'active' : 'inactive' }}
         <span v-if="needsAccountAndUserNotLoggedIn()" class="text-warning"> - You need a (free) account to use this feature</span>
@@ -43,7 +41,7 @@
     </div>
 
     <div class="col text-right q-mr-xl">
-      <div v-if="!text.get(feature)?.planned">
+      <div v-if="!appFeature?.planned">
         <q-btn v-if="!hasFeature()" color="warning"
                label="Activate Feature" @click="grant(feature)" :disable="needsAccountAndUserNotLoggedIn()"/>
         <q-btn v-else
@@ -78,8 +76,8 @@
     </div>
 
     <div class="col-12 q-my-md">
-      <div v-html="text.get(feature)?.description"></div>
-      <div v-if="hasFeature()" class="text-primary q-mt-md">{{ text.get(feature)?.activatedMsg }}</div>
+      <div v-html="appFeature?.description"></div>
+      <div v-if="hasFeature()" class="text-primary q-mt-md">{{ appFeature?.activatedMsg }}</div>
     </div>
 
     <div class="col-12 q-my-sm" v-if="getDependentFeatures(feature).length > 0 && !hasFeature()">
@@ -103,20 +101,20 @@
       </ul>
     </div>
 
-    <div class="col-12 q-my-md" v-if="text.get(feature)?.img">
+    <div class="col-12 q-my-md" v-if="appFeature?.img">
       <div>
-        <q-img :src="text.get(feature)?.img" :width="text.get(feature)?.img_width || '250px'"/>
+        <q-img :src="appFeature?.image" :width="appFeature?.imageWidth || '250px'"/>
       </div>
     </div>
 
-    <template v-if="text.get(feature)?.more">
+    <template v-if="appFeature?.more">
       <div class="col-12 q-my-sm">
         <div class="text-subtitle2">More Info</div>
       </div>
 
       <div class="col-12 q-my-md">
         <div> click <a class="cursor-pointer text-blue-6"
-                       @click="NavigationService.openOrCreateTab([text.get(feature)?.more])">here</a></div>
+                       @click="NavigationService.openOrCreateTab([appFeature?.more])">here</a></div>
       </div>
     </template>
 
@@ -125,7 +123,7 @@
     </div>
 
     <div class="col-12 q-my-md">
-      <div> {{ permissionText(text.get(feature)) }}</div>
+      <div> {{ permissionText(appFeature) }}</div>
     </div>
 
   </div>
@@ -169,38 +167,7 @@ onMounted(() => {
 })
 
 
-text.set(FeatureIdent.OPENTABS_THRESHOLD.toLowerCase(), {
-  name: 'Open Tabs Warning',
-  description: 'The Idea behind the tabset extension is to keep your tabs count small - and still deal with all the URLs you need to handle. Tabsets' +
-    ' can help you by tracking your open tabs count and alert you when it gets too big. Furthermore, it offers you ways to reduce your tab count on the fly. This ' +
-    'feature is customizable in the settings.',
-  img: 'open_tabs_warning.png',
-  permissions: []
-})
-text.set(FeatureIdent.GROUP_BY_DOMAIN.toLowerCase(), {
-  name: 'Group By Domain',
-  img: 'groupedByDomain.png',
-  description: 'The "Grouped By Domain" Feature provides a view where you can see all your tabs grouped by Domains. All Domains with at least two matching tabs will be considered.',
-  permissions: []
-})
-text.set(FeatureIdent.SAVE_TAB_AS_PNG.toLowerCase(), {
-  name: 'Save Tab As Image',
-  description: 'You can save tabs as a PNG Image.<br>Creating an image will utilize an external server.',
-  permissions: [],
-  needsAccount: true
-})
-text.set(FeatureIdent.SAVE_TAB_AS_PDF.toLowerCase(), {
-  name: 'Save Tab As PDF',
-  description: 'You can save tabs as a PDF File.',
-  permissions: []
-})
-text.set(FeatureIdent.RSS.toLowerCase(), {
-  name: 'RSS View',
-  img: 'rss.png',
-  description: 'The "RSS View" list all your RSS Pages. It is recommended to enable the "analyse Tabs" feature as well to automatically find ' +
-    'linked rss feeds from your tabsets.',
-  permissions: []
-})
+
 // text.set(FeatureIdent.THUMBNAILS.toLowerCase(), {
 //   experimental: false,
 //   name: 'Thumbnails',
@@ -209,121 +176,40 @@ text.set(FeatureIdent.RSS.toLowerCase(), {
 //       'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to have thumbnails.',
 //   permissions: ['thumbnails']
 // })
-text.set(FeatureIdent.ANALYSE_TABS.toLowerCase(), {
-  experimental: false,
-  name: 'Analyse Tabs',
-  img: 'analyse.png',
-  img_width: '700px',
-  description: 'This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab\'s content, ' +
-    'its links and the received http headers are taken into account. ' +
-    'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
-  permissions: ['allOrigins']
-})
 
-text.set(FeatureIdent.EXPERIMENTAL_VIEWS.toLowerCase(), {
-  experimental: true,
-  name: 'Experimental Views',
-  description: 'The default view of your tabset is a list - but there can be other views as well like grids or even a canvas.',
-  permissions: []
-})
-text.set(FeatureIdent.DYNAMIC.toLowerCase(), {
-  experimental: true,
-  name: 'Dynamic Tabsets',
-  description: 'The idea is to provide you with tabset data which is defined outside the scope of this extension - e.g. defined by a website like wikipedia. ' +
-    'For now, there is only one example; the wikipedia "List of most visited websites" is added to your tabsets as a readonly tab.',
-  permissions: []
-})
-text.set(FeatureIdent.SESSIONS.toLowerCase(), {
-  experimental: true,
-  name: 'Sessions',
-  description: 'A session is a special type of tabsets where your newly opened tabs will be tracked automatically',
-  permissions: []
-})
-text.set(FeatureIdent.BACKUP.toLowerCase(), {
-  experimental: true,
-  name: 'Backup Tabset',
-  description: 'Simply get rid of all open tabs by assigning them to this special tabset - a backup tabset which you can revisit later for proper assignment',
-  permissions: []
-})
+// text.set(FeatureIdent.DYNAMIC.toLowerCase(), {
+//   experimental: true,
+//   name: 'Dynamic Tabsets',
+//   description: 'The idea is to provide you with tabset data which is defined outside the scope of this extension - e.g. defined by a website like wikipedia. ' +
+//     'For now, there is only one example; the wikipedia "List of most visited websites" is added to your tabsets as a readonly tab.',
+//   permissions: []
+// })
 
-text.set(FeatureIdent.IGNORE.toLowerCase(), {
-  experimental: true,
-  name: 'Ignore Tabset',
-  description: 'This is a list of urls you want to ignore. This can be normal urls or urls with placeholders to catch all google search results for example',
-  permissions: []
-})
 
-text.set(FeatureIdent.HELP.toLowerCase(), {
-  name: 'Help Pages',
-  description: 'A readonly Tabset will be created containing the links to Tabsets Help',
-  permissions: []
-})
+// text.set(FeatureIdent.HELP.toLowerCase(), {
+//   name: 'Help Pages',
+//   description: 'A readonly Tabset will be created containing the links to Tabsets Help',
+//   permissions: []
+// })
 
-text.set(FeatureIdent.SPACES.toLowerCase(), {
-  experimental: true,
-  name: 'Spaces',
-  description: 'The "Spaces" Feature lets you organize your tabsets in a larger structure, which might become handy ' +
-    'if you start having many tabsets. The main difference to bookmark folders is that there is only two ' +
-    'levels, but you can assign a tabset to multiple spaces.',
-  permissions: []
-})
-// TODO remove (we have windows_management)
-text.set(FeatureIdent.WINDOWS.toLowerCase(), {
-  planned: true,
-  name: 'Multiple Windows Support',
-  description: 'Currently, only the active window is tracked by the Tabsets Extension. This feature will support all open Browser windows.',
-  permissions: []
-})
-text.set(FeatureIdent.SCHEDULED.toLowerCase(), {
-  planned: true,
-  name: 'Schedule Tabs Support',
-  description: 'Be reminded about tabs you want to revisit',
-  permissions: []
-})
-text.set(FeatureIdent.OLD_TABS.toLowerCase(), {
-  planned: true,
-  name: 'Old Tabs View',
-  description: 'Get a list of old tabs to decide which ones to keep.',
-  permissions: []
-})
-text.set(FeatureIdent.NOTES.toLowerCase(), {
-  name: 'Notes Feature',
-  description: 'Add Notes to tabsets',
-  permissions: []
-})
-text.set(FeatureIdent.NOTES.toLowerCase(), {
-  name: 'Use Notes additionally to Tabs',
-  description: 'Create notes and treat them like tabs',
-  permissions: []
-})
-text.set(FeatureIdent.WEBSITE_CLIP.toLowerCase(), {
-  name: 'Website Clip',
-  description: 'Create an image clip from a website and store it',
-  permissions: ['notification']
-})
-text.set(FeatureIdent.STANDALONE_APP.toLowerCase(), {
-  name: 'Standalone App',
-  description: 'Tabsets as full-page application',
-  permissions: []
-})
+// text.set(FeatureIdent.SCHEDULED.toLowerCase(), {
+//   planned: true,
+//   name: 'Schedule Tabs Support',
+//   description: 'Be reminded about tabs you want to revisit',
+//   permissions: []
+// })
+// text.set(FeatureIdent.OLD_TABS.toLowerCase(), {
+//   planned: true,
+//   name: 'Old Tabs View',
+//   description: 'Get a list of old tabs to decide which ones to keep.',
+//   permissions: []
+// })
 // text.set(FeatureIdent.NEWEST_TABS.toLowerCase(), {
 //   name: 'Newest Tabs',
 //   img: 'newest_tabs.png',
 //   description: 'Activate a view to get quick access to your 100 newest tabs',
 //   permissions: []
 // })
-text.set(FeatureIdent.TOP10.toLowerCase(), {
-  name: 'Top 10 Tabs',
-  img: 'top10.png',
-  description: 'Activate a view to list all tabs by how often they have been accessed',
-  permissions: []
-})
-text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
-  name: 'Open Tabs',
-  description: 'Quick access to all your open tabs of the current browsers window<br><br>' +
-    'Adds quick navigation to jump back and forth to recently opened tabs.',
-  permissions: []
-})
 // text.set(FeatureIdent.CATEGORIZATION.toLowerCase(), {
 //   name: 'Tabsets Categorization',
 //   description: 'Categorize your tabsets automatically',
@@ -334,97 +220,10 @@ text.set(FeatureIdent.OPEN_TABS.toLowerCase(), {
 //   description: 'Highlight parts of a page and add notes',
 //   permissions: ['contextMenus']
 // })
-text.set(FeatureIdent.NOTIFICATIONS.toLowerCase(), {
-  name: 'Browser Notifications',
-  img: 'notification.png',
-  description: 'Allow Tabsets to send Notifications via your Browser. Recommended.',
-  permissions: ['notifications']
-})
 
-text.set(FeatureIdent.TAGS.toLowerCase(), {
-  name: 'Use Tags',
-  img: 'tags.png',
-  description: 'Tabs can be tagged with labels making it easier to be found again',
-  permissions: []
-})
-
-
-text.set(FeatureIdent.ARCHIVE_TABSET.toLowerCase(), {
-  name: 'Archive Tabsets',
-  img: 'archive.png',
-  description: 'Push Tabsets you don\'t need into an archive and restore them later if you want',
-  permissions: []
-})
-
-// text.set(FeatureIdent.WINDOW_MANAGEMENT.toLowerCase(), {
-//   name: 'Advanced Window Management',
-//   description: 'Work with multiple named Windows and assign them to tabsets so that specific tabsets always ' +
-//       'are opened in the same window',
-//   permissions: []
-// })
-
-text.set(FeatureIdent.COLOR_TAGS.toLowerCase(), {
-  name: 'Color Tags for Tabsets and Tabs',
-  description: 'Assign colors to Tabsets and Tabs as an additional organization level',
-  img: 'colortags.png',
-  permissions: []
-})
-
-text.set(FeatureIdent.ADVANCED_TAB_MANAGEMENT.toLowerCase(), {
-  name: 'Advanced Tab Management',
-  description: 'Sometimes you want pages to open in the same tab, even if the URLs are (slightly) different',
-  permissions: []
-})
-
-text.set(FeatureIdent.TAB_GROUPS.toLowerCase(), {
-  name: 'Chrome Tab Groups',
-  description: 'Utilize Chrome Tab Groups',
-  permissions: ['tabGroups']
-})
-text.set(FeatureIdent.MONITORING.toLowerCase(), {
-  name: 'Monitoring Website Changes',
-  description: 'Check periodically for changes of a website<br><br>' +
-    'This feature is not reliable, as there are many reasons why a website might change (e.g. if it simply displays a date).' +
-    'But sometimes it can be helpful. Use at your own discretion.',
-  img: 'monitor.png',
-  more: 'https://docs.tabsets.net/website-monitoring',
-  permissions: []
-})
-text.set(FeatureIdent.ANNOTATIONS.toLowerCase(), {
-  name: 'Annotate Website',
-  description: 'Hightlight text on a website and create and comment on annotations.',
-  img: 'o_auto_awesome',
-  //more: 'https://docs.tabsets.net/website-monitoring',
-  permissions: []
-})
-text.set(FeatureIdent.TAB_HELPER.toLowerCase(), {
-  name: 'Tab Helper',
-  description: 'Add a small tag on any website to access tabsets features quickly.<br>' +
-    'You need to restart tabsets if you activate or deactivate this feature.<br>' +
-    'The Tabsets Helper Icon will appear on all pages you open once activated.',
-  img: 'tabhelper.png',
-  //more: 'https://docs.tabsets.net/website-monitoring',
-  permissions: []
-})
-text.set(FeatureIdent.AUTO_TAB_SWITCHER.toLowerCase(), {
-  name: 'Auto Tab Switcher',
-  description: 'Switch the Tab\'s URL every x Seconds',
-  permissions: []
-})
 text.set(FeatureIdent.TABS_AS_TREE.toLowerCase(), {
   name: 'Tabs as Tree',
   description: 'Show a tree view of your tabs',
-  permissions: []
-})
-text.set(FeatureIdent.TABSET_SUBFOLDER.toLowerCase(), {
-  name: 'Subfolders for Tabsets',
-  description: 'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
-  permissions: []
-})
-text.set(FeatureIdent.TABSETS_SHARING.toLowerCase(), {
-  name: 'Sharing Tabsets',
-  description: 'Share tabsets publicly.',
-  needsAccount: true,
   permissions: []
 })
 
@@ -433,6 +232,7 @@ watchEffect(() => {
     const f = feature.value?.toUpperCase() as FeatureIdent
     if (f) {
       appFeature.value = new AppFeatures().getFeature(f)
+      console.log("got app feature", appFeature.value)
       if (appFeature.value) {
         featureActive.value = useFeaturesStore().hasFeature(appFeature.value.ident as FeatureIdent)
         switch (appFeature.value.type) {
@@ -454,16 +254,16 @@ watchEffect(() => {
   }
 )
 
-watchEffect(() => {
-  console.log("=!!!", useFeaturesStore().count)
-})
-
-watch(() => useFeaturesStore().count, (currentValue, oldValue) => {
-  console.log("watvhingh!!", currentValue, oldValue)
-  if (appFeature.value) {
-    featureActive.value = useFeaturesStore().hasFeature(appFeature.value.ident as FeatureIdent)
-  }
-})
+// watchEffect(() => {
+//   console.log("=!!!", useFeaturesStore().count)
+// })
+//
+// watch(() => useFeaturesStore().count, (currentValue, oldValue) => {
+//   console.log("watvhingh!!", currentValue, oldValue)
+//   if (appFeature.value) {
+//     featureActive.value = useFeaturesStore().hasFeature(appFeature.value.ident as FeatureIdent)
+//   }
+// })
 
 const hasFeature = () => {
   if (appFeature.value && appFeature.value.ident) {
@@ -516,17 +316,16 @@ const revoke = (ident: string) => {
   }
 }
 
-const permissionText = (f: any) => {
-  if (!f) {
-    return "???"
-  }
-  const permissions: string[] = f.permissions
-  if (permissions.length === 0) {
-    return "This feature does not need additional browser permissions."
-  } else {
-    return "This feature needs additional browser permissions: " + JSON.stringify(permissions)
-  }
-
+const permissionText = (f: Feature | undefined) => {
+  //if (!f) {
+    return ""
+  //}
+  // const permissions: string[] = f.permissions
+  // if (permissions.length === 0) {
+  //   return "This feature does not need additional browser permissions."
+  // } else {
+  //   return "This feature needs additional browser permissions: " + JSON.stringify(permissions)
+  // }
 }
 
 const getDependentFeatures = (rootFeature: string, onlyActive: boolean = false): Feature[] => {
@@ -546,7 +345,7 @@ const getDependentFeatures = (rootFeature: string, onlyActive: boolean = false):
 const isActive = (f: Feature) => useFeaturesStore().hasFeature(FeatureIdent[f.ident as keyof typeof FeatureIdent])
 
 const needsAccountAndUserNotLoggedIn = (): boolean => {
-  if (!text.get(feature.value)?.needsAccount) {
+  if (!appFeature.value?.needsAccount) {
     return false
   }
   return !useAuthStore().isAuthenticated()
