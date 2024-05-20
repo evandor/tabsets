@@ -223,7 +223,7 @@ import ToolbarButton from "components/widgets/ToolbarButton.vue";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useAuthStore} from "stores/authStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const $q = useQuasar()
 const router = useRouter()

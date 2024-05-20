@@ -187,7 +187,7 @@ import {SidePanelView, useUiStore} from "stores/uiStore";
 import {NotificationType} from "src/services/ErrorHandler";
 import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 

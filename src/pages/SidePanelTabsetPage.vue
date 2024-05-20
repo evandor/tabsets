@@ -105,7 +105,7 @@ import {FeatureIdent} from "src/models/FeatureIdent";
 import NavigationService from "src/services/NavigationService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 

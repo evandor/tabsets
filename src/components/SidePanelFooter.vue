@@ -218,7 +218,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 

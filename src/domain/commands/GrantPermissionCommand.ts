@@ -8,7 +8,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/suggestions/models/Suggestion";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 class UndoCommand implements Command<boolean> {
 

@@ -371,7 +371,7 @@ import {useAuthStore} from "stores/authStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 

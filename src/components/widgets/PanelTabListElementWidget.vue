@@ -395,7 +395,7 @@ import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode, isCurrentTab} = useUtils()
 const {handleSuccess} = useNotificationHandler()

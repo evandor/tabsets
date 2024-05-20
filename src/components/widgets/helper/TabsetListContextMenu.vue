@@ -180,7 +180,7 @@ import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
 import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 
