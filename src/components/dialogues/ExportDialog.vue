@@ -43,7 +43,7 @@ import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

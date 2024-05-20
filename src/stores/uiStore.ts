@@ -5,7 +5,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash"
 import {LocalStorage, useQuasar} from "quasar";
 import {useUtils} from "src/services/Utils";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {Toast, ToastType} from "src/models/Toast";
 import {
@@ -13,7 +13,7 @@ import {
   SHARING_AVATAR_IDENT,
 } from "boot/constants";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 export enum DrawerTabs {
   BOOKMARKS = "bookmarks",

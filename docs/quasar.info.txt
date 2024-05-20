@@ -10,7 +10,7 @@ Global packages
   cordova - 12.0.0 (cordova-lib@12.0.1)
 
 Important local packages
-  quasar - 2.16.2 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
+  quasar - 2.16.4 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
   @quasar/app-vite - 1.9.3 -- Quasar Framework App CLI with Vite
   @quasar/extras - 1.16.11 -- Quasar Framework fonts, icons and animations
   eslint-plugin-quasar - Not installed
@@ -18,9 +18,9 @@ Important local packages
   vue-router - 4.3.2
   pinia - 2.1.7 -- Intuitive, type safe and flexible Store for Vue
   vuex - Not installed
-  vite - 5.2.11 -- Native-ESM powered web dev build tool
+  vite - 2.9.18 -- Native-ESM powered web dev build tool
   eslint - Not installed
-  electron - 29.3.3 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
+  electron - 29.4.0 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
   electron-packager - 17.1.2 -- Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI
   @electron/packager - 18.3.2 -- Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI
   electron-builder - Not installed
@@ -36,4 +36,5 @@ Quasar App Extensions
 Networking
   Host - Carstens-MBP.fritz.box
   en0 - 192.168.178.112
+  en9 - 169.254.33.109
 

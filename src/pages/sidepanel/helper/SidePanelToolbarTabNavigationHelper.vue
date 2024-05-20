@@ -19,9 +19,9 @@
 </template>
 <script setup lang="ts">
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import NavigationService from "src/services/NavigationService";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 </script>

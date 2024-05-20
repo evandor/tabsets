@@ -71,10 +71,10 @@ import {Tabset, TABSET_NAME_MAX_LENGTH, TabsetStatus} from "src/tabsets/models/T
 import _ from "lodash"
 import {useTabsetService} from "src/services/TabsetService2";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {useUtils} from "src/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {sendMsg} = useUtils()
 

@@ -4,7 +4,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {SaveOrReplaceResult} from "src/models/SaveOrReplaceResult";
 import {useUtils} from "src/services/Utils";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import Analytics from "src/utils/google-analytics";
@@ -12,7 +12,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {TabsetType} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "stores/linkedFeaturesStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {sendMsg} = useUtils()
 
