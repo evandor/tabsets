@@ -1,5 +1,5 @@
-import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import Command from "src/core/domain/Command";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useTabsetService} from "src/services/TabsetService2";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useWindowsStore} from "src/windows/stores/windowsStore";

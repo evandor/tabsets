@@ -429,7 +429,7 @@ import {DrawerTabs, ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
