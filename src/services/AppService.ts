@@ -73,7 +73,6 @@ class AppService {
     const messagesStore = useMessagesStore()
     const searchStore = useSearchStore()
     const uiStore = useUiStore()
-    const tabsetsStore = useTabsetsStore()
 
     this.router = router
 
@@ -84,7 +83,7 @@ class AppService {
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
 
-    await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
+
 
     await ChromeListeners.initListeners()
 
@@ -104,6 +103,8 @@ class AppService {
     await useAuthStore().setUser(user)
     //useAuthStore().upsertAccount(account)
 
+
+
     await useNotificationsStore().initialize(useDB(undefined).db)
     await useSuggestionsStore().init()
     await messagesStore.initialize(useDB(undefined).db)
@@ -116,6 +117,9 @@ class AppService {
       // const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
 
       let persistenceStore = dbStoreToUse(syncType)
+
+      // await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
+
 
       if (router.currentRoute.value.query.token === "failed") {
         console.log("failed login, falling back to indexedDB")
@@ -158,6 +162,8 @@ class AppService {
     const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsetsStore = useTabsetsStore()
+
+    await useFeaturesStore().initialize(syncType, useAuthStore().isAuthenticated(), quasar)
 
 
     await spacesStore.initialize(syncType, useAuthStore().isAuthenticated())

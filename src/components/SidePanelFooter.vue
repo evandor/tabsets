@@ -87,7 +87,7 @@
                flat
                :size="getButtonSize()"
                @click="openOptionsPage()">
-          <q-tooltip class="tooltip" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
         <q-btn
@@ -97,7 +97,7 @@
           flat
           :size="getButtonSize()"
           @click="toggleShowWindowTable()">
-          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
         </q-btn>
 
         <q-btn
@@ -106,7 +106,7 @@
           flat
           :size="getButtonSize()"
           @click="toggleShowStatsTable()">
-          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Show Stats</q-tooltip>
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Show Stats</q-tooltip>
         </q-btn>
 
         <span v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP) && useAuthStore().isAuthenticated()">
@@ -136,7 +136,7 @@
                flat
                :size="getButtonSize()"
                @click="openExtensionTab()">
-          <q-tooltip class="tooltip" anchor="top left" self="bottom left">Tabsets as full-page app</q-tooltip>
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Tabsets as full-page app</q-tooltip>
         </q-btn>
 
         <span class="q-my-xs q-ml-xs q-mr-none cursor-pointer" v-if="authStore.isAuthenticated()">
@@ -179,7 +179,7 @@
                color="blue"
                :size="getButtonSize()"
                @click="toggleShowLogin()">
-          <q-tooltip class="tooltip">Log in or Sign up</q-tooltip>
+          <q-tooltip class="tooltip_small">Log in or Sign up</q-tooltip>
         </q-btn>
 
       </div>
