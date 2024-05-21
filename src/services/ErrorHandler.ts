@@ -1,5 +1,5 @@
 import {Notify} from 'quasar'
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useUiStore} from "stores/uiStore";
 import {useLogger} from "src/services/Logger";
 

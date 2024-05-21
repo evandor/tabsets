@@ -136,7 +136,7 @@ import {api} from "boot/axios";
 import _ from "lodash"
 import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 

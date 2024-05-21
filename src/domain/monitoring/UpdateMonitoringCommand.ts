@@ -1,5 +1,5 @@
-import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import Command from "src/core/domain/Command";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {Monitor, MonitoringType} from "src/models/Monitor";
 import {Tab} from "src/tabsets/models/Tab";

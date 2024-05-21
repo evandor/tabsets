@@ -385,7 +385,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 // @ts-ignore
 import rangy from "rangy/lib/rangy-core.js";
 import "rangy/lib/rangy-serializer";

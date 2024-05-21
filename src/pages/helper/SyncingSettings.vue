@@ -239,7 +239,7 @@ import {
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useUtils} from "src/services/Utils";
 import {useNotificationHandler} from "src/services/ErrorHandler";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useAuthStore} from "stores/authStore";
 import {doc, updateDoc} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";

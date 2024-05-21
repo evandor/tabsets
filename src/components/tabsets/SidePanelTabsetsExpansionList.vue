@@ -247,7 +247,7 @@ import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {useUtils} from "src/services/Utils";
 import getScrollTarget = scroll.getScrollTarget;
 
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";

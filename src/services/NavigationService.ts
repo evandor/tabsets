@@ -6,7 +6,7 @@ import JsUtils from "src/utils/JsUtils";
 import {useGroupsStore} from "stores/groupsStore";
 import {Suggestion, SuggestionType} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";

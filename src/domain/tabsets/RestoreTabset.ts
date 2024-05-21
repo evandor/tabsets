@@ -1,5 +1,5 @@
-import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import Command from "src/core/domain/Command";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import ChromeApi from "src/services/ChromeApi";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
