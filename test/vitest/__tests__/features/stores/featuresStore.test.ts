@@ -4,13 +4,9 @@ import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
-import {useTabsetService} from "src/services/TabsetService2";
-import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import ChromeApi from "src/services/ChromeApi";
-import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
-import IndexedDbSuggestionsPersistence from "src/suggestions/persistence/IndexedDbSuggestionsPersistence";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {SyncType} from "stores/appStore";
+import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
+import {FeatureIdent} from "src/models/FeatureIdent";
 
 installQuasarPlugin();
 
@@ -19,62 +15,18 @@ vi.mock('vue-router')
 describe('FeaturesStore', () => {
 
   let db = null as unknown as PersistenceService
-  let suggestionsDB = IndexedDbSuggestionsPersistence
 
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
     db = useDB(undefined).db
-   // await useTabsetService().init(db)
 
-    const window100 = ChromeApi.createChromeWindowObject(100, 17, 28)
-    const currentWindows = [
-      window100
-    ]
     // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/hssoAlvluW8
     const chromeMock = {
-      windows: {
-        getAll: vi.fn((callback) => {
-          console.log("mocking chrome.windows.getAll")
-          callback(currentWindows);
+      permissions: {
+        getAll: vi.fn(() => {
+          return Promise.resolve([])
         }),
-        getCurrent: vi.fn((options, callback) => {
-          console.log("mocking chrome.windows.getCurrent")
-          callback(window100)
-        }),
-        getLastFocused: vi.fn((options, callback) => {
-          console.log("mocking chrome.windows.getLastFocused")
-          callback(window100)
-        }),
-        get: vi.fn((windowId, queryOptions, callback) => {
-          console.log("mocking chrome.windows.get", windowId, queryOptions)
-          window100.left = 33
-          return window100
-        }),
-        onCreated: {
-          addListener: vi.fn((listener) => {
-            console.log("mocking chrome.windows.onCreated.addListener", listener)
-            // onCreatedListener = listener
-          })
-        },
-        onRemoved: {
-          addListener: vi.fn((listener) => {
-            console.log("mocking chrome.windows.onRemoved.addListener", listener)
-            // onRemovedListener = listener
-          })
-        },
-        onFocusChanged: {
-          addListener: vi.fn((listener) => {
-            console.log("mocking chrome.windows.onFocusChanged.addListener", listener)
-            // onFocusChangedListener = listener
-          })
-        },
-        onBoundsChanged: {
-          addListener: vi.fn((listener) => {
-            console.log("mocking chrome.windows.onBoundsChanged.addListener", listener)
-            //callback(undefined)
-          })
-        }
       },
       runtime: {
         sendMessage: vi.fn(() => {
@@ -84,38 +36,50 @@ describe('FeaturesStore', () => {
 
     vi.stubGlobal('chrome', chromeMock);
 
-    await useFeaturesStore().initialize(SyncType.NONE, false)
-    //useWindowsStore().initListeners()
-
+    await useFeaturesStore().initialize(InMemoryFeaturesPersistence)
   })
 
-  afterEach(async () => {
-    db.clear("features")
-  })
-
-  it('initializes correctly', async () => {
+  it('initializes correctly with local storage', async () => {
     const features = useFeaturesStore().activeFeatures
-    // useSu
-    // const windows = await  db.getWindows()
-    // expect(windows.length).toBe(1)
-    // expect(windows[0].id).toBe(100)
-    //
-    // const window = await db.getWindow(100)
-    // expect(window?.id).toBe(100)
-    //
     expect(features.length).toBe(0)
   })
 
-  it('adds static suggestion', async () => {
-    var staticSuggestion = Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE);
-    await useSuggestionsStore().addSuggestion(staticSuggestion)
-    expect(useSuggestionsStore().getSuggestions([SuggestionState.NEW]).length).toBe(1)
+  it('adds valid feature', async () => {
+    useFeaturesStore().activateFeature("top10")
+    expect(useFeaturesStore().activeFeatures.length).toBe(1)
+    expect(useFeaturesStore().activeFeatures[0]).toBe("top10")
   })
 
-  it.skip('adds suggestion for URL', async () => {
-    var s = new Suggestion("", "title", "msg", "https://www.skysail.io", SuggestionType.CONTENT_CHANGE)
-    await useSuggestionsStore().addSuggestion(s)
-    expect(useSuggestionsStore().getSuggestions([SuggestionState.NEW]).length).toBe(1)
+  it('adds valid feature', async () => {
+    useFeaturesStore().activateFeature("top10")
+    expect(useFeaturesStore().activeFeatures.length).toBe(1)
+    expect(useFeaturesStore().activeFeatures[0]).toBe("top10")
+  })
+
+  it('does not add invalid feature', async () => {
+    expect(() => useFeaturesStore().activateFeature("unknownFeature")).toThrowError(
+      /^unknown feature called unknownFeature$/,
+    )
+  })
+
+  it('adds valid feature only once', async () => {
+    useFeaturesStore().activateFeature("top10")
+    useFeaturesStore().activateFeature("top10")
+    expect(useFeaturesStore().activeFeatures.length).toBe(1)
+    expect(useFeaturesStore().activeFeatures[0]).toBe("top10")
+  })
+
+  it('removes Feature again', async () => {
+    useFeaturesStore().activateFeature("top10")
+    expect(useFeaturesStore().activeFeatures.length).toBe(1)
+    useFeaturesStore().deactivateFeature("top10")
+    expect(useFeaturesStore().activeFeatures.length).toBe(0)
+  })
+
+  it('has added feature', async () => {
+    useFeaturesStore().activateFeature("top10")
+    expect(useFeaturesStore().activeFeatures.length).toBe(1)
+    expect(useFeaturesStore().hasFeature(FeatureIdent.TOP10)).toBe(true)
   })
 
 });

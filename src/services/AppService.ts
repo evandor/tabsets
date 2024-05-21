@@ -46,6 +46,10 @@ function dbStoreToUse(st: SyncType) {
   return useDB(undefined).db
 }
 
+function useFirestore(syncType: SyncType) {
+  return !(!useAuthStore().isAuthenticated() || syncType !== SyncType.FIRESTORE);
+}
+
 class AppService {
 
   router: Router = null as unknown as Router
@@ -163,8 +167,12 @@ class AppService {
     const groupsStore = useGroupsStore()
     const tabsetsStore = useTabsetsStore()
 
-    await useFeaturesStore().initialize(syncType, useAuthStore().isAuthenticated(), quasar)
-
+    /**
+     * features store: passing storage for better testing.
+     * make sure features are not used before this line in code.
+     */
+    const featuresStorage = useFirestore(syncType) ? useDB().featuresFirestoreDb : useDB(quasar).featuresLocalStorage
+    await useFeaturesStore().initialize(featuresStorage)
 
     await spacesStore.initialize(syncType, useAuthStore().isAuthenticated())
 
