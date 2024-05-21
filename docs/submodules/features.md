@@ -5,6 +5,9 @@
 
 Check out this page: [installation](../../src/features/docs/installation.md)
 
+### Setup
+
+Once the submodule has been installed in your application, it needs to be [setup](../../src/features/docs/setup.md).
 
 ### usage
 
@@ -14,11 +17,3 @@ Check out this page: [installation](../../src/features/docs/installation.md)
 
 [code](../../src/features/docs/code.md)
 
-
-## to delete
-
-<!--@include: ../../src/features/docs/index.md-->
-
-```typescript
-<!--@include: ../../src/features/models/Feature.ts-->
-```
