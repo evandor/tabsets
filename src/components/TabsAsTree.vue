@@ -32,8 +32,8 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import NavigationService from "src/services/NavigationService";
 import DeleteBookmarkFolderDialog from "src/bookmarks/dialogues/DeleteBookmarkFolderDialog.vue";
-import {TreeNode} from "src/models/Tree";
 import _ from "lodash"
+import {TreeNode} from "src/bookmarks/models/Tree";
 
 const router = useRouter()
 const permissionsStore = usePermissionsStore()
