@@ -4,7 +4,6 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import JsUtils from "src/utils/JsUtils";
 import {useGroupsStore} from "stores/groupsStore";
-import {usePermissionsStore} from "stores/permissionsStore";
 import {Suggestion, SuggestionType} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {ExecutionResult} from "src/domain/ExecutionResult";
@@ -13,8 +12,6 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-
-const {handleSuccess} = useNotificationHandler()
 
 class NavigationService {
 
@@ -101,6 +98,7 @@ class NavigationService {
                   found = true
                   console.debug("found something", r)
                   if (r.active) {
+                    const {handleSuccess} = useNotificationHandler()
                     handleSuccess(new ExecutionResult("", "already opened..."))
                   }
                   chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
