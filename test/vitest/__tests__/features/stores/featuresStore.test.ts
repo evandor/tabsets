@@ -9,26 +9,23 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import ChromeApi from "src/services/ChromeApi";
 import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
 import IndexedDbSuggestionsPersistence from "src/suggestions/persistence/IndexedDbSuggestionsPersistence";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {SyncType} from "stores/appStore";
 
 installQuasarPlugin();
 
 vi.mock('vue-router')
 
-describe('SuggestionsStore', () => {
+describe('FeaturesStore', () => {
 
   let db = null as unknown as PersistenceService
   let suggestionsDB = IndexedDbSuggestionsPersistence
-
-    let
-  onCreatedListener = null as unknown as ((window: chrome.windows.Window) => Promise<void>)
-  let onRemovedListener = null as unknown as ((windowId: number) => Promise<void>)
-  let onFocusChangedListener = null as unknown as ((windowId: number) => Promise<void>)
 
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
     db = useDB(undefined).db
-    //await useTabsetService().init(db)
+   // await useTabsetService().init(db)
 
     const window100 = ChromeApi.createChromeWindowObject(100, 17, 28)
     const currentWindows = [
@@ -57,19 +54,19 @@ describe('SuggestionsStore', () => {
         onCreated: {
           addListener: vi.fn((listener) => {
             console.log("mocking chrome.windows.onCreated.addListener", listener)
-            onCreatedListener = listener
+            // onCreatedListener = listener
           })
         },
         onRemoved: {
           addListener: vi.fn((listener) => {
             console.log("mocking chrome.windows.onRemoved.addListener", listener)
-            onRemovedListener = listener
+            // onRemovedListener = listener
           })
         },
         onFocusChanged: {
           addListener: vi.fn((listener) => {
             console.log("mocking chrome.windows.onFocusChanged.addListener", listener)
-            onFocusChangedListener = listener
+            // onFocusChangedListener = listener
           })
         },
         onBoundsChanged: {
@@ -87,17 +84,17 @@ describe('SuggestionsStore', () => {
 
     vi.stubGlobal('chrome', chromeMock);
 
-    await useSuggestionsStore().init()
+    await useFeaturesStore().initialize(SyncType.NONE, false)
     //useWindowsStore().initListeners()
 
   })
 
   afterEach(async () => {
-    db.clear("suggestions")
+    db.clear("features")
   })
 
   it('initializes correctly', async () => {
-    const newSuggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW])
+    const features = useFeaturesStore().activeFeatures
     // useSu
     // const windows = await  db.getWindows()
     // expect(windows.length).toBe(1)
@@ -106,7 +103,7 @@ describe('SuggestionsStore', () => {
     // const window = await db.getWindow(100)
     // expect(window?.id).toBe(100)
     //
-    expect(newSuggestions.length).toBe(0)
+    expect(features.length).toBe(0)
   })
 
   it('adds static suggestion', async () => {

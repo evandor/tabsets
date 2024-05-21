@@ -192,13 +192,7 @@ export const usePermissionsStore = defineStore('permissions', () => {
     grantPermission,
     revokePermission,
     hasAllOrigins,
-    grantAllOrigins,
-    revokeAllOrigins,
     permissions,
-   // hasFeature,
-   // activateFeature,
-   // deactivateFeature,
-   // featuresCount,
     addActivateFeature,
     removeActivateFeature
   }
