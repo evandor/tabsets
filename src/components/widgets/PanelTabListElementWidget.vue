@@ -392,7 +392,7 @@ import "rangy/lib/rangy-serializer";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

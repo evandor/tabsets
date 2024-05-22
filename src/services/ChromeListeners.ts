@@ -18,10 +18,8 @@ import "rangy/lib/rangy-serializer";
 import {useAuthStore} from "stores/authStore";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {SidePanelView, useUiStore} from "stores/uiStore";
-import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {

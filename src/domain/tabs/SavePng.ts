@@ -2,7 +2,7 @@ import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {Tab} from "src/tabsets/models/Tab";
 import {usePermissionsStore} from "stores/permissionsStore";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import PdfService from "src/services/PdfService";
 import TabsetService from "src/services/TabsetService";
 import ContentUtils from "src/utils/ContentUtils";

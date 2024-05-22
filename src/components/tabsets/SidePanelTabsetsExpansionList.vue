@@ -248,7 +248,7 @@ import {useUtils} from "src/core/services/Utils";
 import getScrollTarget = scroll.getScrollTarget;
 
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import TabsetService from "src/services/TabsetService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";

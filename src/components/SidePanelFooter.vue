@@ -207,7 +207,7 @@ import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
 import {Window} from "src/windows/models/Window"
