@@ -206,7 +206,7 @@ import {useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import _ from "lodash";
 import {useTabsetService} from "src/services/TabsetService2";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {reactive, ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useRouter} from "vue-router";

@@ -33,7 +33,7 @@
 
 <script lang="ts" setup>
 
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'

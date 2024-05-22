@@ -71,7 +71,7 @@
 <script setup lang="ts">
 
 import {Tab, UrlExtension} from "src/tabsets/models/Tab"
-import TabsetService from "src/services/TabsetService"
+import TabsetService from "src/tabsets/services/TabsetService"
 import {PropType, ref} from "vue"
 import NavigationService from "src/core/services/NavigationService"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"

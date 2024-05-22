@@ -268,7 +268,7 @@ a tab's url starts with one of the urls of this tabset, it will be ignored and n
 import {onMounted, onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {date, openURL, uid, useQuasar} from "quasar";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";

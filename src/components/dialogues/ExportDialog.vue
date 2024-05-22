@@ -37,7 +37,7 @@
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 

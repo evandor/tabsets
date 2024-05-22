@@ -32,7 +32,7 @@
 <script lang="ts" setup>
 
 import {computed, ref, watchEffect} from "vue";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {uid, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 

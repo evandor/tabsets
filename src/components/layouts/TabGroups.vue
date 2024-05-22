@@ -105,7 +105,7 @@
 
 <script setup lang="ts">
 import {Tab} from "src/tabsets/models/Tab";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {PropType, ref, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {uid, useQuasar} from "quasar";

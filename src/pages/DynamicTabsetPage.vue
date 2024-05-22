@@ -175,7 +175,7 @@ import TabColumns from "src/components/layouts/TabColumns.vue";
 import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
 import _ from "lodash"
 import {useTabGroupsStore} from "src/stores/tabGroupsStore";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {Tab} from "src/tabsets/models/Tab";
 import RestoreTabsetDialog from "src/tabsets/dialogues/RestoreTabsetDialog.vue";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";

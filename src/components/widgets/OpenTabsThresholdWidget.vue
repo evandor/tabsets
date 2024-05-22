@@ -75,7 +75,7 @@
 <script lang="ts" setup>
 
 import {useSettingsStore} from "src/stores/settingsStore";
-import TabsetService from "src/services/TabsetService"
+import TabsetService from "src/tabsets/services/TabsetService"
 import {ref, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";

@@ -250,7 +250,7 @@ import getScrollTarget = scroll.getScrollTarget;
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
