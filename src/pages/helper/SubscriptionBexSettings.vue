@@ -191,7 +191,7 @@ import {getAuth, onAuthStateChanged} from "firebase/auth";
 import {createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect,signInWithEmailLink,sendSignInLinkToEmail, signInWithCredential, UserCredential} from "firebase/auth";
 import {setDoc, doc} from "firebase/firestore";
 import {useAuthStore} from "../../stores/authStore";
-import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
+import {NotificationType, useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useRouter} from "vue-router";
 import PricingCard from "pages/helper/PricingCard.vue";
 import PlanFeature from "pages/helper/PlanFeature.vue";

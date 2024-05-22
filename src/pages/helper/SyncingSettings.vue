@@ -238,7 +238,7 @@ import {
 } from "boot/constants";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import {useUtils} from "src/core/services/Utils";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useAuthStore} from "stores/authStore";
 import {doc, updateDoc} from "firebase/firestore";

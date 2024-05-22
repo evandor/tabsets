@@ -52,7 +52,7 @@ import {onMounted, ref, watchEffect} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useUtils} from "src/core/services/Utils";
 import _ from "lodash"
 import {Tab} from "src/tabsets/models/Tab";
