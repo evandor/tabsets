@@ -3,7 +3,7 @@ import {CLEANUP_PERIOD_IN_MINUTES, MONITORING_PERIOD_IN_MINUTES} from "boot/cons
 import _ from "lodash"
 import NavigationService from "src/core/services/NavigationService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import {SearchDoc} from "src/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/tabsets/models/Tab";

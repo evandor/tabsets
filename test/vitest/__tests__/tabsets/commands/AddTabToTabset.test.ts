@@ -8,7 +8,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import PersistenceService from "src/services/PersistenceService";
 import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
