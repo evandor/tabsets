@@ -3,7 +3,7 @@ import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import TabsetService from "src/services/TabsetService";
 import {Tab} from "src/tabsets/models/Tab";
 import {useSearchStore} from "src/stores/searchStore";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 
 const {sendMsg} = useUtils()
 

@@ -57,7 +57,7 @@ import {useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import _ from "lodash"
-import {useUtils} from "src/services/Utils"
+import {useUtils} from "src/core/services/Utils"
 import {useSettingsStore} from "src/stores/settingsStore"
 import {PropType, ref, watch, watchEffect} from "vue";
 import ChromeApi from "src/services/ChromeApi";

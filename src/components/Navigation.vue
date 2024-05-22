@@ -62,7 +62,7 @@ import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"

@@ -237,7 +237,7 @@ import {
   SYNC_TYPE
 } from "boot/constants";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useNotificationHandler} from "src/services/ErrorHandler";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useAuthStore} from "stores/authStore";

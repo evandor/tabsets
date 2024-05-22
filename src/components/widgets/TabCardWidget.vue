@@ -77,7 +77,7 @@ import NavigationService from "src/services/NavigationService"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand"
-import {useUtils} from "src/services/Utils"
+import {useUtils} from "src/core/services/Utils"
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 const props = defineProps({

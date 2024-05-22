@@ -59,7 +59,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
-import {useUtils} from "src/services/Utils"
+import {useUtils} from "src/core/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

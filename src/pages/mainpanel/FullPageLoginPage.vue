@@ -70,7 +70,7 @@ import {
 } from "firebase/auth";
 import {useAuthStore} from "stores/authStore";
 import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useRouter} from "vue-router";
 
 const {handleError} = useNotificationHandler()

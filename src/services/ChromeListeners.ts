@@ -11,7 +11,7 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/model
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/utils/ContentUtils";

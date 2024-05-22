@@ -244,7 +244,7 @@ import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPublicly
 import {openURL, scroll, uid, useQuasar} from "quasar";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import getScrollTarget = scroll.getScrollTarget;
 
 import {ExecutionResult} from "src/core/domain/ExecutionResult";

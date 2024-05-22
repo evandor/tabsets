@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {onMounted, ref, watchEffect} from "vue";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";

@@ -387,7 +387,7 @@ import NavigationService from "src/services/NavigationService"
 import {date} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash"
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {openURL} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
 import VueJsonPretty from "vue-json-pretty";
