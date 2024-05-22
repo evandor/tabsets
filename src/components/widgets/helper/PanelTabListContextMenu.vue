@@ -121,7 +121,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useRouter} from "vue-router";
 import {useSettingsStore} from "stores/settingsStore";
-import NavigationService from "src/services/NavigationService";
+import NavigationService from "src/core/services/NavigationService";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";

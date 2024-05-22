@@ -65,7 +65,7 @@ import {useRoute, useRouter} from "vue-router";
 import {date, useQuasar} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {extract} from "@extractus/feed-extractor";
-import NavigationService from "src/services/NavigationService";
+import NavigationService from "src/core/services/NavigationService";
 import {formatDistance, parseISO} from "date-fns";
 import Analytics from "src/utils/google-analytics";
 

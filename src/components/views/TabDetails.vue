@@ -214,7 +214,7 @@ import {openURL, useQuasar} from "quasar";
 import {Tab} from "src/tabsets/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/core/services/Utils";
-import NavigationService from "src/services/NavigationService";
+import NavigationService from "src/core/services/NavigationService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";

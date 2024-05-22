@@ -143,7 +143,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import NewSpaceDialog from "src/spaces/dialogues/NewSpaceDialog.vue";
-import NavigationService from "src/services/NavigationService";
+import NavigationService from "src/core/services/NavigationService";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";

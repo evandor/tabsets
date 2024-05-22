@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import NavigationService from "src/services/NavigationService";
+import NavigationService from "src/core/services/NavigationService";
 import TabsetService from "src/services/TabsetService";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"

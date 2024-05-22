@@ -55,7 +55,7 @@ import {useMeta, useQuasar} from "quasar";
 import {useRoute, useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
-import NavigationService from "src/services/NavigationService"
+import NavigationService from "src/core/services/NavigationService"
 import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/spaces/stores/spacesStore"
