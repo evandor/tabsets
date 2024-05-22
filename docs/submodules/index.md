@@ -25,3 +25,6 @@ the user's choice.
 ## Thumbnails
 
 ## Windows
+
+## Dependencies
+
