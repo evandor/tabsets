@@ -30,9 +30,9 @@
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"
              v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
-      <q-tab name="search" label="Search Engine" v-if="useSettingsStore().isEnabled('dev')"/>
+      <q-tab name="search" label="Search Engine" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
       <q-tab name="importExport" label="Import/Export"/>
-      <q-tab name="internals" label="Internals" v-if="useSettingsStore().isEnabled('dev')"/>
+      <q-tab name="internals" label="Internals" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
       <!--      <q-tab name="featureToggles" label="Feature Toggles"-->
       <!--             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>-->
       <q-tab name="featureToggles" label="Feature Toggles"/>
@@ -166,7 +166,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useSettingsStore().isEnabled('dev')">
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <div class="col-3">
           New Version Simulation
         </div>
@@ -178,7 +178,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useSettingsStore().isEnabled('dev')">
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <div class="col-3">
           New Suggestion Simulation
         </div>

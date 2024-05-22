@@ -6,6 +6,10 @@ import {FeatureIdent, FeatureType} from "src/models/FeatureIdent";
 
 export class AppFeatures {
   features: Feature[] = [
+
+    new Feature(FeatureIdent.DEV_MODE, FeatureType.INTERNAL, "Developer Mode",
+      "A feature toggle to switch between dev mode on/off", "","",['all']),
+
     new Feature(FeatureIdent.TOP10, FeatureType.RECOMMENDED,
       'Top 10 Tabs',
       'Activate a view to list all tabs by how often they have been accessed',

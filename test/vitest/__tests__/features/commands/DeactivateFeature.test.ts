@@ -21,15 +21,15 @@ describe('DeactivateFeatureCommand', () => {
 
   it('feature gets deactivated again', async () => {
     const feature = new AppFeatures().features[0]
-    await new ActivateFeatureCommand(feature).execute()
+    await new ActivateFeatureCommand(feature.ident).execute()
     expect(useFeaturesStore().activeFeatures.indexOf(feature.ident.toLowerCase())).toBeGreaterThanOrEqual(0)
-    await new DeactivateFeatureCommand(feature).execute()
+    await new DeactivateFeatureCommand(feature.ident).execute()
     expect(useFeaturesStore().activeFeatures.length).toBe(0)
   })
 
   it('command has proper toString representation', async () => {
     const feature = new AppFeatures().features[0]
-    const cmd = new DeactivateFeatureCommand(feature)
+    const cmd = new DeactivateFeatureCommand(feature.ident)
     expect(cmd.toString()).toBe("DeactivateFeatureCommand: {feature=TOP10}")
   })
 

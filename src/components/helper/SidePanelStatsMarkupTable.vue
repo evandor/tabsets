@@ -74,6 +74,8 @@ import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import NavigationService from "src/core/services/NavigationService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {FeatureIdent} from "src/models/FeatureIdent";
 
 const localstorage = useQuasar().localStorage
 
@@ -83,7 +85,7 @@ const rows = ref<object[]>([])
 const currentWindowName = ref('---')
 const statsSnapshot = ref<object | undefined>(undefined)
 
-const devMode = ref<boolean>(settingsStore.isEnabled('dev'))
+const devMode = ref<boolean>(useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE))
 
 onMounted(() => {
   statsSnapshot.value = localstorage.getItem("stats") as object || undefined
