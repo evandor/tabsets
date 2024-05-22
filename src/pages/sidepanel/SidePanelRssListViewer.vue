@@ -62,7 +62,7 @@ import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {handleError, handleSuccess} = useNotificationHandler()

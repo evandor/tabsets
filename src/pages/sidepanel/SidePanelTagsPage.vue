@@ -47,7 +47,7 @@ import {useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/services/TabsetService2";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

@@ -55,7 +55,7 @@ import SearchHit from "src/components/layouts/SearchHit.vue"
 import {Hit} from "src/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {Tabset} from "src/tabsets/models/Tabset";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

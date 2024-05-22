@@ -59,7 +59,7 @@ import {useRoute} from "vue-router";
 import {date} from "quasar"
 import MHtmlService from "src/services/MHtmlService";
 import {useUiStore} from "src/stores/uiStore";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
 import _ from "lodash"

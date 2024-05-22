@@ -392,7 +392,7 @@ import {openURL} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

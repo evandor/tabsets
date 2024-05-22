@@ -149,7 +149,7 @@ import {SidePanelView, useUiStore} from "stores/uiStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {Space} from "src/spaces/models/Space";
 import SpaceHeader from "pages/sidepanel/helper/SpaceHeader.vue";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
