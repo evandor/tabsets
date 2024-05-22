@@ -4,7 +4,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import PdfService from "src/services/PdfService";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import ContentUtils from "src/utils/ContentUtils";
 import {BlobType} from "src/models/SavedBlob";
 

@@ -144,7 +144,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
 import {useDB} from "src/services/usePersistenceService";

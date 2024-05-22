@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import NavigationService from "src/core/services/NavigationService";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"
 import {useRouter} from "vue-router";

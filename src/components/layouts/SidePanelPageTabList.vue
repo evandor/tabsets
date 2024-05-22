@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import {Tab, TabSorting} from "src/tabsets/models/Tab";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {ref, onMounted, PropType, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";

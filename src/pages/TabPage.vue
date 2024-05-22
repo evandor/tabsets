@@ -382,7 +382,7 @@
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useRoute, useRouter} from "vue-router";
 import {onMounted, reactive, ref, watchEffect} from "vue";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import NavigationService from "src/core/services/NavigationService"
 import {date} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";

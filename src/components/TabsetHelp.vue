@@ -33,7 +33,7 @@
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {Tab} from "src/tabsets/models/Tab";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const router = useRouter()

@@ -1,6 +1,6 @@
 import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {uid} from "quasar";
 import {Tabset} from "src/tabsets/models/Tabset";

@@ -416,7 +416,7 @@
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {LocalStorage, useQuasar} from "quasar";
 import {useSearchStore} from "src/stores/searchStore";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";

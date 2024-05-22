@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {useRouter} from "vue-router";
 import _ from "lodash"
 import {ref} from "vue";

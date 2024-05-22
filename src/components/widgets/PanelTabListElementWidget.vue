@@ -361,7 +361,7 @@ import {
   TabSorting,
   UrlExtension
 } from "src/tabsets/models/Tab";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
