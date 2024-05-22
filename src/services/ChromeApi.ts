@@ -4,7 +4,7 @@ import _ from "lodash"
 import NavigationService from "src/core/services/NavigationService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useSearchStore} from "src/search/stores/searchStore";
-import {SearchDoc} from "src/models/SearchDoc";
+import {SearchDoc} from "src/search/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
