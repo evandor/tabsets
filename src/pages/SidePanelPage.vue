@@ -136,7 +136,7 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import _ from "lodash"
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {LocalStorage, scroll, uid} from "quasar";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";

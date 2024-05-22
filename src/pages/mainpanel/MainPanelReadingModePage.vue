@@ -69,7 +69,7 @@ import {useRoute} from "vue-router";
 import {onMounted, ref, watchEffect} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
 import {Readability} from "@mozilla/readability";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import NavigationService from "src/services/NavigationService";
 import Analytics from "src/utils/google-analytics";
 import {useQuasar} from "quasar";

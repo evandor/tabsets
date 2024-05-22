@@ -36,7 +36,7 @@ import {uid, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useUiStore} from "src/stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

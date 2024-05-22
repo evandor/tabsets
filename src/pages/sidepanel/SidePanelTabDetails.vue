@@ -355,7 +355,7 @@ import {useRoute, useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {Tab} from "src/tabsets/models/Tab";
 import {formatDistance} from "date-fns";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import NavigationService from "src/services/NavigationService";
 import {useSearchStore} from "src/stores/searchStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";

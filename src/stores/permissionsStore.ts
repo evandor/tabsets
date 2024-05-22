@@ -7,7 +7,7 @@ import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets
 import {TabsetType} from "src/tabsets/models/Tabset";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {AppFeatures} from "src/models/AppFeatures";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useTabsetService} from "src/services/TabsetService2";
 import PersistenceService from "src/services/PersistenceService";
 import {LocalStorage} from "quasar";

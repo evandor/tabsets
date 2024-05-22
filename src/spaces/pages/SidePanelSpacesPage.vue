@@ -136,7 +136,7 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import _ from "lodash"
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {uid, useQuasar} from "quasar";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {usePermissionsStore} from "stores/permissionsStore";

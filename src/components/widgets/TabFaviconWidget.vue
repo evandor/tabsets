@@ -31,7 +31,7 @@
 import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {PropType} from "vue";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 
 const {favIconFromUrl} = useUtils()
 

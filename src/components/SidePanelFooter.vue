@@ -196,7 +196,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import NavigationService from "src/services/NavigationService";
 import {openURL, uid, useQuasar} from "quasar";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash";

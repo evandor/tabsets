@@ -86,7 +86,7 @@ import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";

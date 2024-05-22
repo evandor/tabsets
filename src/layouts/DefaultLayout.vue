@@ -193,7 +193,7 @@ import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
