@@ -84,7 +84,7 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useSearchStore} from "src/stores/searchStore";
 import {Hit} from "src/models/Hit";
 import {useRoute, useRouter} from "vue-router";
-import NavigationService from "src/services/NavigationService";
+import NavigationService from "src/core/services/NavigationService";
 import {SearchIndexQuery} from "src/domain/queries/SearchIndexQuery";
 import {useQueryExecutor} from "src/services/QueryExecutor";
 import {useUiStore} from "src/stores/uiStore";

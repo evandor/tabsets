@@ -58,7 +58,7 @@ import Analytics from "src/utils/google-analytics";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import {openURL, useQuasar} from "quasar";
 import {Entity} from "src/models/Entity";
-import NavigationService from "src/services/NavigationService";
+import NavigationService from "src/core/services/NavigationService";
 import _ from "lodash"
 import NewApiDialog from "components/dialogues/NewApiDialog.vue";
 import {Api} from "src/models/Api";

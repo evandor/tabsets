@@ -65,7 +65,7 @@ import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute} from "vue-router";
 import {date} from "quasar"
 import {extract} from '@extractus/feed-extractor'
-import NavigationService from "src/services/NavigationService";
+import NavigationService from "src/core/services/NavigationService";
 import {formatDistance, parseISO} from "date-fns";
 import Analytics from "src/utils/google-analytics";
 

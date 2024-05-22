@@ -351,7 +351,7 @@
 </template>
 
 <script setup lang="ts">
-import NavigationService from "src/services/NavigationService";
+import NavigationService from "src/core/services/NavigationService";
 import {
   HTMLSelection,
   HTMLSelectionComment,
