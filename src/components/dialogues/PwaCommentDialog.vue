@@ -50,7 +50,7 @@
 
 import {ref, watchEffect} from "vue";
 import {date, LocalStorage, useDialogPluginComponent, useQuasar} from "quasar";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {AddCommentCommand} from "src/domain/tabs/AddCommentCommand";
 import {useUiStore} from "stores/uiStore";
 import {SHARING_AUTHOR_IDENT} from "boot/constants";

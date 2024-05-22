@@ -59,7 +59,7 @@ import {useQuasar} from "quasar";
 import _ from "lodash";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const emit = defineEmits(['tagSelected']);

@@ -57,7 +57,7 @@ import {useUtils} from "src/services/Utils";
 import _ from "lodash"
 import {Tab} from "src/tabsets/models/Tab";
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";

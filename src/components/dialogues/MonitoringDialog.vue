@@ -77,7 +77,7 @@
 
 import {PropType, ref, watchEffect} from "vue";
 import {QForm, useDialogPluginComponent} from "quasar";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {MonitoringType} from "src/models/Monitor";
 import {UpdateMonitoringCommand} from "src/domain/monitoring/UpdateMonitoringCommand";
 import {Tab} from "src/tabsets/models/Tab";

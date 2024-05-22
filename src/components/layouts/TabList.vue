@@ -38,7 +38,7 @@ import TabsetService from "src/services/TabsetService";
 import {PropType, ref} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import _ from "lodash"
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import TabListHelper from "components/layouts/mainpanel/TabListHelper.vue";
