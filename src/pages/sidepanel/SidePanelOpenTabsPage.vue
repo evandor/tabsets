@@ -46,7 +46,7 @@ import Analytics from "src/core/utils/google-analytics";
 import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {uid} from "quasar";
 import SidePanelOpenTabsListViewer from "pages/sidepanel/SidePanelOpenTabsListViewer.vue";
 

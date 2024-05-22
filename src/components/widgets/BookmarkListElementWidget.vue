@@ -82,7 +82,7 @@ import {useRouter} from "vue-router";
 import {date} from "quasar";
 import NavigationService from "src/core/services/NavigationService";
 import BookmarksService from "src/bookmarks/services/BookmarksService";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 
 const {formatDate} = useUtils()
 

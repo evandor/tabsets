@@ -90,7 +90,7 @@ import _ from "lodash";
 import {onMounted, ref, watchEffect, watch} from "vue"
 import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/tabsets/services/TabsetService";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useRoute} from "vue-router";
 import {useUiStore} from "src/stores/uiStore";

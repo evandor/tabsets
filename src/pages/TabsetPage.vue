@@ -283,7 +283,7 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import JsUtils from "src/utils/JsUtils";
 import {useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import Analytics from "src/core/utils/google-analytics";
 import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 import {useAuthStore} from "stores/authStore";

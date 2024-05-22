@@ -175,7 +175,7 @@ import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
 import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tab} from "src/tabsets/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";

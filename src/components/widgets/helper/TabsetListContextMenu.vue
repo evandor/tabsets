@@ -168,7 +168,7 @@ import RestoreTabsetDialog from "src/tabsets/dialogues/RestoreTabsetDialog.vue";
 import {Space} from "src/spaces/models/Space";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import _ from "lodash";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {openURL, useQuasar} from "quasar";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {ShareTabsetCommand} from "src/tabsets/commands/ShareTabsetCommand"

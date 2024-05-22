@@ -18,7 +18,7 @@ import {Router} from "vue-router";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 

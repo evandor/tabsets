@@ -347,7 +347,7 @@
 import {useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import _ from "lodash";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import TabsetService from "src/tabsets/services/TabsetService";
 import {ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";

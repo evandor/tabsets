@@ -3,7 +3,7 @@ import {ref} from "vue";
 import {useUtils} from "src/core/services/Utils";
 import PersistenceService from "src/services/PersistenceService";
 import _ from "lodash"
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 
 /**
  * a pinia store for chrome groups.

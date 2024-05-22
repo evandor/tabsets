@@ -7,7 +7,7 @@ import SidePanelPage from "pages/SidePanelPage.vue";
 import {useDB} from "src/services/usePersistenceService";
 import {useQuasar} from "quasar";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";

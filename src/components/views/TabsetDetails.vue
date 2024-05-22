@@ -24,7 +24,7 @@
 
 import {useUiStore} from "src/stores/uiStore";
 import {ref, watchEffect} from "vue";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tabset} from "src/tabsets/models/Tabset";
 import InfoItem from "components/views/helper/InfoItem.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

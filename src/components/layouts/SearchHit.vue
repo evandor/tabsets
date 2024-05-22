@@ -85,7 +85,7 @@ import {Hit} from "src/models/Hit";
 import _ from "lodash"
 import {useRouter} from "vue-router";
 import BookmarksService from "src/bookmarks/services/BookmarksService";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {useUtils} from "src/core/services/Utils";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";

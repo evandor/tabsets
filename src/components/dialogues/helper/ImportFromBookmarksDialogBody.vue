@@ -69,7 +69,7 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabsetFromBookmarksCommand} from "src/domain/tabsets/CreateTabsetFromBookmarks";
 import {Tabset, TABSET_NAME_MAX_LENGTH, TabsetStatus} from "src/tabsets/models/Tabset";
 import _ from "lodash"
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useUtils} from "src/core/services/Utils";
