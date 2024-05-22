@@ -30,9 +30,12 @@
 
 <script lang="ts" setup>
 
-import {AccessItem, useAuthStore} from "stores/authStore";
 import {ref, watchEffect} from "vue";
 import {useSettingsStore} from "stores/settingsStore";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {ActivateFeatureCommand} from "src/features/commands/ActivateFeature";
+import {FeatureIdent} from "src/models/FeatureIdent";
+import {DeactivateFeatureCommand} from "src/features/commands/DeactivateFeature";
 
 const settingsStore = useSettingsStore()
 
@@ -44,6 +47,12 @@ watchEffect(() => {
 
 const updateSettings = (ident: string, val: boolean) => {
   console.log("settings updated to", ident, val)
+  if (val) {
+    useCommandExecutor().execute(new ActivateFeatureCommand(FeatureIdent.DEV_MODE.toString()))
+  } else {
+    useCommandExecutor().execute(new DeactivateFeatureCommand(FeatureIdent.DEV_MODE.toString()))
+  }
+  // TODO deprecated
   settingsStore.setFeatureToggle(ident, val)
 }
 

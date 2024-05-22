@@ -131,7 +131,7 @@
 
       <q-separator inset v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />
 
-      <template v-if="useSettingsStore().isEnabled('dev')">
+      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <ContextMenuItem v-close-popup
                          @was-clicked="useSearchStore().reindexTabset(tabset.id)"
                          icon="o_note"

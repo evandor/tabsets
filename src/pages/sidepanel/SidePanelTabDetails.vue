@@ -85,7 +85,7 @@
       <div class="col-3 text-left">
 
 
-        <q-btn v-if="featuresStore.isEnabled('dev')"
+        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"
                @click="showTabDetails"
                round size="11px"
                color="primary"
@@ -244,7 +244,7 @@
             <div class="col-7 text-right text-caption">{{ tab?.activatedCount }}x</div>
           </div>
 
-          <template v-if="useSettingsStore().isEnabled('dev')">
+          <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
             <div class="row q-mx-sm">
               <div class="col-12 text-caption text-bold q-px-xl">
                 <hr>

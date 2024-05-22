@@ -69,7 +69,7 @@
       <div class="col-3 text-left">
 
 
-        <q-btn v-if="featuresStore.isEnabled('dev')"
+        <q-btn v-if="useFeaturesStore.hasFeature(FeatureIdent.DEV_MODE)"
                @click="showTabDetails"
                round size="11px"
                color="primary"
@@ -223,13 +223,12 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 
 const uiStore = useUiStore()
-const featuresStore = useSettingsStore()
 const router = useRouter()
-const $q = useQuasar()
 
 const hasAllUrlsPermission = ref<boolean | undefined>(false)
 

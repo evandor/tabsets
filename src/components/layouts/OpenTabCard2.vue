@@ -22,7 +22,7 @@
          :class="isCurrentTab(toTab(chromeTab)) ? 'text-bold' : ''"
          @click="NavigationService.openChromeTab(chromeTab)">
       {{ chromeTab?.title }}
-      <q-tooltip class="tooltip" v-if="useSettingsStore().isEnabled('dev')">
+      <q-tooltip class="tooltip" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         {{ chromeTab.id }} / {{ chromeTab.url }}
       </q-tooltip>
       <q-tooltip class="tooltip" v-else>

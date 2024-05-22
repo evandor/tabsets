@@ -231,7 +231,7 @@ const showTabDetails = async (tab: Tab) => {
 }
 
 const showTabDetailsMenuEntry = (tab: Tab) =>
-  useSettingsStore().isEnabled('dev')
+  useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)
 //&& !(tab.placeholders?.type === PlaceholdersType.URL_SUBSTITUTION)
 
 const deleteTabLabel = (tab: Tab) =>

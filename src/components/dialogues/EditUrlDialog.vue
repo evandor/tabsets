@@ -41,7 +41,7 @@
                  @update:model-value="val => updatePlaceholder(placeholder, val)"/>
       </q-card-section>
 
-      <template v-if="useSettingsStore().isEnabled('dev')">
+      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <q-card-section>
           <q-select
             label="Treat tab as"

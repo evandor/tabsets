@@ -36,7 +36,7 @@
         <q-space/>
 
         <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
-                      v-if="useTabsetsStore().tabsets.size > 1 || useSettingsStore().isEnabled('dev')"/>
+                      v-if="useTabsetsStore().tabsets.size > 1 || useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
 
         <Transition name="colorized-appear">
           <div v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
