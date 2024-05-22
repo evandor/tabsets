@@ -177,7 +177,7 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
-import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
+import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

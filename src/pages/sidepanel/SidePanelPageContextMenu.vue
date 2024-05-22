@@ -168,7 +168,7 @@ import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import {LocalStorage, openURL, useQuasar} from "quasar";
 import {useUtils} from "src/core/services/Utils";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
+import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
