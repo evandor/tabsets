@@ -36,7 +36,7 @@
 import iDraw from 'idraw';
 import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute} from "vue-router";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";

@@ -7,7 +7,7 @@ import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import tabsetService from "src/tabsets/services/TabsetService";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import ChromeApi from "src/services/ChromeApi";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useSettingsStore} from "stores/settingsStore";

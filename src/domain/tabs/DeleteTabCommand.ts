@@ -2,7 +2,7 @@ import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {Tab} from "src/tabsets/models/Tab";
 import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useUtils} from "src/core/services/Utils";
 
 const {addToTabset, deleteTab} = useTabsetService()

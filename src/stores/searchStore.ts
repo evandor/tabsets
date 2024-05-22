@@ -7,7 +7,7 @@ import {ref} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {uid} from "quasar";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

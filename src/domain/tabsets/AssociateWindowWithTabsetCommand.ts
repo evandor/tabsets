@@ -1,6 +1,6 @@
 import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";

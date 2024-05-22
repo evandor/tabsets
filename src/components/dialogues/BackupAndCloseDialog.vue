@@ -28,7 +28,7 @@
 import {ref} from "vue";
 import {uid, useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tab} from "src/tabsets/models/Tab";
 import TabsetService from "src/tabsets/services/TabsetService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

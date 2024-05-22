@@ -65,7 +65,7 @@ import {onMounted, ref, watchEffect} from "vue"
 import _ from "lodash"
 import {Space} from "src/spaces/models/Space"
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import Analytics from "src/core/utils/google-analytics";
 import {useUtils} from "src/core/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

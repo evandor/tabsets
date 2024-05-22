@@ -33,7 +33,7 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import {useQuasar} from "quasar";
 import _ from "lodash"
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import {useUtils} from "src/core/services/Utils"

@@ -98,7 +98,7 @@ import Analytics from "src/core/utils/google-analytics";
 import SidePanelTabsetsSelectorWidget from "components/widgets/SidePanelTabsetsSelectorWidget.vue";
 import {uid, useQuasar} from "quasar";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {FeatureIdent} from "src/models/FeatureIdent";

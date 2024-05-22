@@ -366,7 +366,7 @@ import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 import _ from "lodash";

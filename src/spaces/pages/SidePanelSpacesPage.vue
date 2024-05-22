@@ -154,7 +154,7 @@ import {Space} from "src/spaces/models/Space";
 import SpaceHeader from "pages/sidepanel/helper/SpaceHeader.vue";
 import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
