@@ -385,7 +385,7 @@ import {onMounted, reactive, ref, watchEffect} from "vue";
 import TabsetService from "src/tabsets/services/TabsetService";
 import NavigationService from "src/core/services/NavigationService"
 import {date} from "quasar";
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import _ from "lodash"
 import {useUtils} from "src/core/services/Utils";
 import {openURL} from "quasar";

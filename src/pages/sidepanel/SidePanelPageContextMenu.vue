@@ -162,7 +162,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useSettingsStore} from "stores/settingsStore";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import NavigationService from "src/core/services/NavigationService";
 import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import {LocalStorage, openURL, useQuasar} from "quasar";

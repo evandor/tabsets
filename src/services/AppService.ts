@@ -13,7 +13,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";

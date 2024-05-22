@@ -17,7 +17,7 @@
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useUiStore} from "stores/uiStore";

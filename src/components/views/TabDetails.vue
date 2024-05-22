@@ -215,7 +215,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/core/services/Utils";
 import NavigationService from "src/core/services/NavigationService";
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/FeatureIdent";
