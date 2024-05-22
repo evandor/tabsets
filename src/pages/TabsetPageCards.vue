@@ -52,7 +52,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";
 import {useUiStore} from "src/stores/uiStore";
 import {useRoute} from "vue-router";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import TabGrid from "components/layouts/TabGrid.vue";
 import {Tabset} from "src/tabsets/models/Tabset";

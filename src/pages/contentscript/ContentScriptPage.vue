@@ -38,7 +38,7 @@
 import {useUtils} from "src/services/Utils";
 import {onMounted, ref, watchEffect} from "vue";
 import {useTabsetService} from "src/services/TabsetService2";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";

@@ -115,7 +115,7 @@
 <script lang="ts" setup>
 
 import {PropType, ref} from "vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {Notify, useQuasar} from "quasar";
 import {Tab} from "src/tabsets/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";

@@ -37,7 +37,7 @@ import TabsetService from "src/services/TabsetService";
 import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ImportTabsetsCommand} from "src/tabsets/commands/ImportTabsets";
 import {useUtils} from "src/services/Utils";
 

@@ -107,7 +107,7 @@ import {ref, watchEffect} from "vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import _ from "lodash";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
