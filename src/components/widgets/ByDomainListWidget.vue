@@ -17,7 +17,7 @@
 import {useRouter} from "vue-router";
 import {onMounted, ref, watchEffect} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

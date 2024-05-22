@@ -190,7 +190,7 @@ import JsUtils from "src/utils/JsUtils";
 import {UserLevel, useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import {useTabsetService} from "src/services/TabsetService2";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 import EditorJsConfig from "src/utils/EditorJsConfig";
 import { useMeta } from 'quasar'

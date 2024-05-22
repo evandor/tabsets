@@ -284,7 +284,7 @@ import JsUtils from "src/utils/JsUtils";
 import {useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import {useTabsetService} from "src/services/TabsetService2";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 import {useAuthStore} from "stores/authStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

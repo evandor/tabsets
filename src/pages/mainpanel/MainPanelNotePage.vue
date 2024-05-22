@@ -54,7 +54,7 @@ import {Tabset} from "src/tabsets/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 //import 'regenerator-runtime/runtime'
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 
 import EditorJsConfig from "src/utils/EditorJsConfig";
 

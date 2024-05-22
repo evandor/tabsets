@@ -94,7 +94,7 @@ import {useTabsetService} from "src/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useRoute} from "vue-router";
 import {useUiStore} from "src/stores/uiStore";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";

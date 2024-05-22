@@ -79,7 +79,7 @@ import {onMounted, ref, watch, watchEffect} from "vue"
 import TabsetService from "src/services/TabsetService";
 import {useTabsetService} from "src/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Window} from "src/windows/models/Window";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
