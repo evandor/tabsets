@@ -73,7 +73,7 @@
 import {Tab, UrlExtension} from "src/tabsets/models/Tab"
 import TabsetService from "src/tabsets/services/TabsetService"
 import {PropType, ref} from "vue"
-import NavigationService from "src/core/services/NavigationService"
+import NavigationService from "src/services/NavigationService"
 import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand"

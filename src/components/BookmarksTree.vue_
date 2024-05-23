@@ -90,7 +90,7 @@ import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useSettingsStore} from "src/stores/settingsStore"
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import DeleteBookmarkFolderDialog from "src/bookmarks/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";

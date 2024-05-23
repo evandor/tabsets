@@ -70,7 +70,7 @@ import {onMounted, ref, watchEffect} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
 import {Readability} from "@mozilla/readability";
 import {useUtils} from "src/core/services/Utils";
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 import Analytics from "src/core/utils/google-analytics";
 import {useQuasar} from "quasar";
 

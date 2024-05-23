@@ -68,7 +68,7 @@ import {openURL, useQuasar} from "quasar";
 import NewEntityDialog from "components/dialogues/NewEntityDialog.vue";
 import {Entity} from "src/models/Entity";
 import {useEntitiesStore} from "stores/entitiesStore";
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 import NewFormulaDialog from "components/dialogues/NewFormulaDialog.vue";
 import _ from "lodash"
 

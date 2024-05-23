@@ -34,7 +34,7 @@
 
 import {ref, watchEffect} from "vue";
 import {useUiStore} from "src/stores/uiStore";
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 
 const urls = ref<object[]>([])
 

@@ -194,7 +194,7 @@ import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 import {openURL, uid, useQuasar} from "quasar";
 import {useUtils} from "src/core/services/Utils";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
