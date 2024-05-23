@@ -44,7 +44,7 @@
 
   <!-- right part: name, title, description, url && note -->
   <q-item-section class="q-mb-sm"
-                  :style="isCurrentTab(props.tab) ? 'border-right:2px solid #1565C0' : ''"
+                  :style="TabService.isCurrentTab(props.tab) ? 'border-right:2px solid #1565C0' : ''"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined">
 
@@ -60,7 +60,7 @@
 
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
                 v-html="nameOrTitle(props.tab as Tab)"/>
-          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold text-blue-9':''">{{
+          <span v-else :class="TabService.isCurrentTab(props.tab) ? 'text-bold text-blue-9':''">{{
               nameOrTitle(props.tab as Tab)
             }}</span>
           <q-popup-edit
@@ -396,8 +396,9 @@ import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import TabService from "src/services/TabService";
 
-const {inBexMode, isCurrentTab} = useUtils()
+const {inBexMode} = useUtils()
 const {handleSuccess} = useNotificationHandler()
 
 const props = defineProps({
@@ -560,7 +561,7 @@ const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const iconStyle = () => {
-  if (isCurrentTab(props.tab)) {
+  if (TabService.isCurrentTab(props.tab)) {
     return "border:1px solid #bfbfbf;border-radius:3px"
   } else {
     return "border:0px solid white;border-radius:3px"
@@ -677,7 +678,7 @@ const deleteAnnotation = async (tab: Tab, annotationToDelete: any) => {
 
 const showAnnotation = async (tab: Tab, a: HTMLSelection) => {
   selectedAnnotation.value = selectedAnnotation.value === a ? undefined : a;
-  if (!isCurrentTab(tab)) {
+  if (!TabService.isCurrentTab(tab)) {
     gotoTab()
   }
   console.log("showing annotation", a, tab.chromeTabId)
