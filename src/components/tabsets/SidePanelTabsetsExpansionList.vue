@@ -596,7 +596,6 @@ const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => 
     currentChromeTab.url !== '' &&
     currentChromeTab.url.indexOf('https://tabsets.web.app/?apiKey=') < 0 &&
     useTabsetsStore().getCurrentTabset?.id === tabset.id
-  //isCurrentTab()
 }
 
 const saveTabsetDescription = () => {

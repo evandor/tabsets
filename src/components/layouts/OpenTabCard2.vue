@@ -19,7 +19,7 @@
     </div>
 
     <div class="col-8 q-mt-sm q-ml-xs text-body2 ellipsis cursor-pointer"
-         :class="isCurrentTab(toTab(chromeTab)) ? 'text-bold' : ''"
+         :class="TabService.isCurrentTab(toTab(chromeTab)) ? 'text-bold' : ''"
          @click="NavigationService.openChromeTab(chromeTab)">
       {{ chromeTab?.title }}
       <q-tooltip class="tooltip" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
@@ -63,6 +63,9 @@ import {PropType, ref, watch, watchEffect} from "vue";
 import ChromeApi from "src/services/ChromeApi";
 import {uid} from "quasar";
 import {useTabsetsStore} from "../../tabsets/stores/tabsetsStore";
+import TabService from "src/services/TabService";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {FeatureIdent} from "src/models/FeatureIdent";
 
 const props = defineProps({
   chromeTab: {type: Object as PropType<chrome.tabs.Tab>, required: true},
@@ -71,8 +74,6 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['selectionChanged', 'addedToTabset', 'hasSelectable'])
-
-const {isCurrentTab} = useUtils()
 
 const showIcons = ref(false)
 const alreadyInCurrentTabset = ref(false)
