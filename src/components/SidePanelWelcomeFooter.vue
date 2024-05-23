@@ -58,7 +58,7 @@
 </template>
 <script setup lang="ts">
 
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 
 const openPlansPage = () => NavigationService.openOrCreateTab(["https://tabsets.web.app/#/pricing?wcp=1"]) // "from WelComePage = true"
 

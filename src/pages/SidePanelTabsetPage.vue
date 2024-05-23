@@ -102,7 +102,7 @@ import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {FeatureIdent} from "src/models/FeatureIdent";
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

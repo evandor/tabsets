@@ -80,7 +80,7 @@ import {useUtils} from "src/core/services/Utils"
 import {Bookmark} from "src/bookmarks/models/Bookmark";
 import {useRouter} from "vue-router";
 import {date} from "quasar";
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 import BookmarksService from "src/bookmarks/services/BookmarksService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 

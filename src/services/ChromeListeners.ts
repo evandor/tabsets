@@ -12,7 +12,7 @@ import {FeatureIdent} from "src/models/FeatureIdent";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
 import {useUtils} from "src/core/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/utils/ContentUtils";
 import "rangy/lib/rangy-serializer";
 import {useAuthStore} from "stores/authStore";

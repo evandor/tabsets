@@ -57,7 +57,7 @@
 
 <script lang="ts" setup>
 
-import NavigationService from "src/core/services/NavigationService";
+import NavigationService from "src/services/NavigationService";
 import {ref} from "vue";
 import {LocalStorage} from "quasar";
 import {CURRENT_USER_EMAIL, EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
