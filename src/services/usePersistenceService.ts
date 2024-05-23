@@ -27,7 +27,6 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
   let localDb = undefined as unknown as PersistenceService
   let featuresLocalStorage: FeaturesPersistence = undefined as unknown as FeaturesPersistence
-  console.log("===>", quasar)
   if (quasar) {
     localDb = new LocalStoragePersistenceService(quasar)
     featuresLocalStorage = new LocalStorageFeaturesPersistence(quasar)

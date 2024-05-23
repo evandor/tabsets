@@ -28,3 +28,23 @@ the user's choice.
 
 ## Dependencies
 
+```mermaid
+classDiagram
+  note "read submodule Windows depends on submodule Features"
+  Features <-- Windows
+  Tabsets <-- Windows
+  Tabsets <-- Thumbnails
+  Content <-- Tabsets
+  Features <-- Tabsets
+  Search <-- Tabsets
+  Spaces <-- Tabsets
+  Suggestions <-- Tabsets
+  Features <-- Spaces
+  Windows <-- Spaces
+
+  Bookmarks <-- Search
+
+  Search <-- Content
+
+```
+

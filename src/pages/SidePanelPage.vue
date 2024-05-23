@@ -283,18 +283,21 @@ if (inBexMode()) {
       const tsId = message.data.tabsetId
       useTabsetsStore().selectCurrentTabset(tsId)
     } else if (message.name === 'feature-activated') {
-      usePermissionsStore().addActivateFeature(message.data.feature)
-      if (message.data.feature === 'help') {
-        useTabsetService().reloadTabset("HELP")
-      } else if (message.data.feature === 'bookmarks') {
-        usePermissionsStore().load()
-          .then(() => {
-            useBookmarksStore().init()
-            useBookmarksStore().loadBookmarks()
-          })
-      }
+      console.log("===>", message)
+      // usePermissionsStore().addActivateFeature(message.data.feature)
+      useFeaturesStore().activateFeature(message.data.feature)
+      // if (message.data.feature === 'help') {
+      //   useTabsetService().reloadTabset("HELP")
+      // } else if (message.data.feature === 'bookmarks') {
+      //   usePermissionsStore().load()
+      //     .then(() => {
+      //       useBookmarksStore().init()
+      //       useBookmarksStore().loadBookmarks()
+      //     })
+      // }
     } else if (message.name === "feature-deactivated") {
-      usePermissionsStore().removeActivateFeature(message.data.feature)
+      // usePermissionsStore().removeActivateFeature(message.data.feature)
+      useFeaturesStore().deactivateFeature(message.data.feature)
     } else if (message.name === "tabsets-imported") {
       useSpacesStore().reload()
       useTabsetService().init(useDB(undefined).db)
