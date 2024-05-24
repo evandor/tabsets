@@ -80,20 +80,20 @@
 
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {Hit} from "src/models/Hit";
 import _ from "lodash"
 import {useRouter} from "vue-router";
 import BookmarksService from "src/bookmarks/services/BookmarksService";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore"
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

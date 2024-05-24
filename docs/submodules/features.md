@@ -13,6 +13,10 @@ Once the submodule has been installed in your application, it needs to be [setup
 
 [usage](../../src/features/docs/usage.md)
 
+### messages
+
+[messages](../../src/features/docs/messages.md)
+
 ### code
 
 [code](../../src/features/docs/code.md)

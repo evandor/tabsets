@@ -48,13 +48,13 @@ import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {uid, useMeta, useQuasar} from "quasar";
 import {Tab, UrlExtension} from "src/tabsets/models/Tab";
-import {useUtils} from "src/services/Utils";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useUtils} from "src/core/services/Utils";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tabset} from "src/tabsets/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 //import 'regenerator-runtime/runtime'
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 
 import EditorJsConfig from "src/utils/EditorJsConfig";
 

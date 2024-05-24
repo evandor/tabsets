@@ -136,16 +136,16 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import _ from "lodash"
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {LocalStorage, scroll, uid} from "quasar";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import TabsetService from "src/services/TabsetService";
-import Analytics from "src/utils/google-analytics";
+import TabsetService from "src/tabsets/services/TabsetService";
+import Analytics from "src/core/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
@@ -226,14 +226,12 @@ const getTabsetOrder =
   ]
 
 function determineTabsets() {
-  const res = _.sortBy(
+  return _.sortBy(
     _.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
       (ts: Tabset) => ts.status !== TabsetStatus.DELETED
         && ts.status !== TabsetStatus.HIDDEN &&
         ts.status !== TabsetStatus.ARCHIVED),
     getTabsetOrder, ["asc"]);
-  console.log("determined tabsets", res)
-  return res
 }
 
 watchEffect(() => {
@@ -283,18 +281,21 @@ if (inBexMode()) {
       const tsId = message.data.tabsetId
       useTabsetsStore().selectCurrentTabset(tsId)
     } else if (message.name === 'feature-activated') {
-      usePermissionsStore().addActivateFeature(message.data.feature)
-      if (message.data.feature === 'help') {
-        useTabsetService().reloadTabset("HELP")
-      } else if (message.data.feature === 'bookmarks') {
-        usePermissionsStore().load()
-          .then(() => {
-            useBookmarksStore().init()
-            useBookmarksStore().loadBookmarks()
-          })
-      }
+      console.log("===>", message)
+      // usePermissionsStore().addActivateFeature(message.data.feature)
+      useFeaturesStore().activateFeature(message.data.feature)
+      // if (message.data.feature === 'help') {
+      //   useTabsetService().reloadTabset("HELP")
+      // } else if (message.data.feature === 'bookmarks') {
+      //   usePermissionsStore().load()
+      //     .then(() => {
+      //       useBookmarksStore().init()
+      //       useBookmarksStore().loadBookmarks()
+      //     })
+      // }
     } else if (message.name === "feature-deactivated") {
-      usePermissionsStore().removeActivateFeature(message.data.feature)
+      // usePermissionsStore().removeActivateFeature(message.data.feature)
+      useFeaturesStore().deactivateFeature(message.data.feature)
     } else if (message.name === "tabsets-imported") {
       useSpacesStore().reload()
       useTabsetService().init(useDB(undefined).db)

@@ -41,10 +41,10 @@
 
 <script setup lang="ts">
 import {Tab, TabSorting} from "src/tabsets/models/Tab";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {PropType} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";

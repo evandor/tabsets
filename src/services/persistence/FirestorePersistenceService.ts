@@ -2,7 +2,7 @@ import PersistenceService from "src/services/PersistenceService";
 import {Message} from "src/models/Message";
 import {Space} from "src/spaces/models/Space";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
-import {SearchDoc} from "src/models/SearchDoc";
+import {SearchDoc} from "src/search/models/SearchDoc";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Tab} from "src/tabsets/models/Tab";
 import {MetaLink} from "src/models/MetaLink";

@@ -38,7 +38,7 @@ import {DrawerTabs, useUiStore} from "stores/uiStore";
 import TabListElementWidget from "components/widgets/TabListElementWidget.vue";
 import {PropType, ref} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 
 const props = defineProps({
   tabs: {type: Array as PropType<Tab[]>, required: true},

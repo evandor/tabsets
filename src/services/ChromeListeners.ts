@@ -4,14 +4,13 @@ import {HTMLSelection, Tab} from "src/tabsets/models/Tab";
 import {uid, useQuasar} from "quasar";
 import throttledQueue from 'throttled-queue';
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {useTabsetService} from "src/services/TabsetService2";
-import {usePermissionsStore} from "src/stores/permissionsStore";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {MetaLink} from "src/models/MetaLink";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {Extractor, Extractors, ExtractorType} from "src/config/Extractors";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/utils/ContentUtils";
@@ -19,10 +18,8 @@ import "rangy/lib/rangy-serializer";
 import {useAuthStore} from "stores/authStore";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {SidePanelView, useUiStore} from "stores/uiStore";
-import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {

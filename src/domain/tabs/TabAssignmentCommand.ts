@@ -1,9 +1,9 @@
-import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
-import TabsetService from "src/services/TabsetService";
+import Command from "src/core/domain/Command";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {Tab} from "src/tabsets/models/Tab";
-import {useSearchStore} from "src/stores/searchStore";
-import {useUtils} from "src/services/Utils";
+import {useSearchStore} from "src/search/stores/searchStore";
+import {useUtils} from "src/core/services/Utils";
 
 const {sendMsg} = useUtils()
 

@@ -136,17 +136,17 @@
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
 import {Tab, TabComment} from "src/tabsets/models/Tab";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
-import {useUtils} from "src/services/Utils"
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useUtils} from "src/core/services/Utils"
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {date, LocalStorage, useQuasar} from "quasar";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useRouter} from "vue-router";
 import _ from "lodash";

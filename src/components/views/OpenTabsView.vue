@@ -89,12 +89,12 @@ import {Tabset} from "src/tabsets/models/Tabset";
 import _ from "lodash";
 import {onMounted, ref, watchEffect, watch} from "vue"
 import {VueDraggableNext} from 'vue-draggable-next'
-import TabsetService from "src/services/TabsetService";
-import {useTabsetService} from "src/services/TabsetService2";
+import TabsetService from "src/tabsets/services/TabsetService";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {useRoute} from "vue-router";
 import {useUiStore} from "src/stores/uiStore";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";

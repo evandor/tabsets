@@ -4,7 +4,7 @@ import {LocalStoragePersistenceService} from "src/services/storage/LocalStorageP
 import PersistenceService from "src/services/PersistenceService";
 import FsPersistentService from "src/services/persistence/FirestorePersistenceService";
 import SpacesPersistence from "src/spaces/persistence/SpacesPersistence";
-import IndexedDbSpacesStorage from "src/spaces/persistence/IndexedDbSpacesStorage";
+import IndexedDbSpacesStorage from "src/spaces/persistence/IndexedDbSpacesPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabsetsPersistence";
@@ -27,7 +27,6 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
   let localDb = undefined as unknown as PersistenceService
   let featuresLocalStorage: FeaturesPersistence = undefined as unknown as FeaturesPersistence
-  console.log("===>", quasar)
   if (quasar) {
     localDb = new LocalStoragePersistenceService(quasar)
     featuresLocalStorage = new LocalStorageFeaturesPersistence(quasar)

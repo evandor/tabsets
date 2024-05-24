@@ -5,7 +5,7 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {AssociateWindowWithTabsetCommand} from "src/domain/tabsets/AssociateWindowWithTabsetCommand";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";

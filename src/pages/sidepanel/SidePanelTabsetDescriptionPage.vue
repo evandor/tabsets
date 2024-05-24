@@ -66,7 +66,7 @@ import {onMounted, PropType, ref, watchEffect} from "vue";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 import EditorJsConfig from "src/utils/EditorJsConfig";
 import {openURL} from "quasar";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {DeleteTabsetDescriptionCommand} from "src/tabsets/commands/DeleteTabsetDescriptionCommand";
 import {useUiStore} from "stores/uiStore";
 

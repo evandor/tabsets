@@ -3,8 +3,8 @@ import {CLEANUP_PERIOD_IN_MINUTES, MONITORING_PERIOD_IN_MINUTES} from "boot/cons
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useSearchStore} from "src/stores/searchStore";
-import {SearchDoc} from "src/models/SearchDoc";
+import {useSearchStore} from "src/search/stores/searchStore";
+import {SearchDoc} from "src/search/models/SearchDoc";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
@@ -18,7 +18,7 @@ import {Router} from "vue-router";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 

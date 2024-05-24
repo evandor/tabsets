@@ -131,7 +131,7 @@
 
       <q-separator inset v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />
 
-      <template v-if="useSettingsStore().isEnabled('dev')">
+      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <ContextMenuItem v-close-popup
                          @was-clicked="useSearchStore().reindexTabset(tabset.id)"
                          icon="o_note"
@@ -162,20 +162,20 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useSettingsStore} from "stores/settingsStore";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import NavigationService from "src/services/NavigationService";
 import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import {LocalStorage, openURL, useQuasar} from "quasar";
-import {useUtils} from "src/services/Utils";
-import {useCommandExecutor} from "src/services/CommandExecutor";
-import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
+import {useUtils} from "src/core/services/Utils";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
 import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tab} from "src/tabsets/models/Tab";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
@@ -184,7 +184,7 @@ import NewWindowDialog from "src/windows/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
 import {MarkTabsetDeletedCommand} from "src/tabsets/commands/MarkTabsetDeleted";
 import {SidePanelView, useUiStore} from "stores/uiStore";
-import {NotificationType} from "src/services/ErrorHandler";
+import {NotificationType} from "src/core/services/ErrorHandler";
 import NewSubfolderDialog from "components/dialogues/NewSubfolderDialog.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

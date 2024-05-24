@@ -90,7 +90,7 @@
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
-        <q-btn
+        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)"
           icon="o_grid_view"
           data-testid="buttonManageWindows"
           :class="rightButtonClass()"
@@ -192,11 +192,10 @@ import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import NavigationService from "src/services/NavigationService";
 import {openURL, uid, useQuasar} from "quasar";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash";
@@ -207,7 +206,7 @@ import {ToastType} from "src/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
 import {Window} from "src/windows/models/Window"
@@ -549,7 +548,6 @@ const saveAsTabset = (windowId: number, name: string) => {
   })
 }
 const additionalActionWasClicked = (event: any) => {
-  console.log("§hier", event)
   if (event.action === 'saveTabset') {
     saveAsTabset(event.window.id, event.window.name)
   }

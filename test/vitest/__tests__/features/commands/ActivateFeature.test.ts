@@ -20,7 +20,7 @@ describe('ActivateFeatureCommand', () => {
 
   it('feature gets activated', async () => {
     const feature = new AppFeatures().features[0]
-    const cmd = new ActivateFeatureCommand(feature)
+    const cmd = new ActivateFeatureCommand(feature.ident)
     const res = await cmd.execute()
     expect(res.message).toBe("Feature top10 was activated")
     expect(useFeaturesStore().activeFeatures.indexOf(feature.ident.toLowerCase())).toBeGreaterThanOrEqual(0)
@@ -28,7 +28,7 @@ describe('ActivateFeatureCommand', () => {
 
   it('command has proper toString representation', async () => {
     const feature = new AppFeatures().features[0]
-    const cmd = new ActivateFeatureCommand(feature)
+    const cmd = new ActivateFeatureCommand(feature.ident)
     expect(cmd.toString()).toBe("ActivateFeatureCommand: {feature=TOP10}")
   })
 

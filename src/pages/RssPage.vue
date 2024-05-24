@@ -67,7 +67,7 @@ import {date} from "quasar"
 import {extract} from '@extractus/feed-extractor'
 import NavigationService from "src/services/NavigationService";
 import {formatDistance, parseISO} from "date-fns";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 
 const route = useRoute()
 

@@ -175,11 +175,11 @@
 import {onMounted, onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {date, openURL, uid, useQuasar} from "quasar";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {FeatureIdent} from "src/models/FeatureIdent";
@@ -189,8 +189,8 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import JsUtils from "src/utils/JsUtils";
 import {UserLevel, useUiStore} from "src/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
-import {useTabsetService} from "src/services/TabsetService2";
-import Analytics from "src/utils/google-analytics";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import Analytics from "src/core/utils/google-analytics";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 import EditorJsConfig from "src/utils/EditorJsConfig";
 import { useMeta } from 'quasar'

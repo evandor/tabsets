@@ -159,8 +159,8 @@ import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/tabsets/model
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {PropType, ref} from "vue";
-import {useUtils} from "src/services/Utils";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useUtils} from "src/core/services/Utils";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
@@ -168,7 +168,7 @@ import RestoreTabsetDialog from "src/tabsets/dialogues/RestoreTabsetDialog.vue";
 import {Space} from "src/spaces/models/Space";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import _ from "lodash";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {openURL, useQuasar} from "quasar";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {ShareTabsetCommand} from "src/tabsets/commands/ShareTabsetCommand"
@@ -177,7 +177,7 @@ import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
-import {RestoreTabsetCommand} from "src/domain/tabsets/RestoreTabset";
+import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

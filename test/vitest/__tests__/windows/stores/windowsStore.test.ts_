@@ -2,7 +2,7 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import {useDB} from "src/services/usePersistenceService";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import ChromeApi from "src/services/ChromeApi";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";

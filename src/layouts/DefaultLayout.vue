@@ -33,7 +33,7 @@
         <q-space/>
 
         <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
-                      v-if="useTabsetsStore().tabsets.size > 1 || useSettingsStore().isEnabled('dev')"/>
+                      v-if="useTabsetsStore().tabsets.size > 1 || useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
 
         <Transition name="colorized-appear">
           <div v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
@@ -193,7 +193,7 @@ import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";

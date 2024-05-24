@@ -44,7 +44,7 @@
 
   <!-- right part: name, title, description, url && note -->
   <q-item-section class="q-mb-sm"
-                  :style="isCurrentTab(props.tab) ? 'border-right:2px solid #1565C0' : ''"
+                  :style="TabService.isCurrentTab(props.tab) ? 'border-right:2px solid #1565C0' : ''"
                   @mouseover="hoveredTab = tab.id"
                   @mouseleave="hoveredTab = undefined">
 
@@ -60,7 +60,7 @@
 
           <span v-if="props.tab?.extension === UrlExtension.NOTE"
                 v-html="nameOrTitle(props.tab as Tab)"/>
-          <span v-else :class="isCurrentTab(props.tab) ? 'text-bold text-blue-9':''">{{
+          <span v-else :class="TabService.isCurrentTab(props.tab) ? 'text-bold text-blue-9':''">{{
               nameOrTitle(props.tab as Tab)
             }}</span>
           <q-popup-edit
@@ -361,12 +361,12 @@ import {
   TabSorting,
   UrlExtension
 } from "src/tabsets/models/Tab";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import PanelTabListContextMenu from "components/widgets/helper/PanelTabListContextMenu.vue";
 import _ from "lodash";
@@ -374,7 +374,7 @@ import {formatDistance} from "date-fns";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
@@ -385,19 +385,20 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 // @ts-ignore
 import rangy from "rangy/lib/rangy-core.js";
 import "rangy/lib/rangy-serializer";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import TabService from "src/services/TabService";
 
-const {inBexMode, isCurrentTab} = useUtils()
+const {inBexMode} = useUtils()
 const {handleSuccess} = useNotificationHandler()
 
 const props = defineProps({
@@ -560,7 +561,7 @@ const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const iconStyle = () => {
-  if (isCurrentTab(props.tab)) {
+  if (TabService.isCurrentTab(props.tab)) {
     return "border:1px solid #bfbfbf;border-radius:3px"
   } else {
     return "border:0px solid white;border-radius:3px"
@@ -677,7 +678,7 @@ const deleteAnnotation = async (tab: Tab, annotationToDelete: any) => {
 
 const showAnnotation = async (tab: Tab, a: HTMLSelection) => {
   selectedAnnotation.value = selectedAnnotation.value === a ? undefined : a;
-  if (!isCurrentTab(tab)) {
+  if (!TabService.isCurrentTab(tab)) {
     gotoTab()
   }
   console.log("showing annotation", a, tab.chromeTabId)

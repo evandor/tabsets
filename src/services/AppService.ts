@@ -6,14 +6,14 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import tabsetService from "src/services/TabsetService";
-import {useTabsetService} from "src/services/TabsetService2";
+import tabsetService from "src/tabsets/services/TabsetService";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import ChromeApi from "src/services/ChromeApi";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
@@ -163,7 +163,6 @@ class AppService {
 
   private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router, syncType: SyncType) {
     const spacesStore = useSpacesStore()
-    const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsetsStore = useTabsetsStore()
 
@@ -173,6 +172,12 @@ class AppService {
      */
     const featuresStorage = useFirestore(syncType) ? useDB().featuresFirestoreDb : useDB(quasar).featuresLocalStorage
     await useFeaturesStore().initialize(featuresStorage)
+
+    /**
+     * windows store
+     */
+    await useWindowsStore().initialize()
+    useWindowsStore().initListeners()
 
     await spacesStore.initialize(syncType, useAuthStore().isAuthenticated())
 
@@ -195,9 +200,6 @@ class AppService {
       await groupsStore.initialize(useDB(undefined).db)
       groupsStore.initListeners()
     }
-
-    await windowsStore.initialize()
-    windowsStore.initListeners()
 
     useUiStore().appLoading = undefined
 

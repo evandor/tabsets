@@ -366,7 +366,7 @@
     </div>
   </div>
 
-  <div v-else-if="tab === 'debug'" v-if="useSettingsStore().isEnabled('dev')">
+  <div v-else-if="tab === 'debug'" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded>The tabs internal representation</q-banner>
       <vue-json-pretty style="font-size: 80%" :show-length="true"
@@ -382,17 +382,17 @@
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useRoute, useRouter} from "vue-router";
 import {onMounted, reactive, ref, watchEffect} from "vue";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import NavigationService from "src/services/NavigationService"
 import {date} from "quasar";
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import _ from "lodash"
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {openURL} from "quasar";
 import {useSettingsStore} from "src/stores/settingsStore"
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

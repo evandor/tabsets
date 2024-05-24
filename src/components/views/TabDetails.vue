@@ -69,7 +69,7 @@
       <div class="col-3 text-left">
 
 
-        <q-btn v-if="featuresStore.isEnabled('dev')"
+        <q-btn v-if="useFeaturesStore.hasFeature(FeatureIdent.DEV_MODE)"
                @click="showTabDetails"
                round size="11px"
                color="primary"
@@ -205,31 +205,30 @@
 import {useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import _ from "lodash";
-import {useTabsetService} from "src/services/TabsetService2";
-import TabsetService from "src/services/TabsetService";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {reactive, ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useRouter} from "vue-router";
 import {openURL, useQuasar} from "quasar";
 import {Tab} from "src/tabsets/models/Tab";
 import {formatDistance} from "date-fns";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import NavigationService from "src/services/NavigationService";
-import {useSearchStore} from "src/stores/searchStore";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useSearchStore} from "src/search/stores/searchStore";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const {inBexMode} = useUtils()
 
 const uiStore = useUiStore()
-const featuresStore = useSettingsStore()
 const router = useRouter()
-const $q = useQuasar()
 
 const hasAllUrlsPermission = ref<boolean | undefined>(false)
 

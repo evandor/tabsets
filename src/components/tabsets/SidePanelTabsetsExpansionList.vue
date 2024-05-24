@@ -228,7 +228,7 @@
 <script lang="ts" setup>
 
 import {Tabset, TabsetSharing, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 import SidePanelSubfolderContextMenu from "pages/sidepanel/SidePanelSubfolderContextMenu.vue";
 import SidePanelPageTabList from "components/layouts/SidePanelPageTabList.vue";
@@ -237,20 +237,20 @@ import {useUiStore} from "stores/uiStore";
 import _ from "lodash";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {Tab} from "src/tabsets/models/Tab";
 import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
 import {openURL, scroll, uid, useQuasar} from "quasar";
 import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import getScrollTarget = scroll.getScrollTarget;
 
-import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
@@ -596,7 +596,6 @@ const showAddTabButton = (tabset: Tabset, currentChromeTab: chrome.tabs.Tab) => 
     currentChromeTab.url !== '' &&
     currentChromeTab.url.indexOf('https://tabsets.web.app/?apiKey=') < 0 &&
     useTabsetsStore().getCurrentTabset?.id === tabset.id
-  //isCurrentTab()
 }
 
 const saveTabsetDescription = () => {

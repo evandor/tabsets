@@ -48,12 +48,12 @@
 
 <script setup lang="ts">
 import {Tab, TabSorting} from "src/tabsets/models/Tab";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {ref, onMounted, PropType, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {SPECIAL_ID_FOR_NO_GROUP_ASSIGNED} from "boot/constants";
 import _ from "lodash"

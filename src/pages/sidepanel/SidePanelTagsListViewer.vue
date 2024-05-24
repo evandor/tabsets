@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";

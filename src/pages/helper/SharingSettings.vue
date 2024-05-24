@@ -53,7 +53,7 @@
 import {ref, watchEffect} from "vue";
 import {SHARING_AUTHOR_IDENT, SHARING_AVATAR_IDENT, STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {LocalStorage} from "quasar";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 
 const {sanitize} = useUtils()
 
