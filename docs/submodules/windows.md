@@ -19,5 +19,4 @@ Once the submodule has been installed in your application, it needs to be [setup
 
 ### code
 
-[code](../../src/windows/docs/code.md)
-
+...
