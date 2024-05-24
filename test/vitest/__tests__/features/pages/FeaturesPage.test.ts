@@ -27,8 +27,8 @@ describe('FeaturesPage', () => {
 
   it('should be mounted', async () => {
     console.log("html", wrapper.html())
-    expect(wrapper.text()).toContain("Recommended Features");
-    expect(wrapper.text()).toContain("Optional Features");
+    expect(wrapper.text()).toContain("Recommended Feature");
+    expect(wrapper.text()).toContain("Activate a view to list all tabs");
   });
 
 
