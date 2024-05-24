@@ -8,6 +8,9 @@ import ChromeApi from "src/services/ChromeApi";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {FeatureIdent} from "src/models/FeatureIdent";
+import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
 
 installQuasarPlugin();
 
@@ -63,6 +66,9 @@ async function setupMocks(currentWindow: any) {
         })
       }
     },
+    permissions: {
+      getAll: vi.fn(() => [])
+    },
     runtime: {
       sendMessage: vi.fn(() => {
       })
@@ -94,6 +100,8 @@ describe('WindowsStore', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
+    await useFeaturesStore().initialize(InMemoryFeaturesPersistence)
+    useFeaturesStore().activateFeature(FeatureIdent.WINDOWS_MANAGEMENT)
     await IndexedDbTabsetsPersistence.init()
     await IndexedDbWindowsPersistence.init()
     db = useDB(undefined).tabsetsIndexedDb
@@ -102,7 +110,7 @@ describe('WindowsStore', () => {
 
   afterEach(async () => {
     db.clear("tabsets")
-    //db.clear("windows")
+    db.clear("windows")
   })
 
   it('initializing correctly with multiple windows and indices differing', async () => {
