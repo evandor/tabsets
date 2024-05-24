@@ -163,7 +163,6 @@ class AppService {
 
   private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router, syncType: SyncType) {
     const spacesStore = useSpacesStore()
-    const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsetsStore = useTabsetsStore()
 
@@ -173,6 +172,12 @@ class AppService {
      */
     const featuresStorage = useFirestore(syncType) ? useDB().featuresFirestoreDb : useDB(quasar).featuresLocalStorage
     await useFeaturesStore().initialize(featuresStorage)
+
+    /**
+     * windows store
+     */
+    await useWindowsStore().initialize()
+    useWindowsStore().initListeners()
 
     await spacesStore.initialize(syncType, useAuthStore().isAuthenticated())
 
@@ -195,9 +200,6 @@ class AppService {
       await groupsStore.initialize(useDB(undefined).db)
       groupsStore.initListeners()
     }
-
-    await windowsStore.initialize()
-    windowsStore.initListeners()
 
     useUiStore().appLoading = undefined
 

@@ -2,6 +2,29 @@
 
 tabsets.net uses git submodules to share logic and UI components with other applications.
 
+## Dependencies
+
+read: submodule Windows depends on submodule Features etc
+
+```mermaid
+classDiagram
+  Features <-- Windows
+  Tabsets <-- Windows
+  Tabsets <-- Thumbnails
+  Content <-- Tabsets
+  Features <-- Tabsets
+  Search <-- Tabsets
+  Spaces <-- Tabsets
+  Suggestions <-- Tabsets
+  Features <-- Spaces
+  Windows <-- Spaces
+
+  Bookmarks <-- Search
+
+  Search <-- Content
+
+```
+
 ## Bookmarks
 
 The Bookmarks Submodule lets you access your browsers bookmark API and provides some views
@@ -26,25 +49,8 @@ the user's choice.
 
 ## Windows
 
-## Dependencies
+The Windows Submodule provides a little ui component to list your browsers open windows.
 
-```mermaid
-classDiagram
-  note "read submodule Windows depends on submodule Features"
-  Features <-- Windows
-  Tabsets <-- Windows
-  Tabsets <-- Thumbnails
-  Content <-- Tabsets
-  Features <-- Tabsets
-  Search <-- Tabsets
-  Spaces <-- Tabsets
-  Suggestions <-- Tabsets
-  Features <-- Spaces
-  Windows <-- Spaces
+[windows](./windows.md)
 
-  Bookmarks <-- Search
-
-  Search <-- Content
-
-```
 

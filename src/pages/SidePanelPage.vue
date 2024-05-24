@@ -226,14 +226,12 @@ const getTabsetOrder =
   ]
 
 function determineTabsets() {
-  const res = _.sortBy(
+  return _.sortBy(
     _.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
       (ts: Tabset) => ts.status !== TabsetStatus.DELETED
         && ts.status !== TabsetStatus.HIDDEN &&
         ts.status !== TabsetStatus.ARCHIVED),
     getTabsetOrder, ["asc"]);
-  console.log("determined tabsets", res)
-  return res
 }
 
 watchEffect(() => {
