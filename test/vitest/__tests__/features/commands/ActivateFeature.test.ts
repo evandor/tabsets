@@ -6,6 +6,8 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
 import {ActivateFeatureCommand} from "src/features/commands/ActivateFeature";
 import {AppFeatures} from "src/models/AppFeatures";
+import {Feature} from "src/features/models/Feature";
+import {FeatureIdent} from "src/models/FeatureIdent";
 
 installQuasarPlugin();
 
@@ -19,16 +21,16 @@ describe('ActivateFeatureCommand', () => {
   })
 
   it('feature gets activated', async () => {
-    const feature = new AppFeatures().features[0]
-    const cmd = new ActivateFeatureCommand(feature.ident)
+    const feature = new AppFeatures().features.find((f:Feature) => f.ident === FeatureIdent.TOP10)
+    const cmd = new ActivateFeatureCommand(feature!.ident)
     const res = await cmd.execute()
     expect(res.message).toBe("Feature top10 was activated")
-    expect(useFeaturesStore().activeFeatures.indexOf(feature.ident.toLowerCase())).toBeGreaterThanOrEqual(0)
+    expect(useFeaturesStore().activeFeatures.indexOf(feature!.ident.toLowerCase())).toBeGreaterThanOrEqual(0)
   })
 
   it('command has proper toString representation', async () => {
-    const feature = new AppFeatures().features[0]
-    const cmd = new ActivateFeatureCommand(feature.ident)
+    const feature = new AppFeatures().features.find((f:Feature) => f.ident === FeatureIdent.TOP10)
+    const cmd = new ActivateFeatureCommand(feature!.ident)
     expect(cmd.toString()).toBe("ActivateFeatureCommand: {feature=TOP10}")
   })
 
