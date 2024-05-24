@@ -33,34 +33,34 @@ if (process.env.USE_FIREBASE == "true") {
 
 if (inBexMode()) {
 
-  $q.bex.on('fcm.token.received', ({data, respond}) => {
-    console.log('Token received from service worker:', data)
-    LocalStorage.set('app.fcmToken', data.token)
-    FirestorePersistenceService.updateUserToken(data.token)
-    respond('thx')
-  })
+  // $q.bex.on('fcm.token.received', ({data, respond}) => {
+  //   console.log('Token received from service worker:', data)
+  //   LocalStorage.set('app.fcmToken', data.token)
+  //   FirestorePersistenceService.updateUserToken(data.token)
+  //   respond('thx')
+  // })
 
-  $q.bex.on('fb.message.received', async ({data, respond}) => {
-    const localInstallationId = LocalStorage.getItem(APP_INSTALLATION_ID) || "";
-    console.debug('Message received from service worker:', data, localInstallationId)
-
-    if (data.msg) {
-      switch (data.msg) {
-        case "event.tabset.updated":
-          if (localInstallationId !== data.origin) {
-            console.log("reloading tabsets due to remote event", localInstallationId, data)
-            //await FirestorePersistenceService.loadSpaces()
-            await FirestorePersistenceService.loadTabsets()
-          }
-          break
-        default:
-          console.log("unrecognized payload with msg " + data.msg)
-      }
-    } else {
-      console.log("unrecognized payload without msg field")
-    }
-    respond('thx')
-  })
+  // $q.bex.on('fb.message.received', async ({data, respond}) => {
+  //   const localInstallationId = LocalStorage.getItem(APP_INSTALLATION_ID) || "";
+  //   console.debug('Message received from service worker:', data, localInstallationId)
+  //
+  //   if (data.msg) {
+  //     switch (data.msg) {
+  //       case "event.tabset.updated":
+  //         if (localInstallationId !== data.origin) {
+  //           console.log("reloading tabsets due to remote event", localInstallationId, data)
+  //           //await FirestorePersistenceService.loadSpaces()
+  //           await FirestorePersistenceService.loadTabsets()
+  //         }
+  //         break
+  //       default:
+  //         console.log("unrecognized payload with msg " + data.msg)
+  //     }
+  //   } else {
+  //     console.log("unrecognized payload without msg field")
+  //   }
+  //   respond('thx')
+  // })
 }
 
 if (process.env.USE_FIREBASE == "true") {
