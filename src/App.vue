@@ -12,7 +12,6 @@ import {APP_INSTALLATION_ID, CURRENT_USER_ID} from "boot/constants";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
-import FirestorePersistenceService from "src/services/persistence/FirestorePersistenceService";
 import {useUtils} from "src/core/services/Utils";
 import {useLogger} from "src/services/Logger";
 
