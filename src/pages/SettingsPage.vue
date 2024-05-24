@@ -30,9 +30,9 @@
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"
              v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
-      <q-tab name="search" label="Search Engine" v-if="useSettingsStore().isEnabled('dev')"/>
+      <q-tab name="search" label="Search Engine" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
       <q-tab name="importExport" label="Import/Export"/>
-      <q-tab name="internals" label="Internals" v-if="useSettingsStore().isEnabled('dev')"/>
+      <q-tab name="internals" label="Internals" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
       <!--      <q-tab name="featureToggles" label="Feature Toggles"-->
       <!--             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>-->
       <q-tab name="featureToggles" label="Feature Toggles"/>
@@ -166,7 +166,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useSettingsStore().isEnabled('dev')">
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <div class="col-3">
           New Version Simulation
         </div>
@@ -178,7 +178,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useSettingsStore().isEnabled('dev')">
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <div class="col-3">
           New Suggestion Simulation
         </div>
@@ -415,27 +415,27 @@
 <script setup lang="ts">
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {LocalStorage, useQuasar} from "quasar";
-import {useSearchStore} from "src/stores/searchStore";
-import TabsetService from "src/services/TabsetService";
+import {useSearchStore} from "src/search/stores/searchStore";
+import TabsetService from "src/tabsets/services/TabsetService";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
-import {useNotificationHandler} from "src/services/ErrorHandler";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
 import {DrawerTabs, ListDetailLevel, useUiStore} from "src/stores/uiStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
-import {useUtils} from "src/services/Utils";
-import Analytics from "src/utils/google-analytics";
+import {useUtils} from "src/core/services/Utils";
+import Analytics from "src/core/utils/google-analytics";
 import {useGroupsStore} from "../stores/groupsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";

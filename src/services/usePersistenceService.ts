@@ -4,14 +4,14 @@ import {LocalStoragePersistenceService} from "src/services/storage/LocalStorageP
 import PersistenceService from "src/services/PersistenceService";
 import FsPersistentService from "src/services/persistence/FirestorePersistenceService";
 import SpacesPersistence from "src/spaces/persistence/SpacesPersistence";
-import IndexedDbSpacesStorage from "src/spaces/persistence/IndexedDbSpacesStorage";
+import IndexedDbSpacesStorage from "src/spaces/persistence/IndexedDbSpacesPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabsetsPersistence";
 import FirestoreSpacesPersistence from "src/spaces/persistence/FirestoreSpacesPersistence";
 import FeaturesPersistence from "src/features/persistence/FeaturesPersistence";
-import IndexedDbFeaturesPersistence from "src/features/persistence/IndexedDbFeaturesPersistence";
 import {LocalStorageFeaturesPersistence} from "src/features/persistence/LocalStorageFeaturesPersistence";
+import FirestoreFeaturesPersistence from "src/features/persistence/FirestoreFeaturesPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
@@ -23,7 +23,7 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   const tabsetsIndexedDb: TabsetsPersistence = IndexedDbTabsetsPersistence
   const tabsetsFirestoreDb: TabsetsPersistence = FirestoreTabsetsPersistence
 
-  const featuresIndexedDb: FeaturesPersistence = IndexedDbFeaturesPersistence
+  const featuresFirestoreDb: FeaturesPersistence = FirestoreFeaturesPersistence
 
   let localDb = undefined as unknown as PersistenceService
   let featuresLocalStorage: FeaturesPersistence = undefined as unknown as FeaturesPersistence
@@ -36,7 +36,7 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   return {
     db, localDb, firestore, spacesIndexedDb, spacesFirestoreDb,
     tabsetsIndexedDb, tabsetsFirestoreDb,
-    featuresIndexedDb,featuresLocalStorage
+    featuresFirestoreDb, featuresLocalStorage
   }
 
 }

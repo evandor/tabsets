@@ -38,7 +38,7 @@
 
 import BookmarksPage from "src/bookmarks/pages/BookmarksPage.vue";
 import {onMounted, ref} from "vue";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import AddBookmarkFolderDialog from "src/bookmarks/dialogues/AddBookmarkFolderDialog.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useQuasar} from "quasar";

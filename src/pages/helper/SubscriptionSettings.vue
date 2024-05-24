@@ -84,7 +84,7 @@ import {LocalStorage, openURL} from "quasar";
 import {SUBSCRIPTION_ID_IDENT} from "boot/constants";
 import {getAuth, onAuthStateChanged} from "firebase/auth";
 import {signInWithPopup, UserCredential} from "firebase/auth";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {collection, setDoc, doc, getDocs} from "firebase/firestore";
 import userHasClaim from "src/services/stripe/isUserPremium";
 import {createCheckoutSession} from "src/services/stripe/createCheckoutSession";

@@ -105,17 +105,17 @@
 
 <script setup lang="ts">
 import {Tab} from "src/tabsets/models/Tab";
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {PropType, ref, watchEffect} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {uid, useQuasar} from "quasar";
 import _ from "lodash"
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
-import {useTabsetService} from "src/services/TabsetService2";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
-import {useUtils} from "src/services/Utils"
+import {useUtils} from "src/core/services/Utils"
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";

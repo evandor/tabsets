@@ -86,8 +86,8 @@ import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import BookmarksService from "src/bookmarks/services/BookmarksService";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useNotificationHandler} from "src/services/ErrorHandler";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useSettingsStore} from "src/stores/settingsStore"
 import NavigationService from "src/services/NavigationService";
@@ -95,7 +95,7 @@ import {FeatureIdent} from "src/models/FeatureIdent";
 import NewTabsetDialog from "components/dialogues/NewTabsetDialog.vue";
 import DeleteBookmarkFolderDialog from "src/bookmarks/dialogues/bookmarks/DeleteBookmarkFolderDialog.vue";
 import {TreeNode} from "src/models/Tree";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useUiStore} from "stores/uiStore";
 
 const router = useRouter()

@@ -50,7 +50,7 @@ import {useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 defineEmits([

@@ -33,13 +33,13 @@
 
 <script lang="ts" setup>
 
-import TabsetService from "src/services/TabsetService";
+import TabsetService from "src/tabsets/services/TabsetService";
 import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ImportTabsetsCommand} from "src/tabsets/commands/ImportTabsets";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 
 defineEmits([
   // REQUIRED; need to specify some events that your

@@ -1,6 +1,6 @@
-import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
-import TabsetService from "src/services/TabsetService";
+import Command from "src/core/domain/Command";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import TabsetService from "src/tabsets/services/TabsetService";
 
 
 export class ToggleSortingCommand implements Command<string> {

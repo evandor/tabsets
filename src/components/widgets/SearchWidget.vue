@@ -81,7 +81,7 @@
 
 <script lang="ts" setup>
 import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import {Hit} from "src/models/Hit";
 import {useRoute, useRouter} from "vue-router";
 import NavigationService from "src/services/NavigationService";
@@ -89,7 +89,7 @@ import {SearchIndexQuery} from "src/domain/queries/SearchIndexQuery";
 import {useQueryExecutor} from "src/services/QueryExecutor";
 import {useUiStore} from "src/stores/uiStore";
 import JsUtils from "src/utils/JsUtils";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

@@ -4,7 +4,7 @@ import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import ChromeApi from "src/services/ChromeApi";
 import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
@@ -28,7 +28,7 @@ describe('SuggestionsStore', () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
     db = useDB(undefined).db
-    await useTabsetService().init(db)
+    //await useTabsetService().init(db)
 
     const window100 = ChromeApi.createChromeWindowObject(100, 17, 28)
     const currentWindows = [

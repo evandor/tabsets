@@ -18,7 +18,7 @@
 <script lang="ts" setup>
 
 import {onMounted, ref, watchEffect} from "vue";
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 
 const props = defineProps({
   searchTerm: {type: String, default: ''},

@@ -6,14 +6,14 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import tabsetService from "src/services/TabsetService";
-import {useTabsetService} from "src/services/TabsetService2";
+import tabsetService from "src/tabsets/services/TabsetService";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import ChromeApi from "src/services/ChromeApi";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {useSearchStore} from "stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
@@ -46,6 +46,10 @@ function dbStoreToUse(st: SyncType) {
   return useDB(undefined).db
 }
 
+function useFirestore(syncType: SyncType) {
+  return !(!useAuthStore().isAuthenticated() || syncType !== SyncType.FIRESTORE);
+}
+
 class AppService {
 
   router: Router = null as unknown as Router
@@ -73,7 +77,6 @@ class AppService {
     const messagesStore = useMessagesStore()
     const searchStore = useSearchStore()
     const uiStore = useUiStore()
-    const tabsetsStore = useTabsetsStore()
 
     this.router = router
 
@@ -84,7 +87,7 @@ class AppService {
     // init of stores and some listeners
     await usePermissionsStore().initialize(useDB(quasar).localDb)
 
-    await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
+
 
     await ChromeListeners.initListeners()
 
@@ -104,6 +107,8 @@ class AppService {
     await useAuthStore().setUser(user)
     //useAuthStore().upsertAccount(account)
 
+
+
     await useNotificationsStore().initialize(useDB(undefined).db)
     await useSuggestionsStore().init()
     await messagesStore.initialize(useDB(undefined).db)
@@ -116,6 +121,9 @@ class AppService {
       // const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
 
       let persistenceStore = dbStoreToUse(syncType)
+
+      // await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
+
 
       if (router.currentRoute.value.query.token === "failed") {
         console.log("failed login, falling back to indexedDB")
@@ -155,10 +163,21 @@ class AppService {
 
   private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router, syncType: SyncType) {
     const spacesStore = useSpacesStore()
-    const windowsStore = useWindowsStore()
     const groupsStore = useGroupsStore()
     const tabsetsStore = useTabsetsStore()
 
+    /**
+     * features store: passing storage for better testing.
+     * make sure features are not used before this line in code.
+     */
+    const featuresStorage = useFirestore(syncType) ? useDB().featuresFirestoreDb : useDB(quasar).featuresLocalStorage
+    await useFeaturesStore().initialize(featuresStorage)
+
+    /**
+     * windows store
+     */
+    await useWindowsStore().initialize()
+    useWindowsStore().initListeners()
 
     await spacesStore.initialize(syncType, useAuthStore().isAuthenticated())
 
@@ -181,9 +200,6 @@ class AppService {
       await groupsStore.initialize(useDB(undefined).db)
       groupsStore.initListeners()
     }
-
-    await windowsStore.initialize()
-    windowsStore.initListeners()
 
     useUiStore().appLoading = undefined
 

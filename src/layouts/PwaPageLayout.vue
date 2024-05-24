@@ -55,7 +55,7 @@ import {useMeta, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
-import {useSearchStore} from "src/stores/searchStore";
+import {useSearchStore} from "src/search/stores/searchStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/spaces/stores/spacesStore"
 import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
@@ -65,7 +65,7 @@ import {DrawerTabs, UserLevel, useUiStore} from "src/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import ExportDialog from "components/dialogues/ExportDialog.vue";
 import ImportDialog from "components/dialogues/ImportDialog.vue";

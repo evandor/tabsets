@@ -57,7 +57,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import TabList from "components/layouts/TabList.vue";
 import {useSettingsStore} from "src/stores/settingsStore"
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 

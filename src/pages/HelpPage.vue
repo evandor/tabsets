@@ -21,7 +21,7 @@
 
 import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import Analytics from "src/utils/google-analytics";
+import Analytics from "src/core/utils/google-analytics";
 
 const route = useRoute()
 const router = useRouter()

@@ -1,4 +1,5 @@
 export enum FeatureIdent {
+  DEV_MODE="DEV_MODE",
   //BOOKMARKS = "BOOKMARKS", -- active by default now
   //PAGE_MARKER = "PAGE_MARKER",
   // SAVE_TAB = "SAVE_TAB", // As MHTML
@@ -52,5 +53,6 @@ export enum FeatureType {
   OPTIONAL = "OPTIONAL",
   EXPERIMENTAL = "EXPERIMENTAL",
   PLANNED = "PLANNED",
-  DISABLED = "DISABLED"
+  DISABLED = "DISABLED",
+  INTERNAL = "INTERNAL"
 }

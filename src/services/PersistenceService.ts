@@ -1,7 +1,5 @@
 import {Tabset} from "src/tabsets/models/Tabset";
-import {Tab} from "src/tabsets/models/Tab";
 import {Notification} from "src/models/Notification";
-import {SearchDoc} from "src/models/SearchDoc";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";

@@ -1,12 +1,12 @@
-import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import Command from "src/core/domain/Command";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/suggestions/models/Suggestion";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 

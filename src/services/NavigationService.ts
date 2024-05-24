@@ -1,20 +1,14 @@
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {openURL, uid} from "quasar";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import JsUtils from "src/utils/JsUtils";
 import {useGroupsStore} from "stores/groupsStore";
-import {usePermissionsStore} from "stores/permissionsStore";
-import {Suggestion, SuggestionType} from "src/suggestions/models/Suggestion";
-import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {ExecutionResult} from "src/domain/ExecutionResult";
-import {useNotificationHandler} from "src/services/ErrorHandler";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-
-const {handleSuccess} = useNotificationHandler()
 
 class NavigationService {
 
@@ -101,6 +95,7 @@ class NavigationService {
                   found = true
                   console.debug("found something", r)
                   if (r.active) {
+                    const {handleSuccess} = useNotificationHandler()
                     handleSuccess(new ExecutionResult("", "already opened..."))
                   }
                   chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
@@ -127,26 +122,26 @@ class NavigationService {
             }, (tab: chrome.tabs.Tab) => {
               chrome.windows.update(useWindowId, {focused: true})
 
-              if (!useFeaturesStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-                setTimeout(() => {
-                  // check potential redirect
-                  chrome.tabs.get(tab.id || 0, (potentiallyChangedTab: chrome.tabs.Tab) => {
-                    if (tab.url !== potentiallyChangedTab.url && tab.url?.trim() !== "" && potentiallyChangedTab.url?.trim() !== "") {
-                      console.log("tab's URL change during one second, assuming 30x redirect, creating suggestion", tab, potentiallyChangedTab)
-                      const suggestionId = uid()
-                      const suggestion = new Suggestion(suggestionId,
-                        "Tab's URL changed", "Seems like the tab's URL has changed according to the server. " +
-                        "Should the URL be updated?",
-                        "/suggestions/" + suggestionId,
-                        SuggestionType.REDIRECT_HAPPENED_FOR_TAB)
-                      suggestion.setData({url, location: potentiallyChangedTab.url})
-                      useSuggestionsStore().addSuggestion(suggestion).catch((err) => {
-                        console.log("got error", err)
-                      })
-                    }
-                  })
-                }, 1000)
-              }
+              // if (!useFeaturesStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+              //   setTimeout(() => {
+              //     // check potential redirect
+              //     chrome.tabs.get(tab.id || 0, (potentiallyChangedTab: chrome.tabs.Tab) => {
+              //       if (tab.url !== potentiallyChangedTab.url && tab.url?.trim() !== "" && potentiallyChangedTab.url?.trim() !== "") {
+              //         console.log("tab's URL change during one second, assuming 30x redirect, creating suggestion", tab, potentiallyChangedTab)
+              //         const suggestionId = uid()
+              //         const suggestion = new Suggestion(suggestionId,
+              //           "Tab's URL changed", "Seems like the tab's URL has changed according to the server. " +
+              //           "Should the URL be updated?",
+              //           "/suggestions/" + suggestionId,
+              //           SuggestionType.REDIRECT_HAPPENED_FOR_TAB)
+              //         suggestion.setData({url, location: potentiallyChangedTab.url})
+              //         useSuggestionsStore().addSuggestion(suggestion).catch((err) => {
+              //           console.log("got error", err)
+              //         })
+              //       }
+              //     })
+              //   }, 1000)
+              // }
 
               if (groups.length > i) {
                 ctx.handleGroup(groups[i], useWindowId, tab);
@@ -226,11 +221,6 @@ class NavigationService {
     } catch (err) {
       console.log("error clsosing chrome tab", err)
     }
-  }
-
-  updateAvailable(details: any) {
-    console.log("details: UpdateAvailableDetails", details)
-    useNotificationsStore().updateAvailable(true, details.version)
   }
 
   backOneTab() {

@@ -41,7 +41,7 @@
                  @update:model-value="val => updatePlaceholder(placeholder, val)"/>
       </q-card-section>
 
-      <template v-if="useSettingsStore().isEnabled('dev')">
+      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <q-card-section>
           <q-select
             label="Treat tab as"
@@ -74,8 +74,8 @@ import {computed, PropType, ref, watchEffect} from "vue";
 import {useDialogPluginComponent} from 'quasar'
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
-import {useNotificationHandler} from "src/services/ErrorHandler";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";

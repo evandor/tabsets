@@ -75,7 +75,7 @@
 <script lang="ts" setup>
 
 import {useSettingsStore} from "src/stores/settingsStore";
-import TabsetService from "src/services/TabsetService"
+import TabsetService from "src/tabsets/services/TabsetService"
 import {ref, watch, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
@@ -86,7 +86,7 @@ import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import BackupAndCloseDialog from "components/dialogues/BackupAndCloseDialog.vue";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";

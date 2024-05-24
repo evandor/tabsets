@@ -77,7 +77,7 @@
 
 import {PropType, ref, watchEffect} from "vue";
 import {QForm, useDialogPluginComponent} from "quasar";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {MonitoringType} from "src/models/Monitor";
 import {UpdateMonitoringCommand} from "src/domain/monitoring/UpdateMonitoringCommand";
 import {Tab} from "src/tabsets/models/Tab";
@@ -85,7 +85,7 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import DialogButton from "components/buttons/DialogButton.vue";
 import {SavePngCommand} from "src/domain/tabs/SavePng";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {NoOpCommand} from "src/domain/commands/NoOpCommand";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";

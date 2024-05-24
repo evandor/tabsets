@@ -115,7 +115,7 @@
 <script lang="ts" setup>
 
 import {PropType, ref} from "vue";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {Notify, useQuasar} from "quasar";
 import {Tab} from "src/tabsets/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
@@ -135,8 +135,8 @@ import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {api} from "boot/axios";
 import _ from "lodash"
 import {useAuthStore} from "stores/authStore";
-import {NotificationType, useNotificationHandler} from "src/services/ErrorHandler";
-import {ExecutionResult} from "src/domain/ExecutionResult";
+import {NotificationType, useNotificationHandler} from "src/core/services/ErrorHandler";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 
@@ -231,7 +231,7 @@ const showTabDetails = async (tab: Tab) => {
 }
 
 const showTabDetailsMenuEntry = (tab: Tab) =>
-  useSettingsStore().isEnabled('dev')
+  useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)
 //&& !(tab.placeholders?.type === PlaceholdersType.URL_SUBSTITUTION)
 
 const deleteTabLabel = (tab: Tab) =>
