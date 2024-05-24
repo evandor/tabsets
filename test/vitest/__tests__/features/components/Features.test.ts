@@ -33,7 +33,7 @@ describe('Features', () => {
     expect(firstFeature).toContain("text-green");
 
     const secondFeature = wrapper.find('div.q-list > div:nth-child(2)').html()
-    expect(secondFeature).toContain("Open Tabs");
+    expect(secondFeature).toContain("Windows Management");
     expect(secondFeature).toContain("text-grey");
   });
 
