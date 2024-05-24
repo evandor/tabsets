@@ -90,7 +90,7 @@
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
         </q-btn>
 
-        <q-btn
+        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)"
           icon="o_grid_view"
           data-testid="buttonManageWindows"
           :class="rightButtonClass()"
@@ -192,7 +192,6 @@ import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import NavigationService from "src/services/NavigationService";
 import {openURL, uid, useQuasar} from "quasar";
@@ -549,7 +548,6 @@ const saveAsTabset = (windowId: number, name: string) => {
   })
 }
 const additionalActionWasClicked = (event: any) => {
-  console.log("§hier", event)
   if (event.action === 'saveTabset') {
     saveAsTabset(event.window.id, event.window.name)
   }
