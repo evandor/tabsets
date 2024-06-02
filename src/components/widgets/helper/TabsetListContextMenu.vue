@@ -173,7 +173,7 @@ import {openURL, useQuasar} from "quasar";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {ShareTabsetCommand} from "src/tabsets/commands/ShareTabsetCommand"
 import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
-import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import {CopyToClipboardCommand} from "src/core/domain/commands/CopyToClipboard";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
