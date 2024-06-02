@@ -177,7 +177,7 @@ import {PropType} from "vue";
 import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tab} from "src/tabsets/models/Tab";
-import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import {CopyToClipboardCommand} from "src/core/domain/commands/CopyToClipboard";
 import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
 import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
 import NewWindowDialog from "src/windows/dialogues/NewWindowDialog.vue";
