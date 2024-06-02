@@ -40,21 +40,12 @@ import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
-import {useMessagesStore} from "stores/messagesStore";
 import {Message} from "src/models/Message";
 
 const messages = ref<Message[]>([])
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelMessagesPage', document.location.href);
-})
-
-watchEffect(() => {
-  useMessagesStore().getMessages()
-    .then(r => {
-      console.log("setting to ", r)
-      messages.value = r
-    })
 })
 
 </script>

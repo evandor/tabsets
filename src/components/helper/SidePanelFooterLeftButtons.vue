@@ -104,7 +104,6 @@ import {usePermissionsStore} from "stores/permissionsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
 import {SuggestionState} from "src/suggestions/models/Suggestion";
-import {useMessagesStore} from "stores/messagesStore";
 import SidePanelFooterViewMenuItem from "components/helper/SidePanelFooterViewMenuItem.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "../../tabsets/stores/tabsStore2";
@@ -125,10 +124,6 @@ const animateBookmarksButton = ref(false)
 
 watchEffect(() => {
   buttonSize.value = useUiStore().getButtonSize('sidePanelFooter')
-})
-
-watchEffect(() => {
-  useMessagesStore().getMessages().then((msgs) => unreadMessagesCount.value = msgs.length)
 })
 
 watchEffect(() => {
