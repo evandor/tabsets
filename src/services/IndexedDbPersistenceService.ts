@@ -45,6 +45,7 @@ class IndexedDbPersistenceService implements PersistenceService {
     console.log(" loading tabsets indexeddb")
     return await this.db.getAll('tabsets')
       .then((res: any) => res.forEach((r: Tabset) => {
+        console.log("got res", res)
         // make sure some fields are correctly initialized even for old(er) tabsets
         if (!r.columns) {
           r.columns = []
