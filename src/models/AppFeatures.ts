@@ -163,7 +163,7 @@ export class AppFeatures {
       'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
       'o_folder', '', ['all']),
 
-    new Feature(FeatureIdent.TABSETS_SHARING, FeatureType.OPTIONAL,
+    new Feature(FeatureIdent.TABSETS_SHARING, FeatureType.EXPERIMENTAL,
       'Sharing Tabsets',
       'Share tabsets publicly.',
       'o_ios_share', '', ['all'], [], true),
