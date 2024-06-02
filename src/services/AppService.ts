@@ -17,7 +17,6 @@ import {useSearchStore} from "src/search/stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {useMessagesStore} from "src/stores/messagesStore";
 import {SyncType, useAppStore} from "stores/appStore";
 import {useAuthStore} from "stores/authStore";
 import PersistenceService from "src/services/PersistenceService";
@@ -74,7 +73,6 @@ class AppService {
     const appStore = useAppStore()
     const settingsStore = useSettingsStore()
     const bookmarksStore = useBookmarksStore()
-    const messagesStore = useMessagesStore()
     const searchStore = useSearchStore()
     const uiStore = useUiStore()
 
@@ -111,7 +109,6 @@ class AppService {
 
     await useNotificationsStore().initialize(useDB(undefined).db)
     await useSuggestionsStore().init()
-    await messagesStore.initialize(useDB(undefined).db)
 
     tabsetService.setLocalStorage(localStorage)
 
@@ -179,7 +176,9 @@ class AppService {
     await useWindowsStore().initialize()
     useWindowsStore().initListeners()
 
-    await spacesStore.initialize(syncType, useAuthStore().isAuthenticated())
+    const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
+      useDB().spacesFirestoreDb : useDB().spacesIndexedDb
+    await spacesStore.initialize(spacesPersistence)
 
     const tabsetsPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
       useDB().tabsetsFirestoreDb : useDB().tabsetsIndexedDb

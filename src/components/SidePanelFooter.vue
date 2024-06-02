@@ -202,7 +202,7 @@ import _ from "lodash";
 import {SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
-import {ToastType} from "src/models/Toast";
+import {ToastType} from "src/core/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
