@@ -242,7 +242,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {Tab} from "src/tabsets/models/Tab";
 import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
 import {openURL, scroll, uid, useQuasar} from "quasar";
-import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import {CopyToClipboardCommand} from "src/core/domain/commands/CopyToClipboard";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
 import {useUtils} from "src/core/services/Utils";
 import getScrollTarget = scroll.getScrollTarget;

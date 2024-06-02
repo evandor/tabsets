@@ -145,7 +145,7 @@ import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {date, LocalStorage, useQuasar} from "quasar";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
-import {CopyToClipboardCommand} from "src/domain/commands/CopyToClipboard";
+import {CopyToClipboardCommand} from "src/core/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import ShortUrl from "components/utils/ShortUrl.vue";
 import {useRouter} from "vue-router";
