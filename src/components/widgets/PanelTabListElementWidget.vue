@@ -385,10 +385,6 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import PdfService from "src/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
-// @ts-ignore
-import rangy from "rangy/lib/rangy-core.js";
-import "rangy/lib/rangy-serializer";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";

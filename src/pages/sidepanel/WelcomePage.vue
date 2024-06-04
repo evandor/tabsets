@@ -151,7 +151,6 @@ watchEffect(async () => {
 
 function setFeature(featureIdent: FeatureIdent, val: UnwrapRef<boolean>) {
   const feature = new AppFeatures().getFeature(featureIdent)
-  console.log("feeature", feature)
   if (val && feature) {
     console.log("activating", featureIdent)
     useFeaturesStore().activateFeature(featureIdent.toLowerCase())
