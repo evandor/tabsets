@@ -21,7 +21,7 @@ jobs:
         run: |
           touch .env
           echo STAGE=PRD >> .env
-          echo FIREBASE_ACTIVE=true >> .env
+          echo FIREBASE_ACTIVE=false >> .env
           echo BACKEND_URL="https://tabsets-72089.web.app" >> .env
           echo TABSETS_PWA_URL="https://pwa.tabsets.net" >> .env
           echo FIREBASE_API_KEY="${{ secrets.FIREBASE_API_KEY }}" >> .env

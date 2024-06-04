@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 
-import {LocalStorage, setCssVar, useQuasar} from "quasar";
+import {setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
 import {EventEmitter} from "events";
 import {onAuthStateChanged} from "firebase/auth";
-import {APP_INSTALLATION_ID, CURRENT_USER_ID} from "boot/constants";
+import {CURRENT_USER_ID} from "boot/constants";
 import {useRouter} from "vue-router";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
@@ -26,42 +26,12 @@ const {info} = useLogger()
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
+// TODO remove next version
 if (process.env.USE_FIREBASE == "true") {
   FirebaseServices.init()
 }
 
-if (inBexMode()) {
-
-  // $q.bex.on('fcm.token.received', ({data, respond}) => {
-  //   console.log('Token received from service worker:', data)
-  //   LocalStorage.set('app.fcmToken', data.token)
-  //   FirestorePersistenceService.updateUserToken(data.token)
-  //   respond('thx')
-  // })
-
-  // $q.bex.on('fb.message.received', async ({data, respond}) => {
-  //   const localInstallationId = LocalStorage.getItem(APP_INSTALLATION_ID) || "";
-  //   console.debug('Message received from service worker:', data, localInstallationId)
-  //
-  //   if (data.msg) {
-  //     switch (data.msg) {
-  //       case "event.tabset.updated":
-  //         if (localInstallationId !== data.origin) {
-  //           console.log("reloading tabsets due to remote event", localInstallationId, data)
-  //           //await FirestorePersistenceService.loadSpaces()
-  //           await FirestorePersistenceService.loadTabsets()
-  //         }
-  //         break
-  //       default:
-  //         console.log("unrecognized payload with msg " + data.msg)
-  //     }
-  //   } else {
-  //     console.log("unrecognized payload without msg field")
-  //   }
-  //   respond('thx')
-  // })
-}
-
+// TODO remove next version
 if (process.env.USE_FIREBASE == "true") {
   const auth = FirebaseServices.getAuth()
   onAuthStateChanged(auth, async (user) => {
