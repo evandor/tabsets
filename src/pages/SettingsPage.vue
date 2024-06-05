@@ -20,12 +20,12 @@
             v-model="tab"
             no-caps>
       <q-tab name="appearance" label="Appearance"/>
-      <q-tab name="account" label="Account"/>
-      <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
-      <q-tab name="sharing" label="Sharing"
-             :class="useAuthStore().userMayAccess(AccessItem.SHARE) ? 'text-primary':'text-grey'"/>
-      <q-tab name="syncing" label="Syncing"
-             :class="useAuthStore().userMayAccess(AccessItem.SYNC) ? 'text-primary':'text-grey'"/>
+<!--      <q-tab name="account" label="Account"/>-->
+<!--      <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>-->
+<!--      <q-tab name="sharing" label="Sharing"-->
+<!--             :class="useAuthStore().userMayAccess(AccessItem.SHARE) ? 'text-primary':'text-grey'"/>-->
+<!--      <q-tab name="syncing" label="Syncing"-->
+<!--             :class="useAuthStore().userMayAccess(AccessItem.SYNC) ? 'text-primary':'text-grey'"/>-->
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"
