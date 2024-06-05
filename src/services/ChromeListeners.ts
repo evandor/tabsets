@@ -14,7 +14,6 @@ import {useUtils} from "src/core/services/Utils";
 import {useGroupsStore} from "stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/utils/ContentUtils";
-import "rangy/lib/rangy-serializer";
 import {useAuthStore} from "stores/authStore";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {SidePanelView, useUiStore} from "stores/uiStore";
@@ -56,12 +55,12 @@ function annotationScript(tabId: string, annotations: any[]) {
   l.setAttribute("rel", "stylesheet")
   document.head.appendChild(l)
 
-  var s = document.createElement('script');
-  //s.type = "module"
-  s.src = chrome.runtime.getURL('www/js/rangy/rangy.js');
-  s.setAttribute("type", 'text/javascript');
-  //s.src = "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-core.min.js";
-  document.body.appendChild(s);
+  // var s = document.createElement('script');
+  // //s.type = "module"
+  // s.src = chrome.runtime.getURL('www/js/rangy/rangy.js');
+  // s.setAttribute("type", 'text/javascript');
+  // //s.src = "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-core.min.js";
+  // document.body.appendChild(s);
 
   // var s3 = document.createElement('script');
   // s3.dataset.id = 'tabsets-rangy-annotation-data';

@@ -3004,11 +3004,6 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.7.tgz#50ae4353eaaddc04044279812f52c8c65857dbcb"
   integrity sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==
 
-"@types/rangy@^0.0.38":
-  version "0.0.38"
-  resolved "https://registry.yarnpkg.com/@types/rangy/-/rangy-0.0.38.tgz#f1f50af2a74a94ebef36298b0fe1c85b23643097"
-  integrity sha512-KMybA3NQLSc5Fl5VOyLVSZ10AMSY6anQqLxP8dxgNsui3dScPIB7smywq69gwJkud2ODVTIImMNN3RtHcFKYgA==
-
 "@types/resolve@1.20.2":
   version "1.20.2"
   resolved "https://registry.yarnpkg.com/@types/resolve/-/resolve-1.20.2.tgz#97d26e00cd4a0423b4af620abecf3e6f442b7975"
@@ -9280,11 +9275,6 @@ range-parser@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.1.tgz#3cf37023d199e1c24d1a55b84800c2f3e6468031"
   integrity sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==
-
-rangy@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/rangy/-/rangy-1.3.1.tgz#fa117e136e618ed82d91bcf938c7ceeb936aad1d"
-  integrity sha512-gfo1FOzdvcrcCR+wf0XMKPJBD3p2nHUw2wvNtuKsaHoI2dXQ9vH2QIpSQMV+mWLvKSqPfDNThhlyK8UN1hJijw==
 
 raw-body@2.5.2:
   version "2.5.2"
