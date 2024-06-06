@@ -1,13 +1,9 @@
 import {defineStore} from 'pinia';
-import {Subscription} from "src/models/Subscription";
-import {getAuth, signOut, User} from "firebase/auth";
 import {LocalStorage, useQuasar} from "quasar";
 import PersistenceService from "src/services/PersistenceService";
 import {computed, ref} from "vue";
 import {Account, UserData} from "src/models/Account";
 import {CURRENT_USER_ID} from "boot/constants";
-import {collection, doc, getDoc, getDocs} from "firebase/firestore";
-import FirebaseServices from "src/services/firebase/FirebaseServices";
 
 export enum AccessItem {
   SYNC = "SYNC",
@@ -20,7 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
   let storage = null as unknown as PersistenceService
 
   const authenticated = ref(false)
-  const user = ref<User>(null as unknown as User)
+  const user = ref<any>(null)
   const authRequest = ref<string>(null as unknown as string)
   const account = ref<Account | undefined>(undefined)
 
@@ -103,35 +99,8 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   // --- actions ---
-  async function setUser(u: User | undefined) {
-    console.log("setting user id to ", u?.uid)
-    if (u) {
-      LocalStorage.set(CURRENT_USER_ID, u.uid)
-      authenticated.value = true;
-      user.value = u;
-
-      const userDoc = await getDoc(doc(FirebaseServices.getFirestore(), "users", u.uid))
-      const userData = userDoc.data() as UserData
-      const account = new Account(u.uid, userData)
-      console.debug("created account object", account)
-      const querySnapshot = await getDocs(collection(FirebaseServices.getFirestore(), "users", u.uid, "subscriptions"))
-      const products = new Set<string>()
-      querySnapshot.forEach((doc) => {
-        const subscriptionData = doc.data()
-        if (subscriptionData.data && subscriptionData.data.metadata) {
-          products.add(subscriptionData.data.metadata.product)
-        }
-        account.setProducts(Array.from(products))
-        //console.log("hier", account, products)
-      })
-      useAuthStore().upsertAccount(account)
-
-    } else {
-      LocalStorage.remove(CURRENT_USER_ID)
-      authenticated.value = false;
-      user.value = null as unknown as User;
-      products.value = []
-    }
+  async function setUser(u: any | undefined) {
+    console.log("noop: setting user id to ", u?.uid)
   }
 
   function setAuthRequest(ar: string) {
@@ -140,15 +109,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout(): Promise<any> {
-    console.log("logging out user")
-    return signOut(getAuth())
-      .then(() => {
-        authenticated.value = false
-        user.value = null as unknown as User
-        LocalStorage.remove(CURRENT_USER_ID)
-        //console.log("logout", (process.env.MODE === 'bex') ? window.location.origin + "/www/index.html" : window.location.origin)
-        return Promise.resolve("")
-      })
+    return Promise.resolve("noop: logging out user")
   }
 
   function upsertAccount(acc: Account | undefined) {

@@ -18,11 +18,9 @@ import {Router} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {SyncType, useAppStore} from "stores/appStore";
-import {useAuthStore} from "stores/authStore";
 import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "stores/uiStore";
 import {User} from "firebase/auth";
-import FsPersistenceService from "src/services/persistence/FirestorePersistenceService";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
 import {useContentService} from "src/content/services/ContentService";
@@ -31,23 +29,6 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 
-function dbStoreToUse(st: SyncType) {
-  const isAuthenticated = useAuthStore().isAuthenticated()
-  if (!isAuthenticated) {
-    console.debug("%not authenticated", "font-weight:bold")
-    return useDB(undefined).db
-  }
-  if (st === SyncType.FIRESTORE) {
-    console.debug("%csyncType " + st, "font-weight:bold")
-    return useDB(undefined).firestore
-  }
-  console.debug("%cfallback, syncType " + st, "font-weight:bold")
-  return useDB(undefined).db
-}
-
-function useFirestore(syncType: SyncType) {
-  return !(!useAuthStore().isAuthenticated() || syncType !== SyncType.FIRESTORE);
-}
 
 class AppService {
 
@@ -86,7 +67,6 @@ class AppService {
     await usePermissionsStore().initialize(useDB(quasar).localDb)
 
 
-
     await ChromeListeners.initListeners()
 
     ChromeBookmarkListeners.initListeners()
@@ -101,10 +81,6 @@ class AppService {
     await IndexedDbPersistenceService.init("db")
 
     // init services
-    await useAuthStore().initialize(useDB(undefined).db)
-    await useAuthStore().setUser(user)
-    //useAuthStore().upsertAccount(account)
-
 
 
     await useNotificationsStore().initialize(useDB(undefined).db)
@@ -112,28 +88,7 @@ class AppService {
 
     tabsetService.setLocalStorage(localStorage)
 
-    if (useAuthStore().isAuthenticated()) {
-      // sync features
-      const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
-      // const syncUrl = useAuthStore().getAccount()?.userData?.sync?.url
-
-      let persistenceStore = dbStoreToUse(syncType)
-
-      // await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
-
-
-      if (router.currentRoute.value.query.token === "failed") {
-        console.log("failed login, falling back to indexedDB")
-      }
-
-      console.debug(`%cchecking sync config: type=${syncType}, persistenceStore=${persistenceStore.getServiceName()}`, "font-weight:bold")
-
-      await FsPersistenceService.init()
-
-      await this.initCoreSerivces(quasar, persistenceStore, this.router, syncType)
-    } else {
-      await this.initCoreSerivces(quasar, useDB().db, this.router, SyncType.NONE)
-    }
+    await this.initCoreSerivces(quasar, useDB().db, this.router, SyncType.NONE)
 
     useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
 
@@ -155,7 +110,6 @@ class AppService {
         tsIframe.location.reload()
       }
     }
-    useAuthStore().setAuthRequest(null as unknown as string)
   }
 
   private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router, syncType: SyncType) {
@@ -167,8 +121,7 @@ class AppService {
      * features store: passing storage for better testing.
      * make sure features are not used before this line in code.
      */
-    const featuresStorage = useFirestore(syncType) ? useDB().featuresFirestoreDb : useDB(quasar).featuresLocalStorage
-    await useFeaturesStore().initialize(featuresStorage)
+    await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
 
     /**
      * windows store
@@ -188,7 +141,7 @@ class AppService {
     await useTabsStore2().initialize()
 
     const thumbnailsPersistence = IndexedDbThumbnailsPersistence
-      //store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
+    //store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
     await useThumbnailsService().init(thumbnailsPersistence)
 
     await useContentService().init(IndexedDbContentPersistence)
@@ -208,7 +161,6 @@ class AppService {
     // console.log("checking for welcome page", useTabsetsStore().tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated())
     if (useTabsetsStore().tabsets.size === 0 &&
       quasar.platform.is.bex &&
-      !useAuthStore().isAuthenticated() &&
       !router.currentRoute.value.path.startsWith("/fullpage") &&
       !router.currentRoute.value.path.startsWith("/mainpanel")) {
       await router.push("/sidepanel/welcome")
