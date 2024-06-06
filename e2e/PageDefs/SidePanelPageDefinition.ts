@@ -24,6 +24,8 @@ export class SidePanelPageDefinition extends TabsetPageDefinition {
 
     async addToTabset() {
         //const btn = await this.page.waitForSelector('[data-testid=startAddingTabsBtn]')
-        await this.saveInTabsetBtn.click()
+        const btn = await this.page.waitForSelector('[data-testid=saveInTabsetBtn]')
+        // await this.saveInTabsetBtn.click()
+        await btn.click()
     }
 }
