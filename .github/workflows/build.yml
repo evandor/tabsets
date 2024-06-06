@@ -1,11 +1,11 @@
-name: 'coverage'
+name: 'build'
 on:
 #  pull_request:
 #    branches:
 #      - master
 #      - main
   push:
-    branches: [ main, chrome-extension,vitest,TAB-** ]
+    branches: [ main, chrome-extension ]
 jobs:
   coverage:
     runs-on: ubuntu-latest
