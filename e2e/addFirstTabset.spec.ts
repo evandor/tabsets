@@ -19,7 +19,7 @@ test('popup page', async ({ page, extensionId }) => {
 
   const saveInTabsetBtn = page.locator('[data-testid=saveInTabsetBtn]')
 
-  await page.screenshot({ path: 'saveInTabsetBtn.png', fullPage: true });
+  // await page.screenshot({ path: 'saveInTabsetBtn.png', fullPage: true });
 
   await saveInTabsetBtn.click()
 
