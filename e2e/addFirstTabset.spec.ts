@@ -15,9 +15,13 @@ test('popup page', async ({ page, extensionId }) => {
   await addTabsetSubmitBtn.click()
 
   await page.goto(urlFor(extensionId, '/sidepanel'));
+  await page.waitForURL('**\/sidepanel')
 
- // const saveInTabsetBtn = page.locator('[data-testid=saveInTabsetBtn]')
- // await saveInTabsetBtn.click()
+  const saveInTabsetBtn = page.locator('[data-testid=saveInTabsetBtn]')
+
+  await page.screenshot({ path: 'saveInTabsetBtn.png', fullPage: true });
+
+  await saveInTabsetBtn.click()
 
   //await expect(page.locator('body')).toHaveText('my-extension popup');
 });
