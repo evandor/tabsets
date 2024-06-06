@@ -22,6 +22,6 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Run your tests
-        run: npx playwright test
+        run: xvfb-run npx playwright test
         env:
           HOME: /root
