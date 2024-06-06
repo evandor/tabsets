@@ -13,7 +13,7 @@ import { devices } from '@playwright/test';
 const config: PlaywrightTestConfig = {
   testDir: './e2e',
   /* Maximum time one test can run for. */
-  timeout: 30 * 1000,
+  timeout: 20 * 1000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -35,6 +35,7 @@ const config: PlaywrightTestConfig = {
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
+
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://localhost:3000',
 
@@ -49,7 +50,7 @@ const config: PlaywrightTestConfig = {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        viewport: { width: 960, height: 1200 }
+        viewport: { width: 800, height: 1200 }
       },
     },
 
@@ -59,12 +60,12 @@ const config: PlaywrightTestConfig = {
     //     ...devices['Desktop Firefox'],
     //   },
     // },
-    {
-      name: 'Microsoft Edge',
-      use: {
-        channel: 'msedge',
-      },
-    },
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: {
+    //     channel: 'msedge',
+    //   },
+    // },
     // {
     //   name: 'Google Chrome',
     //   use: {

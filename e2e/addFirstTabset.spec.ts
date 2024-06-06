@@ -1,77 +1,27 @@
-import {Browser, BrowserContext, chromium, expect, test as base} from "@playwright/test";
-import path from "path";
-// @ts-ignore
-import {SidePanelWelcomePageDefinition} from "app/e2e/PageDefs/SidePanelWelcomePageDefinition";
-// @ts-ignore
-import {SidePanelPageDefinition} from "app/e2e/PageDefs/SidePanelPageDefinition";
+import { test, expect } from './fixtures';
 
-export const test = base.extend<{
-  context: BrowserContext;
-  extensionId: string;
-}>({
-  context: async ({}, use) => {
-    const pathToExtension = path.join(__dirname, "../dist/bex");
+function urlFor(extensionId: string, path: string) {
+  return `chrome-extension://${extensionId}/www/index.html#${path}`
+}
 
-    const context = await chromium.launchPersistentContext("", {
-      headless: false,
-      args: [
-        `--disable-extensions-except=${pathToExtension}`,
-        `--load-extension=${pathToExtension}`,
-      ],
-    });
-    // @ts-ignore
-    await use(context);
-    setTimeout(() => {
-      context.close();
-    }, 3000);
+test('popup page', async ({ page, extensionId }) => {
+  await page.goto(urlFor(extensionId, '/sidepanel/welcome'));
+  //await page.goto("http://localhost:9000/#/sidepanel/welcome")
 
-  },
-  extensionId: async ({context}, use) => {
-    let [background] = context.serviceWorkers();
-    if (!background)
-      background = await context.waitForEvent("serviceworker");
-    const extensionId = background.url().split("/")[2];
-    await use(extensionId);
-  }
+  const newTabsetName = page.locator('[data-testid=newTabsetName]')
+  const addTabsetSubmitBtn = page.locator('[data-testid=addTabsetSubmitBtn]')
 
-});
+  await newTabsetName.fill("tabsetName")
+  await addTabsetSubmitBtn.click()
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+  await page.goto(urlFor(extensionId, '/sidepanel'));
+  await page.waitForURL('**\/sidepanel')
 
-test("add the first tabset", async ({page, extensionId, context}) => {
-  // test.use({ viewport: { width: 600, height: 900 } });
-  const welcomePage = new SidePanelWelcomePageDefinition(page, extensionId);
-  await welcomePage.goto()
-  const sidePanelPage: SidePanelPageDefinition = await welcomePage.submitNewTabsetDialog('first tabset')
-  const allPages = context.pages();
-  //console.log("allPages", allPages)
-  //allPages[allPages.length-1].close()
-  //await sidePanelPage.clickStartDialog()
-  // const tabsetsPage:TabsetTestPage = await aboutPage.submitAddUrlDialog('https://www.skysail.io')
-  //
-  // const skysailTabcardWidget = tabsetsPage.skysailTabcardWidget
-  //await expect(sidePanelPage).toContainText("https://www.skysail.io")
-  //await delay(10000)
+  const saveInTabsetBtn = page.locator('[data-testid=saveInTabsetBtn]')
 
-  await sidePanelPage.screenshot(page, 'addFirstTabset', 'finish.png')
+  await page.screenshot({ path: 'saveInTabsetBtn.png', fullPage: true });
 
-});
+  await saveInTabsetBtn.click()
 
-test("add tabset with tab", async ({page, extensionId, context}) => {
-  // test.use({ viewport: { width: 600, height: 900 } });
-  const welcomePage = new SidePanelWelcomePageDefinition(page, extensionId);
-  await welcomePage.goto()
-  const sidePanelPage: SidePanelPageDefinition = await welcomePage.submitNewTabsetDialog('first tabset')
-  const allPages = context.pages();
-  //console.log("allPages", allPages)
-  //allPages[allPages.length-1].close()
-  //await sidePanelPage.clickStartDialog()
-  // const tabsetsPage:TabsetTestPage = await aboutPage.submitAddUrlDialog('https://www.skysail.io')
-  //
-  // const skysailTabcardWidget = tabsetsPage.skysailTabcardWidget
-  //await expect(sidePanelPage).toContainText("https://www.skysail.io")
-  //await delay(10000)
-  await sidePanelPage.addToTabset()
-  await sidePanelPage.screenshot(page, 'addFirstTabsetWithTab', 'finish.png')
-
+  //await expect(page.locator('body')).toHaveText('my-extension popup');
 });
