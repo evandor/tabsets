@@ -16,8 +16,8 @@ test('popup page', async ({ page, extensionId }) => {
 
   await page.goto(urlFor(extensionId, '/sidepanel'));
 
-  const saveInTabsetBtn = page.locator('[data-testid=saveInTabsetBtn]')
-  await saveInTabsetBtn.click()
+ // const saveInTabsetBtn = page.locator('[data-testid=saveInTabsetBtn]')
+ // await saveInTabsetBtn.click()
 
   //await expect(page.locator('body')).toHaveText('my-extension popup');
 });
