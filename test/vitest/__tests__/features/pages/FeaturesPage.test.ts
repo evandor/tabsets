@@ -16,7 +16,7 @@ describe('FeaturesPage', () => {
   // @ts-ignore
   useRoute.mockReturnValue({
     params: {
-      feature: "top10"
+      feature: "bookmarks"
     },
   })
 
@@ -28,7 +28,7 @@ describe('FeaturesPage', () => {
   it('should be mounted', async () => {
     console.log("html", wrapper.html())
     expect(wrapper.text()).toContain("Recommended Feature");
-    expect(wrapper.text()).toContain("Activate a view to list all tabs");
+    expect(wrapper.text()).toContain("Activate a Bookmark Manager in the Side Panel");
   });
 
 
