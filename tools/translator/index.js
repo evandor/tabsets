@@ -1,4 +1,5 @@
 import translate from "translate";
+import * as fs from 'fs';
 
 translate.engine = "deepl";
 translate.key = process.env.DEEPL_KEY;
@@ -20,24 +21,74 @@ const englishIn = {
   "welcome_to_tabsets": "Welcome  to Tabsets"
 }
 
+const sourceRes = await fetch("https://raw.githubusercontent.com/evandor/tabsets/chrome-extension/src/i18n/en/en.json")
+const source = await sourceRes.json()
+console.log("source", source)
 
-const keys = Object.keys(englishIn)
+const deRes = await fetch("https://raw.githubusercontent.com/evandor/tabsets/chrome-extension/src/i18n/de/de.json")
+const de = await deRes.json()
 
-console.log("=== bg ===")
+const keys = Object.keys(source)
 
-console.log("{")
+console.log("=== de ===")
+let deTranslation = "{\n"
+const deKeys = Object.keys(de)
 for (const k of keys) {
-  const text = await translate(englishIn[k], "bg");
-  console.log(" \"" + k + "\": \""+text+"\",");
+  if (deKeys.indexOf(k) >= 0) {
+    // console.log("  \"" + k + "\": \"" + de[k] + "\",");
+    deTranslation += "  \"" + k + "\": \"" + de[k] + "\",\n"
+  } else {
+    const text = "t"// await translate(englishIn[k], "bg");
+    //console.log(" \"" + k + "\": \"" + await translate(source[k], "de") + "\",");
+    deTranslation += "  \"" + k + "\": \"" + await translate(source[k], "de")  + "\",\n"
+  }
 }
-console.log("}")
+//console.log("}")
+deTranslation += "}"
+deTranslation = deTranslation.replace(",\n}", "\n}")
 
-console.log("=== ja ===")
+// console.log("===>", deTranslation)
+const translated = JSON.parse(deTranslation)
 
-console.log("{")
-for (const k of keys) {
-  const text = await translate(englishIn[k], "ja");
-  console.log(" \"" + k + "\": \""+text+"\",");
-}
-console.log("}")
+const orderedTranslated = Object.keys(translated).sort().reduce(
+  (obj, key) => {
+    obj[key] = translated[key];
+    return obj;
+  },
+  {}
+);
+console.log("===>", typeof orderedTranslated)
+
+
+fs.writeFileSync("../../src/i18n/de/de.json", JSON.stringify(orderedTranslated, null,2))
+
+// });
+
+//
+// function readTextFile(file, callback) {
+//   var rawFile = new XMLHttpRequest();
+//   rawFile.overrideMimeType("application/json");
+//   rawFile.open("GET", file, true);
+//   rawFile.onreadystatechange = function() {
+//     if (rawFile.readyState === 4 && rawFile.status == "200") {
+//       callback(rawFile.responseText);
+//     }
+//   }
+//   rawFile.send(null);
+// }
+//
+// readTextFile("../../src/i18n/en/en.json", function(text){
+//   var data = JSON.parse(text);
+//   console.log(data);
+// });
+
+
+// console.log("=== ja ===")
+//
+// console.log("{")
+// for (const k of keys) {
+//   const text = await translate(englishIn[k], "ja");
+//   console.log(" \"" + k + "\": \""+text+"\",");
+// }
+// console.log("}")
 

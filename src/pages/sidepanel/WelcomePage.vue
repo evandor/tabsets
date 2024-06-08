@@ -43,10 +43,6 @@
                 @was-clicked="addFirstTabset"
                 :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
             </q-card-actions>
-            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
-              <span class="q-mx-none cursor-pointer text-primary" style="font-size:smaller"
-                    @click.stop="openBookmarksView">or open Bookmark Manager</span>
-            </q-card-actions>
           </q-card>
         </div>
         <div class="row q-mr-sm">
@@ -59,40 +55,6 @@
             <span class="q-ma-none q-pa-none q-mx-xs text-grey-5">|</span>
             <span class="text-grey q-mx-none cursor-pointer" style="font-size:smaller"
                   @click.stop="clicked('https://docs.tabsets.net')">{{ t('documentation') }}</span>
-          </div>
-        </div>
-
-        <br><br>
-
-        <div class="row q-mt-lg q-ml-md">
-          <div class="col-12 text-caption q-mb-sm">
-            {{ t('optionally') }}
-          </div>
-          <div class="col-12 q-mb-md">
-<!--            <q-checkbox size="xs" v-model="activateBookmarks" class="text-grey" :label="t('activate_bookmarks_integration')"/>-->
-<!--            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">-->
-<!--              <q-tooltip class="tooltip">Allow access to your bookmarks. Can be added later, too</q-tooltip>-->
-<!--            </q-icon>-->
-            <q-checkbox size="xs" v-model="activateNotifications" class="text-grey"
-                        :label="t('activate_browser_notifications')"/>
-            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
-              <q-tooltip class="tooltip">Allow browser notifications for better integration. Can be added later, too
-              </q-tooltip>
-            </q-icon>
-
-            <q-checkbox size="xs" v-model="activateFullPageApp" class="text-grey"
-                        :label="t('activate_fullpage_application')"/>
-            <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">
-              <q-tooltip class="tooltip">Tabsets can be additionally run as fullpage app</q-tooltip>
-            </q-icon>
-
-<!--            <template v-if="firebaseActive()">-->
-<!--              <q-checkbox-->
-<!--                size="xs" v-model="login" class="text-grey" label="Login or create Account"/>-->
-<!--              <q-icon class="q-ml-sm cursor-pointer" name="o_help" color="grey">-->
-<!--                <q-tooltip class="tooltip">With an Account, you can sync your tabsets across browsers and computers</q-tooltip>-->
-<!--              </q-icon>-->
-<!--            </template>-->
           </div>
         </div>
 

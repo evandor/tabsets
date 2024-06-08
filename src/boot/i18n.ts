@@ -3,9 +3,9 @@ import messages from '@intlify/unplugin-vue-i18n/messages'
 
 // @ts-ignore
 export default ({app}) => {
+  // console.log("====>", navigator.language)
   const i18n = createI18n({
     locale: navigator.language.split('-')[0],
-    //locale: 'ja',
     fallbackLocale: 'en',
     // missingWarn: false,
     // fallbackWarn: false,

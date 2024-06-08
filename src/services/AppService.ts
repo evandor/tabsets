@@ -129,12 +129,10 @@ class AppService {
     await useWindowsStore().initialize()
     useWindowsStore().initListeners()
 
-    const spacesPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
-      useDB().spacesFirestoreDb : useDB().spacesIndexedDb
+    const spacesPersistence = useDB().spacesIndexedDb
     await spacesStore.initialize(spacesPersistence)
 
-    const tabsetsPersistence = store.getServiceName() === 'FirestorePersistenceService' ?
-      useDB().tabsetsFirestoreDb : useDB().tabsetsIndexedDb
+    const tabsetsPersistence = useDB().tabsetsIndexedDb
     await tabsetsStore.initialize(tabsetsPersistence)
     await useTabsetService().init(tabsetsPersistence, false)
 

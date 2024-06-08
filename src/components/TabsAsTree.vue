@@ -34,6 +34,7 @@ import NavigationService from "src/services/NavigationService";
 import DeleteBookmarkFolderDialog from "src/bookmarks/dialogues/DeleteBookmarkFolderDialog.vue";
 import _ from "lodash"
 import {TreeNode} from "src/bookmarks/models/Tree";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const router = useRouter()
 const permissionsStore = usePermissionsStore()

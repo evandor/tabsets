@@ -36,7 +36,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/sidepanel/welcome',
-    component: () => import('layouts/SidePanelLayout.vue'),
+    component: () => import('layouts/SidePanelNoFooterLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/WelcomePage.vue')}],
   },
   {

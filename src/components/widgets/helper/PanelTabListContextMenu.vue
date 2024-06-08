@@ -34,32 +34,6 @@
         </q-item>
       </template>
 
-      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.MONITORING)">
-        <q-item :clickable="props.tab?.placeholders === undefined || props.tab?.monitor !== undefined"
-                v-close-popup @click.stop="monitoringDialog(props['tab' as keyof object])">
-          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
-            <q-icon size="xs" name="o_change_circle"
-                    :color="props.tab?.placeholders !== undefined && props.tab?.monitor === undefined? 'grey' : 'info'"/>
-          </q-item-section>
-          <q-item-section v-if="props.tab?.monitor">
-            Monitoring Changes...
-          </q-item-section>
-          <q-item-section v-else :class="props.tab?.placeholders ? 'text-grey' : 'text-black'">
-            Monitor Changes
-          </q-item-section>
-        </q-item>
-      </template>
-
-      <!--      <q-separator inset/>-->
-      <!--      <q-item clickable v-close-popup @click.stop="copyToClipboard(props['tab' as keyof object])">-->
-      <!--        <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">-->
-      <!--          <q-icon size="xs" name="o_link" color="accent"/>-->
-      <!--        </q-item-section>-->
-      <!--        <q-item-section>-->
-      <!--          Copy URL to Clipboard-->
-      <!--        </q-item-section>-->
-      <!--      </q-item>-->
-
       <template v-if="useFeaturesStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT)">
         <q-separator inset/>
         <q-item clickable v-close-popup @click.stop="assignTab(props['tab' as keyof object])">
@@ -120,17 +94,14 @@ import {Notify, useQuasar} from "quasar";
 import {Tab} from "src/tabsets/models/Tab";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
 import {useRouter} from "vue-router";
-import {useSettingsStore} from "stores/settingsStore";
 import NavigationService from "src/services/NavigationService";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
-import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import EditUrlDialog from "components/dialogues/EditUrlDialog.vue";
 import {PlaceholdersType} from "src/models/Placeholders";
 import ColorSelector from "components/dialogues/helper/ColorSelector.vue";
 import {UpdateTabColorCommand} from "src/domain/tabs/UpdateTabColor";
-import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {api} from "boot/axios";
 import _ from "lodash"
@@ -217,11 +188,6 @@ const deleteTab = async () => {
 const addCommentDialog = () => $q.dialog({
   component: CommentDialog,
   componentProps: {tabId: props.tab.id, sharedId: props.tabset?.sharedId}
-})
-
-const monitoringDialog = (tab: Tab) => $q.dialog({
-  component: MonitoringDialog,
-  componentProps: {tab: tab, note: tab.note}
 })
 
 const showTabDetails = async (tab: Tab) => {

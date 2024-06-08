@@ -44,6 +44,7 @@
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded style="border:1px solid orange">On this settings page, you can adjust the general appearance of
         the tabsets extension.
+        {{ t('provide_name_add_later')}}
       </q-banner>
 
       <div class="row items-baseline q-ma-md q-gutter-md">
