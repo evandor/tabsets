@@ -7,10 +7,10 @@
                        icon="o_note"
                        label="Edit Tabset"/>
 
-      <ContextMenuItem v-close-popup
-                       @was-clicked="emits('editHeaderDescription')"
-                       icon="o_description"
-                       label="Tabset Description..."/>
+<!--      <ContextMenuItem v-close-popup-->
+<!--                       @was-clicked="emits('editHeaderDescription')"-->
+<!--                       icon="o_description"-->
+<!--                       label="Tabset Description..."/>-->
 
       <template v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
 
@@ -103,34 +103,6 @@
 
       <q-separator inset/>
 
-      <ContextMenuItem v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING) && (tabset.sharing === TabsetSharing.UNSHARED || !tabset.sharing)"
-                       v-close-popup
-                       @was-clicked="shareTabsetPubliclyDialog(tabset)"
-                       icon="ios_share"
-                       color="warning"
-                       label="Share as link..."/>
-
-      <ContextMenuItem v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
-                       v-close-popup
-                       @was-clicked="shareTabsetPubliclyDialog(tabset, true)"
-                       icon="ios_share"
-                       color="warning"
-                       label="Republish">
-        <q-tooltip class="tooltip-small">Tabset has changed, republish</q-tooltip>
-      </ContextMenuItem>
-
-      <ContextMenuItem
-        v-if="tabset.sharing === TabsetSharing.PUBLIC_LINK || tabset.sharing === TabsetSharing.PUBLIC_LINK_OUTDATED"
-        v-close-popup
-        @was-clicked="removePublicShare(tabset.id, tabset.sharedId)"
-        icon="ios_share"
-        color="warning"
-        label="Stop Sharing">
-        <q-tooltip class="tooltip-small">Delete Shared Link</q-tooltip>
-      </ContextMenuItem>
-
-      <q-separator inset v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING)" />
-
       <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <ContextMenuItem v-close-popup
                          @was-clicked="useSearchStore().reindexTabset(tabset.id)"
@@ -158,10 +130,8 @@
 
 <script lang="ts" setup>
 
-import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
-import {useSettingsStore} from "stores/settingsStore";
 import {useSearchStore} from "src/search/stores/searchStore";
 import NavigationService from "src/services/NavigationService";
 import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
