@@ -2,7 +2,7 @@
 
   <template v-if="restricted">
     <Transition name="colorized-appear">
-      <q-btn v-if="!props.feature || useFeaturesStore().hasFeature(FeatureIdent[props.feature])"
+      <q-btn v-if="!props.feature || useFeaturesStore().hasFeature(FeatureIdent[props.feature as keyof typeof FeatureIdent])"
              :flat="!outlinedIfActive()"
              :outline="outlinedIfActive()"
              name="sidebar" :icon="props.icon" :size="btnSize"
@@ -30,8 +30,7 @@
 import {DrawerTabs, useUiStore} from "src/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
-
-const permissionsStore = usePermissionsStore()
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const props = defineProps({
   feature: {type: String, required: false},

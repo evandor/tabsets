@@ -10,12 +10,22 @@ export class AppFeatures {
     new Feature(FeatureIdent.DEV_MODE, FeatureType.INTERNAL, "Developer Mode",
       "A feature toggle to switch between dev mode on/off", "","",['all']),
 
-    new Feature(FeatureIdent.TOP10, FeatureType.RECOMMENDED,
+    new Feature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED,
+      'Bookmarks Manager',
+      'Activate a Bookmark Manager in the Side Panel',
+      'o_bookmark', '', ['all']),
+
+    new Feature(FeatureIdent.STATS, FeatureType.OPTIONAL,
+      'Stats Widget',
+      'Activate a little Widget to display some statistics (tabs count etc)',
+      'show_chart', '', ['all']),
+
+    new Feature(FeatureIdent.TOP10, FeatureType.OPTIONAL,
       'Top 10 Tabs',
       'Activate a view to list all tabs by how often they have been accessed',
       'o_workspace_premium', 'top10.png', ['all']),
 
-    new Feature(FeatureIdent.WINDOWS_MANAGEMENT, FeatureType.RECOMMENDED,
+    new Feature(FeatureIdent.WINDOWS_MANAGEMENT, FeatureType.OPTIONAL,
       'Windows Management',
       'Access to your browsers windows and their tabs',
       'o_grid_view','', ['all']),
@@ -25,11 +35,6 @@ export class AppFeatures {
       'Quick access to all your open tabs of the current browsers window<br><br>' +
       'Adds quick navigation to jump back and forth to recently opened tabs.',
       'o_playlist_add', '', ['bex']),
-
-    new Feature(FeatureIdent.SAVE_TAB_AS_PNG, FeatureType.EXPERIMENTAL,
-      'Save Tab as Image', 'You can save tabs as a PNG Image.<br>Creating an image will utilize an external server.',
-      'o_image', '', ['bex'], [], true)
-      .setActivateCommands([new GrantPermissionCommand('pageCapture')]),
 
     new Feature(FeatureIdent.GROUP_BY_DOMAIN, FeatureType.OPTIONAL,
       'Group By Domain View',
@@ -70,12 +75,7 @@ export class AppFeatures {
       'Simply get rid of all open tabs by assigning them to this special tabset - a backup tabset which you can revisit later for proper assignment',
       'o_inventory_2', '', ['bex']),
 
-    new Feature(FeatureIdent.IGNORE, FeatureType.EXPERIMENTAL,
-      'Ignore Tabset',
-      'This is a list of urls you want to ignore. This can be normal urls or urls with placeholders to catch all google search results for example',
-      'o_pause_circle', '', ['bex']),
-
-    new Feature(FeatureIdent.TAGS, FeatureType.RECOMMENDED,
+    new Feature(FeatureIdent.TAGS, FeatureType.OPTIONAL,
       'Use Tags for Tabs',
       'Tabs can be tagged with labels making it easier to be found again',
       'o_label', '', ['all']),
@@ -85,19 +85,12 @@ export class AppFeatures {
       'CreateCreate notes and treat them like tabs',
       'o_note', '', ['all']),
 
-    // permissions notification
-    new Feature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL,
-      'Create an image clip from a website and store it',
-      '',
-      'filter_center_focus', '', ['bex'])
-      .setActivateCommands([new GrantPermissionCommand('notifications')]),
-
-    new Feature(FeatureIdent.STANDALONE_APP, FeatureType.RECOMMENDED,
+    new Feature(FeatureIdent.STANDALONE_APP, FeatureType.DISABLED,
       'Standalone App',
       'Tabsets as full-page application',
        'o_open_in_new','', ['bex']),
 
-    new Feature(FeatureIdent.NOTIFICATIONS, FeatureType.RECOMMENDED,
+    new Feature(FeatureIdent.NOTIFICATIONS, FeatureType.EXPERIMENTAL,
       'Browser Notifications',
       'Allow Tabsets to send Notifications via your Browser. Recommended.',
       'o_notifications', '', ['all'])
@@ -139,20 +132,6 @@ export class AppFeatures {
       'o_view_list', '', ['chrome_bex'])
       .setActivateCommands([new GrantPermissionCommand('tabGroups')]),
 
-    new Feature(FeatureIdent.MONITORING, FeatureType.EXPERIMENTAL,
-      'Monitor Website Changes',
-      'Check periodically for changes of a website<br><br>' +
-      'This feature is not reliable, as there are many reasons why a website might change (e.g. if it simply displays a date).' +
-      'But sometimes it can be helpful. Use at your own discretion.',
-      'o_change_circle', 'monitor.png', ['bex']),
-
-    new Feature(FeatureIdent.TAB_HELPER, FeatureType.EXPERIMENTAL,
-      'Tab Helper',
-      'Add a small tag on any website to access tabsets features quickly.<br>' +
-      'You need to restart tabsets if you activate or deactivate this feature.<br>' +
-      'The Tabsets Helper Icon will appear on all pages you open once activated.',
-      'o_article', 'tabhelper.png', ['bex']),
-
     new Feature(FeatureIdent.AUTO_TAB_SWITCHER, FeatureType.EXPERIMENTAL,
       'Auto Tab Switcher',
       'Switch the Tab\'s URL every x Seconds',
@@ -163,10 +142,6 @@ export class AppFeatures {
       'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
       'o_folder', '', ['all']),
 
-    new Feature(FeatureIdent.TABSETS_SHARING, FeatureType.EXPERIMENTAL,
-      'Sharing Tabsets',
-      'Share tabsets publicly.',
-      'o_ios_share', '', ['all'], [], true),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {
