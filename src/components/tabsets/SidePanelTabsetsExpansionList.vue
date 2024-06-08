@@ -90,17 +90,17 @@
                    class="q-ma-none q-px-sm q-py-none"
                    name="o_bookmark_add"
                    :class="alreadyInTabset() ? '':'cursor-pointer'"
-                   :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'accent':'warning'"
+                   :color="alreadyInTabset() ? 'grey-5': tsBadges.length > 0 ? 'positive':'warning'"
                    size="xs"
                    data-testid="saveInTabsetBtn">
               <div>Add Tab</div>
               <!--                  <q-icon right class="q-ma-none q-pa-none" size="2em" name="o_south" />-->
             </q-btn>
-            <span
-              v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"
-              style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{
-                tsBadges.length
-              }}</span>
+<!--            <span-->
+<!--              v-if="!alreadyInTabset() && showAddTabButton(tabset as Tabset, currentChromeTab) && tsBadges.length > 0"-->
+<!--              style="color: grey;font-size: 7px;position: relative;top:-2px;left:-11px;">{{-->
+<!--                tsBadges.length-->
+<!--              }}</span>-->
             <q-tooltip class="tooltip-small" v-if="alreadyInTabset()">
               Tab is already contained in tabset '{{ tabset.name }}'
             </q-tooltip>
@@ -125,12 +125,12 @@
         </q-item-section>
 
         <q-item-section side
+                        @click.stop=""
                         @mouseover="hoveredTabset = tabset.id"
                         @mouseleave="hoveredTabset = undefined">
-          <q-item-label>
+          <q-item-label v-if="useTabsetsStore().getCurrentTabset?.id === tabset.id">
             <q-icon class="cursor-pointer" name="more_horiz" size="16px"/>
-            <SidePanelPageContextMenu :tabset="tabset as Tabset"
-                                      @edit-header-description="toggleEditHeader(tabset as Tabset, index)"/>
+            <SidePanelPageContextMenu :tabset="tabset as Tabset" />
           </q-item-label>
         </q-item-section>
       </template>
@@ -408,23 +408,6 @@ const suggestTabsetImport = () => {
   return false
 }
 
-const importSharedTabset = () => {
-  const currentTabUrl = useTabsStore2().currentChromeTab?.url
-  if (currentTabUrl) {
-    console.log("Importing", currentTabUrl)
-    const urlSplit = currentTabUrl.split("/")
-    const tabsetId = urlSplit[urlSplit.length - 1]
-    FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
-      .then((res: any) => {
-        const newTabset = res as Tabset
-        newTabset.sharing = TabsetSharing.UNSHARED
-        //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
-        useTabsetService().saveTabset(newTabset)
-        useTabsetService().reloadTabset(newTabset.id)
-      })
-  }
-}
-
 const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | undefined = undefined) => {
   console.log("updated...", tabsetId, open, index, Object.keys(tabsetExpanded.value))
   tabsetExpanded.value.set(tabsetId, open)
@@ -454,6 +437,7 @@ const updateSelectedTabset = (tabsetId: string, open: boolean, index: number | u
 const toggleEditHeader = (tabset: Tabset, index: number) => {
   editHeaderDescription.value = !editHeaderDescription.value
   if (editHeaderDescription.value) {
+    console.log("hier!!")
     updateSelectedTabset(tabset.id, true, index)
     headerDescription.value = tabset.headerDescription || ''
   }
