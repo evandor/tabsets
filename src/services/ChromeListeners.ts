@@ -264,23 +264,6 @@ class ChromeListeners {
   }
 
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
-    if (info.url) {
-      if (this.checkOriginForEmailLink(info.url)) {
-        const split = info.url.split("?")
-        const authRequest = split[1]
-        console.log("authRequest received on", window.location.href)
-        //const newLocation = window.location + "?" + authRequest
-        //console.log("%cnewLocation", "color:green",newLocation)
-        //window.location.href = newLocation
-        useAuthStore().setAuthRequest(authRequest)
-      }
-    }
-
-
-    // if (!useTabsStore().listenersOn) {
-    //   console.debug(`onUpdated:   tab ${number}: >>> listeners off, returning <<<`)
-    //   return
-    // }
 
     // set current chrome tab in tabsStore
     await setCurrentTab()
@@ -422,9 +405,9 @@ class ChromeListeners {
     //if (useFeaturesStore().hasFeature(FeatureIdent.THUMBNAILS)) {
     scripts.push("content-script-thumbnails.js")
     //}
-    if (useFeaturesStore().hasFeature(FeatureIdent.TAB_HELPER)) {
-      scripts.push("content-script-tab-helper.js")
-    }
+    // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_HELPER)) {
+    //   scripts.push("content-script-tab-helper.js")
+    // }
     if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
       scripts.push("highlight-annotations.js")
     }
