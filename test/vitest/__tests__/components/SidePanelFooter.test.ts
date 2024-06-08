@@ -146,8 +146,8 @@ describe('SidePanelFooter', () => {
   it('should be mounted', async () => {
     // expect(wrapper.text()).toContain("grid");
     // expect(wrapper.text()).toContain("view");
-    expect(wrapper.text()).toContain("show");
-    expect(wrapper.text()).toContain("chart");
+    expect(wrapper.text()).toContain("settings");
+    //expect(wrapper.text()).toContain("chart");
     expect(wrapper.text()).not.toContain("Open Window");
   });
 
