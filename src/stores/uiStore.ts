@@ -54,9 +54,6 @@ export class SidePanelView {
   static readonly BY_DOMAIN_LIST = new SidePanelView('byDomainList', '/sidepanel/byDomainList',
     () => useFeaturesStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN));
 
-  static readonly SHARED_TABSETS_LIST = new SidePanelView('sharedTsList', '/sidepanel/sharedTsList',
-    () => useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING));
-
   static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist',
     () => useFeaturesStore().hasFeature(FeatureIdent.RSS));
 
@@ -66,7 +63,7 @@ export class SidePanelView {
     () => useFeaturesStore().hasFeature(FeatureIdent.TOP10));
 
   static readonly BOOKMARKS = new SidePanelView('bookmarks', '/sidepanel/bookmarks',
-    () => true) //&& useRoute()?.path !== "/sidepanel/welcome");
+    () => useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS)) //&& useRoute()?.path !== "/sidepanel/welcome");
 
   static readonly PUBLIC_TABSETS = new SidePanelView('categorized_tabsets', '/sidepanel/byCategory',
     () => true);

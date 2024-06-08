@@ -229,11 +229,7 @@ const openNewTabsetDialog = () => {
 }
 
 const showSyncInfo = () => {
-  if (!useAuthStore().isAuthenticated()) {
-    return false
-  }
-  const syncType = useAuthStore().getAccount()?.userData?.sync?.type || SyncType.NONE
-  return syncType !== SyncType.NONE
+  return false
 }
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''

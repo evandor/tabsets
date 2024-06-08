@@ -165,16 +165,6 @@
               <q-icon name="arrow_right" size="16px"/>
             </span>
 
-            <q-icon v-if="(props.tab as Tab).monitor"
-                    @click.stop="monitoringDialog(props.tab as Tab)"
-                    name="o_change_circle" class="q-mr-xs"
-                    :color="(props.tab as Tab).placeholders ? 'negative' : 'accent'">
-              <q-tooltip class="tooltip-small" v-if="!(props.tab as Tab).placeholders">This tab is being monitored for
-                changes
-              </q-tooltip>
-              <q-tooltip class="tooltip-small" v-else>Tabs with placeholders cannot be monitored</q-tooltip>
-            </q-icon>
-
             <q-icon v-if="suggestion"
                     @click.stop="showSuggestion()"
                     name="o_notifications" class="q-mr-xs"
@@ -372,7 +362,6 @@ import PanelTabListContextMenu from "components/widgets/helper/PanelTabListConte
 import _ from "lodash";
 import {formatDistance} from "date-fns";
 import {Tabset} from "src/tabsets/models/Tabset";
-import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useUtils} from "src/core/services/Utils";
 import {useRouter} from "vue-router";
@@ -380,7 +369,6 @@ import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
 import {PlaceholdersType} from "src/models/Placeholders";
 import {LocalStorage, useQuasar} from "quasar";
-import MonitoringDialog from "components/dialogues/MonitoringDialog.vue";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import PdfService from "src/services/PdfService";
@@ -395,7 +383,6 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import TabService from "src/services/TabService";
 
 const {inBexMode} = useUtils()
-const {handleSuccess} = useNotificationHandler()
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -656,19 +643,11 @@ const showSuggestion = () => {
   NavigationService.openOrCreateTab([url])
 }
 
-const monitoringDialog = (tab: Tab) => {
-  console.log("calling dialog with tab", tab)
-  $q.dialog({
-    component: MonitoringDialog,
-    componentProps: {tab: tab, note: tab.note}
-  })
-}
-
 const openImage = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/png/' + props.tab.id + "/" + pngs.value[0].id))
 
 const deleteAnnotation = async (tab: Tab, annotationToDelete: any) => {
   //console.log("deleting annotatin", tab, annotationToDelete)
-  tab.annotations = _.filter(tab.annotations, a => a.id !== annotationToDelete.id)
+  tab.annotations = _.filter(tab.annotations, (a:any) => a.id !== annotationToDelete.id)
   useTabsetService().saveCurrentTabset()
 }
 
