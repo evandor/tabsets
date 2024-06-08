@@ -19,7 +19,7 @@
             inline-label
             v-model="tab"
             no-caps>
-      <q-tab name="appearance" label="Appearance"/>
+      <q-tab name="appearance" :label="t('appearance')"/>
 <!--      <q-tab name="account" label="Account"/>-->
 <!--      <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>-->
 <!--      <q-tab name="sharing" label="Sharing"-->
@@ -42,14 +42,13 @@
   <div v-if="tab === 'appearance'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded style="border:1px solid orange">On this settings page, you can adjust the general appearance of
-        the tabsets extension.
-        {{ t('provide_name_add_later')}}
+      <q-banner rounded style="border:1px solid orange">
+        {{ t('settings_adjust_general_appearance')}}
       </q-banner>
 
       <div class="row items-baseline q-ma-md q-gutter-md">
 
-        <InfoLine label="Title">
+        <InfoLine :label="t('title')">
           <q-input type="text" color="primary" filled v-model="installationTitle" label="">
             <template v-slot:prepend>
               <q-icon name="o_edit_note"/>
@@ -57,11 +56,11 @@
           </q-input>
         </InfoLine>
 
-        <InfoLine label="Dark Mode (experimental)">
-          <q-radio v-model="darkMode" val="auto" label="Auto"/>
-          <q-radio v-model="darkMode" val="true" label="Enabled"/>
-          <q-radio v-model="darkMode" val="false" label="Disabled"/>
-          &nbsp;&nbsp;&nbsp;(changing this needs restart)
+        <InfoLine :label="t('dark_mode')">
+          <q-radio v-model="darkMode" val="auto" :label="t('Auto')"/>
+          <q-radio v-model="darkMode" val="true" :label="t('Enabled')"/>
+          <q-radio v-model="darkMode" val="false" :label="t('Disabled')"/>
+          &nbsp;&nbsp;&nbsp;{{t('changing_needs_restart')}}
         </InfoLine>
 
         <div class="col-3">
@@ -81,35 +80,35 @@
         </div>
         <div class="col"></div>
 
-        <InfoLine :label="'Tab Info Detail Level ' +  (detailLevelPerTabset ? ' (Default)' : '')">
+        <InfoLine :label="t('tab_info_detail_level', {detailLevelPerTabset: (detailLevelPerTabset ? ' (Default)' : '')})">
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
           <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details"/>
         </InfoLine>
 
         <InfoLine label="">
-          <q-checkbox v-model="detailLevelPerTabset" label="Adjust individually per tabset"/>
+          <q-checkbox v-model="detailLevelPerTabset" :label="t('individually_per_tabset')"/>
         </InfoLine>
 
         <InfoLine label="URLs">
-          <q-checkbox v-model="fullUrls" label="Show full URLs in Tab Details"/>
+          <q-checkbox v-model="fullUrls" :label="t('show_full_url')"/>
         </InfoLine>
 
-        <InfoLine label="Ignore Browser Extensions as tabs">
-          <q-toggle v-model="ignoreExtensionsEnabled"
-                    @click="updateSettings('extensionsAsTabs', ignoreExtensionsEnabled)"/>
-        </InfoLine>
+<!--        <InfoLine label="Ignore Browser Extensions as tabs">-->
+<!--          <q-toggle v-model="ignoreExtensionsEnabled"-->
+<!--                    @click="updateSettings('extensionsAsTabs', ignoreExtensionsEnabled)"/>-->
+<!--        </InfoLine>-->
 
       </div>
 
       <div class="row items-baseline q-ma-md q-gutter-md"
            v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
         <div class="col-3">
-          Tab Switching Time in seconds
+          {{t('tab_switching_time')}}
         </div>
         <div class="col-9">
           <q-select
-            label="Tab Auto-Switcher Settings"
+            :label="t('tab_switcher_settings')"
             filled
             v-model="autoSwitcherOption"
             :options="autoSwitcherOptions"
@@ -122,25 +121,24 @@
 
       <div class="row items-baseline q-ma-md q-gutter-md">
         <div class="col-3">
-          Restore Info Messages
+          {{ t('restore_info_msg')}}
         </div>
         <div class="col-3">
-          If you accidentally closed an info message box with a hint, you can restore them all by clicking here:
+          {{t('accidentally_closed_info_msgs')}}
         </div>
         <div class="col-1"></div>
         <div class="col">
-          <q-btn label="Restore Hints" @click.stop="restoreHints"/>
+          <q-btn :label="t('restore_hints')" @click.stop="restoreHints"/>
         </div>
       </div>
 
       <div class="row items-baseline q-ma-md q-gutter-md"
            v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
         <div class="col-3">
-          Warning Thresholds
+          {{ t('warning_thresholds')}}
         </div>
         <div class="col-3">
-          warnings start when minimum open tabs count is reached<br>
-          Reaching the maximum will turn the bar red.
+          {{t('warnings_info')}}
         </div>
         <div class="col q-ma-xl">
           <q-range
@@ -155,10 +153,10 @@
 
       <div class="row items-baseline q-ma-md q-gutter-md">
         <div class="col-3">
-          Thumbnail Quality in %
+          {{t('thumbnail_quality')}}
         </div>
         <div class="col-3">
-          larger Thumbnails look better but need more (local) storage.
+          {{t('larger_thumbs_info')}}
         </div>
         <div class="col q-ma-xl">
           <q-slider v-model="settingsStore.thumbnailQuality"
