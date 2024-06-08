@@ -26,14 +26,14 @@ describe('Features', () => {
 
   it('color green for active feature, grey otherwise', async () => {
     await useFeaturesStore().initialize(InMemoryFeaturesPersistence)
-    useFeaturesStore().activateFeature(FeatureIdent.TOP10)
+    useFeaturesStore().activateFeature(FeatureIdent.BOOKMARKS)
     wrapper = mount(Features);
     const firstFeature = wrapper.find('div.q-list > div').html()
-    expect(firstFeature).toContain("Top 10 Tabs");
+    expect(firstFeature).toContain("Bookmarks");
     expect(firstFeature).toContain("text-green");
 
     const secondFeature = wrapper.find('div.q-list > div:nth-child(2)').html()
-    expect(secondFeature).toContain("Windows Management");
+    expect(secondFeature).toContain("Open Tabs");
     expect(secondFeature).toContain("text-grey");
   });
 
