@@ -2,7 +2,6 @@
   <q-btn
       icon="close"
       @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-      color="black"
       flat
       class="q-ma-none q-pa-xs cursor-pointer"
       style="max-width:20px"

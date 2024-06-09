@@ -8,8 +8,6 @@ import {setCssVar, useQuasar} from "quasar";
 import AppService from "src/services/AppService";
 import {EventEmitter} from "events";
 import {useRouter} from "vue-router";
-import {useNotificationHandler} from "src/core/services/ErrorHandler";
-import {useUtils} from "src/core/services/Utils";
 import {useLogger} from "src/services/Logger";
 
 const $q = useQuasar()

@@ -114,7 +114,7 @@ watchEffect(() => {
 
 
 const subscribe = async () => {
-  if (useAuthStore().isAuthenticated()) {
+  if (useAuthStore().isAuthenticated) {
     console.log("xxx", useAuthStore().user.uid)
     await createCheckoutSession(useAuthStore().user.uid)
   }

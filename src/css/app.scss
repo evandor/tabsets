@@ -9,14 +9,21 @@
   color: black;
 }
 
+.body--light .darkBlueInBrightMode {
+  color: $blue-10;
+}
+
 .body--light .greyBorderBottom {
   border-bottom: 1px solid $bordergrey;
 }
 
-
 .body--dark .darkInDarkMode {
   background-color: black;
   color: white;
+}
+
+.body--dark .brightBlueInDarkMode {
+  color: lightskyblue;
 }
 
 .body--dark .greyBorderBottom {

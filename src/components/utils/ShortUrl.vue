@@ -1,5 +1,5 @@
 <template>
-  <span class="text-blue-10">{{ props.label ? props.label : shortenUrl() }}
+  <span class="brightBlueInDarkMode darkBlueInBrightMode">{{ props.label ? props.label : shortenUrl() }}
     <q-tooltip v-if="props.hostnameOnly" class="tooltip">{{ url }}</q-tooltip>
   </span>
 </template>

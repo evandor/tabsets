@@ -129,7 +129,7 @@
     </div>
     <div class="col"></div>
 
-    <template v-if="!emailVerified && useAuthStore().isAuthenticated()">
+    <template v-if="!emailVerified && useAuthStore().isAuthenticated">
     <div class="col-3">
       Please verify your email first
     </div>
