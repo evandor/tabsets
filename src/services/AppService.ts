@@ -156,7 +156,7 @@ class AppService {
     // tabsets not in bex mode means running on "pwa.tabsets.net"
     // probably running an import ("/imp/:sharedId")
     // we do not want to go to the welcome back
-    // console.log("checking for welcome page", useTabsetsStore().tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated())
+    // console.log("checking for welcome page", useTabsetsStore().tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated)
     if (useTabsetsStore().tabsets.size === 0 &&
       quasar.platform.is.bex &&
       !router.currentRoute.value.path.startsWith("/fullpage") &&

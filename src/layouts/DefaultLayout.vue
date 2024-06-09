@@ -131,7 +131,7 @@
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
-              <q-item v-if="!useAuthStore().isAuthenticated()" clickable @click="router.push('/login')">Login</q-item>
+              <q-item v-if="!useAuthStore().isAuthenticated" clickable @click="router.push('/login')">Login</q-item>
               <q-item v-else clickable @click="router.push('/logout')">Logout</q-item>
 
               <q-item clickable @click="router.push('/settings')">Settings</q-item>

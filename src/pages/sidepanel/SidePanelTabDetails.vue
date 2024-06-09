@@ -108,7 +108,7 @@
         <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && useAuthStore().isAuthenticated()">
+        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && useAuthStore().isAuthenticated">
           <q-btn
               @click.stop="savePng(tab as Tab)"
               flat round color="primary" size="11px" icon="image"

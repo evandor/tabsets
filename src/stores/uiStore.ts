@@ -57,7 +57,8 @@ export class SidePanelView {
   static readonly RSS_LIST = new SidePanelView('rssList', '/sidepanel/rsslist',
     () => useFeaturesStore().hasFeature(FeatureIdent.RSS));
 
-  static readonly NEWEST_TABS_LIST = new SidePanelView('newestList', '/sidepanel/newestList');
+  static readonly NEWEST_TABS_LIST = new SidePanelView('newestList', '/sidepanel/newestList',
+    () => useFeaturesStore().hasFeature(FeatureIdent.NEWEST_TABS));
 
   static readonly TOP_10_TABS_LIST = new SidePanelView('top10List', '/sidepanel/top10List',
     () => useFeaturesStore().hasFeature(FeatureIdent.TOP10));
@@ -73,7 +74,8 @@ export class SidePanelView {
 
   static readonly MESSAGES = new SidePanelView('messages', '/sidepanel/messages')
 
-  static readonly TABS_AS_TREE = new SidePanelView('tabsAsTree', '/sidepanel/tabsAsTree')
+  static readonly TABS_AS_TREE = new SidePanelView('tabsAsTree', '/sidepanel/tabsAsTree',
+    () => useFeaturesStore().hasFeature(FeatureIdent.TABS_AS_TREE))
 
   private constructor(
     public readonly ident: string,
@@ -109,10 +111,10 @@ export class SidePanel {
 
   constructor(
     public activeView: SidePanelView = SidePanelView.MAIN) {
-   // this.relevantViews.push(SidePanelView.TOP_10_TABS_LIST)
+    // this.relevantViews.push(SidePanelView.TOP_10_TABS_LIST)
     this.relevantViews.push(SidePanelView.TAG)
     this.relevantViews.push(SidePanelView.TABS_LIST)
-   // this.relevantViews.push(SidePanelView.TAGS_LIST)
+    // this.relevantViews.push(SidePanelView.TAGS_LIST)
     this.relevantViews.push(SidePanelView.BOOKMARKS)
     //this.relevantViews.push(SidePanelView.BY_DOMAIN_LIST)
     //this.relevantViews.push(SidePanelView.NEWEST_TABS_LIST)
