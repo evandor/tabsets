@@ -1,6 +1,6 @@
 <template>
   <q-menu :offset="[12, 8]">
-    <q-list dense style="min-width: 180px">
+    <q-list dense style="min-width: 200px">
 
       <ContextMenuItem v-close-popup
                        @was-clicked="openEditTabsetDialog(tabset)"
@@ -68,14 +68,14 @@
                          label="Open in window..."/>
       </template>
 
-      <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 1"
+      <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 6"
                        v-close-popup
                        @was-clicked="focus(tabset)"
                        icon="filter_center_focus"
                        color="accent"
                        label="Focus on tabset"/>
 
-      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 1">
+      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 4">
         <ContextMenuItem v-close-popup
                          @was-clicked="pin(tabset)"
                          icon="o_push_pin"
