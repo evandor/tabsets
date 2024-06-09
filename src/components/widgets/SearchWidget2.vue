@@ -5,9 +5,7 @@
              ref="searchInputRef"
              :placeholder="inputPlaceholder()"
              class="fit q-mx-md"
-             color="primary"
-             bg-color="white"
-             label-color="primary"
+
              v-model="search">
     </q-input>
   </div>

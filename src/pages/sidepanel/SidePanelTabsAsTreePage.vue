@@ -23,8 +23,7 @@
           <SidePanelToolbarButton
               icon="close"
               tooltip="Close this view"
-              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-              color="black" />
+              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"/>
         </template>
 
       </FirstToolbarHelper>
