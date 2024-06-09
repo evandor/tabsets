@@ -190,10 +190,10 @@
   >
     <q-tab name="tabset" label="Tabs"/>
     <q-tab name="page" label="Page"
-           v-if="useAuthStore().isAuthenticated()"
+           v-if="useAuthStore().isAuthenticated"
            :disable="!useTabsetsStore().currentTabsetId"/>
     <q-tab name="canvas" label="Canvas"
-           v-if="useAuthStore().isAuthenticated()"
+           v-if="useAuthStore().isAuthenticated"
            :disable="!useTabsetsStore().currentTabsetId"/>
   </q-tabs>
 

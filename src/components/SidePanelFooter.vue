@@ -516,7 +516,7 @@ const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) 
 const gotoStripe = () => openURL("https://billing.stripe.com/p/login/test_5kA9EHf2Da596HuaEE")
 const openPwaUrl = () => NavigationService.openOrCreateTab([process.env.TABSETS_PWA_URL || 'https://www.skysail.io'])
 const showLoginBtn = () => process.env.USE_FIREBASE == "true" && useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)
-const showSettingsButton = () => route?.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated()
+const showSettingsButton = () => route?.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated
 </script>
 
 <style>

@@ -80,6 +80,16 @@ export class AppFeatures {
       'Tabs can be tagged with labels making it easier to be found again',
       'o_label', '', ['all']),
 
+    new Feature(FeatureIdent.TABS_AS_TREE, FeatureType.OPTIONAL,
+      'Tabs as Tree',
+      'A view organizing your tabs URLs as a tree',
+      'account_tree', '', ['all']),
+
+    new Feature(FeatureIdent.NEWEST_TABS, FeatureType.OPTIONAL,
+      'Newest Tabs',
+      'A quick access view for your newest tabs',
+      'schedule', '', ['all']),
+
     new Feature(FeatureIdent.NOTES, FeatureType.EXPERIMENTAL,
       'Notes Feature',
       'CreateCreate notes and treat them like tabs',

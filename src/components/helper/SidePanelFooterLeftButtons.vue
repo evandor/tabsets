@@ -10,7 +10,7 @@
     <q-tooltip class="tooltip">{{ suggestionsLabel() }}</q-tooltip>
   </q-btn>
 
-  <q-btn v-if="useTabsetsStore().allTabsCount > 0"
+  <q-btn v-if="showViewMenu()"
          icon="o_view_list"
          :size="props.size"
          class="q-my-xs q-ml-xs q-mr-none q-px-xs"
@@ -20,11 +20,6 @@
         <!--        <q-item dense clickable v-close-popup>-->
         <!--          <q-item-section>new window</q-item-section>-->
         <!--        </q-item>-->
-        <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.SHARED_TABSETS_LIST"
-                                     label="Shared Tabsets"
-                                     icon="o_share"
-                                     :size="buttonSize"
-                                     tooltip="All your shared tabsets"/>
         <SidePanelFooterViewMenuItem :side-panel-view="SidePanelView.BY_DOMAIN_LIST"
                                      label="Tabs By Domain"
                                      icon="o_dns"
@@ -61,6 +56,40 @@
       </q-list>
     </q-menu>
   </q-btn>
+
+  <template v-if="!showViewMenu()">
+
+    <SidePanelFooterLeftButton
+      :side-panel-view="SidePanelView.BY_DOMAIN_LIST"
+      :size="props.size"
+      icon="o_dns"
+      tooltip="List all your tabs URLs by domain"/>
+
+    <SidePanelFooterLeftButton
+      :side-panel-view="SidePanelView.TAGS_LIST"
+      :size="props.size"
+      icon="o_label"
+      tooltip="Tags List"/>
+
+    <SidePanelFooterLeftButton
+      :side-panel-view="SidePanelView.NEWEST_TABS_LIST"
+      :size="props.size"
+      icon="o_schedule"
+      tooltip="Newest Tabs List"/>
+
+    <SidePanelFooterLeftButton
+      :side-panel-view="SidePanelView.TABS_AS_TREE"
+      :size="props.size"
+      icon="o_account_tree"
+      tooltip="Show a tree view of your tabs"/>
+
+    <SidePanelFooterLeftButton
+      :side-panel-view="SidePanelView.TOP_10_TABS_LIST"
+      :size="props.size"
+      icon="o_workspace_premium"
+      tooltip="Top 10 Tabs List (by access)"/>
+
+  </template>
 
   <SidePanelFooterLeftButton
     :side-panel-view="SidePanelView.TABS_LIST"
@@ -138,6 +167,19 @@ const suggestionsLabel = () => {
 
 }
 
+const showViewMenu = () => {
+  if (useTabsetsStore().allTabsCount === 0) {
+    return false
+  }
+  const activeViews = [
+    useFeaturesStore().hasFeature(FeatureIdent.TABS_AS_TREE),
+    useFeaturesStore().hasFeature(FeatureIdent.NEWEST_TABS),
+    useFeaturesStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN),
+    useFeaturesStore().hasFeature(FeatureIdent.TAGS),
+    useFeaturesStore().hasFeature(FeatureIdent.TOP10)
+  ]
+  return activeViews.filter(Boolean).length > 3
+}
 </script>
 
 <script setup lang="ts">

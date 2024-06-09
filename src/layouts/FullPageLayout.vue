@@ -148,7 +148,7 @@
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
-              <q-item v-if="!useAuthStore().isAuthenticated()" clickable @click="router.push('/login')">Login</q-item>
+              <q-item v-if="!useAuthStore().isAuthenticated" clickable @click="router.push('/login')">Login</q-item>
               <q-item v-else clickable @click="logout()">Logout</q-item>
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
               <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>

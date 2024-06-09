@@ -26,7 +26,7 @@
               icon="close"
               tooltip="Close this view"
               @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
-              color="black" />
+          />
         </template>
 
       </FirstToolbarHelper>
