@@ -249,16 +249,16 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{path: '', component: () => import('pages/SearchResultPage.vue')}],
   },
-  {
-    path: '/pwa/imp/:sharedId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/public/ImportPublicTabsetPage.vue')}],
-  },
-  {
-    path: '/pwa/tabsets/:tabsetId',
-    component: () => import('layouts/PwaPageLayout.vue'),
-    children: [{path: '', component: () => import('pages/pwa/PwaTabsetPage.vue')}],
-  },
+  // {
+  //   path: '/pwa/imp/:sharedId',
+  //   component: () => import('layouts/PlainLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/public/ImportPublicTabsetPage.vue')}],
+  // },
+  // {
+  //   path: '/pwa/tabsets/:tabsetId',
+  //   component: () => import('layouts/PwaPageLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/pwa/PwaTabsetPage.vue')}],
+  // },
   {
     path: '/contentscript',
     component: () => import('layouts/PlainLayout.vue'),

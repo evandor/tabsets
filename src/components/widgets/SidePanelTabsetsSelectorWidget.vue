@@ -60,17 +60,17 @@
           </q-item>
         </template>
 
-        <template
-          v-if="useFeaturesStore().hasFeature(FeatureIdent.BACKUP) || useFeaturesStore().hasFeature(FeatureIdent.IGNORE)">
-          <q-separator/>
-          <q-item disable>
-            Special Tabsets
-          </q-item>
-          <q-item v-for="ts in tabsetsWithTypes([TabsetType.SPECIAL])" clickable v-close-popup
-                  @click="switchTabset(ts)">
-            <q-item-section class="q-ml-sm">{{ ts.name }}</q-item-section>
-          </q-item>
-        </template>
+<!--        <template-->
+<!--          v-if="useFeaturesStore().hasFeature(FeatureIdent.BACKUP) || useFeaturesStore().hasFeature(FeatureIdent.IGNORE)">-->
+<!--          <q-separator/>-->
+<!--          <q-item disable>-->
+<!--            Special Tabsets-->
+<!--          </q-item>-->
+<!--          <q-item v-for="ts in tabsetsWithTypes([TabsetType.SPECIAL])" clickable v-close-popup-->
+<!--                  @click="switchTabset(ts)">-->
+<!--            <q-item-section class="q-ml-sm">{{ ts.name }}</q-item-section>-->
+<!--          </q-item>-->
+<!--        </template>-->
 
         <template v-if="!useAsTabsetsSwitcher">
           <q-separator/>
@@ -80,13 +80,13 @@
         </template>
 
         <q-separator/>
-        <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
+        <q-item v-if="useTabsetsStore().currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
           <q-item-section>Edit Tabset Name</q-item-section>
         </q-item>
 
         <template v-if="!useAsTabsetsSwitcher">
           <q-separator/>
-          <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
+          <q-item v-if="useTabsetsStore().currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
             <q-item-section>Delete this Tabset...</q-item-section>
           </q-item>
         </template>
@@ -131,7 +131,7 @@ const switchTabsetOptions = ref<string[]>([])
 
 watchEffect(() => {
   allTabsetsButCurrent.value = _.sortBy(_.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
-    (tabset: Tabset) => tabset.id !== tabsStore.currentTabsetId), "name")
+    (tabset: Tabset) => tabset.id !== useTabsetsStore().currentTabsetId), "name")
 })
 
 const filterFn = (val: any, update: any, abort: any) => {
@@ -166,24 +166,24 @@ watchEffect(() => {
       ts.status !== TabsetStatus.ARCHIVED &&
       ts.status !== TabsetStatus.DELETED),
     [
-      function (o) {
+      function (o:Tabset) {
         return o.status === TabsetStatus.FAVORITE ? 0 : 1
       },
-      function (o) {
+      function (o:Tabset) {
         return o.name.toLowerCase()
       }
-    ]), (key) => {
+    ]), (key:Tabset) => {
     return {id: key.id, label: key.name, type: key.type, count: key.tabs.length}
   })
 })
 
-const tabsetLabel = () => !tabsStore.currentTabsetName ? 'no tabset selected' : tabsStore.currentTabsetName
+const tabsetLabel = () => !useTabsetsStore().currentTabsetName ? 'no tabset selected' : useTabsetsStore().currentTabsetName
 
 const openNewTabsetDialog = () => {
   $q.dialog({
     component: NewTabsetDialog,
     componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
+      tabsetId: useTabsetsStore().currentTabsetId,
       fromPanel: props.fromPanel
     }
   })
@@ -193,8 +193,8 @@ const deleteTabsetDialog = () => {
   $q.dialog({
     component: DeleteTabsetDialog,
     componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
-      tabsetName: tabsStore.currentTabsetName
+      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetName: useTabsetsStore().currentTabsetName
     }
   })
 }
@@ -203,8 +203,8 @@ const openEditTabsetDialog = () => {
   $q.dialog({
     component: EditTabsetDialog,
     componentProps: {
-      tabsetId: tabsStore.currentTabsetId,
-      tabsetName: tabsStore.currentTabsetName,
+      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetName: useTabsetsStore().currentTabsetName,
       fromPanel: props.fromPanel
     }
   })
