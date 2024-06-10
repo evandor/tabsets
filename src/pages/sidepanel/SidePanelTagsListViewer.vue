@@ -40,8 +40,8 @@ import {SidePanelView, useUiStore} from "src/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import TagsListViewerWidget from "components/widgets/TagsListViewerWidget.vue";
-import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
+import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 
 const {handleError} = useNotificationHandler()
 
