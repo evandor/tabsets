@@ -33,6 +33,7 @@ git submodule add -b main https://github.com/evandor/submodule-suggestions.git s
 git submodule add -b main https://github.com/evandor/submodule-thumbnails.git src/thumbnails
 git submodule add -b main https://github.com/evandor/submodule-content.git src/content
 git submodule add -b main https://github.com/evandor/submodule-features.git src/features
+git submodule add -b main https://github.com/evandor/submodule-opentabs.git src/opentabs
 ```
 
 if you run into problems (e.g. src/bookmarks already exists, but is empty), run this:

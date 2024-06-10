@@ -67,7 +67,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/sidepanel/tabslist',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelOpenTabsPage.vue')}],
+    children: [{path: '', component: () => import('src/opentabs/pages/SidePanelOpenTabsPage.vue')}],
   },
   {
     path: '/sidepanel/tagslist',

@@ -38,3 +38,7 @@
 	path = src/search
 	url = https://github.com/evandor/submodule-search.git
 	branch = main
+[submodule "src/opentabs"]
+	path = src/opentabs
+	url = https://github.com/evandor/submodule-opentabs.git
+	branch = main
