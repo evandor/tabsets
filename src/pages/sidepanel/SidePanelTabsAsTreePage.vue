@@ -41,7 +41,7 @@ import {SidePanelView, useUiStore} from "stores/uiStore";
 import {onMounted} from "vue";
 import Analytics from "src/core/utils/google-analytics";
 import ToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
-import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
+import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
 import TabsAsTree from "components/TabsAsTree.vue";
 

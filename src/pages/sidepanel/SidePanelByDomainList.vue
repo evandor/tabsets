@@ -47,7 +47,7 @@ import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
 import ByDomainListWidget from "components/widgets/ByDomainListWidget.vue";
-import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
+import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 
 const router = useRouter()

@@ -35,9 +35,7 @@
 
 <script setup lang="ts">
 import {onMounted, ref, watchEffect} from 'vue';
-import {useRoute, useRouter} from "vue-router";
 import _ from "lodash"
-import {useSearchStore} from "src/search/stores/searchStore";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
@@ -48,9 +46,9 @@ import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
-import SidePanelToolbarTabNavigationHelper from "pages/sidepanel/helper/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 
 const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
