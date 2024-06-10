@@ -1,9 +1,8 @@
 name: Publish
 on:
   push:
-    branches: [ chrome-extension ]
-  #pull_request:
-  #  branches: [ chrome-extension ]
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
