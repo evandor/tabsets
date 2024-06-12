@@ -138,8 +138,8 @@
         <!--        <span>{{ useUiStore().tabsFilter }}</span>-->
         <q-btn
           v-if="useTabsetsStore().currentTabsetId !== '' &&
-                  useTabsetsStore().getTabset(useTabsetsStore().currentTabsetId) &&
-                  useTabsetsStore().getCurrentTabset?.tabs?.length > 10 &&
+                  useTabsetsStore().getTabset(useTabsetsStore().currentTabsetId!) &&
+                  useTabsetsStore().getCurrentTabset!?.tabs?.length > 10 &&
                   $q.screen.gt.xs"
           flat
           :text-color="useUiStore().tabsFilter ? 'secondary' : 'primary'"
@@ -161,7 +161,7 @@
 
         <q-icon v-if="useTabsetsStore().currentTabsetId !== '' &&
           tabset?.type !== TabsetType.DYNAMIC &&
-          useTabsetsStore().getTabset(useTabsetsStore().currentTabsetId)"
+          useTabsetsStore().getTabset(useTabsetsStore().currentTabsetId!)"
                 class="cursor-pointer" size="22px" color="warning"
                 name="add_circle" @click="addUrlDialog">
           <q-tooltip
@@ -289,6 +289,7 @@ import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 import {useAuthStore} from "stores/authStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const route = useRoute()
 const router = useRouter()
@@ -323,7 +324,7 @@ watchEffect(() => {
 })
 
 
-const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(useTabsetsStore().currentTabsetId, newValue))
+const setNewName = (newValue: string) => useCommandExecutor().executeFromUi(new RenameTabsetCommand(useTabsetsStore().currentTabsetId!, newValue))
 
 const setFilter = (newValue: string) => {
   console.log("filter", newValue)

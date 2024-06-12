@@ -6,10 +6,10 @@
       <div class="col-2">
         <TabFaviconWidget
           class="q-mr-md q-mb-md"
-          :tab="uiStore.getSelectedTab" width="24px" height="24px"/>
+          :tab="useUiStore().getSelectedTab as Tab" width="24px" height="24px"/>
       </div>
       <div class="col-10 text-body1 ellipsis">
-        {{ getHost(useUiStore().getSelectedTab?.url, true) }}
+        {{ getHost(useUiStore().getSelectedTab!.url, true) }}
       </div>
       <div class="col-12 text-body2 ellipsis">
         {{ useUiStore().getSelectedTab?.title }}
@@ -69,7 +69,7 @@
       <div class="col-3 text-left">
 
 
-        <q-btn v-if="useFeaturesStore.hasFeature(FeatureIdent.DEV_MODE)"
+        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"
                @click="showTabDetails"
                round size="11px"
                color="primary"
@@ -93,10 +93,10 @@
         <!--        </q-btn>-->
 
         <q-btn v-if="usePermissionsStore().hasPermission('pageCapture')"
-               @click.stop="saveTab(useUiStore().getSelectedTab)"
+               @click.stop="saveTab(useUiStore().getSelectedTab!)"
                flat round color="primary" size="11px" icon="save"
-               :disabled="!isOpen(useUiStore().getSelectedTab)">
-          <q-tooltip v-if="isOpen(useUiStore().getSelectedTab)">Save this tab</q-tooltip>
+               :disabled="!isOpen(useUiStore().getSelectedTab!)">
+          <q-tooltip v-if="isOpen(useUiStore().getSelectedTab!)">Save this tab</q-tooltip>
           <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
             it.
           </q-tooltip>
@@ -259,7 +259,7 @@ watchEffect(() => {
           thumbnail.value = ''
         }
       })
-    TabsetService.getContentFor(uiStore.getSelectedTab)
+    TabsetService.getContentFor(useUiStore().getSelectedTab as Tab)
       .then(data => {
         if (data) {
           content.value = data.content

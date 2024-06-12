@@ -36,7 +36,7 @@ export abstract class FirebaseCall<T> {
 
   static async post(path: string, data: object, resType = "json", fullPath = false) {
     console.log("firebase call to ", path)
-    const idToken = await useAuthStore().user.getIdToken()
+    const idToken = "token-to-be-done" //await useAuthStore().user.getIdToken()
     //console.log("got idTOken", idToken)
     const urlToUse = fullPath ? path : `${process.env.BACKEND_URL}${path}`
     console.log("posting to", urlToUse)
