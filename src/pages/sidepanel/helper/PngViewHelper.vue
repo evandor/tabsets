@@ -10,17 +10,16 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import {date} from "quasar";
-import PdfService from "src/services/PdfService";
-
-const mhtml = ref<any>()
+import PdfService from "src/snapshots/services/PdfService";
 
 const props = defineProps({
+  extension: {type: String, default: 'png'},
   pngId: {type: String, required: true},
   created: {type: Number, required: true},
   tabId: {type: String, required: true}
 })
 
-const openMhtml = () => window.open(chrome.runtime.getURL('www/index.html#/mainpanel/png/' + props.tabId + "/" + props.pngId));
+const openMhtml = () => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${props.extension}/${props.tabId}/${props.pngId}`));
 const deletePdf = () => PdfService.deleteBlob(props.tabId, props.pngId)
 
 </script>

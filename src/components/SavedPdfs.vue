@@ -33,7 +33,7 @@
 import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {SavedBlob} from "src/models/SavedBlob";
-import PdfService from "src/services/PdfService";
+import PdfService from "src/snapshots/services/PdfService";
 
 const router = useRouter()
 
