@@ -1,9 +1,8 @@
-import Query from "src/domain/Query";
-import {QueryResult} from "src/domain/QueryResult";
+import Query from "src/core/domain/Query";
+import {QueryResult} from "src/core/domain/QueryResult";
 import _ from "lodash";
 import {Hit} from "src/models/Hit";
 import {uid} from "quasar";
-import ChromeApi from "src/services/ChromeApi";
 import {useSearchStore} from "src/search/stores/searchStore";
 import {Hits} from "src/models/Hits";
 
