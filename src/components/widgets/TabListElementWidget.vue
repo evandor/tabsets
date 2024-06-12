@@ -147,7 +147,7 @@ import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
 import {CopyToClipboardCommand} from "src/core/domain/commands/CopyToClipboard";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import ShortUrl from "components/utils/ShortUrl.vue";
+import ShortUrl from "src/core/utils/ShortUrl.vue";
 import {useRouter} from "vue-router";
 import _ from "lodash";
 import CommentDialog from "components/dialogues/CommentDialog.vue";

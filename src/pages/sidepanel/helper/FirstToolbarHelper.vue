@@ -114,7 +114,7 @@ import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useQuasar} from "quasar";
 import {useAuthStore} from "stores/authStore";
 import {SyncType} from "stores/appStore";
