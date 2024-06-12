@@ -46,7 +46,7 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {onMounted, ref} from "vue";
 import Analytics from "src/core/utils/google-analytics";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 

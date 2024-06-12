@@ -54,7 +54,7 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {SidePanelView, useUiStore} from "stores/uiStore";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {openURL, useQuasar} from "quasar";
 import {Entity} from "src/models/Entity";
 import NavigationService from "src/services/NavigationService";
