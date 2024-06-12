@@ -108,7 +108,7 @@
         <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
         <!--        </q-btn>-->
 
-        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && useAuthStore().isAuthenticated">
+        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
           <q-btn
               @click.stop="savePng(tab as Tab)"
               flat round color="primary" size="11px" icon="image"
@@ -120,12 +120,12 @@
           </q-btn>
         </template>
 
-        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PDF)">
+        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
           <q-btn
-              @click.stop="savePdf(tab)"
+              @click.stop="savePdf(tab as Tab)"
               flat round color="primary" size="11px" icon="o_picture_as_pdf"
-              :disabled="!isOpen(tab)">
-            <q-tooltip v-if="isOpen(tab)">Save this tab as a PDF File</q-tooltip>
+              :disabled="!isOpen(tab as Tab)">
+            <q-tooltip v-if="isOpen(tab as Tab)">Save this tab as a PDF File</q-tooltip>
             <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
               it.
             </q-tooltip>
@@ -187,7 +187,7 @@
 <!--    </q-expansion-item>-->
 
     <q-expansion-item label="Archived Images"
-                      v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pngs.length > 0">
+                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && pngs.length > 0">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="png in pngs">
@@ -198,11 +198,11 @@
     </q-expansion-item>
 
     <q-expansion-item label="Archived PDFs"
-                      v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB_AS_PNG) && pdfs.length > 0">
+                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && pdfs.length > 0">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="pdf in pdfs">
-            <PngViewHelper :pngId="pdf.id" :created="pdf.created" :tabId="tab?.id || 'unknown'"/>
+            <PngViewHelper extension='pdf' :pngId="pdf.id" :created="pdf.created" :tabId="tab?.id || 'unknown'"/>
           </div>
         </q-card-section>
       </q-card>
@@ -352,7 +352,6 @@ import TabsetService from "src/tabsets/services/TabsetService";
 import {ref, watchEffect} from "vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useRoute, useRouter} from "vue-router";
-import {useQuasar} from "quasar";
 import {Tab} from "src/tabsets/models/Tab";
 import {formatDistance} from "date-fns";
 import {useUtils} from "src/core/services/Utils";
@@ -361,25 +360,20 @@ import {useSearchStore} from "src/search/stores/searchStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {useSettingsStore} from "src/stores/settingsStore"
-import PdfService from "src/services/PdfService";
+import PdfService from "src/snapshots/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
-import {SavePngCommand} from "src/domain/tabs/SavePng";
-import {SavePdfCommand} from "src/domain/tabs/SavePdf";
-import {useAuthStore} from "stores/authStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {SavePngCommand} from "src/snapshots/domain/SavePng";
+import {SavePdfCommand} from "src/domain/tabs/SavePdf";
 
 const {inBexMode} = useUtils()
 
-const uiStore = useUiStore()
-const featuresStore = useSettingsStore()
 const router = useRouter()
 const route = useRoute()
-const $q = useQuasar()
 
 const hasAllUrlsPermission = ref<boolean | undefined>(false)
 
@@ -502,27 +496,29 @@ const showTabDetails = () =>
 
 watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()
-  const keyMaps = fuseIndex['_keysMap' as keyof object]
-  const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-    return tab.value?.url === r.$[2]?.v
-  })
-  const keys: Map<number, object> = new Map()
-  Object.keys(keyMaps).forEach((k: any) => {
-    keys.set(keyMaps[k], {
-      name: k
+  if (fuseIndex) {
+    const keyMaps = fuseIndex['_keysMap' as keyof object]
+    const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
+      return tab.value?.url === r.$[2]?.v
     })
-  })
+    const keys: Map<number, object> = new Map()
+    Object.keys(keyMaps).forEach((k: any) => {
+      keys.set(keyMaps[k], {
+        name: k
+      })
+    })
 
-  if (res && res.length > 0) {
-    Object.keys(res[0]['$' as keyof object]).forEach(k => {
-      const tmp = res[0]['$' as keyof object][k as keyof object]
-      const v: any = keys.get(+k)
-      v.n = tmp['n' as keyof object]
-      const c = tmp['v' as keyof object]
-      v.v = c //? (c.length > 100 ? c.substring(0,98) + "..." : c) : ''
-      keys.set(+k, v)
-    })
-    searchIndex.value = keys
+    if (res && res.length > 0) {
+      Object.keys(res[0]['$' as keyof object]).forEach(k => {
+        const tmp = res[0]['$' as keyof object][k as keyof object]
+        const v: any = keys.get(+k)
+        v.n = tmp['n' as keyof object]
+        const c = tmp['v' as keyof object]
+        v.v = c //? (c.length > 100 ? c.substring(0,98) + "..." : c) : ''
+        keys.set(+k, v)
+      })
+      searchIndex.value = keys
+    }
   }
 })
 

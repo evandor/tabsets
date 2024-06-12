@@ -427,8 +427,8 @@ export const useUiStore = defineStore('ui', () => {
     selectedTab.value = tab
   }
 
-  const getSelectedTab = computed(() => {
-    return selectedTab.value
+  const getSelectedTab = computed(():Tab | undefined => {
+    return selectedTab.value as Tab | undefined
   })
 
   // highlight url(s) feature

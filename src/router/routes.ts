@@ -157,7 +157,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/png/:tabId/:blobId',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelPngPage.vue')}],
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue')}],
+  },
+  {
+    path: '/mainpanel/pdf/:tabId/:blobId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue')}],
   },
   {
     path: '/mainpanel/tab/:id',// TODO combine with Tag page
