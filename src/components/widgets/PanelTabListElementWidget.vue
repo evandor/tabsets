@@ -367,7 +367,7 @@ import {useUtils} from "src/core/services/Utils";
 import {useRouter} from "vue-router";
 import {useGroupsStore} from "stores/groupsStore";
 import {DeleteChromeGroupCommand} from "src/domain/groups/DeleteChromeGroupCommand";
-import {PlaceholdersType} from "src/models/Placeholders";
+import {PlaceholdersType} from "src/tabsets/models/Placeholders";
 import {LocalStorage, useQuasar} from "quasar";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
