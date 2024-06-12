@@ -38,7 +38,8 @@ export class GrantPermissionCommand implements Command<boolean> {
             useBookmarksStore().loadBookmarks()
               .then(() => {
                 // TabsetService.init()
-                useTabsetService().init(useDB(undefined).db)
+                // TODO
+                //useTabsetService().init(useDB(undefined).db)
                 ChromeBookmarkListeners.initListeners()
               })
             useSuggestionsStore().removeSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)

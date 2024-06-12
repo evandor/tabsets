@@ -53,7 +53,7 @@ export abstract class FirebaseCall<T> {
     console.log("firebase call to ", path)
     // TODO use approach as in onAuthStateChanged?
     useAuthStore().user.getIdToken()
-      .then((idToken) => {
+      .then((idToken: string) => {
         //console.log("got idTOken", idToken)
         const urlToUse = fullPath ? path : `${process.env.BACKEND_URL}${path}`
         console.log("posting to", urlToUse)
@@ -81,7 +81,7 @@ export abstract class FirebaseCall<T> {
       const axiosError = err as AxiosError
       if (axiosError.response?.status === 403) {
         console.warn("logging out due to invalid token (potentially expired)")
-        useAuthStore().logout();
+        //useAuthStore().logout();
         //Logz.info({"message": "logging out due to invalid token (potentially expired)"})
       }
     } else {

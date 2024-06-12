@@ -4,7 +4,7 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-// import TabsetService from "src/tabsets/services/TabsetService";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 class UndoCommand implements Command<boolean> {
 

@@ -16,7 +16,7 @@
 
 import {uid, useQuasar} from "quasar";
 import {onMounted, ref, watchEffect} from "vue";
-import {Hit} from "src/models/Hit";
+import {Hit} from "src/search/models/Hit";
 import Analytics from "src/core/utils/google-analytics";
 import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";

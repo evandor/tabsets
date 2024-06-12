@@ -81,7 +81,7 @@
 <script setup lang="ts">
 import NavigationService from "src/services/NavigationService";
 import TabsetService from "src/tabsets/services/TabsetService";
-import {Hit} from "src/models/Hit";
+import {Hit} from "src/search/models/Hit";
 import _ from "lodash"
 import {useRouter} from "vue-router";
 import BookmarksService from "src/bookmarks/services/BookmarksService";
