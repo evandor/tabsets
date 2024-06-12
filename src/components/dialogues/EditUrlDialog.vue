@@ -79,7 +79,7 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
-import DialogButton from "components/buttons/DialogButton.vue";
+import DialogButton from "src/core/dialog/buttons/DialogButton.vue";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useSettingsStore} from "stores/settingsStore";

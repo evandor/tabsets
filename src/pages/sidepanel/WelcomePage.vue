@@ -72,7 +72,7 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT} from "boot/constants";
 import Analytics from "src/core/utils/google-analytics";
-import DialogButton from "components/buttons/DialogButton.vue";
+import DialogButton from "src/core/dialog/buttons/DialogButton.vue";
 import {useAuthStore} from "stores/authStore";
 import {LocalStorage, openURL} from "quasar";
 import {FeatureIdent} from "src/models/FeatureIdent";
