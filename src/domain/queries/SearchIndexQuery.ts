@@ -1,10 +1,10 @@
 import Query from "src/core/domain/Query";
 import {QueryResult} from "src/core/domain/QueryResult";
 import _ from "lodash";
-import {Hit} from "src/models/Hit";
+import {Hit} from "src/search/models/Hit";
 import {uid} from "quasar";
 import {useSearchStore} from "src/search/stores/searchStore";
-import {Hits} from "src/models/Hits";
+import {Hits} from "src/search/models/Hits";
 
 export class SearchIndexQuery implements Query<Hits> {
 

@@ -1,6 +1,5 @@
 import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {Tabset} from "src/tabsets/models/Tabset";
 import {useGroupsStore} from "stores/groupsStore";
 
 

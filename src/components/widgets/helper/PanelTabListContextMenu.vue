@@ -99,7 +99,7 @@ import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import EditUrlDialog from "components/dialogues/EditUrlDialog.vue";
-import {PlaceholdersType} from "src/models/Placeholders";
+import {PlaceholdersType} from "src/tabsets/models/Placeholders";
 import ColorSelector from "src/core/dialog/ColorSelector.vue";
 import {UpdateTabColorCommand} from "src/domain/tabs/UpdateTabColor";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
