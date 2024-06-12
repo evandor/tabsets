@@ -344,7 +344,6 @@
 
 <script lang="ts" setup>
 
-import {useUiStore} from "src/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import _ from "lodash";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
