@@ -371,7 +371,7 @@ import {PlaceholdersType} from "src/models/Placeholders";
 import {LocalStorage, useQuasar} from "quasar";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
-import PdfService from "src/services/PdfService";
+import PdfService from "src/snapshots/services/PdfService";
 import {SavedBlob} from "src/models/SavedBlob";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {DeleteCommentCommand} from "src/domain/tabs/DeleteCommentCommand";

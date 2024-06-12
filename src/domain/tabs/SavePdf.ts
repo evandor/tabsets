@@ -3,7 +3,7 @@ import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {Tab} from "src/tabsets/models/Tab";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
-import PdfService from "src/services/PdfService";
+import PdfService from "src/snapshots/services/PdfService";
 import TabsetService from "src/tabsets/services/TabsetService";
 import ContentUtils from "src/utils/ContentUtils";
 import {BlobType} from "src/models/SavedBlob";
@@ -22,10 +22,10 @@ export class SavePdfCommand implements Command<any> {
     }
 
     async execute(): Promise<ExecutionResult<any>> {
-        if (!usePermissionsStore().hasPermission('pageCapture')) {
-            handleError("missing permission pageCapture")
-            return Promise.reject("xxx")
-        }
+        // if (!usePermissionsStore().hasPermission('pageCapture')) {
+        //     handleError("missing permission pageCapture")
+        //     return Promise.reject("xxx")
+        // }
         if (!this.chromeTabId) {
             return Promise.reject("could not find chromeTabId for tab")
         }
