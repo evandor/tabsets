@@ -1,5 +1,4 @@
 import {Tab} from "src/tabsets/models/Tab";
-import {Placeholders, PlaceholdersType} from "src/models/Placeholders";
 import {uid} from "quasar";
 
 class IDrawUtils {

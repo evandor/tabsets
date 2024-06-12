@@ -52,7 +52,7 @@ import _ from "lodash"
 import {useSearchStore} from "src/search/stores/searchStore";
 import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
-import {Hit} from "src/models/Hit";
+import {Hit} from "src/search/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";

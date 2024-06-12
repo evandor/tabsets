@@ -82,7 +82,7 @@
 <script lang="ts" setup>
 import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {useSearchStore} from "src/search/stores/searchStore";
-import {Hit} from "src/models/Hit";
+import {Hit} from "src/search/models/Hit";
 import {useRoute, useRouter} from "vue-router";
 import NavigationService from "src/services/NavigationService";
 import {SearchIndexQuery} from "src/domain/queries/SearchIndexQuery";

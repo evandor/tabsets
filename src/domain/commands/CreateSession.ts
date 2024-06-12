@@ -4,6 +4,7 @@ import {DeleteTabsetCommand} from "src/tabsets/commands/DeleteTabset";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import _ from "lodash"
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 class UndoCommand implements Command<object> {
 
@@ -28,7 +29,7 @@ export class CreateSessionCommand implements Command<object> {
 
   async execute(): Promise<ExecutionResult<object>> {
     try {
-      _.forEach([...useTabsetsStore().tabsets.values()], (ts: Tabset) => {
+      _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
         if (ts.type === TabsetType.SESSION) {
           ts.type = TabsetType.DEFAULT
           useTabsetService().saveTabset(ts)

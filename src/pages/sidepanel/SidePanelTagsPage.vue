@@ -39,7 +39,7 @@ import _ from "lodash"
 import {Tabset} from "src/tabsets/models/Tabset";
 import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
-import {Hit} from "src/models/Hit";
+import {Hit} from "src/search/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {useUiStore} from "src/stores/uiStore";
 import {Tab} from "src/tabsets/models/Tab";
