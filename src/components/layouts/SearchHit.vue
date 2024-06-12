@@ -89,10 +89,8 @@ import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {useUtils} from "src/core/services/Utils";
 import {ListDetailLevel, useUiStore} from "stores/uiStore";
-import ShortUrl from "components/utils/ShortUrl.vue";
-import {usePermissionsStore} from "stores/permissionsStore";
+import ShortUrl from "src/core/utils/ShortUrl.vue";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

@@ -148,13 +148,12 @@ import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
 import {useDB} from "src/services/usePersistenceService";
-import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
-import SidePanelToolbarButton from "components/buttons/SidePanelToolbarButton.vue";
+import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useI18n} from 'vue-i18n'
 import SidePanelTabsetsExpansionList from "components/tabsets/SidePanelTabsetsExpansionList.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
