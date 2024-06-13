@@ -16,7 +16,7 @@
 
 <script lang="ts" setup>
 
-import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {PropType} from "vue";
 import {useRouter} from "vue-router";
 
@@ -38,7 +38,7 @@ const leftButtonClass = () => "q-my-xs q-px-xs q-mr-none"
 
 const toggleView = () => {
   if (isActive()) {
-    activateView(SidePanelView.MAIN)
+    activateView(SidePanelViews.MAIN)
     router.push("/sidepanel")
   } else {
     activateView(props.sidePanelView)

@@ -14,7 +14,7 @@ import TagsListViewerWidget from "components/widgets/TagsListViewerWidget.vue";
 const selectTag = (tag: string) => {
   console.log("selecting", tag)
   useUiStore().setSelectedTag(tag)
-  //useUiStore().sidePanelSetActiveView(SidePanelView.TAG)
+  //useUiStore().sidePanelSetActiveView(SidePanelViews.TAG)
   useUiStore().rightDrawerSetActiveTab(DrawerTabs.TAG_VIEWER)
 }
 

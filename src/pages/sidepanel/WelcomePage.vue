@@ -65,7 +65,7 @@
 
 <script lang="ts" setup>
 
-import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {onMounted, ref, UnwrapRef, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
@@ -81,6 +81,7 @@ import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {SidePanelViews} from "src/models/SidePanelViews";
 
 const {t} = useI18n()
 const router = useRouter()
@@ -161,7 +162,7 @@ const addFirstTabset = () => {
   useCommandExecutor()
     .executeFromUi(new CreateTabsetCommand(tabsetName.value, []))
     .then((res) => {
-      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
       router.push("/sidepanel?first=true")
     })
 }
@@ -181,8 +182,8 @@ const firebaseActive = () => {
 }
 
 const openBookmarksView = () => {
-  useUiStore().sidePanelSetActiveView(SidePanelView.BOOKMARKS)
-  router.push("/sidepanel/" + SidePanelView.BOOKMARKS)
+  useUiStore().sidePanelSetActiveView(SidePanelViews.BOOKMARKS)
+  router.push("/sidepanel/" + SidePanelViews.BOOKMARKS)
 }
 
 </script>

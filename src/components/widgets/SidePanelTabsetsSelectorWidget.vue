@@ -112,7 +112,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
-import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 
@@ -215,7 +215,7 @@ const switchTabset = (ts: any) => {
   useCommandExecutor()
     .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
-      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
       if (!props.fromPanel) {
         router.push("/tabsets/" + ts.id)
       }
@@ -235,7 +235,7 @@ const switchToTabset = (ts: Tabset) => {
   useCommandExecutor()
     .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
-      //useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      //useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
       if (!props.useAsTabsetsSwitcher) {
         router.push("/sidepanel/tabsets/" + ts.id)
       }

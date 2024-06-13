@@ -147,7 +147,7 @@
   </q-footer>
 </template>
 <script setup lang="ts">
-import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
@@ -177,6 +177,7 @@ import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {SidePanelViews} from "src/models/SidePanelViews";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -237,7 +238,7 @@ watchEffect(() => {
   //console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
     doShowSuggestionButton.value ||
-    (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+    (useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
       _.findIndex(suggestions, s => {
         return s.state === SuggestionState.NEW ||
           (s.state === SuggestionState.NOTIFICATION && !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
@@ -245,7 +246,7 @@ watchEffect(() => {
 
   showSuggestionIcon.value =
     !doShowSuggestionButton.value &&
-    useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+    useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
     _.findIndex(suggestions, s => {
       return s.state === SuggestionState.DECISION_DELAYED
     }) >= 0
@@ -452,16 +453,6 @@ const toggleShowStatsTable = () => {
   if (showWindowTable.value) {
     showWindowTable.value = false
   }
-}
-
-const logout = () => {
-  authStore.logout()
-    .then(() => {
-      router.push("/refresh/sidepanel")
-    })
-    .catch(() => {
-      //this.handleError(error)
-    })
 }
 
 const calcWindowRows = (): WindowHolder[] => {
