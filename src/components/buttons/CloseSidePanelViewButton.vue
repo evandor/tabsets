@@ -1,7 +1,7 @@
 <template>
   <q-btn
       icon="close"
-      @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"
+      @click="useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)"
       flat
       class="q-ma-none q-pa-xs cursor-pointer"
       style="max-width:20px"
@@ -11,5 +11,5 @@
 
 </template>
 <script setup lang="ts">
-import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 </script>
