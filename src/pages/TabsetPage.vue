@@ -271,7 +271,7 @@ import {date, openURL, uid, useQuasar} from "quasar";
 import TabsetService from "src/tabsets/services/TabsetService";
 import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
