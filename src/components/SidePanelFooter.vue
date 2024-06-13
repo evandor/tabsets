@@ -147,7 +147,7 @@
   </q-footer>
 </template>
 <script setup lang="ts">
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";

@@ -153,7 +153,7 @@ import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArch
 import NewWindowDialog from "src/windows/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
 import {MarkTabsetDeletedCommand} from "src/tabsets/commands/MarkTabsetDeleted";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
 import {NotificationType} from "src/core/services/ErrorHandler";
 import NewSubfolderDialog from "src/tabsets/dialogues/NewSubfolderDialog.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

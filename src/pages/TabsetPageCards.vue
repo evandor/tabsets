@@ -50,7 +50,7 @@ import TabsExporter from "components/layouts/TabsExporter.vue";
 import {PropType, ref, watchEffect} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
 import _ from "lodash";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {useRoute} from "vue-router";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";

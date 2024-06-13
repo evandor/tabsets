@@ -22,7 +22,7 @@
 
 <script lang="ts" setup>
 
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {ref, watchEffect} from "vue";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tabset} from "src/tabsets/models/Tabset";

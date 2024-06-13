@@ -43,7 +43,7 @@
 
 import BookmarksTree from "src/bookmarks/components/BookmarksTree.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
 import {onMounted, ref} from "vue";
 import Analytics from "src/core/utils/google-analytics";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";

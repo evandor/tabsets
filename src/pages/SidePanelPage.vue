@@ -139,7 +139,7 @@ import {useRouter} from "vue-router";
 import {useUtils} from "src/core/services/Utils";
 import {LocalStorage, scroll, uid} from "quasar";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";

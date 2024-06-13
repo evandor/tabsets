@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
 import {PropType} from "vue";
 import {useRouter} from "vue-router";
 

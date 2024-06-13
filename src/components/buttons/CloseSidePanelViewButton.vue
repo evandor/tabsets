@@ -11,5 +11,5 @@
 
 </template>
 <script setup lang="ts">
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
 </script>
