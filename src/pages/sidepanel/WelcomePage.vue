@@ -65,7 +65,7 @@
 
 <script lang="ts" setup>
 
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
 import {onMounted, ref, UnwrapRef, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";

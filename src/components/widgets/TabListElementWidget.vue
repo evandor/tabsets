@@ -151,7 +151,7 @@ import ShortUrl from "src/core/utils/ShortUrl.vue";
 import {useRouter} from "vue-router";
 import _ from "lodash";
 import CommentDialog from "components/dialogues/CommentDialog.vue";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import PwaCommentDialog from "components/dialogues/PwaCommentDialog.vue";
 import {SHARING_AVATAR_IDENT} from "boot/constants";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";

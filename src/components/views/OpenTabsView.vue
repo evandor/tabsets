@@ -90,7 +90,7 @@ import {onMounted, ref, watchEffect, watch} from "vue"
 import {VueDraggableNext} from 'vue-draggable-next'
 import TabsetService from "src/tabsets/services/TabsetService";
 import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import Analytics from "src/core/utils/google-analytics";
 import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";

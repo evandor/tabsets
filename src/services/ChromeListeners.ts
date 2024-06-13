@@ -7,7 +7,7 @@ import {useGroupsStore} from "stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/utils/ContentUtils";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {HTMLSelection, Tab} from "src/tabsets/models/Tab";

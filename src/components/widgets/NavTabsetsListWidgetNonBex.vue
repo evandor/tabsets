@@ -76,7 +76,7 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
 import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

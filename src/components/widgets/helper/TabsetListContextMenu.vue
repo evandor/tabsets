@@ -175,7 +175,7 @@ import {ShareTabsetCommand} from "src/tabsets/commands/ShareTabsetCommand"
 import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
 import {CopyToClipboardCommand} from "src/core/domain/commands/CopyToClipboard";
 import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import {CopyTabsetCommand} from "src/domain/tabsets/CopyTabset";
 import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 import {Tab} from "src/tabsets/models/Tab";

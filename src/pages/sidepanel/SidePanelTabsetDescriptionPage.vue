@@ -68,7 +68,7 @@ import EditorJsConfig from "src/utils/EditorJsConfig";
 import {openURL} from "quasar";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {DeleteTabsetDescriptionCommand} from "src/tabsets/commands/DeleteTabsetDescriptionCommand";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 
 const props = defineProps({
   tabsetId: {type: String, required: true},

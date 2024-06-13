@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 
-import {DrawerTabs, useUiStore} from "stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import TagsListViewerWidget from "components/widgets/TagsListViewerWidget.vue";
 
 const selectTag = (tag: string) => {

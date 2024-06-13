@@ -104,7 +104,7 @@ import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {SidePanelView, useUiStore} from "src/ui/stores/uiStore";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";

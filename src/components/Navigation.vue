@@ -59,7 +59,7 @@ import {useQuasar} from "quasar";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useUtils} from "src/core/services/Utils";
