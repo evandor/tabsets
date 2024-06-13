@@ -150,7 +150,7 @@ import {useAuthStore} from "stores/authStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/services/AppService";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";

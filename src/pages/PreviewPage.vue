@@ -54,7 +54,7 @@ import {useRoute, useRouter} from "vue-router";
 import {date} from "quasar"
 import _ from "lodash"
 import TabsetService from "src/tabsets/services/TabsetService";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()

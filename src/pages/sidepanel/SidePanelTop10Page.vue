@@ -61,7 +61,7 @@ import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";

@@ -32,7 +32,7 @@ import {useQuasar} from "quasar";
 import _ from "lodash"
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import {useUtils} from "src/core/services/Utils"
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
