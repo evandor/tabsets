@@ -20,8 +20,8 @@
 <script lang="ts" setup>
 
 import {useRouter} from "vue-router";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
-import ByDomainListWidget from "components/widgets/ByDomainListWidget.vue";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
+import ByDomainListWidget from "src/tabsets/widgets/ByDomainListWidget.vue";
 
 const router = useRouter()
 

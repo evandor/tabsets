@@ -7,7 +7,7 @@ import {MetaLink} from "src/models/MetaLink";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";

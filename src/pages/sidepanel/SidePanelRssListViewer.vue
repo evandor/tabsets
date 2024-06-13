@@ -56,7 +56,7 @@ import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useUtils} from "src/core/services/Utils";
 import _ from "lodash"
 import {Tab} from "src/tabsets/models/Tab";
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";

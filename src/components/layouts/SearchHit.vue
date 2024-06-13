@@ -88,7 +88,7 @@ import BookmarksService from "src/bookmarks/services/BookmarksService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {useUtils} from "src/core/services/Utils";
-import {ListDetailLevel, useUiStore} from "stores/uiStore";
+import {ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
 import ShortUrl from "src/core/utils/ShortUrl.vue";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";

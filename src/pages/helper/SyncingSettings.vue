@@ -243,7 +243,7 @@ import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useAuthStore} from "stores/authStore";
 import {doc, updateDoc} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const {sendMsg} = useUtils()

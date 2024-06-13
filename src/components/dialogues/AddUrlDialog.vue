@@ -41,7 +41,7 @@ import normalizeUrl from 'normalize-url';
 import {Tab} from "src/tabsets/models/Tab";
 import ChromeApi from "src/services/ChromeApi";
 import {useUtils} from "src/core/services/Utils";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

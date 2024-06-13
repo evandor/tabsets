@@ -23,7 +23,7 @@
           <SidePanelToolbarButton
               icon="close"
               tooltip="Close this view"
-              @click="useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)"/>
+              @click="useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)"/>
         </template>
 
       </FirstToolbarHelper>
@@ -37,7 +37,7 @@
 
 import BookmarksTree from "src/bookmarks/components/BookmarksTree.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {onMounted} from "vue";
 import Analytics from "src/core/utils/google-analytics";
 import ToolbarButton from "src/core/components/SidePanelToolbarButton.vue";

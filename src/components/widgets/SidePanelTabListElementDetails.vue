@@ -51,7 +51,7 @@
 import {Tab} from "src/tabsets/models/Tab";
 import TabsetService from "src/tabsets/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
-import {ListDetailLevel, useUiStore} from "src/stores/uiStore";
+import {ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
 import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {formatDistance} from "date-fns";

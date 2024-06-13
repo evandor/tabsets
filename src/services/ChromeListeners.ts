@@ -7,7 +7,7 @@ import {useGroupsStore} from "stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/utils/ContentUtils";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {HTMLSelection, Tab} from "src/tabsets/models/Tab";
@@ -19,6 +19,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {SidePanelViews} from "src/models/SidePanelViews";
 
 const {
   saveTabset,
@@ -530,7 +531,7 @@ class ChromeListeners {
       //   //this.handleMessageWebsiteImage(request, sender, sendResponse)
       //   useTabsetService().handleAnnotationMessage(request)
     } else if (request.name === 'sidepanel-switch-view') {
-      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
     } else {
       console.log("got unknown message", request)
     }
