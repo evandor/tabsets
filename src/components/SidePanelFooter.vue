@@ -36,8 +36,8 @@
             style="font-size: smaller;text-align: center"
             :class="toastBannerClass()">
             {{ useUiStore().toasts[0]?.msg }}
-            <template v-slot:action v-if="useUiStore().toasts[0]?.action">
-              <q-btn flat label="Undo"
+            <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">
+              <q-btn flat :label="useUiStore().toasts[0].actions[0].label"
                      @click="useUiStore().callUndoActionFromCurrentToast()"/>
             </template>
           </q-banner>
@@ -74,12 +74,12 @@
         &nbsp;
       </div>
       <div v-else class="col text-right">
-        <q-btn icon="o_help" v-if="useFeaturesStore().hasFeature(FeatureIdent.HELP)"
-               :class="rightButtonClass()"
-               flat
-               :size="getButtonSize()"
-               @click="openHelpView()">
-        </q-btn>
+<!--        <q-btn icon="o_help" v-if="useFeaturesStore().hasFeature(FeatureIdent.HELP)"-->
+<!--               :class="rightButtonClass()"-->
+<!--               flat-->
+<!--               :size="getButtonSize()"-->
+<!--               @click="openHelpView()">-->
+<!--        </q-btn>-->
 
         <q-btn icon="o_settings" v-if="showSettingsButton()"
                class="q-my-xs q-px-xs q-mr-none"

@@ -104,7 +104,7 @@ import TabsetHelp from "components/TabsetHelp.vue";
 import TabsetDetails from "components/views/TabsetDetails.vue";
 import TagsListViewer from "components/views/TagsListViewer.vue";
 import TagListViewer from "components/views/TagListViewer.vue";
-import ByDomainList from "components/ByDomainList.vue";
+import ByDomainList from "src/tabsets/components/ByDomainList.vue";
 import OpenTabsView from "components/views/OpenTabsView.vue";
 import SavedPdfs from "components/SavedPdfs.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";

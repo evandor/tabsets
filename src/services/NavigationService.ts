@@ -3,12 +3,15 @@ import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import JsUtils from "src/utils/JsUtils";
 import {useGroupsStore} from "stores/groupsStore";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import _ from "lodash"
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {NoOpCommand} from "src/core/domain/commands/NoOpCommand";
+import {RefreshTabCommand} from "src/tabsets/commands/RefreshTabCommand";
 
 class NavigationService {
 
@@ -94,9 +97,22 @@ class NavigationService {
                 if (!found) { // highlight only first hit
                   found = true
                   console.debug("found something", r)
+
+                  const tabsForUrl = useTabsetsStore().tabsForUrl(url)
+                  console.log("tabsForUrl", tabsForUrl)
+                  const lastActive = _.min(_.map(tabsForUrl, tfu => tfu.lastActive))
+                  const {handleSuccess} = useNotificationHandler()
                   if (r.active) {
-                    const {handleSuccess} = useNotificationHandler()
-                    handleSuccess(new ExecutionResult("", "already opened..."))
+                    console.log(`lastActive ${lastActive}, now: ${new Date().getTime()}, diff: ${new Date().getTime() - (lastActive || new Date().getTime())}`)
+                    if (lastActive && new Date().getTime() - lastActive > 1000 * 60) {
+                      handleSuccess(new ExecutionResult("", "already opened,...", new Map([["Refresh", new RefreshTabCommand(r.id!, url)]])))
+                    } else {
+                      handleSuccess(new ExecutionResult("", "already opened..."))
+                    }
+                  } else {
+                    if (lastActive && new Date().getTime() - lastActive > 1000 * 60) {
+                      handleSuccess(new ExecutionResult("", "maybe outdated...", new Map([["Refresh?", new RefreshTabCommand(r.id!, url)]])))
+                    }
                   }
                   chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
                   chrome.windows.update(useWindowId, {focused: true})

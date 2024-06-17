@@ -11,7 +11,7 @@ class UndoCommand implements Command<any> {
 
   execute(): Promise<ExecutionResult<any>> {
     console.info(this.tab, `reverting changed tab name to ${this.oldName}`)
-    return TabsetService.setCustomTitle(this.tab, this.oldName,"")
+    return TabsetService.setCustomTitle(this.tab, this.oldName, "")
       .then(res => {
         if (this.tab.url) {
           useSearchStore().update(this.tab.url, 'name', this.oldName)
@@ -43,8 +43,8 @@ export class UpdateTabNameCommand implements Command<any> {
         new ExecutionResult(
           this.newName,
           "Tab's title was edited",
-          new UndoCommand(this.tab, oldTitle)))
-      )
+          new Map([["Undo", new UndoCommand(this.tab, oldTitle)]])
+        )))
       .catch(err => Promise.reject(err))
   }
 

@@ -5,7 +5,7 @@ import {MetaLink} from "src/models/MetaLink";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useGroupsStore} from "stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
-import ContentUtils from "src/utils/ContentUtils";
+import ContentUtils from "src/core/utils/ContentUtils";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
@@ -121,8 +121,6 @@ class ChromeListeners {
   inProgress = false;
 
   thumbnailsActive = true
-
-  throttleOnePerSecond = throttledQueue(1, 1000, true)
 
   private onCreatedListener = (tab: chrome.tabs.Tab) => this.onCreated(tab)
   private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => this.onUpdated(number, info, tab)
@@ -464,23 +462,9 @@ class ChromeListeners {
         console.warn("got runtime error:" + chrome.runtime.lastError);
       }
       const url = tab.url
-      _.forEach([...useTabsetsStore().tabsets.keys()], key => {
-        const ts = useTabsetsStore().tabsets.get(key)
-        if (ts && ts.status !== TabsetStatus.DELETED) {
-          // increasing hit count
-          const hits = _.filter(ts.tabs, (t: Tab) => t.url === url) as Tab[]
-          let hit = false
-          _.forEach(hits, h => {
-            h.activatedCount = 1 + h.activatedCount
-            h.lastActive = new Date().getTime()
-            hit = true
-          })
-          if (hit) {
-            console.debug("saving tabset on activated", ts.name)
-            saveTabset(ts as Tabset)
-          }
-        }
-      })
+      if (url) {
+        useTabsetService().urlWasActivated(url)
+      }
     })
   }
 
