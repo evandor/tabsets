@@ -39,7 +39,7 @@ import {useRoute} from "vue-router";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import PanelTabListElementWidget from "src/tabsets/widgets/PanelTabListElementWidget.vue";
 import IDrawUtils from "src/utils/IDrawUtils";
 import {uid} from "quasar";
 import _ from "lodash"
