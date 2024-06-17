@@ -35,7 +35,7 @@ export class StopSessionCommand implements Command<any> {
           new ExecutionResult(
             null,
             "The session has been stopped. New Tabs are not added automatically.",
-            new UndoCommand(this.tabset)))
+            new Map([["Undo", new UndoCommand(this.tabset)]])))
         .catch((err) => Promise.reject("issue saving tabset"))
     }
     return Promise.reject("could not find tabset")

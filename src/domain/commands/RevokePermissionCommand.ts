@@ -46,7 +46,7 @@ export class RevokePermissionCommand implements Command<boolean> {
         return new ExecutionResult(
           true,
           "Permission was revoked",
-          new UndoCommand(this.permission))
+          new Map([["Undo", new UndoCommand(this.permission)]]))
       })
   }
 
