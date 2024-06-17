@@ -26,7 +26,7 @@ import {Tab, TabSorting} from "src/tabsets/models/Tab";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {PropType} from "vue";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import PanelTabListElementWidget from "src/tabsets/widgets/PanelTabListElementWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

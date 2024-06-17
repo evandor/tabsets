@@ -40,6 +40,10 @@ classDiagram
   Core <-- Snapshots
   Tabsets <-- Snapshots
 
+  UI <-- Opentabs
+  Tabsets <-- Opentabs
+  Features <-- Opentabs
+
   Core <-- UI
 
 ```

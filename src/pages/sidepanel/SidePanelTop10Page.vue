@@ -59,7 +59,7 @@
 import _ from "lodash"
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import PanelTabListElementWidget from "src/tabsets/widgets/PanelTabListElementWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {onMounted, ref, watchEffect} from "vue";
