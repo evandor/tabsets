@@ -2,7 +2,7 @@ import {openURL, uid} from "quasar";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import JsUtils from "src/utils/JsUtils";
-import {useGroupsStore} from "stores/groupsStore";
+import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
@@ -10,9 +10,12 @@ import {FeatureIdent} from "src/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import _ from "lodash"
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {NoOpCommand} from "src/core/domain/commands/NoOpCommand";
 import {RefreshTabCommand} from "src/tabsets/commands/RefreshTabCommand";
 
+/**
+ * refactoring remark: uses many other modules, needs to be one-per-application
+ *
+ */
 class NavigationService {
 
   placeholderPattern = /\${[^}]*}/gm
@@ -64,11 +67,11 @@ class NavigationService {
         // get all tabs with this url
         const tabsForUrl = useTabsetsStore().tabsForUrl(url) || []
         tabsForUrl.forEach(t => {
-          if (t.httpInfo) {
-            t.httpError = ''
-            t.httpInfo = ''
+          if (t.tab.httpInfo) {
+            t.tab.httpError = ''
+            t.tab.httpInfo = ''
 
-            const ts = useTabsetsStore().tabsetFor(t.id)
+            const ts = useTabsetsStore().tabsetFor(t.tab.id)
             if (ts) {
               //console.log("saving tabset ", ts)
               useTabsetService().saveTabset(ts)
@@ -100,7 +103,7 @@ class NavigationService {
 
                   const tabsForUrl = useTabsetsStore().tabsForUrl(url)
                   console.log("tabsForUrl", tabsForUrl)
-                  const lastActive = _.min(_.map(tabsForUrl, tfu => tfu.lastActive))
+                  const lastActive = _.min(_.map(tabsForUrl, tfu => tfu.tab.lastActive))
                   const {handleSuccess} = useNotificationHandler()
                   if (r.active) {
                     console.log(`lastActive ${lastActive}, now: ${new Date().getTime()}, diff: ${new Date().getTime() - (lastActive || new Date().getTime())}`)
@@ -179,7 +182,7 @@ class NavigationService {
     } else if (urls.length === 1) {
       const tabs = useTabsetsStore().tabsForUrl(urls[0])
       if (tabs.length === 1) {
-        const tabAndTabsetId = useTabsetsStore().getTabAndTabsetId(tabs[0].id)
+        const tabAndTabsetId = useTabsetsStore().getTabAndTabsetId(tabs[0].tab.id)
         if (tabAndTabsetId) {
           return useTabsetsStore().getTabset(tabAndTabsetId.tabsetId)?.window || 'current'
         }

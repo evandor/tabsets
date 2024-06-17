@@ -15,7 +15,7 @@ import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSearchStore} from "src/search/stores/searchStore";
 import {Router} from "vue-router";
-import {useGroupsStore} from "stores/groupsStore";
+import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {SyncType, useAppStore} from "stores/appStore";
 import PersistenceService from "src/services/PersistenceService";
@@ -138,6 +138,8 @@ class AppService {
 
     await useTabsStore2().initialize()
 
+    //await useGroupsStore().initialize(useDB().groupsIndexedDb)
+
     const thumbnailsPersistence = IndexedDbThumbnailsPersistence
     //store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
     await useThumbnailsService().init(thumbnailsPersistence)
@@ -147,7 +149,7 @@ class AppService {
     ChromeApi.init(router)
 
     if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-      await groupsStore.initialize(useDB(undefined).db)
+      await groupsStore.initialize(useDB().groupsIndexedDb)
       groupsStore.initListeners()
     }
 

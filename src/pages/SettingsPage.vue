@@ -412,6 +412,13 @@
 </template>
 
 <script setup lang="ts">
+
+
+/**
+ * refactoring remark: uses many other modules, needs to be one-per-application
+ *
+ */
+
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {LocalStorage, useQuasar} from "quasar";
 import {useSearchStore} from "src/search/stores/searchStore";
@@ -435,7 +442,6 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import {useUtils} from "src/core/services/Utils";
 import Analytics from "src/core/utils/google-analytics";
-import {useGroupsStore} from "../stores/groupsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {useRoute} from "vue-router";

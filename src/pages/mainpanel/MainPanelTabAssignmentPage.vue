@@ -84,7 +84,6 @@ import {Notify, QForm} from "quasar";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {TabAssignmentCommand} from "src/domain/tabs/TabAssignmentCommand";
 import JsUtils from "src/utils/JsUtils";
-import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
