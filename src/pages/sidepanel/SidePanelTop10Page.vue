@@ -65,7 +65,7 @@ import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
-import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
+import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const top10 = ref<Tab[]>([])
