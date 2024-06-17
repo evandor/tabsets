@@ -31,7 +31,9 @@ export class MoveToTabsetCommand implements Command<any> {
         if (this.copy) {
           return Promise.resolve(new ExecutionResult("done", "Tab was copied"))
         } else {
-          return Promise.resolve(new ExecutionResult("done", "Tab was moved - press 'Shift' if you want to copy instead", new UndoCommand(this.tabId, this.oldTabsetId, this.copy)))
+          return Promise.resolve(new ExecutionResult("done",
+            "Tab was moved - press 'Shift' if you want to copy instead",
+            new Map([["Undo", new UndoCommand(this.tabId, this.oldTabsetId, this.copy)]])))
         }
       })
       .catch((err) => Promise.reject(err))

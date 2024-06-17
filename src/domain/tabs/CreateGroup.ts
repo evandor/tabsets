@@ -40,7 +40,9 @@ export class CreateGroupCommand implements Command<any> {
     this.tabset.columns.push(group)
     return useTabsetService().saveTabset(this.tabset)
       .then((res) =>
-        Promise.resolve(new ExecutionResult("done", `Group ${trustedTitle} was created`, new UndoCommand(this.tabset, group.id))))
+        Promise.resolve(new ExecutionResult("done",
+          `Group ${trustedTitle} was created`,
+          new Map([["Undo", new UndoCommand(this.tabset, group.id)]]))))
       .catch(err => Promise.reject("could not create group"))
   }
 

@@ -54,7 +54,7 @@ export class GrantPermissionCommand implements Command<boolean> {
           return new ExecutionResult(
             granted,
             "Permission was added",
-            new UndoCommand(this.permission))
+            new Map([["Undo", new UndoCommand(this.permission)]]))
         } else {
           console.log("permission was not granted", this.permission)
           useFeaturesStore().deactivateFeature(this.permission)

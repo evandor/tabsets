@@ -49,7 +49,7 @@ export class UpdateTabUrlCommand implements Command<any> {
         new ExecutionResult(
           this.newUrl,
           "Tab updated",
-          new UndoCommand(this.tab, oldUrl)))
+          new Map([["Undo", new UndoCommand(this.tab, oldUrl)]])))
       )
       .catch(err => Promise.reject(err))
   }
