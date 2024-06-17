@@ -42,7 +42,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/sidepanel/tabsets/:tabsetId',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/SidePanelTabsetPage.vue')}],
+    children: [{path: '', component: () => import('src/tabsets/pages/SidePanelTabsetPage.vue')}],
   },
   {
     path: '/sidepanel/spaces',
@@ -232,12 +232,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/bydomain/:encodedUrl',
     component: () => import('layouts/FullPageLayout.vue'),
-    children: [{path: '', component: () => import('pages/ByDomainPage.vue')}],
+    children: [{path: '', component: () => import('src/tabsets/pages/ByDomainPage.vue')}],
   },
   {
     path: '/historyByAge/:encodedAge',
     component: () => import('layouts/DefaultLayout.vue'),
-    children: [{path: '', component: () => import('pages/ByAgePage.vue')}],
+    children: [{path: '', component: () => import('src/tabsets/pages/ByAgePage.vue')}],
   },
   {
     path: '/features/:feature',
