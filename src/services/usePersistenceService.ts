@@ -6,10 +6,12 @@ import SpacesPersistence from "src/spaces/persistence/SpacesPersistence";
 import IndexedDbSpacesStorage from "src/spaces/persistence/IndexedDbSpacesPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
-import FirestoreTabsetsPersistence from "src/tabsets/persistence/FirestoreTabsetsPersistence";
 import FeaturesPersistence from "src/features/persistence/FeaturesPersistence";
 import {LocalStorageFeaturesPersistence} from "src/features/persistence/LocalStorageFeaturesPersistence";
-import FirestoreFeaturesPersistence from "src/features/persistence/FirestoreFeaturesPersistence";
+import SnapshotsPersistence from "src/snapshots/persistence/SnapshotsPersistence";
+import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
+import IndexedDbTabsetsGroupsPersistence from "src/tabsets/persistence/IndexedDbTabsetsGroupsPersistence";
+import TabsetsGroupsPersistence from "src/tabsets/persistence/TabsetsGroupsPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
@@ -18,6 +20,9 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   const spacesIndexedDb: SpacesPersistence = IndexedDbSpacesStorage
 
   const tabsetsIndexedDb: TabsetsPersistence = IndexedDbTabsetsPersistence
+  const groupsIndexedDb: TabsetsGroupsPersistence = IndexedDbTabsetsGroupsPersistence
+
+  const snapshotsIndexedDb: SnapshotsPersistence = IndexedDbSnapshotPersistence
 
   let localDb = undefined as unknown as PersistenceService
   let featuresLocalStorage: FeaturesPersistence = undefined as unknown as FeaturesPersistence
@@ -29,7 +34,9 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   return {
     db, localDb, spacesIndexedDb,
     tabsetsIndexedDb,
-    featuresLocalStorage
+    featuresLocalStorage,
+    snapshotsIndexedDb,
+    groupsIndexedDb
   }
 
 }

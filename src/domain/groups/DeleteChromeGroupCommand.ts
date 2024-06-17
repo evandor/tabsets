@@ -1,6 +1,6 @@
 import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {useGroupsStore} from "stores/groupsStore";
+import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 
 
 export class DeleteChromeGroupCommand implements Command<string> {

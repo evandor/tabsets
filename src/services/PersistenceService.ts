@@ -2,7 +2,6 @@ import {Tabset} from "src/tabsets/models/Tabset";
 import {Notification} from "src/models/Notification";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
-import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
 
@@ -23,10 +22,10 @@ interface PersistenceService {
   getLinks(url: string): Promise<object>
   saveLinks(url: string, links: any): Promise<void | IDBValidKey>
 
-  getBlobs(type: BlobType): Promise<any[]>
-  saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined): Promise<any>
-  getBlobsForTab(tabId: string): Promise<SavedBlob[]>
-  deleteBlob(tabId: string, elementId: string): void;
+  // getBlobs(type: BlobType): Promise<any[]>
+  // saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined): Promise<any>
+  // getBlobsForTab(tabId: string): Promise<SavedBlob[]>
+  // deleteBlob(tabId: string, elementId: string): void;
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void>
 
@@ -41,10 +40,10 @@ interface PersistenceService {
   getActiveFeatures(): Promise<string[]>
   saveActiveFeatures(val: string[]): any
 
-  addGroup(group: chrome.tabGroups.TabGroup): Promise<any>
-  updateGroup(group: chrome.tabGroups.TabGroup): Promise<any>
-  getGroups(): Promise<chrome.tabGroups.TabGroup[]>
-  deleteGroupByTitle(title: string): Promise<void>
+  // addGroup(group: chrome.tabGroups.TabGroup): Promise<any>
+  // updateGroup(group: chrome.tabGroups.TabGroup): Promise<any>
+  // getGroups(): Promise<chrome.tabGroups.TabGroup[]>
+  // deleteGroupByTitle(title: string): Promise<void>
 
   getMessages(): Promise<Message[]>
   addMessage(msg: Message):void

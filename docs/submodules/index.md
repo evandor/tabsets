@@ -25,6 +25,7 @@ classDiagram
   Search <-- Tabsets
   Spaces <-- Tabsets
   Suggestions <-- Tabsets
+  UI <-- Tabsets
 
   Core <-- Spaces
   Features <-- Spaces
@@ -38,6 +39,8 @@ classDiagram
 
   Core <-- Snapshots
   Tabsets <-- Snapshots
+
+  Core <-- UI
 
 ```
 

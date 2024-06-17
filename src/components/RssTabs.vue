@@ -32,7 +32,7 @@
 import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {Tab} from "src/tabsets/models/Tab";
-import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
+import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const router = useRouter()
