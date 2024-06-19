@@ -28,9 +28,11 @@ import IndexedDbContentPersistence from "src/content/persistence/IndexedDbConten
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-
+import mitt from 'mitt'
 
 class AppService {
+
+  emitter = mitt()
 
   router: Router = null as unknown as Router
   initialized = false
@@ -75,7 +77,18 @@ class AppService {
 
     settingsStore.initialize(quasar.localStorage);
 
+    // should be initialized before search submodule
+    await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
+    await useContentService().init(IndexedDbContentPersistence)
+
     searchStore.init().catch((err) => console.error(err))
+
+    chrome.runtime.onMessage.addListener((message: any, sender: any, r: any) => {
+      console.log("===>", message)
+    })
+
+    this.emitter.on('*', (type, e) => console.log("===>", type, e))
+
 
     // init db
     await IndexedDbPersistenceService.init("db")
@@ -140,11 +153,6 @@ class AppService {
 
     //await useGroupsStore().initialize(useDB().groupsIndexedDb)
 
-    const thumbnailsPersistence = IndexedDbThumbnailsPersistence
-    //store.getServiceName() === 'FirestorePersistenceService' ? useDB().spacesFirestoreDb : useDB().spacesIndexedDb
-    await useThumbnailsService().init(thumbnailsPersistence)
-
-    await useContentService().init(IndexedDbContentPersistence)
 
     ChromeApi.init(router)
 
@@ -168,6 +176,7 @@ class AppService {
 
 
   }
+
 
 }
 
