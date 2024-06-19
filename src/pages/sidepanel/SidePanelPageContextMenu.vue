@@ -142,7 +142,7 @@ import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
-import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
+import ContextMenuItem from "src/core/components/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
 import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
 import {useTabsetService} from "src/tabsets/services/TabsetService2";

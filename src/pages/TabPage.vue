@@ -389,12 +389,13 @@ import {useSearchStore} from "src/search/stores/searchStore";
 import _ from "lodash"
 import {useUtils} from "src/core/services/Utils";
 import {openURL} from "quasar";
-import {useSettingsStore} from "src/stores/settingsStore"
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import Analytics from "src/core/utils/google-analytics";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {FeatureIdent} from "src/models/FeatureIdent";
 
 const searchStore = useSearchStore()
 const route = useRoute()

@@ -5,7 +5,7 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {useGroupsStore} from "stores/groupsStore";
+import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import ChromeApi from "src/services/ChromeApi";
 
 installQuasarPlugin();

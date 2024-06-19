@@ -35,7 +35,7 @@ import {useUtils} from "src/core/services/Utils"
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import PanelTabListElementWidget from "src/tabsets/widgets/PanelTabListElementWidget.vue";
 import {useRoute} from "vue-router";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

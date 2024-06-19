@@ -3,7 +3,7 @@ import {uid, useQuasar} from "quasar";
 import throttledQueue from 'throttled-queue';
 import {MetaLink} from "src/models/MetaLink";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {useGroupsStore} from "stores/groupsStore";
+import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/core/utils/ContentUtils";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
@@ -20,6 +20,7 @@ import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
+import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 
 const {
   saveTabset,
@@ -284,14 +285,14 @@ class ChromeListeners {
       // handle existing tabs
       if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
         const matchingTabs = useTabsetsStore().tabsForUrl(chromeTab.url || '')
-        for (const t of matchingTabs) {
+        for (const tabAndTabsetId of matchingTabs) {
           // we care only about actually setting a group, not about removal
           if (info.groupId && info.groupId >= 0) {
-            console.log(" --- updating existing tabs for url: ", chromeTab.url, t, info)
-            t.groupId = info.groupId
-            t.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
-            t.updated = new Date().getTime()
-            const tabset = useTabsetsStore().tabsetFor(t.id)
+            console.log(" --- updating existing tabs for url: ", chromeTab.url, tabAndTabsetId, info)
+            tabAndTabsetId.tab.groupId = info.groupId
+            tabAndTabsetId.tab.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
+            tabAndTabsetId.tab.updated = new Date().getTime()
+            const tabset = useTabsetsStore().tabsetFor(tabAndTabsetId.tab.id)
             if (tabset) {
               await useTabsetService().saveTabset(tabset)
             }
@@ -307,6 +308,11 @@ class ChromeListeners {
           this.handleUpdate(ts, chromeTab)
         }
       })
+
+      // matching tabs for url
+      if (chromeTab.url) {
+        useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
+      }
 
       // handle windowsStore related pages
       //sendMsg('window-updated', {initiated: "ChromeListeners#onUpdated"})

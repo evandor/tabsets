@@ -46,7 +46,7 @@ import {Tab} from "src/tabsets/models/Tab"
 import TabsetService from "src/tabsets/services/TabsetService"
 import {onMounted, PropType, ref, watchEffect} from "vue"
 import NavigationService from "src/services/NavigationService"
-import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
+import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue"
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 

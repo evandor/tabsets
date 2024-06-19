@@ -71,13 +71,11 @@
 import {PropType, ref, watchEffect} from "vue";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
-import {openURL, useQuasar} from "quasar";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {MoveToTabsetCommand} from "src/domain/tabs/MoveToTabset";
-import TabsetListContextMenu from "components/widgets/helper/TabsetListContextMenu.vue";
+import TabsetListContextMenu from "src/tabsets/widgets/TabsetListContextMenu.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const router = useRouter()

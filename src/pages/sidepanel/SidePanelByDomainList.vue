@@ -48,7 +48,7 @@ import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
 import ByDomainListWidget from "src/tabsets/widgets/ByDomainListWidget.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
-import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
+import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
 
 const router = useRouter()
 

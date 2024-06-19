@@ -57,8 +57,8 @@ const props = defineProps({
 
 const importData = () => {
   // @ts-ignore
-  var file = document.getElementById("json2import").files[0];
-  var reader = new FileReader();
+  const file = document.getElementById("json2import").files[0];
+  const reader = new FileReader();
   reader.onload = function (e) {
     // @ts-ignore
     const json = e.target.result
