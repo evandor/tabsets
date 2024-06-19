@@ -49,19 +49,13 @@
 <script lang="ts" setup>
 
 import {onMounted, ref, watchEffect} from "vue";
-import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useUtils} from "src/core/services/Utils";
-import _ from "lodash"
 import {Tab} from "src/tabsets/models/Tab";
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import TabFaviconWidget from "components/widgets/TabFaviconWidget.vue";
-import PanelTabListElementWidget from "components/widgets/PanelTabListElementWidget.vue";
+import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import SecondToolbarHelper from "pages/sidepanel/helper/SecondToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

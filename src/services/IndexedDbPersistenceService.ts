@@ -7,7 +7,7 @@ import {MetaLink} from "src/models/MetaLink";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
-import {useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {BlobType, SavedBlob} from "src/models/SavedBlob";
@@ -23,7 +23,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async init(dbName: string) {
-    console.log(" ...initializing indexeddb database", dbName)
+    console.debug(" ...initializing indexeddb database", dbName)
     this.db = await this.initDatabase(dbName)
     useUiStore().dbReady = true
   }
@@ -199,49 +199,49 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  async saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {
-    //const encodedTabUrl = btoa(tab.url)
-    const existing = await this.db.get('blobs', id)
-    const arrayToSave: object[] = []
-    const savedBlob = new SavedBlob(uid(), type, url, data, remark)
-    if (existing) {
-      existing.push(savedBlob)
-      return this.db.put('blobs', existing, id)
-    } else {
-      return this.db.put('blobs', [savedBlob], id)
-    }
-  }
-
-  getBlobs(type: BlobType): Promise<any[]> {
-    if (!this.db) { // can happen for some reason
-      return Promise.resolve([])
-    }
-    try {
-      console.log("hier", type)
-      return this.db.getAll('blobs')
-        .then((b: any[]) => {
-          console.log("got b", b)
-          const blobs = _.flatten(b)
-          return _.filter(blobs, d => d.type === type)
-        })
-    } catch (ex) {
-      console.log("got error in getBlobs", ex)
-      return Promise.reject("got error in getBlobs")
-    }
-  }
-
-  getBlobsForTab(tabId: string): Promise<SavedBlob[]> {
-    if (!this.db) { // can happen for some reason
-      return Promise.resolve([])
-    }
-    return this.db.get('blobs', tabId)
-  }
-
-  async deleteBlob(tabId: string, elementId: string) {
-    let blobsForTab = await this.getBlobsForTab(tabId)
-    blobsForTab = _.filter(blobsForTab, b => b.id !== elementId)
-    await this.db.put('blobs', blobsForTab, tabId)
-  }
+  // async saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {
+  //   //const encodedTabUrl = btoa(tab.url)
+  //   const existing = await this.db.get('blobs', id)
+  //   const arrayToSave: object[] = []
+  //   const savedBlob = new SavedBlob(uid(), type, url, data, remark)
+  //   if (existing) {
+  //     existing.push(savedBlob)
+  //     return this.db.put('blobs', existing, id)
+  //   } else {
+  //     return this.db.put('blobs', [savedBlob], id)
+  //   }
+  // }
+  //
+  // getBlobs(type: BlobType): Promise<any[]> {
+  //   if (!this.db) { // can happen for some reason
+  //     return Promise.resolve([])
+  //   }
+  //   try {
+  //     console.log("hier", type)
+  //     return this.db.getAll('blobs')
+  //       .then((b: any[]) => {
+  //         console.log("got b", b)
+  //         const blobs = _.flatten(b)
+  //         return _.filter(blobs, d => d.type === type)
+  //       })
+  //   } catch (ex) {
+  //     console.log("got error in getBlobs", ex)
+  //     return Promise.reject("got error in getBlobs")
+  //   }
+  // }
+  //
+  // getBlobsForTab(tabId: string): Promise<SavedBlob[]> {
+  //   if (!this.db) { // can happen for some reason
+  //     return Promise.resolve([])
+  //   }
+  //   return this.db.get('blobs', tabId)
+  // }
+  //
+  // async deleteBlob(tabId: string, elementId: string) {
+  //   let blobsForTab = await this.getBlobsForTab(tabId)
+  //   blobsForTab = _.filter(blobsForTab, b => b.id !== elementId)
+  //   await this.db.put('blobs', blobsForTab, tabId)
+  // }
 
   addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
     console.debug("adding group", group)

@@ -18,7 +18,7 @@ import {LocalStorage} from "quasar";
 import {APP_INSTALLATION_ID} from "boot/constants";
 import {useDB} from "src/services/usePersistenceService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 function tabsetDoc(tabsetId: string) {
@@ -64,7 +64,7 @@ class FirestorePersistenceService implements PersistenceService {
   }
 
   async init() {
-    console.log(" ...initializing GitPersistenceService")
+    console.debug(" ...initializing GitPersistenceService")
     this.indexedDB = useDB(undefined).db as typeof IndexedDbPersistenceService
     return Promise.resolve("")
   }

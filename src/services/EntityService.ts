@@ -6,7 +6,7 @@ export function useEntitiesService() {
 
   const init = async (providedDb: PersistenceService,
                      ) => {
-    console.log(" ...initializing entitiesService as", providedDb.getServiceName())
+    console.debug(" ...initializing entitiesService as", providedDb.getServiceName())
     db = providedDb
 
 

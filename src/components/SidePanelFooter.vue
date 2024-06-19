@@ -36,8 +36,8 @@
             style="font-size: smaller;text-align: center"
             :class="toastBannerClass()">
             {{ useUiStore().toasts[0]?.msg }}
-            <template v-slot:action v-if="useUiStore().toasts[0]?.action">
-              <q-btn flat label="Undo"
+            <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">
+              <q-btn flat :label="useUiStore().toasts[0].actions[0].label"
                      @click="useUiStore().callUndoActionFromCurrentToast()"/>
             </template>
           </q-banner>
@@ -74,12 +74,12 @@
         &nbsp;
       </div>
       <div v-else class="col text-right">
-        <q-btn icon="o_help" v-if="useFeaturesStore().hasFeature(FeatureIdent.HELP)"
-               :class="rightButtonClass()"
-               flat
-               :size="getButtonSize()"
-               @click="openHelpView()">
-        </q-btn>
+<!--        <q-btn icon="o_help" v-if="useFeaturesStore().hasFeature(FeatureIdent.HELP)"-->
+<!--               :class="rightButtonClass()"-->
+<!--               flat-->
+<!--               :size="getButtonSize()"-->
+<!--               @click="openHelpView()">-->
+<!--        </q-btn>-->
 
         <q-btn icon="o_settings" v-if="showSettingsButton()"
                class="q-my-xs q-px-xs q-mr-none"
@@ -147,7 +147,7 @@
   </q-footer>
 </template>
 <script setup lang="ts">
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
@@ -177,6 +177,7 @@ import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {SidePanelViews} from "src/models/SidePanelViews";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -237,7 +238,7 @@ watchEffect(() => {
   //console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
     doShowSuggestionButton.value ||
-    (useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+    (useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
       _.findIndex(suggestions, s => {
         return s.state === SuggestionState.NEW ||
           (s.state === SuggestionState.NOTIFICATION && !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
@@ -245,7 +246,7 @@ watchEffect(() => {
 
   showSuggestionIcon.value =
     !doShowSuggestionButton.value &&
-    useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+    useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
     _.findIndex(suggestions, s => {
       return s.state === SuggestionState.DECISION_DELAYED
     }) >= 0
@@ -452,16 +453,6 @@ const toggleShowStatsTable = () => {
   if (showWindowTable.value) {
     showWindowTable.value = false
   }
-}
-
-const logout = () => {
-  authStore.logout()
-    .then(() => {
-      router.push("/refresh/sidepanel")
-    })
-    .catch(() => {
-      //this.handleError(error)
-    })
 }
 
 const calcWindowRows = (): WindowHolder[] => {

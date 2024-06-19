@@ -51,21 +51,16 @@
 
 import {Tab} from "src/tabsets/models/Tab"
 import NavigationService from "src/services/NavigationService"
-import TabFaviconWidget from "src/components/widgets/TabFaviconWidget.vue"
+import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue"
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {useUiStore} from "src/stores/uiStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
-import _ from "lodash"
-import {useUtils} from "src/core/services/Utils"
-import {useSettingsStore} from "src/stores/settingsStore"
 import {PropType, ref, watch, watchEffect} from "vue";
-import ChromeApi from "src/services/ChromeApi";
 import {uid} from "quasar";
-import {useTabsetsStore} from "../../tabsets/stores/tabsetsStore";
 import TabService from "src/services/TabService";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
+import {useTabsetsStore} from "../../tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   chromeTab: {type: Object as PropType<chrome.tabs.Tab>, required: true},

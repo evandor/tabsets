@@ -142,7 +142,7 @@ import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
-import ContextMenuItem from "pages/sidepanel/helper/ContextMenuItem.vue";
+import ContextMenuItem from "src/core/components/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
 import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
@@ -153,7 +153,7 @@ import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArch
 import NewWindowDialog from "src/windows/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
 import {MarkTabsetDeletedCommand} from "src/tabsets/commands/MarkTabsetDeleted";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {NotificationType} from "src/core/services/ErrorHandler";
 import NewSubfolderDialog from "src/tabsets/dialogues/NewSubfolderDialog.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -305,7 +305,7 @@ const deleteTabsetDialog = (tabset: Tabset) => {
 const deleteTabset = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetDeletedCommand(tabset.id))
   .then((res: any) => {
     //if (props.sidePanelMode) {
-    useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+    useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
     //}
     return res
   })

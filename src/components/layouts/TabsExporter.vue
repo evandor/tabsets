@@ -54,13 +54,13 @@ import {PropType, ref} from "vue";
 import {VueDraggableNext} from 'vue-draggable-next'
 import {useQuasar} from "quasar";
 import _ from "lodash"
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import TabListElementWidget from "src/components/widgets/TabListElementWidget.vue";
 import {useUtils} from "src/core/services/Utils"
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({

@@ -63,12 +63,21 @@
 
             <SidePanelToolbarTabNavigationHelper/>
 
+            <!--            <SidePanelToolbarButton-->
+            <!--              v-if="showSyncInfo()"-->
+            <!--              icon="o_sync_alt"-->
+            <!--              tooltip="This account is being synced"-->
+            <!--              :color="useUiStore().syncing ? 'green':'grey'"-->
+            <!--              size="9px"-->
+            <!--              class="q-ml-sm q-mr-sm"/>-->
+
             <SidePanelToolbarButton
-              v-if="showSyncInfo()"
-              icon="o_sync_alt"
-              tooltip="This account is being synced"
+              v-if="useTabsetsUiStore().matchingTabs.length > 0 && useTabsetsUiStore().matchingTabs[0].tabsetId !== useTabsetsStore().currentTabsetId"
+              icon="system_update_alt"
+              :tooltip="`open current tab (${useTabsetsUiStore().matchingTabs[0].tab.url}) in tabset(s)`"
               :color="useUiStore().syncing ? 'green':'grey'"
               size="9px"
+              @click="selectTabsetForFirstMatchingTab(useTabsetsUiStore().matchingTabs[0] as TabAndTabsetId)"
               class="q-ml-sm q-mr-sm"/>
 
             <!--            <SidePanelToolbarButton-->
@@ -104,24 +113,22 @@ import {FeatureIdent} from "src/models/FeatureIdent";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
-import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {TabsetType} from "src/tabsets/models/Tabset";
 import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
-import _ from "lodash";
-import {StopSessionCommand} from "src/domain/commands/StopSessionCommand";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useQuasar} from "quasar";
-import {useAuthStore} from "stores/authStore";
-import {SyncType} from "stores/appStore";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {SidePanelViews} from "src/models/SidePanelViews";
+import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
 const {t} = useI18n({useScope: 'global'})
 
@@ -165,7 +172,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelView.TABS_LIST) &&
+  showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelViews.TABS_LIST) &&
     useUiStore().toolbarFilter
 })
 
@@ -198,24 +205,9 @@ const webClipActive = () => useTabsStore2().currentChromeTab
 const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 
 const showToggleSessionIcon = () =>
-  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
+  useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
   useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) &&
   !searching.value
-
-const showCreateClipButton = () =>
-  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && webClipActive() &&
-  !searching.value
-
-const showCreateClipButtonInActive = () =>
-  useUiStore().sidePanelActiveViewIs(SidePanelView.MAIN) &&
-  useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP) && !webClipActive() &&
-  !searching.value
-
-const newTabsetTooltip = () =>
-  useFeaturesStore().hasFeature(FeatureIdent.SPACES) ?
-    (useSpacesStore().space ? 'Add new Tabset in this space' : 'Add new unassigned Tabset') :
-    t('add_new_tabset')
 
 const openNewTabsetDialog = () => {
   $q.dialog({
@@ -230,6 +222,10 @@ const openNewTabsetDialog = () => {
 
 const showSyncInfo = () => {
   return false
+}
+
+const selectTabsetForFirstMatchingTab = (tabAndTabsetId: TabAndTabsetId) => {
+  useTabsetsStore().selectCurrentTabset(tabAndTabsetId.tabsetId)
 }
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''

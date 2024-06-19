@@ -13,8 +13,6 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {MonitoringType} from "src/models/Monitor";
 import {Router} from "vue-router";
-
-//import "rangy/lib/rangy-serializer";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -115,9 +113,9 @@ class ChromeApi {
           runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
           runContentHousekeeping(useTabsetService().urlExistsInATabset)
         } else if (alarm.name === "monitoring") {
-          if (useFeaturesStore().hasFeature(FeatureIdent.MONITORING)) {
-            checkMonitors(router)
-          }
+          // if (useFeaturesStore().hasFeature(FeatureIdent.MONITORING)) {
+          //   checkMonitors(router)
+          // }
         } else {
           console.log("unknown alarm", alarm)
         }
@@ -126,7 +124,7 @@ class ChromeApi {
 
     chrome.runtime.onUpdateAvailable.addListener(
       (details: any) => {
-        NavigationService.updateAvailable(details)
+       // NavigationService.updateAvailable(details)
       }
     )
 
@@ -158,11 +156,10 @@ class ChromeApi {
       return
     }
 
-    console.log(" building context menu", caller)
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
         () => {
-          console.log("creating contextmenu for tabset_extension")
+          console.debug("creating contextmenu for tabset_extension")
           chrome.contextMenus.create({
               id: 'tabset_extension',
               title: 'Tabsets Extension',
@@ -177,16 +174,16 @@ class ChromeApi {
               // documentUrlPatterns: ['https://*/*', 'https://*/'],
               //   contexts: ['all']
               // })
-              if (useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP)) {
-                console.debug(" > context menu: website_clip")
-                chrome.contextMenus.create({
-                  id: 'website_clip',
-                  parentId: 'tabset_extension',
-                  title: 'Create Website Clip',
-                  documentUrlPatterns: ['https://*/*', 'https://*/'],
-                  contexts: ['all']
-                })
-              }
+              // if (useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP)) {
+              //   console.debug(" > context menu: website_clip")
+              //   chrome.contextMenus.create({
+              //     id: 'website_clip',
+              //     parentId: 'tabset_extension',
+              //     title: 'Create Website Clip',
+              //     documentUrlPatterns: ['https://*/*', 'https://*/'],
+              //     contexts: ['all']
+              //   })
+              // }
               // chrome.contextMenus.create({
               //   id: 'website_quote',
               //   parentId: 'tabset_extension',

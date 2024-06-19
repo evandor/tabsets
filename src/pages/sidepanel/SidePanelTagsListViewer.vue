@@ -36,11 +36,11 @@
 <script lang="ts" setup>
 
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
-import {SidePanelView, useUiStore} from "src/stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import TagsListViewerWidget from "components/widgets/TagsListViewerWidget.vue";
-import CloseSidePanelViewButton from "components/buttons/CloseSidePanelViewButton.vue";
+import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 
 const {handleError} = useNotificationHandler()
@@ -49,7 +49,7 @@ const selectTag = (tag: string) => {
   console.log("selecting", tag)
   useUiStore().setSelectedTag(tag)
   // router.push("/sidepanel/tags")
-  useUiStore().sidePanelSetActiveView(SidePanelView.TAG)
+  useUiStore().sidePanelSetActiveView(SidePanelViews.TAG)
 }
 
 </script>

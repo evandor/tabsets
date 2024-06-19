@@ -23,21 +23,16 @@
 
 <script setup lang="ts">
 
-import {useRouter} from "vue-router";
 import {ref, watch, watchEffect} from "vue";
 import {uid, useQuasar} from "quasar";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import NavigationService from "src/services/NavigationService";
 import DeleteBookmarkFolderDialog from "src/bookmarks/dialogues/DeleteBookmarkFolderDialog.vue";
 import _ from "lodash"
 import {TreeNode} from "src/bookmarks/models/Tree";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-
-const router = useRouter()
-const permissionsStore = usePermissionsStore()
 
 const $q = useQuasar();
 const localStorage = useQuasar().localStorage

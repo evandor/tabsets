@@ -3,11 +3,11 @@ import {uid, useQuasar} from "quasar";
 import throttledQueue from 'throttled-queue';
 import {MetaLink} from "src/models/MetaLink";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {useGroupsStore} from "stores/groupsStore";
+import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
-import ContentUtils from "src/utils/ContentUtils";
+import ContentUtils from "src/core/utils/ContentUtils";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
-import {SidePanelView, useUiStore} from "stores/uiStore";
+import {useUiStore} from "src/ui/stores/uiStore";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {HTMLSelection, Tab} from "src/tabsets/models/Tab";
@@ -19,6 +19,8 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {SidePanelViews} from "src/models/SidePanelViews";
+import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 
 const {
   saveTabset,
@@ -120,8 +122,6 @@ class ChromeListeners {
   inProgress = false;
 
   thumbnailsActive = true
-
-  throttleOnePerSecond = throttledQueue(1, 1000, true)
 
   private onCreatedListener = (tab: chrome.tabs.Tab) => this.onCreated(tab)
   private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => this.onUpdated(number, info, tab)
@@ -285,14 +285,14 @@ class ChromeListeners {
       // handle existing tabs
       if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
         const matchingTabs = useTabsetsStore().tabsForUrl(chromeTab.url || '')
-        for (const t of matchingTabs) {
+        for (const tabAndTabsetId of matchingTabs) {
           // we care only about actually setting a group, not about removal
           if (info.groupId && info.groupId >= 0) {
-            console.log(" --- updating existing tabs for url: ", chromeTab.url, t, info)
-            t.groupId = info.groupId
-            t.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
-            t.updated = new Date().getTime()
-            const tabset = useTabsetsStore().tabsetFor(t.id)
+            console.log(" --- updating existing tabs for url: ", chromeTab.url, tabAndTabsetId, info)
+            tabAndTabsetId.tab.groupId = info.groupId
+            tabAndTabsetId.tab.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
+            tabAndTabsetId.tab.updated = new Date().getTime()
+            const tabset = useTabsetsStore().tabsetFor(tabAndTabsetId.tab.id)
             if (tabset) {
               await useTabsetService().saveTabset(tabset)
             }
@@ -308,6 +308,11 @@ class ChromeListeners {
           this.handleUpdate(ts, chromeTab)
         }
       })
+
+      // matching tabs for url
+      if (chromeTab.url) {
+        useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
+      }
 
       // handle windowsStore related pages
       //sendMsg('window-updated', {initiated: "ChromeListeners#onUpdated"})
@@ -463,23 +468,9 @@ class ChromeListeners {
         console.warn("got runtime error:" + chrome.runtime.lastError);
       }
       const url = tab.url
-      _.forEach([...useTabsetsStore().tabsets.keys()], key => {
-        const ts = useTabsetsStore().tabsets.get(key)
-        if (ts && ts.status !== TabsetStatus.DELETED) {
-          // increasing hit count
-          const hits = _.filter(ts.tabs, (t: Tab) => t.url === url) as Tab[]
-          let hit = false
-          _.forEach(hits, h => {
-            h.activatedCount = 1 + h.activatedCount
-            h.lastActive = new Date().getTime()
-            hit = true
-          })
-          if (hit) {
-            console.debug("saving tabset on activated", ts.name)
-            saveTabset(ts as Tabset)
-          }
-        }
-      })
+      if (url) {
+        useTabsetService().urlWasActivated(url)
+      }
     })
   }
 
@@ -530,7 +521,7 @@ class ChromeListeners {
       //   //this.handleMessageWebsiteImage(request, sender, sendResponse)
       //   useTabsetService().handleAnnotationMessage(request)
     } else if (request.name === 'sidepanel-switch-view') {
-      useUiStore().sidePanelSetActiveView(SidePanelView.MAIN)
+      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
     } else {
       console.log("got unknown message", request)
     }

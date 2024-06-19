@@ -332,6 +332,12 @@
           <span class="text-blue cursor-pointer" @click="clearIndex">[clear Index]</span>&nbsp;
         </div>
       </div>
+      <div class="row">
+        <vue-json-pretty style="font-size: 80%" :show-length="true" :deep="2"
+                         v-model:data="state.data"
+                         :show-double-quotes="true"
+        />
+      </div>
     </div>
 
   </div>
@@ -412,7 +418,14 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch, watchEffect} from "vue";
+
+
+/**
+ * refactoring remark: uses many other modules, needs to be one-per-application
+ *
+ */
+
+import {onMounted, reactive, ref, watch, watchEffect} from "vue";
 import {LocalStorage, useQuasar} from "quasar";
 import {useSearchStore} from "src/search/stores/searchStore";
 import TabsetService from "src/tabsets/services/TabsetService";
@@ -424,7 +437,7 @@ import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefau
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
-import {DrawerTabs, ListDetailLevel, useUiStore} from "src/stores/uiStore";
+import {DrawerTabs, ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
@@ -435,7 +448,6 @@ import {useSettingsStore} from "src/stores/settingsStore"
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import {useUtils} from "src/core/services/Utils";
 import Analytics from "src/core/utils/google-analytics";
-import {useGroupsStore} from "../stores/groupsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {useRoute} from "vue-router";
@@ -458,6 +470,9 @@ import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import VueJsonPretty from "vue-json-pretty";
+import 'vue-json-pretty/lib/styles.css';
+
 const { t } = useI18n()
 
 const {sendMsg, inBexMode} = useUtils()
@@ -473,6 +488,8 @@ useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
 const view = ref('grid')
 const indexSize = ref(0)
+const searchIndexAsJson = ref(null)
+
 
 const { locale } = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -481,6 +498,12 @@ const localeOptions = ref([
   {value: 'de', label: 'German'},
   {value: 'bg', label: 'Bulgarian'}
 ])
+
+const state = reactive({
+  val: JSON.stringify(searchIndexAsJson),
+  data: searchIndexAsJson
+})
+
 
 const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
 const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
@@ -524,6 +547,12 @@ onMounted(() => {
 })
 
 let suggestionsCounter = 0
+
+watchEffect(() => {
+  const data = JSON.stringify(searchStore?.getIndex())
+  console.log("search index data", data)
+  searchIndexAsJson.value = JSON.parse(data)
+})
 
 watchEffect(() => {
   //console.log("watching settingsStore.activeToggles...", settingsStore.activeToggles)
