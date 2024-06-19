@@ -23,7 +23,7 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async init(dbName: string) {
-    console.log(" ...initializing indexeddb database", dbName)
+    console.debug(" ...initializing indexeddb database", dbName)
     this.db = await this.initDatabase(dbName)
     useUiStore().dbReady = true
   }

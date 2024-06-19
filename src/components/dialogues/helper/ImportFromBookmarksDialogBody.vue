@@ -66,7 +66,7 @@ import ChromeApi from "src/services/ChromeApi";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabsetFromBookmarksCommand} from "src/domain/tabsets/CreateTabsetFromBookmarks";
-import {Tabset, TABSET_NAME_MAX_LENGTH, TabsetStatus} from "src/tabsets/models/Tabset";
+import {Tabset, TABSET_NAME_MAX_LENGTH} from "src/tabsets/models/Tabset";
 import _ from "lodash"
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {FeatureIdent} from "src/models/FeatureIdent";
