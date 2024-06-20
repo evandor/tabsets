@@ -63,6 +63,10 @@
           &nbsp;&nbsp;&nbsp;{{t('changing_needs_restart')}}
         </InfoLine>
 
+        <InfoLine :label="t('keyboard_shortcuts')">
+          <div class="text-blue-8 cursor-pointer" @click="NavigationService.openSingleTab('chrome://extensions/shortcuts')">{{t('click_here')}}</div>
+        </InfoLine>
+
         <div class="col-3">
           {{ t('language') }} ({{ t('experimental') }})
         </div>
