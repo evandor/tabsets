@@ -81,21 +81,14 @@ class AppService {
     await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
     await useContentService().init(IndexedDbContentPersistence)
 
-    searchStore.init().catch((err) => console.error(err))
+    await searchStore.init().catch((err) => console.error(err))
 
-    chrome.runtime.onMessage.addListener((message: any, sender: any, r: any) => {
-      console.log("===>", message)
-    })
-
-    this.emitter.on('*', (type, e) => console.log("===>", type, e))
-
+    await useContentService().populateSearch()
 
     // init db
     await IndexedDbPersistenceService.init("db")
 
     // init services
-
-
     await useNotificationsStore().initialize(useDB(undefined).db)
     await useSuggestionsStore().init()
 
