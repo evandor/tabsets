@@ -1,4 +1,5 @@
 import {useSearchStore} from "src/search/stores/searchStore";
+import {ContentItem} from "src/content/models/ContentItem";
 
 /**
  * meant for inter-submodule communication.
@@ -11,24 +12,25 @@ import {useSearchStore} from "src/search/stores/searchStore";
  */
 class AppEventDispatcher {
 
-  dispatchEvent(name: string, params:object) {
-    console.log("===> event added", name, params)
-    switch (name) {
-      case 'add-to-search':
-        // useSearchStore().addToIndex(uid(),
-        //   params['name' as keyof object],
-        //   params['title' as keyof object],
-        //   params['url' as keyof object],
-        //   params['description' as keyof object],
-        //   params['content' as keyof object],
-        //   params['tabsets' as keyof object],
-        //   params['favIconUrl' as keyof object])
-        useSearchStore().addObjectToIndex(params)
-        break
-      default:
-        console.log("unknown event")
+  dispatchEvent(name: string, params: object) {
+    console.debug(" >>> dispatching event", name, params)
+    try {
+
+      switch (name) {
+        case 'add-to-search':
+          useSearchStore().addObjectToIndex(params)
+          break
+        case 'populate-from-content':
+          useSearchStore().populateFromContent(params as unknown as ContentItem[])
+          break;
+        default:
+          console.log(`unknown event ${name}`)
+      }
+    } catch (err) {
+      console.warn("problem dispatching event: ", err)
     }
   }
+
 }
 
 export default new AppEventDispatcher();
