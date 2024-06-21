@@ -23,9 +23,6 @@ class AppEventDispatcher {
         case 'upsert-in-search':
           useSearchStore().upsertObject(params)
           break
-        case 'populate-from-content':
-          useSearchStore().populateFromContent(params as unknown as ContentItem[])
-          break;
         default:
           console.log(`unknown event ${name}`)
       }
