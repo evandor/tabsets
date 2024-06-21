@@ -45,18 +45,19 @@ function runThumbnailsHousekeeping(fnc: (url:string) => boolean) {
 function runContentHousekeeping(fnc: (url:string) => boolean) {
   console.log("housekeeping content now...")
   useContentService().cleanUpContent(fnc)
-    .then(searchDocs => {
+    .then((searchDocs:object[]) => {
       _.forEach(searchDocs, d => {
         //console.log("got document", d)
-        useSearchStore().remove((doc: SearchDoc, idx: number) => {
-          if (doc.url === d.url) {
+        useSearchStore().remove((doc: SearchDoc) => {
+          if (doc.url === d['url' as keyof object]) {
             console.debug("removing", doc)
           }
-          return doc.url === d.url
+          return doc.url === d['url' as keyof object]
         })
-        useSearchStore().addToIndex(
-          d.id, d.name, d.title, d.url, d.description, d.content, d.tabsets, d.favIconUrl
-        )
+        useSearchStore().addObjectToIndex(d)
+        // useSearchStore().addToIndex(
+        //   d.id, d.name, d.title, d.url, d.description, d.content, d.tabsets, d.favIconUrl
+        // )
       })
       //useSearchStore().addToIndex()
     })
