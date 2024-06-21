@@ -28,11 +28,8 @@ import IndexedDbContentPersistence from "src/content/persistence/IndexedDbConten
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import mitt from 'mitt'
 
 class AppService {
-
-  emitter = mitt()
 
   router: Router = null as unknown as Router
   initialized = false
@@ -82,8 +79,6 @@ class AppService {
     await useContentService().init(IndexedDbContentPersistence)
 
     await searchStore.init().catch((err) => console.error(err))
-
-    await useContentService().populateSearch()
 
     // init db
     await IndexedDbPersistenceService.init("db")
@@ -145,6 +140,11 @@ class AppService {
     await useTabsStore2().initialize()
 
     //await useGroupsStore().initialize(useDB().groupsIndexedDb)
+
+    const existingUrls = useTabsetsStore().getAllUrls()
+    await useContentService().populateSearch(existingUrls)
+    await useTabsetService().populateSearch()
+
 
 
     ChromeApi.init(router)

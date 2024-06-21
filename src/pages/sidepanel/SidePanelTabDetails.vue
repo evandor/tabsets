@@ -68,7 +68,7 @@
     <div class="row q-ma-sm">
 
       <div class="col-12" v-if="hasAllUrlsPermission">
-        <q-img :src="thumbnail" style="border:1px dotted grey;border-radius: 5px;" no-native-menu/>
+<!--        <q-img :src="thumbnail" style="border:1px dotted grey;border-radius: 5px;" no-native-menu/>-->
       </div>
       <div class="col-12 bg-amber-1" v-else-if="!inBexMode()">
         <!--        <q-img src="thumbnail-not-available.png" style="border:1px solid grey;border-radius: 5px;" no-native-menu/>-->
@@ -317,22 +317,7 @@
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm">
-            <div class="col-12 text-caption">
-              <div v-for="(k,index) in searchIndex">
-                <div class="row" v-if="searchIndex.get(index)['v']">
-                  <div class="col-4 q-ml-sm text-bold">
-                    {{ searchIndex.get(index)['name'] }}
-                  </div>
-                  <div class="col-7 ellipsis">
-                    {{ searchIndex.get(index)['v'] }}
-                    <q-tooltip class="tooltip">{{ searchIndex.get(index)['v'] }}</q-tooltip>
-                  </div>
-                  <div class="col text-right">
-                    <q-icon name="o_check_circle" color="primary"/>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <TabDetailsSearchIndex :tabId="route.params.tabId as string" />
           </div>
         </q-card-section>
       </q-card>
@@ -344,30 +329,30 @@
 
 <script lang="ts" setup>
 
-import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
-import _ from "lodash";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import TabsetService from "src/tabsets/services/TabsetService";
-import {ref, watchEffect} from "vue";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useRoute, useRouter} from "vue-router";
-import {Tab} from "src/tabsets/models/Tab";
-import {formatDistance} from "date-fns";
 import {useUtils} from "src/core/services/Utils";
-import NavigationService from "src/services/NavigationService";
-import {useSearchStore} from "src/search/stores/searchStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {SaveTabCommand} from "src/domain/tabs/SaveTab";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 import PdfService from "src/snapshots/services/PdfService";
-import {SavedBlob} from "src/models/SavedBlob";
-import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
-import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {SavePngCommand} from "src/snapshots/domain/SavePng";
+import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {SavePngCommand} from "src/snapshots/domain/SavePng";
+import TabsetService from "src/tabsets/services/TabsetService";
+import {Tab} from "src/tabsets/models/Tab";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {usePermissionsStore} from "src/stores/permissionsStore";
+import _ from "lodash";
+import {ref, watchEffect} from "vue";
+import {useRoute, useRouter} from "vue-router";
+import {formatDistance} from "date-fns";
+import NavigationService from "src/services/NavigationService";
+import {SaveTabCommand} from "src/domain/tabs/SaveTab";
+import {FeatureIdent} from "src/models/FeatureIdent";
+import {SavedBlob} from "src/models/SavedBlob";
+import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import {SavePdfCommand} from "src/domain/tabs/SavePdf";
+import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
 
 const {inBexMode} = useUtils()
 
@@ -378,14 +363,11 @@ const hasAllUrlsPermission = ref<boolean | undefined>(false)
 
 const thumbnail = ref('')
 const content = ref('')
-const searchIndex = ref<any>()
 const metaRows = ref<object[]>([])
 const metas = ref({})
 const tab = ref<Tab | undefined>(undefined)
 const pngs = ref<SavedBlob[]>([])
 const pdfs = ref<SavedBlob[]>([])
-
-const {selectTabset} = useTabsetService()
 
 const tags = ref<string[]>([])
 
@@ -420,7 +402,7 @@ watchEffect(() => {
             thumbnail.value = ''
           }
         })
-    TabsetService.getContentFor(tab.value)
+    TabsetService.getContentFor(tab.value as Tab)
         .then(data => {
           if (data) {
             content.value = data['content' as keyof object]
@@ -493,33 +475,6 @@ const formatDate = (timestamp: number | undefined) =>
 const showTabDetails = () =>
     NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
 
-watchEffect(() => {
-  const fuseIndex = useSearchStore().getIndex()
-  if (fuseIndex) {
-    const keyMaps = fuseIndex['_keysMap' as keyof object]
-    const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-      return tab.value?.url === r.$[2]?.v
-    })
-    const keys: Map<number, object> = new Map()
-    Object.keys(keyMaps).forEach((k: any) => {
-      keys.set(keyMaps[k], {
-        name: k
-      })
-    })
-
-    if (res && res.length > 0) {
-      Object.keys(res[0]['$' as keyof object]).forEach(k => {
-        const tmp = res[0]['$' as keyof object][k as keyof object]
-        const v: any = keys.get(+k)
-        v.n = tmp['n' as keyof object]
-        const c = tmp['v' as keyof object]
-        v.v = c //? (c.length > 100 ? c.substring(0,98) + "..." : c) : ''
-        keys.set(+k, v)
-      })
-      searchIndex.value = keys
-    }
-  }
-})
 
 const saveTab = (tab: Tab | undefined) =>
     useCommandExecutor().execute(new SaveTabCommand(useTabsetsStore().getCurrentTabset, tab))
