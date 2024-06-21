@@ -28,6 +28,8 @@ import IndexedDbContentPersistence from "src/content/persistence/IndexedDbConten
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
+import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
 
 class AppService {
 
@@ -73,6 +75,8 @@ class AppService {
     await BookmarksService.init()
 
     settingsStore.initialize(quasar.localStorage);
+
+    await useSnapshotsService().init(IndexedDbSnapshotPersistence)
 
     // should be initialized before search submodule
     await useThumbnailsService().init(IndexedDbThumbnailsPersistence)

@@ -10,7 +10,6 @@ import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/model
 import {useUiStore} from "src/ui/stores/uiStore";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
 import {Account} from "src/models/Account";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

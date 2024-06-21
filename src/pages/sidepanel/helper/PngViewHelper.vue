@@ -10,7 +10,7 @@
 <script lang="ts" setup>
 import {ref} from "vue";
 import {date} from "quasar";
-import PdfService from "src/snapshots/services/PdfService";
+import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 
 const props = defineProps({
   extension: {type: String, default: 'png'},
@@ -20,6 +20,6 @@ const props = defineProps({
 })
 
 const openMhtml = () => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${props.extension}/${props.tabId}/${props.pngId}`));
-const deletePdf = () => PdfService.deleteBlob(props.tabId, props.pngId)
+const deletePdf = () => useSnapshotsService().deleteBlob(props.tabId, props.pngId)
 
 </script>
