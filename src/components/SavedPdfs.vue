@@ -32,15 +32,13 @@
 
 import {ref} from "vue";
 import {useRouter} from "vue-router";
-import {SavedBlob} from "src/models/SavedBlob";
-import PdfService from "src/snapshots/services/PdfService";
 
 const router = useRouter()
 
 const pdfs = ref<SavedBlob[]>([])
 
 
-PdfService.getPdfs()
+useSnapshotsService().getPdfs()
   .then((res: SavedBlob[]) => {
     console.log("hier", res)
     pdfs.value = res
