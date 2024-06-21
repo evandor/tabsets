@@ -2,15 +2,12 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import ChromeApi from "src/services/ChromeApi";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {Tab} from "src/tabsets/models/Tab";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {useSearchStore} from "src/search/stores/searchStore";
-import PersistenceService from "src/services/PersistenceService";
-import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useContentService} from "src/content/services/ContentService";

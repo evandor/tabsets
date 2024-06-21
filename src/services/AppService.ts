@@ -28,11 +28,8 @@ import IndexedDbContentPersistence from "src/content/persistence/IndexedDbConten
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import mitt from 'mitt'
 
 class AppService {
-
-  emitter = mitt()
 
   router: Router = null as unknown as Router
   initialized = false
@@ -81,21 +78,12 @@ class AppService {
     await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
     await useContentService().init(IndexedDbContentPersistence)
 
-    searchStore.init().catch((err) => console.error(err))
-
-    chrome.runtime.onMessage.addListener((message: any, sender: any, r: any) => {
-      console.log("===>", message)
-    })
-
-    this.emitter.on('*', (type, e) => console.log("===>", type, e))
-
+    await searchStore.init().catch((err) => console.error(err))
 
     // init db
     await IndexedDbPersistenceService.init("db")
 
     // init services
-
-
     await useNotificationsStore().initialize(useDB(undefined).db)
     await useSuggestionsStore().init()
 
@@ -152,6 +140,11 @@ class AppService {
     await useTabsStore2().initialize()
 
     //await useGroupsStore().initialize(useDB().groupsIndexedDb)
+
+    const existingUrls = useTabsetsStore().getAllUrls()
+    await useContentService().populateSearch(existingUrls)
+    await useTabsetService().populateSearch()
+
 
 
     ChromeApi.init(router)
