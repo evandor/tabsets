@@ -332,7 +332,6 @@
 import {useUtils} from "src/core/services/Utils";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import PdfService from "src/snapshots/services/PdfService";
 import {SavePngCommand} from "src/snapshots/domain/SavePng";
 import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
@@ -353,6 +352,7 @@ import {SavedBlob} from "src/models/SavedBlob";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import {SavePdfCommand} from "src/domain/tabs/SavePdf";
 import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
+import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 
 const {inBexMode} = useUtils()
 
@@ -418,9 +418,9 @@ watchEffect(() => {
             metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
           }
         })
-    PdfService.getPngsForTab(tab.value.id)
+    useSnapshotsService().getPngsForTab(tab.value.id)
         .then((blobs: SavedBlob[]) => pngs.value = blobs)
-    PdfService.getPdfsForTab(tab.value.id)
+    useSnapshotsService().getPdfsForTab(tab.value.id)
         .then((blobs: SavedBlob[]) => pdfs.value = blobs)
   }
 })
