@@ -4,47 +4,43 @@ tabsets.net uses git submodules to share logic and UI components with other appl
 
 ## Dependencies
 
-read: submodule Windows depends on submodule Features etc
+read: submodule Windows depends on submodule Features etc.
 
 verfiy using something like
 https://github.com/search?q=repo%3Aevandor%2Fsubmodule-spaces+src%2F&type=code
 
+Each module might be dependend on the "core" submodule
 
 ```mermaid
 classDiagram
-  Core <-- Features
+%%  Core <-- Features
+
   Features <-- Windows
   Tabsets <-- Windows
 
-  Core <-- Thumbnails
   Tabsets <-- Thumbnails
   Windows <-- Thumbnails
 
   Content <-- Tabsets
   Features <-- Tabsets
-  Search <-- Tabsets
+%%  Search <-- Tabsets
   Spaces <-- Tabsets
   Suggestions <-- Tabsets
   UI <-- Tabsets
 
-  Core <-- Spaces
   Features <-- Spaces
   Windows <-- Spaces
 
-  Core <-- Bookmarks
-  Bookmarks <-- Search
+%%  Bookmarks <-- Search
 
-  Core <-- Content
   Search <-- Content
 
-  Core <-- Snapshots
   Tabsets <-- Snapshots
 
   UI <-- Opentabs
   Tabsets <-- Opentabs
   Features <-- Opentabs
 
-  Core <-- UI
 
 ```
 

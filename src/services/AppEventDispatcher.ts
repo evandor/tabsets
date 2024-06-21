@@ -20,6 +20,9 @@ class AppEventDispatcher {
         case 'add-to-search':
           useSearchStore().addObjectToIndex(params)
           break
+        case 'upsert-in-search':
+          useSearchStore().upsertObject(params)
+          break
         case 'populate-from-content':
           useSearchStore().populateFromContent(params as unknown as ContentItem[])
           break;
