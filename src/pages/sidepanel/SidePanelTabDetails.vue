@@ -122,27 +122,27 @@
 
         <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
           <q-btn
-              @click.stop="savePdf(tab as Tab)"
-              flat round color="primary" size="11px" icon="o_picture_as_pdf"
+              @click.stop="saveHtml(tab as Tab)"
+              flat round color="primary" size="11px" icon="image"
               :disabled="!isOpen(tab as Tab)">
-            <q-tooltip v-if="isOpen(tab as Tab)">Save this tab as a PDF File</q-tooltip>
+            <q-tooltip v-if="isOpen(tab as Tab)">Save this tab as HTML</q-tooltip>
             <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
               it.
             </q-tooltip>
           </q-btn>
         </template>
 
-        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB)">
-          <q-btn
-              @click.stop="saveTab(tab)"
-              flat round color="primary" size="11px" icon="save"
-              :disabled="!isOpen(tab)">
-            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>
-            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
-              it.
-            </q-tooltip>
-          </q-btn>
-        </template>
+<!--        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB)">-->
+<!--          <q-btn-->
+<!--              @click.stop="saveTab(tab)"-->
+<!--              flat round color="primary" size="11px" icon="save"-->
+<!--              :disabled="!isOpen(tab)">-->
+<!--            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>-->
+<!--            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save-->
+<!--              it.-->
+<!--            </q-tooltip>-->
+<!--          </q-btn>-->
+<!--        </template>-->
 
 
       </div>
@@ -163,7 +163,6 @@
               v-model="tags"
               use-input
               use-chips
-              multiple
               hide-dropdown-icon
               input-debounce="0"
               new-value-mode="add-unique"
@@ -191,7 +190,18 @@
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="png in pngs">
-            <PngViewHelper :pngId="png.id" :created="png.created" :tabId="tab?.id || 'unknown'"/>
+            <PngViewHelper :pngId="png.id" :created="png.created" :tabId="tab?.id || 'unknown'" />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item label="Archived HTML Snapshots"
+                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && htmls.length > 0">
+      <q-card>
+        <q-card-section>
+          <div class="row q-mx-sm q-mt-xs" v-for="html in htmls">
+            <PngViewHelper :pngId="html.id" :created="html.created" :tabId="tab?.id || 'unknown'" extension="html"/>
           </div>
         </q-card-section>
       </q-card>
@@ -348,11 +358,11 @@ import {formatDistance} from "date-fns";
 import NavigationService from "src/services/NavigationService";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {SavedBlob} from "src/models/SavedBlob";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
-import {SavePdfCommand} from "src/domain/tabs/SavePdf";
 import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
+import {BlobType, SavedBlob} from "src/snapshots/models/SavedBlob";
+import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
 
 const {inBexMode} = useUtils()
 
@@ -364,9 +374,9 @@ const hasAllUrlsPermission = ref<boolean | undefined>(false)
 const thumbnail = ref('')
 const content = ref('')
 const metaRows = ref<object[]>([])
-const metas = ref({})
 const tab = ref<Tab | undefined>(undefined)
 const pngs = ref<SavedBlob[]>([])
+const htmls = ref<SavedBlob[]>([])
 const pdfs = ref<SavedBlob[]>([])
 
 const tags = ref<string[]>([])
@@ -422,6 +432,8 @@ watchEffect(() => {
         .then((blobs: SavedBlob[]) => pngs.value = blobs)
     useSnapshotsService().getPdfsForTab(tab.value.id)
         .then((blobs: SavedBlob[]) => pdfs.value = blobs)
+    useSnapshotsService().getBlobForTab(tab.value.id, BlobType.HTML)
+      .then((blobs: SavedBlob[]) => htmls.value = blobs)
   }
 })
 
@@ -485,9 +497,9 @@ const savePng = (tab: Tab | undefined) => {
   }
 }
 
-const savePdf = (tab: Tab | undefined) => {
+const saveHtml = (tab: Tab | undefined) => {
   if (tab) {
-    useCommandExecutor().execute(new SavePdfCommand(tab, "saved by user"))
+    useCommandExecutor().execute(new SaveHtmlCommand(tab, "saved by user"))
   }
 }
 

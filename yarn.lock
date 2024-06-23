@@ -9905,6 +9905,11 @@ serialize-javascript@^6.0.0, serialize-javascript@^6.0.1:
   dependencies:
     randombytes "^2.1.0"
 
+serialize-selection@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/serialize-selection/-/serialize-selection-1.1.1.tgz#d77d17ca999220d40019e23f4383dca4ff6ace35"
+  integrity sha512-I8IGiMRYZO2ItO9ekKLiPCt0Smw0H2i4FG8XKImXtgiY9p6yd5qUK9tVJM5E14HajyoPhzCwEav2KiXWNcc4HA==
+
 serve-static@1.15.0:
   version "1.15.0"
   resolved "https://registry.yarnpkg.com/serve-static/-/serve-static-1.15.0.tgz#faaef08cffe0a1a62f60cad0c4e513cff0ac9540"
