@@ -8,7 +8,6 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from "vue";
 import {date} from "quasar";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 
