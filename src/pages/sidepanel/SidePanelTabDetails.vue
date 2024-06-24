@@ -363,8 +363,12 @@ import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {BlobType, SavedBlob} from "src/snapshots/models/SavedBlob";
 import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
 
 const {inBexMode} = useUtils()
+
+const {handleSuccess, handleError} = useNotificationHandler()
 
 const router = useRouter()
 const route = useRoute()
@@ -499,7 +503,12 @@ const savePng = (tab: Tab | undefined) => {
 
 const saveHtml = (tab: Tab | undefined) => {
   if (tab) {
-    useCommandExecutor().execute(new SaveHtmlCommand(tab, "saved by user"))
+    const tabCandidates = _.filter(useTabsStore2().browserTabs, (t: chrome.tabs.Tab) => t?.url === tab.url)
+    if (tabCandidates.length > 0) {
+      useCommandExecutor().execute(new SaveHtmlCommand(tabCandidates[0], tab.id, "saved by user"))
+    } else {
+      handleError(`no matching tab found for ${tab.url}`)
+    }
   }
 }
 
