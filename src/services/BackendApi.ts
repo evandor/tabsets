@@ -1,4 +1,5 @@
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
+import {AxiosResponse} from "axios";
 
 export class BackendApi {
 
@@ -9,7 +10,7 @@ export class BackendApi {
     return FirebaseCall.post("http://carsten.evandor.de:5000/pdf", {"html": html}, "blob", true)
   }
 
-  createPng(html: string) {
+  createPng(html: string): Promise<AxiosResponse<Blob>> {
     // return FirebaseCall.post("/screenshot", {"html": html}, "blob")
     return FirebaseCall.post("http://carsten.evandor.de:5000/screenshot", {"html": html}, "blob", true)
   }

@@ -25,10 +25,10 @@
       <div class="col-2">
         <TabFaviconWidget v-if="tab"
                           class="q-mr-md q-mb-md"
-                          :tab="tab" width="24px" height="24px"/>
+                          :tab="tab as Tab" width="24px" height="24px"/>
       </div>
       <div class="col-10 text-body1 ellipsis-3">
-        {{ getHost(tab?.url, true) }}
+        {{ getHost(tab?.url || '', true) }}
       </div>
       <div class="col-12 text-body2 ellipsis-3">
         {{ tab?.title }}
@@ -36,7 +36,7 @@
 
       <div class="col-12">
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
-             @click.stop="NavigationService.openOrCreateTab([tab.url] )">
+             @click.stop="NavigationService.openOrCreateTab([tab?.url || ''] )">
           {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary"
                                       class="cursor-pointer"></q-icon>
         </div>
@@ -51,7 +51,7 @@
       <div class="col-7 text-right">
         <q-chip v-for="chip in tabsetChips()"
                 class="cursor-pointer q-ml-xs" size="8px" clickable icon="tab" @click="openTabset(chip)">
-          {{ chip.label }}
+           chip.label
         </q-chip>
       </div>
     </div>
@@ -185,38 +185,38 @@
 <!--      </q-card>-->
 <!--    </q-expansion-item>-->
 
-    <q-expansion-item label="Archived Images"
-                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && pngs.length > 0">
-      <q-card>
-        <q-card-section>
-          <div class="row q-mx-sm q-mt-xs" v-for="png in pngs">
-            <PngViewHelper :pngId="png.id" :created="png.created" :tabId="tab?.id || 'unknown'" />
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+<!--    <q-expansion-item label="Archived Images"-->
+<!--                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && pngs.length > 0">-->
+<!--      <q-card>-->
+<!--        <q-card-section>-->
+<!--          <div class="row q-mx-sm q-mt-xs" v-for="png in pngs">-->
+<!--            <PngViewHelper :pngId="png.id" :created="png.created" :tabId="tab?.id || 'unknown'" />-->
+<!--          </div>-->
+<!--        </q-card-section>-->
+<!--      </q-card>-->
+<!--    </q-expansion-item>-->
 
     <q-expansion-item label="Archived HTML Snapshots"
-                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && htmls.length > 0">
+                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) ">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="html in htmls">
-            <PngViewHelper :pngId="html.id" :created="html.created" :tabId="tab?.id || 'unknown'" extension="html"/>
+            <PngViewHelper :pngId="html.sourceId" :created="html.created" :tabId="tab?.id || 'unknown'" extension="html"/>
           </div>
         </q-card-section>
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Archived PDFs"
-                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && pdfs.length > 0">
-      <q-card>
-        <q-card-section>
-          <div class="row q-mx-sm q-mt-xs" v-for="pdf in pdfs">
-            <PngViewHelper extension='pdf' :pngId="pdf.id" :created="pdf.created" :tabId="tab?.id || 'unknown'"/>
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+<!--    <q-expansion-item label="Archived PDFs"-->
+<!--                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && pdfs.length > 0">-->
+<!--      <q-card>-->
+<!--        <q-card-section>-->
+<!--          <div class="row q-mx-sm q-mt-xs" v-for="pdf in pdfs">-->
+<!--            <PngViewHelper extension='pdf' :pngId="pdf.id" :created="pdf.created" :tabId="tab?.id || 'unknown'"/>-->
+<!--          </div>-->
+<!--        </q-card-section>-->
+<!--      </q-card>-->
+<!--    </q-expansion-item>-->
 
     <!--    <q-expansion-item label="Note"-->
     <!--                      group="somegroup"-->
@@ -308,20 +308,20 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Selections" v-if="tab?.selections?.length > 0"
-                      group="somegroup">
-      <q-card>
-        <q-card-section>
-          <div class="row q-mx-sm q-mt-none">
-            <div class="col-5 text-caption text-bold">Selections</div>
-            <div class="col-7 text-right text-caption">{{ tab?.selections?.length }}</div>
-          </div>
-          <div class="row q-mx-sm q-mt-none" v-for="selection in tab?.selections">
-            <div class="col-12 text-caption">{{ selection.text }}</div>
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
+<!--    <q-expansion-item label="Selections" v-if="tab?.selections?.length > 0"-->
+<!--                      group="somegroup">-->
+<!--      <q-card>-->
+<!--        <q-card-section>-->
+<!--          <div class="row q-mx-sm q-mt-none">-->
+<!--            <div class="col-5 text-caption text-bold">Selections</div>-->
+<!--            <div class="col-7 text-right text-caption">{{ tab?.selections?.length }}</div>-->
+<!--          </div>-->
+<!--          <div class="row q-mx-sm q-mt-none" v-for="selection in tab?.selections">-->
+<!--            <div class="col-12 text-caption">{{ selection.text }}</div>-->
+<!--          </div>-->
+<!--        </q-card-section>-->
+<!--      </q-card>-->
+<!--    </q-expansion-item>-->
 
     <q-expansion-item group="somegroup" label="Search Index">
       <q-card>
@@ -361,10 +361,11 @@ import {FeatureIdent} from "src/models/FeatureIdent";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
-import {BlobType, SavedBlob} from "src/snapshots/models/SavedBlob";
 import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {SavedBlob} from "src/snapshots/models/SavedBlob";
+import {BlobMetadata, BlobType} from "src/snapshots/models/BlobMetadata";
 
 const {inBexMode} = useUtils()
 
@@ -380,7 +381,7 @@ const content = ref('')
 const metaRows = ref<object[]>([])
 const tab = ref<Tab | undefined>(undefined)
 const pngs = ref<SavedBlob[]>([])
-const htmls = ref<SavedBlob[]>([])
+const htmls = ref<BlobMetadata[]>([])
 const pdfs = ref<SavedBlob[]>([])
 
 const tags = ref<string[]>([])
@@ -432,12 +433,17 @@ watchEffect(() => {
             metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
           }
         })
-    useSnapshotsService().getPngsForTab(tab.value.id)
-        .then((blobs: SavedBlob[]) => pngs.value = blobs)
-    useSnapshotsService().getPdfsForTab(tab.value.id)
-        .then((blobs: SavedBlob[]) => pdfs.value = blobs)
-    useSnapshotsService().getBlobForTab(tab.value.id, BlobType.HTML)
-      .then((blobs: SavedBlob[]) => htmls.value = blobs)
+     useSnapshotsService().getMetadataFor(tab.value.id, BlobType.HTML)
+       .then((mds: BlobMetadata[]) => {
+         htmls.value = mds
+       })
+
+    // useSnapshotsService().getPngsForTab(tab.value.id)
+    //     .then((blobs: SavedBlob[]) => pngs.value = blobs)
+    // useSnapshotsService().getPdfsForTab(tab.value.id)
+    //     .then((blobs: SavedBlob[]) => pdfs.value = blobs)
+    // useSnapshotsService().getBlobForTab(tab.value.id, BlobType.HTML)
+    //   .then((blobs: SavedBlob[]) => htmls.value = blobs)
   }
 })
 
@@ -497,7 +503,7 @@ const saveTab = (tab: Tab | undefined) =>
 
 const savePng = (tab: Tab | undefined) => {
   if (tab) {
-    useCommandExecutor().execute(new SavePngCommand(tab, "saved by user"))
+    //useCommandExecutor().execute(new SavePngCommand(tab, "saved by user"))
   }
 }
 
