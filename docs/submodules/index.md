@@ -15,6 +15,9 @@ Each module might be dependend on the "core" submodule
 classDiagram
 %%  Core <-- Features
 
+  Features <-- Bookmarks
+  UI <-- Bookmarks
+
   Features <-- Windows
   Tabsets <-- Windows
 
@@ -26,6 +29,7 @@ classDiagram
 %%  Search <-- Tabsets
   Spaces <-- Tabsets
   Suggestions <-- Tabsets
+%%  Bookmarks <-- Tabsets
   UI <-- Tabsets
 
   Features <-- Spaces
