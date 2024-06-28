@@ -34,10 +34,11 @@ classDiagram
 
   Features <-- Spaces
   Windows <-- Spaces
+  Tabsets <-- Spaces
 
 %%  Bookmarks <-- Search
 
-  Search <-- Content
+%%  Search <-- Content
 
   Tabsets <-- Snapshots
 
