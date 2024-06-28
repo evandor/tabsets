@@ -18,8 +18,8 @@ classDiagram
   Features <-- Windows
   Tabsets <-- Windows
 
-  Tabsets <-- Thumbnails
-  Windows <-- Thumbnails
+%%  Tabsets <-- Thumbnails
+%%  Windows <-- Thumbnails
 
   Content <-- Tabsets
   Features <-- Tabsets
@@ -43,6 +43,10 @@ classDiagram
 
 
 ```
+
+no dependencies:
+
+Thumbnails
 
 ## Bookmarks
 
