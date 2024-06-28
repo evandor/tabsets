@@ -19,7 +19,7 @@ classDiagram
   UI <-- Bookmarks
 
   Features <-- Windows
-  Tabsets <-- Windows
+%%  Tabsets <-- Windows
 
 %%  Tabsets <-- Thumbnails
 %%  Windows <-- Thumbnails
