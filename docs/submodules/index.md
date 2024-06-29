@@ -26,6 +26,7 @@ classDiagram
 
   Content <-- Tabsets
   Features <-- Tabsets
+  Thumbnails <-- Tabsets
 %%  Search <-- Tabsets
   Spaces <-- Tabsets
   Suggestions <-- Tabsets
@@ -51,7 +52,7 @@ classDiagram
 
 no dependencies:
 
-Thumbnails
+-
 
 ## Bookmarks
 
