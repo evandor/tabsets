@@ -114,7 +114,7 @@
     "canvas": "^2.11.2",
     "editorjs-alert": "^1.1.4",
     "editorjs-text-color-plugin": "^2.0.4",
-    "electron": "^30.0.9",
+    "electron": "^31.1.0",
     "electron-packager": "^17.1.2",
     "fake-indexeddb": "^6.0.0",
     "mermaid": "^10.9.1",
