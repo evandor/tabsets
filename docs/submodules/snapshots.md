@@ -1,7 +1,7 @@
 
 ### Installation
 
-Check out this page: [installation](../../src/features/docs/installation.md)
+Check out this page: [installation](../../src/snapshots/docs/installation.md)
 
 ### Setup
 
@@ -9,13 +9,13 @@ Once the submodule has been installed in your application, it needs to be [setup
 
 ### usage
 
-[usage](../../src/features/docs/usage.md)
+[usage](../../src/snapshots/docs/usage.md)
 
 ### messages
 
-[messages](../../src/features/docs/messages.md)
+[messages](../../src/snapshots/docs/messages.md)
 
 ### code
 
-[code](../../src/features/docs/code.md)
+[code](../../src/snapshots/docs/code.md)
 
