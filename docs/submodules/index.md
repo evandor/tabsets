@@ -70,6 +70,12 @@ the user's choice.
 
 [features](./features.md)
 
+## Snapshots
+
+The Snapshots Submodule can save a tab's current content as MHtml. (planned: PNG, PDF, HTML...)
+
+[snapshots](./snapshots.md)
+
 ## Content
 
 ## Suggestions
