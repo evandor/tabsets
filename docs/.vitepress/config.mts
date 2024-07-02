@@ -28,6 +28,7 @@ export default withMermaid({
           items: [
             { text: 'Bookmarks', link: 'docs/submodules/bookmarks' },
             { text: 'Features', link: 'docs/submodules/features' },
+            { text: 'Snapshots', link: 'docs/submodules/snapshots' }
           ]
         }
       ],
