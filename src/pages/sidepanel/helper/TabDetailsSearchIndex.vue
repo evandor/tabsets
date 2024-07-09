@@ -41,8 +41,6 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  console.log("tabid", props.tabId)
-
 
   const fuseIndex = useSearchStore().getIndex()
   if (fuseIndex) {
