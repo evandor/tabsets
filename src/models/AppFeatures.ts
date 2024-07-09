@@ -8,7 +8,7 @@ export class AppFeatures {
   features: Feature[] = [
 
     new Feature(FeatureIdent.DEV_MODE, FeatureType.INTERNAL, "Developer Mode",
-      "A feature toggle to switch between dev mode on/off", "","",['all']),
+      "A feature toggle to switch between dev mode on/off", "", "", ['all']),
 
     new Feature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED,
       'Bookmarks Manager',
@@ -28,7 +28,7 @@ export class AppFeatures {
     new Feature(FeatureIdent.WINDOWS_MANAGEMENT, FeatureType.OPTIONAL,
       'Windows Management',
       'Access to your browsers windows and their tabs',
-      'o_grid_view','', ['all']),
+      'o_grid_view', '', ['all']),
 
     new Feature(FeatureIdent.OPEN_TABS, FeatureType.RECOMMENDED,
       'Open Tabs',
@@ -68,7 +68,7 @@ export class AppFeatures {
       'The "Spaces" Feature lets you organize your tabsets in a larger structure, which might become handy ' +
       'if you start having many tabsets. The main difference to bookmark folders is that there is only two ' +
       'levels, but you can assign a tabset to multiple spaces.',
-      'o_space_dashboard', '',['all']),
+      'o_space_dashboard', '', ['all']),
 
     new Feature(FeatureIdent.BACKUP, FeatureType.EXPERIMENTAL,
       'Backup Tabset',
@@ -90,6 +90,13 @@ export class AppFeatures {
       'A quick access view for your newest tabs',
       'schedule', '', ['all']),
 
+    new Feature(FeatureIdent.RESEARCH_SESSIONS, FeatureType.OPTIONAL,
+      'Research Sessions',
+      'Add Research Capabilities to tabsets - save snapshots of pages and annotate them',
+      'o_science', '', ['all'])
+      .setActivateCommands([new GrantPermissionCommand('pageCapture')])
+      .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
+
     new Feature(FeatureIdent.NOTES, FeatureType.EXPERIMENTAL,
       'Notes Feature',
       'CreateCreate notes and treat them like tabs',
@@ -98,7 +105,7 @@ export class AppFeatures {
     new Feature(FeatureIdent.STANDALONE_APP, FeatureType.EXPERIMENTAL,
       'Standalone App',
       'Tabsets as full-page application',
-       'o_open_in_new','', ['bex']),
+      'o_open_in_new', '', ['bex']),
 
     new Feature(FeatureIdent.NOTIFICATIONS, FeatureType.EXPERIMENTAL,
       'Browser Notifications',
@@ -151,6 +158,12 @@ export class AppFeatures {
       'Subfolder for Tabsets',
       'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
       'o_folder', '', ['all']),
+
+    new Feature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL,
+      'Create an image clip from a website and store it',
+      '',
+      'filter_center_focus', '', ['bex']),
+    // .setActivateCommands([new GrantPermissionCommand('notifications')]),
 
   ]
 

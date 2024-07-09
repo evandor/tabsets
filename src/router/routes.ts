@@ -125,6 +125,11 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelByDomainPage.vue')}],
   },
   {
+    path: '/sidepanel/research/:sourceId',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('src/pages/SidePanelResearchPage.vue')}],
+  },
+  {
     path: '/mainpanel/settings',
     component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
     children: [{path: '', component: () => import('pages/SettingsPage.vue')}],
@@ -198,6 +203,11 @@ const routes: RouteRecordRaw[] = [
     path: '/mainpanel/readingmode/:tabId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('pages/mainpanel/MainPanelReadingModePage.vue')}],
+  },
+  {
+    path: '/mainpanel/mhtml/:tabId/:blobIndex',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue')}],
   },
   {
     path: '/settings',

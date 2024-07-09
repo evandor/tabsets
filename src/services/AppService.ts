@@ -17,8 +17,7 @@ import {useSearchStore} from "src/search/stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {SyncType, useAppStore} from "stores/appStore";
-import PersistenceService from "src/services/PersistenceService";
+import {useAppStore} from "stores/appStore";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {User} from "firebase/auth";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
@@ -29,7 +28,6 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
-import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 
 class AppService {
@@ -95,7 +93,7 @@ class AppService {
 
     tabsetService.setLocalStorage(localStorage)
 
-    await this.initCoreSerivces(quasar, useDB().db, this.router, SyncType.NONE)
+    await this.initCoreSerivces(quasar, this.router)
 
     useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
 
@@ -119,7 +117,7 @@ class AppService {
     }
   }
 
-  private async initCoreSerivces(quasar: any, store: PersistenceService, router: Router, syncType: SyncType) {
+  private async initCoreSerivces(quasar: any, router: Router) {
     const spacesStore = useSpacesStore()
     const groupsStore = useGroupsStore()
     const tabsetsStore = useTabsetsStore()
@@ -152,7 +150,6 @@ class AppService {
     await useTabsetService().populateSearch()
 
 
-
     ChromeApi.init(router)
 
     if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
@@ -173,6 +170,8 @@ class AppService {
       await router.push("/sidepanel/welcome")
     }
 
+    console.log("hier!!!")
+    ChromeApi.buildContextMenu("AppService")
 
   }
 
