@@ -156,7 +156,7 @@ class ChromeApi {
     if (process.env.MODE !== 'bex') {
       return
     }
-
+    console.log("chrome.contextMenus", chrome.contextMenus)
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
         () => {
@@ -164,7 +164,7 @@ class ChromeApi {
           chrome.contextMenus.create({
               id: 'tabset_extension',
               title: 'Tabsets Extension',
-              documentUrlPatterns: ['https://*/*', 'https://*/'],
+              documentUrlPatterns: ['https://*/*', 'https://*/','chrome-extension://*/'],
               contexts: ['all']
             },
             () => {
@@ -175,16 +175,16 @@ class ChromeApi {
               // documentUrlPatterns: ['https://*/*', 'https://*/'],
               //   contexts: ['all']
               // })
-              // if (useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP)) {
-              //   console.debug(" > context menu: website_clip")
-              //   chrome.contextMenus.create({
-              //     id: 'website_clip',
-              //     parentId: 'tabset_extension',
-              //     title: 'Create Website Clip',
-              //     documentUrlPatterns: ['https://*/*', 'https://*/'],
-              //     contexts: ['all']
-              //   })
-              // }
+              if (useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP)) {
+                console.debug(" > context menu: website_clip")
+                chrome.contextMenus.create({
+                  id: 'website_clip',
+                  parentId: 'tabset_extension',
+                  title: 'Create Website Clip',
+                  documentUrlPatterns: ['https://*/*', 'https://*/','chrome-extension://*/'],
+                  contexts: ['all']
+                })
+              }
               // chrome.contextMenus.create({
               //   id: 'website_quote',
               //   parentId: 'tabset_extension',
