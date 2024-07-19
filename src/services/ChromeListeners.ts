@@ -415,7 +415,7 @@ class ChromeListeners {
     if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
       scripts.push("highlight-annotations.js")
     }
-    scripts.push("content-script.js")
+    //scripts.push("content-script.js")
     //scripts.push("recogito2.js")
     scripts.push("tabsets-content-script.js")
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
@@ -432,7 +432,7 @@ class ChromeListeners {
             // @ts-ignore
             chrome.scripting.executeScript({
               target: {tabId: tab.id || 0, allFrames: false},
-              files: [script] //["tabsets-content-script.js","content-script-thumbnails.js"],
+              files: [script]
             }, (callback: any) => {
               if (chrome.runtime.lastError) {
                 console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
@@ -500,7 +500,7 @@ class ChromeListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    console.debug(" <<< got message in ChromeListeners", request)
+    console.debug(` <<< got message '${request.msg}'`, request)
     if (request.msg === 'captureThumbnail') {
       // moved to thumbnailsService
     } else if (request.msg === 'html2text') {
