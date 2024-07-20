@@ -51,8 +51,8 @@
 
     <div class="row q-ma-sm">
 
-      <div class="col-12" v-if="hasAllUrlsPermission">
-        <q-img :src="thumbnail" style="border:1px dotted grey;border-radius: 5px;" no-native-menu/>
+      <div class="col-12" v-if="true">
+       *** <q-img :src="thumbnail" style="border:1px dotted grey;border-radius: 5px;" no-native-menu/>
       </div>
       <div class="col-12 bg-amber-1" v-else-if="!inBexMode()">
         <!--        <q-img src="thumbnail-not-available.png" style="border:1px solid grey;border-radius: 5px;" no-native-menu/>-->
