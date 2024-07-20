@@ -24,7 +24,8 @@ describe('AssociateWindowWithTabsetCommand', () => {
     setActivePinia(createPinia())
     await IndexedDbTabsetsPersistence.init()
     db = useDB(undefined).tabsetsIndexedDb
-    await useTabsetService().init(db)
+    await useTabsetsStore().initialize(db)
+    await useTabsetService().init()
     await useTabsetsStore().initialize(db)
   })
 

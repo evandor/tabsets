@@ -1,4 +1,4 @@
-import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 vi.mock('src/boot/firebase2.ts')
 
@@ -19,8 +19,8 @@ import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabset
 installQuasarPlugin();
 
 async function setupStores() {
-  await useWindowsStore().initialize()
-  useWindowsStore().initListeners()
+  // useWindowsStore().initialize()
+  //useWindowsStore().initListeners()
 }
 
 
@@ -30,7 +30,7 @@ describe('SidePanelFooter', () => {
     "title", "https://www.skysail.io/some-subpage", "favicon")
 
   let db = null as unknown as TabsetsPersistence
-  let windowsDB = IndexedDbWindowsPersistence
+  //let windowsDB = IndexedDbWindowsPersistence
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
   let manageWindowsButton: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
 
@@ -49,11 +49,12 @@ describe('SidePanelFooter', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbPersistenceService.init("db")
-    await IndexedDbTabsetsPersistence.init()
+    //await IndexedDbPersistenceService.init("db")
+    //await IndexedDbTabsetsPersistence.init()
     db = useDB(undefined).tabsetsIndexedDb
     // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))
-    await useTabsetService().init(db)
+    await useTabsetsStore().initialize(db)
+    await useTabsetService().init()
 
     const chromeMock = {
       commands: {
@@ -140,7 +141,7 @@ describe('SidePanelFooter', () => {
 
   afterEach(async () => {
     db.clear("tabsets")
-    db.clear("windows")
+    //db.clear("windows")
   })
 
   it('should be mounted', async () => {
