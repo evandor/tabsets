@@ -31,9 +31,9 @@ describe('UpdateTabUrl', () => {
     await IndexedDbTabsetsPersistence.init()
     await IndexedDbContentPersistence.init()
     await useContentService().init(IndexedDbContentPersistence)
-    db = useDB(undefined).tabsetsIndexedDb
-    await useTabsetService().init(db)
+    db = useDB().tabsetsIndexedDb
     await useTabsetsStore().initialize(db)
+    await useTabsetService().init()
     await useSearchStore().init()
   })
 

@@ -29,14 +29,14 @@ describe('AddTabToTabsetCommand', () => {
     // await IndexedDbPersistenceService.init("db")
     db = useDB(undefined).tabsetsIndexedDb
     await useTabsetsStore().initialize(db)
-    await useTabsetService().init(db)
+    await useTabsetService().init()
     await useSearchStore().init()
     await useContentService().init(IndexedDbContentPersistence)
   })
 
   afterEach(async () => {
     db.clear("tabsets")
-    db.clear("content")
+   // db.clear("content")
   })
 
   it('adding new tab to empty tabset', async () => {
@@ -44,7 +44,7 @@ describe('AddTabToTabsetCommand', () => {
     const tabset = createTabsetResult.result.tabset
 
     const result = await new AddTabToTabsetCommand(new Tab("tabId", skysailChromeTab), tabset).execute()
-    expect(result.message).toBe("Tab was added")
+    expect(result.message).toBe("Link was added")
 
     const tabsetFromDB = useTabsetsStore().getTabset(tabset.id)
     console.log("tabsetFromDB", tabsetFromDB)
@@ -60,7 +60,7 @@ describe('AddTabToTabsetCommand', () => {
 
     await new AddTabToTabsetCommand(new Tab("tabId1", skysailChromeTab), tabset).execute()
     const result = await new AddTabToTabsetCommand(new Tab("tabId2", testDeChromeTab), tabset).execute()
-    expect(result.message).toBe("Tab was added")
+    expect(result.message).toBe("Link was added")
 
     const tabsetFromDB = useTabsetsStore().getTabset("new Tabset")
     console.log("tabsetFromDB", tabsetFromDB)

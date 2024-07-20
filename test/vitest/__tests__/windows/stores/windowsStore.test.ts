@@ -11,6 +11,7 @@ import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabset
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 installQuasarPlugin();
 
@@ -105,7 +106,8 @@ describe('WindowsStore', () => {
     await IndexedDbTabsetsPersistence.init()
     await IndexedDbWindowsPersistence.init()
     db = useDB(undefined).tabsetsIndexedDb
-    await useTabsetService().init(db)
+    await useTabsetsStore().initialize(db)
+    await useTabsetService().init()
   })
 
   afterEach(async () => {
