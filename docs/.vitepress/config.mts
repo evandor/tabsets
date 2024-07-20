@@ -14,7 +14,7 @@ export default withMermaid({
       { text: 'Install as Extension', link: 'https://docs.tabsets.net/installation' },
       { text: 'User Documentation', link: 'https://docs.tabsets.net' }
     ],
-
+    ignoreDeadLinks: true,
     sidebar: {
       '/docs/submodules/': [
         {
