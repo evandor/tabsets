@@ -67,8 +67,8 @@
 
     <div class="row q-ma-sm">
 
-      <div class="col-12" v-if="hasAllUrlsPermission">
-<!--        <q-img :src="thumbnail" style="border:1px dotted grey;border-radius: 5px;" no-native-menu/>-->
+      <div class="col-12" v-if="true">
+        <q-img :src="thumbnail" style="border:1px dotted grey;border-radius: 5px;" no-native-menu/>
       </div>
       <div class="col-12 bg-amber-1" v-else-if="!inBexMode()">
         <!--        <q-img src="thumbnail-not-available.png" style="border:1px solid grey;border-radius: 5px;" no-native-menu/>-->
@@ -342,7 +342,6 @@
 import {useUtils} from "src/core/services/Utils";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {SavePngCommand} from "src/snapshots/domain/SavePng";
 import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -412,7 +411,7 @@ watchEffect(() => {
     useThumbnailsService().getThumbnailFor(tab.value.url)
         .then(data => {
           if (data) {
-            thumbnail.value = data
+            thumbnail.value = data.thumbnail
           } else {
             thumbnail.value = ''
           }
