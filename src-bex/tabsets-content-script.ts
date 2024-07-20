@@ -22,17 +22,15 @@ export default bexContent((bridge: any) => {
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log("got request!!!", request)
     if (request === 'getContent') {
-      console.log("tabsets: received message for content", document.documentElement.outerHTML)
-      sendResponse({content: document.documentElement.outerHTML});
-    } else if (request.action === "highlight-annotation") {
-      sendResponse()
+      console.log("tabsets: received message for content")
+      //sendResponse({content: document.documentElement.outerHTML});
+      sendResponse({
+        html: document.documentElement.outerHTML,
+        metas: getMetas(document)
+      });
+    } else {
+      sendResponse({content: "unknown request in tabsets-content-scripts: " + request});
     }
-    else if (request.type === "SET_EMAIL_FOR_SIGN_IN") {
-      chrome.storage.local.set({ CURRENT_USER_EMAIL: request.email });
-      chrome.storage.local.set({ tabext: sender.tab });
-      console.log("SET_EMAIL_FOR_SIGN_IN", request.email);
-    }
-    sendResponse({content: "unknown request in tabsets-content-scripts: " + request});
     return true
   })
 
@@ -95,16 +93,16 @@ export default bexContent((bridge: any) => {
     return result
   }
 
-  chrome.runtime.sendMessage({
-    msg: "html2text",
-    html: document.documentElement.outerHTML,
-    metas: getMetas(document)
-  }, function (response) {
-    console.log("tabsets: created text excerpt for tabsets")
-    if (chrome.runtime.lastError) {
-      console.warn("got runtime error", chrome.runtime.lastError)
-    }
-  });
+  // chrome.runtime.sendMessage({
+  //   msg: "html2text",
+  //   html: document.documentElement.outerHTML,
+  //   metas: getMetas(document)
+  // }, function (response) {
+  //   console.log("tabsets: created text excerpt for tabsets")
+  //   if (chrome.runtime.lastError) {
+  //     console.warn("got runtime error", chrome.runtime.lastError)
+  //   }
+  // });
 
   chrome.runtime.sendMessage({
     msg: "html2links",
