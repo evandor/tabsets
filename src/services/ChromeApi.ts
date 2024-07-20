@@ -37,15 +37,15 @@ function runHousekeeping() {
   //TabService.checkScheduled()
 }
 
-function runThumbnailsHousekeeping(fnc: (url:string) => boolean) {
+function runThumbnailsHousekeeping(fnc: (url: string) => boolean) {
   console.log("housekeeping thumbnails now...")
   useThumbnailsService().cleanUpThumbnails(fnc)
 }
 
-function runContentHousekeeping(fnc: (url:string) => boolean) {
+function runContentHousekeeping(fnc: (url: string) => boolean) {
   console.log("housekeeping content now...")
   useContentService().cleanUpContent(fnc)
-    .then((searchDocs:object[]) => {
+    .then((searchDocs: object[]) => {
       _.forEach(searchDocs, d => {
         //console.log("got document", d)
         useSearchStore().remove((doc: SearchDoc) => {
@@ -125,7 +125,7 @@ class ChromeApi {
 
     chrome.runtime.onUpdateAvailable.addListener(
       (details: any) => {
-       // NavigationService.updateAvailable(details)
+        // NavigationService.updateAvailable(details)
       }
     )
 
@@ -156,15 +156,15 @@ class ChromeApi {
     if (process.env.MODE !== 'bex') {
       return
     }
-    console.log("chrome.contextMenus", chrome.contextMenus)
     if (chrome && chrome.contextMenus) {
+      console.log("chrome.contextMenus", chrome.contextMenus)
       chrome.contextMenus.removeAll(
         () => {
           console.debug("creating contextmenu for tabset_extension")
           chrome.contextMenus.create({
               id: 'tabset_extension',
               title: 'Tabsets Extension',
-              documentUrlPatterns: ['https://*/*', 'https://*/','chrome-extension://*/'],
+              documentUrlPatterns: ['https://*/*', 'https://*/', 'chrome-extension://*/'],
               contexts: ['all']
             },
             () => {
@@ -181,7 +181,7 @@ class ChromeApi {
                   id: 'website_clip',
                   parentId: 'tabset_extension',
                   title: 'Create Website Clip',
-                  documentUrlPatterns: ['https://*/*', 'https://*/','chrome-extension://*/'],
+                  documentUrlPatterns: ['https://*/*', 'https://*/', 'chrome-extension://*/'],
                   contexts: ['all']
                 })
               }
@@ -302,7 +302,7 @@ class ChromeApi {
             const tabId = tab?.id || 0
             const currentTsId = useTabsetsStore().currentTabsetId
             if (currentTsId) {
-            this.executeAddToTS(tabId, currentTsId)
+              this.executeAddToTS(tabId, currentTsId)
             }
           } else if (e.menuItemId === 'annotate_website') {
             console.log("creating annotation JS", tab)
