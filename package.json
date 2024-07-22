@@ -91,7 +91,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.24.6",
-    "@capacitor/cli": "^6.0.0",
+    "@capacitor/cli": "^6.1.1",
     "@editorjs/checklist": "^1.6.0",
     "@editorjs/image": "^2.9.0",
     "@editorjs/link": "^2.6.2",
