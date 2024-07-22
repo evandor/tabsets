@@ -1,5 +1,5 @@
 
-<!--@include: ../../src/windows/docs/intro.md-->
+<!--@include: ../../src/tabsets/docs/intro.md-->
 
 ### Installation
 
