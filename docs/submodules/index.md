@@ -54,6 +54,12 @@ no dependencies:
 
 - Thumbnails
 
+## Tabsets
+
+The Tabsets Submodule lets you manage collections of links.
+
+[tabsets](tabsets.md)
+
 ## Bookmarks
 
 The Bookmarks Submodule lets you access your browsers bookmark API and provides some views
