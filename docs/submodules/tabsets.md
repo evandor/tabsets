@@ -7,7 +7,7 @@ Check out this page: [installation](../../src/tabsets/docs/installation.md)
 
 ### Setup
 
-Once the submodule has been installed in your application, it needs to be [setup](../../src/tabsts/docs/setup.md).
+Once the submodule has been installed in your application, it needs to be [setup](../../src/tabsets/docs/setup.md).
 
 ### usage
 
