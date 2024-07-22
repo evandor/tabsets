@@ -19,7 +19,7 @@ installQuasarPlugin({plugins: {Dialog, Notify}})
 
 vi.mock('vue-router')
 
-describe('NewTabsetDialog', () => {
+describe('NewTabsetDialogBody', () => {
 
   let db = null as unknown as TabsetsPersistence
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
@@ -36,8 +36,8 @@ describe('NewTabsetDialog', () => {
     await IndexedDbPersistenceService.init("db")
     await IndexedDbTabsetsPersistence.init()
     db = useDB(undefined).tabsetsIndexedDb
-    await useTabsetService().init(db)
     await useTabsetsStore().initialize(db)
+    await useTabsetService().init()
     wrapper = mount(NewTabsetDialogBody, {props: {}});
 
     input = wrapper.find('[data-testid=newTabsetName]')

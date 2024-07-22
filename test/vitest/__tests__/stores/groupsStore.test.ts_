@@ -7,6 +7,8 @@ import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import ChromeApi from "src/services/ChromeApi";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 
 installQuasarPlugin();
 
@@ -14,7 +16,7 @@ vi.mock('vue-router')
 
 describe('GroupsStore', () => {
 
-    let db = null as unknown as PersistenceService
+    let db = null as unknown as IndexedDbTabsetsPersistence
 
     let onCreatedListener = null as unknown as ((group: chrome.tabGroups.TabGroup) => Promise<void>)
     let onRemovedListener = null as unknown as ((windowId: number) => Promise<void>)
@@ -23,8 +25,9 @@ describe('GroupsStore', () => {
     beforeEach(async () => {
         setActivePinia(createPinia())
         await IndexedDbPersistenceService.init("db")
-        db = useDB(undefined).db
-        await useTabsetService().init(db)
+        db = useDB(undefined).tabsetsIndexedDb
+        await useTabsetsStore().initialize(db)
+        await useTabsetService().init()
 
         const currentGroup =
             ChromeApi.createChromeTabGroupObject(1,"currentGroup1", 'grey' as chrome.tabGroups.ColorEnum)

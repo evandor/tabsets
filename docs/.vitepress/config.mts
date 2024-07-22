@@ -14,7 +14,7 @@ export default withMermaid({
       { text: 'Install as Extension', link: 'https://docs.tabsets.net/installation' },
       { text: 'User Documentation', link: 'https://docs.tabsets.net' }
     ],
-
+    ignoreDeadLinks: true,
     sidebar: {
       '/docs/submodules/': [
         {
@@ -28,6 +28,7 @@ export default withMermaid({
           items: [
             { text: 'Bookmarks', link: 'docs/submodules/bookmarks' },
             { text: 'Features', link: 'docs/submodules/features' },
+            { text: 'Snapshots', link: 'docs/submodules/snapshots' }
           ]
         }
       ],

@@ -19,13 +19,14 @@ classDiagram
   UI <-- Bookmarks
 
   Features <-- Windows
-  Tabsets <-- Windows
+%%  Tabsets <-- Windows
 
 %%  Tabsets <-- Thumbnails
 %%  Windows <-- Thumbnails
 
   Content <-- Tabsets
   Features <-- Tabsets
+%%  Thumbnails <-- Tabsets
 %%  Search <-- Tabsets
   Spaces <-- Tabsets
   Suggestions <-- Tabsets
@@ -34,10 +35,11 @@ classDiagram
 
   Features <-- Spaces
   Windows <-- Spaces
+  Tabsets <-- Spaces
 
 %%  Bookmarks <-- Search
 
-  Search <-- Content
+%%  Search <-- Content
 
   Tabsets <-- Snapshots
 
@@ -50,7 +52,13 @@ classDiagram
 
 no dependencies:
 
-Thumbnails
+- Thumbnails
+
+## Tabsets
+
+The Tabsets Submodule lets you manage collections of links.
+
+[tabsets](tabsets.md)
 
 ## Bookmarks
 
@@ -67,6 +75,12 @@ The Features Submodule provides the logic to conditionally activate (or deactiva
 the user's choice.
 
 [features](./features.md)
+
+## Snapshots
+
+The Snapshots Submodule can save a tab's current content as MHtml. (planned: PNG, PDF, HTML...)
+
+[snapshots](./snapshots.md)
 
 ## Content
 
