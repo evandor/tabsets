@@ -196,10 +196,10 @@ onUnmounted(() => {
 })
 
 watchEffect(() => {
-  const ar = useAuthStore().useAuthRequest
-  if (ar) {
-    AppService.restart(ar)
-  }
+  // const ar = useAuthStore().useAuthRequest
+  // if (ar) {
+  //   AppService.restart(ar)
+  // }
 })
 
 watchEffect(() => {
@@ -297,7 +297,7 @@ if (inBexMode()) {
       useFeaturesStore().deactivateFeature(message.data.feature)
     } else if (message.name === "tabsets-imported") {
       useSpacesStore().reload()
-      useTabsetService().init(useDB(undefined).db)
+      useTabsetService().init()
       // TODO reload
     } else if (message.name === "tab-being-dragged") {
       useUiStore().draggingTab(message.data.tabId, null as unknown as any)
@@ -413,14 +413,14 @@ const importSharedTabset = () => {
     console.log("Importing", currentTabUrl)
     const urlSplit = currentTabUrl.split("/")
     const tabsetId = urlSplit[urlSplit.length - 1]
-    FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
+    /*FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
       .then((res: any) => {
         const newTabset = res as Tabset
         newTabset.sharing = TabsetSharing.UNSHARED
         //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
         useTabsetService().saveTabset(newTabset)
         useTabsetService().reloadTabset(newTabset.id)
-      })
+      })*/
   }
 }
 

@@ -84,6 +84,8 @@ import {ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {FeatureIdent} from "src/models/FeatureIdent";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 defineEmits([
   ...useDialogPluginComponent.emits
