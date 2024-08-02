@@ -55,8 +55,8 @@ import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToo
 import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
 import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
 import _ from "lodash"
-import SidePanelTabsetsExpansionList from "src/tabsets/components/SidePanelTabsetsExpansionList.vue";
 import {openURL} from "quasar";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const sharedTabsets = ref<Tabset[]>([])
 

@@ -21,12 +21,11 @@ classDiagram
   Features <-- Windows
 %%  Tabsets <-- Windows
 
-%%  Tabsets <-- Thumbnails
 %%  Windows <-- Thumbnails
 
   Content <-- Tabsets
   Features <-- Tabsets
-%%  Thumbnails <-- Tabsets
+  Thumbnails <-- Tabsets
 %%  Search <-- Tabsets
   Spaces <-- Tabsets
   Suggestions <-- Tabsets
@@ -52,7 +51,7 @@ classDiagram
 
 no dependencies:
 
-- Thumbnails
+-.evn
 
 ## Tabsets
 
@@ -81,6 +80,13 @@ the user's choice.
 The Snapshots Submodule can save a tab's current content as MHtml. (planned: PNG, PDF, HTML...)
 
 [snapshots](./snapshots.md)
+
+## Search
+
+Use this module to create a search index for the application
+
+[search](./search.md)
+
 
 ## Content
 

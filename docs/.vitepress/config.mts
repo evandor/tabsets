@@ -29,6 +29,7 @@ export default withMermaid({
             { text: 'Tabsets', link: 'docs/submodules/tabsets' },
             { text: 'Bookmarks', link: 'docs/submodules/bookmarks' },
             { text: 'Features', link: 'docs/submodules/features' },
+            { text: 'Search', link: 'docs/submodules/search' },
             { text: 'Snapshots', link: 'docs/submodules/snapshots' }
           ]
         }
