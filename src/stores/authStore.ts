@@ -1,11 +1,10 @@
 import {defineStore} from 'pinia';
-import {LocalStorage, useQuasar} from "quasar";
 import PersistenceService from "src/services/PersistenceService";
 import {computed, ref} from "vue";
-import {Account, UserData} from "src/models/Account";
-import {CURRENT_USER_ID} from "boot/constants";
+import {Account} from "src/models/Account";
 
 export enum AccessItem {
+  TABSETS = "TABSETS",
   SYNC = "SYNC",
   SHARE = "SHARE",
   FEATURE_TOGGLES = "FEATURE_TOGGLES"
@@ -48,6 +47,13 @@ export const useAuthStore = defineStore('auth', () => {
     console.log("noop: setting user id to ", u?.uid)
   }
 
+  const limitExceeded = computed(() => {
+    return (item: AccessItem, count: number): boolean => {
+      return false
+    }
+  })
+
+
   return {
     initialize,
     user,
@@ -55,5 +61,6 @@ export const useAuthStore = defineStore('auth', () => {
     getUsername,
     setUser,
     getAccount,
+    limitExceeded
   }
 })
