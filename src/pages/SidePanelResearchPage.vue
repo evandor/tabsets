@@ -123,7 +123,6 @@ import Analytics from "src/core/utils/google-analytics";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import _ from "lodash"
 import {useRoute, useRouter} from "vue-router";
-import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
 import Command from "src/core/domain/Command";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
@@ -139,6 +138,7 @@ import {useUtils} from "src/core/services/Utils";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import SourcePageAnnotation from "src/pages/helper/SourcePageAnnotation.vue";
 import {SavePngCommand} from "src/snapshots/commands/SavePngCommand";
+import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
 
 const router = useRouter()
 const route = useRoute()
@@ -243,7 +243,7 @@ const deleteAnnotation = async (a: Annotation, i: number) => {
 
 const updateBlobs = () => {
   if (source.value?.id) {
-    useSnapshotsService().getMetadataFor(source.value.id, BlobType.HTML)
+    useSnapshotsService().getMetadataFor(source.value.id)
       .then((md: BlobMetadata[]) => {
         metadatas.value = md
       })
@@ -267,7 +267,7 @@ watchEffect(async () => {
     (s: Tab) => s.id === sourceId.value)
   updateBlobs()
   if (source.value) {
-    const mds = await useSnapshotsStore().metadataFor(source.value.id, BlobType.MHTML)
+    const mds = await useSnapshotsStore().metadataFor(source.value.id)
     if (mds) {
       mds.forEach((md: BlobMetadata) => {
         setAnnotations(md.annotations)
@@ -306,7 +306,7 @@ const saveHtml = (source: Tab | undefined) => {
       .then((tabs: chrome.tabs.Tab[]) => {
         const tabCandidates = _.filter(tabs, (t: chrome.tabs.Tab) => t?.url === source.url)
         if (tabCandidates.length > 0) {
-          const saveHtmlCommand: Command<any> = new SaveHtmlCommand(tabCandidates[0], source.id, "saved by user")
+          const saveHtmlCommand: Command<any> = new SaveHtmlCommand(source.id, source.url || '')
           useCommandExecutor().execute(saveHtmlCommand)
           updateBlobs()
         }

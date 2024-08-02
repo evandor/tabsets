@@ -139,7 +139,7 @@ class AppService {
 
     const tabsetsPersistence = useDB().tabsetsIndexedDb
     await tabsetsStore.initialize(tabsetsPersistence)
-    await useTabsetService().init(tabsetsPersistence, false)
+    await useTabsetService().init(false)
 
     await useTabsStore2().initialize()
 
@@ -170,7 +170,6 @@ class AppService {
       await router.push("/sidepanel/welcome")
     }
 
-    console.log("hier!!!")
     ChromeApi.buildContextMenu("AppService")
 
   }

@@ -424,7 +424,7 @@ class ChromeListeners {
         if (chrome.runtime.lastError) {
           console.warn("got runtime error:" + chrome.runtime.lastError);
         }
-        if (!tab.url?.startsWith("chrome")) {
+        if (tab.id && !tab.url?.startsWith("chrome")) {
           scripts.forEach((script: string) => {
             //console.debug("executing scripts", tab.id, script)
 

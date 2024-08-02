@@ -201,7 +201,8 @@
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-xs" v-for="html in htmls">
-            <PngViewHelper :pngId="html.sourceId" :created="html.created" :tabId="tab?.id || 'unknown'" extension="html"/>
+            pngViewHelper
+<!--            <PngViewHelper :pngId="html.sourceId" :created="html.created" :tabId="tab?.id || 'unknown'" extension="html"/>-->
           </div>
         </q-card-section>
       </q-card>
@@ -360,11 +361,11 @@ import {FeatureIdent} from "src/models/FeatureIdent";
 import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
-import {SaveHtmlCommand} from "src/snapshots/domain/SaveHtml";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {SavedBlob} from "src/snapshots/models/SavedBlob";
 import {BlobMetadata, BlobType} from "src/snapshots/models/BlobMetadata";
+import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
 
 const {inBexMode} = useUtils()
 
@@ -432,7 +433,7 @@ watchEffect(() => {
             metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
           }
         })
-     useSnapshotsService().getMetadataFor(tab.value.id, BlobType.HTML)
+     useSnapshotsService().getMetadataFor(tab.value.id)
        .then((mds: BlobMetadata[]) => {
          htmls.value = mds
        })
@@ -510,7 +511,7 @@ const saveHtml = (tab: Tab | undefined) => {
   if (tab) {
     const tabCandidates = _.filter(useTabsStore2().browserTabs, (t: chrome.tabs.Tab) => t?.url === tab.url)
     if (tabCandidates.length > 0) {
-      useCommandExecutor().execute(new SaveHtmlCommand(tabCandidates[0], tab.id, "saved by user"))
+      useCommandExecutor().execute(new SaveHtmlCommand(tab.id, tab.url || ''))
     } else {
       handleError(`no matching tab found for ${tab.url}`)
     }

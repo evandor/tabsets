@@ -20,8 +20,8 @@
             v-model="tab"
             no-caps>
       <q-tab name="appearance" :label="t('appearance')"/>
-<!--      <q-tab name="account" label="Account"/>-->
-<!--      <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>-->
+      <q-tab name="account" label="Account"/>
+      <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
 <!--      <q-tab name="sharing" label="Sharing"-->
 <!--             :class="useAuthStore().userMayAccess(AccessItem.SHARE) ? 'text-primary':'text-grey'"/>-->
 <!--      <q-tab name="syncing" label="Syncing"-->
