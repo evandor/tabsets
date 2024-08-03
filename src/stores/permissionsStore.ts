@@ -1,20 +1,12 @@
 import {defineStore} from 'pinia';
 import {computed, ref} from "vue";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
-import {CreateSpecialTabsetCommand, SpecialTabsetIdent} from "src/domain/tabsets/CreateSpecialTabset";
-import {TabsetType} from "src/tabsets/models/Tabset";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {AppFeatures} from "src/models/AppFeatures";
 import {useUtils} from "src/core/services/Utils";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import PersistenceService from "src/services/PersistenceService";
 import {LocalStorage} from "quasar";
 
 export const usePermissionsStore = defineStore('permissions', () => {
-
-  const {sendMsg} = useUtils()
 
   let storage = null as unknown as PersistenceService
 
@@ -132,8 +124,6 @@ export const usePermissionsStore = defineStore('permissions', () => {
     grantPermission,
     revokePermission,
     hasAllOrigins,
-    permissions,
-    addActivateFeature,
-    removeActivateFeature
+    permissions
   }
 })
