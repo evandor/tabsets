@@ -48,9 +48,10 @@ module.exports = configure(function (ctx) {
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-      'roboto-font', // optional, you are not bound to it
-      'material-icons', // optional, you are not bound to it
-      'material-icons-outlined'
+      'roboto-font',
+      'material-icons',
+      'material-icons-outlined',
+      'material-symbols-outlined'
     ],
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
@@ -273,14 +274,10 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
     bex: {
       contentScripts: [
-//        'content-script', -- needed?
-//        'my-content-script',
         'tabsets-content-script',
         'content-script-tab-helper',
         'content-script-thumbnails',
         'clipping'
-        // 'annotation',
-        // 'highlight-annotations'
       ],
       css: ['clipping.css']
 
