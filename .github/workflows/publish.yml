@@ -2,8 +2,8 @@ name: Publish
 on:
   push:
     tags:
-      - 'v*.*.*'
-
+#      - 'v*.*.*'
+      - 'never'
 jobs:
   build:
     name: Publish webextension
