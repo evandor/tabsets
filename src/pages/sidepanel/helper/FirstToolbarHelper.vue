@@ -230,17 +230,6 @@ const selectTabsetForFirstMatchingTab = (tabAndTabsetId: TabAndTabsetId) => {
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
 
-const syncButtonClicked = () => {
-  if (!useUiStore().fcmSupported) {
-    console.debug("[service-worker] requesting permission2...")
-    Notification.requestPermission().then((permission) => {
-      console.log("got", permission)
-      if (permission === 'granted') {
-        console.log('Notification permission granted.');
-      }
-    }).catch((err) => console.log("err", err))
-  }
-}
 </script>
 
 <style scoped>

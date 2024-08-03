@@ -16,8 +16,6 @@ function log(msg: string, level:number) {
   //     "Content-Type": "application/json"}
   // }).catch((err) => {
   //   console.log("error with logging server")
-  // }).catch((err) => {
-  //   console.log("error with logging server")
   // })
 }
 

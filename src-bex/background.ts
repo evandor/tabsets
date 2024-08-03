@@ -101,7 +101,7 @@ chrome.runtime.onStartup.addListener(() => {
 
 chrome.runtime.onConnect.addListener(function (port) {
   if (port.name === 'tabsetsSidepanel') {
-    //console.log("port3", port)
+    //console.log("[service-worker] port3", port)
     port.onDisconnect.addListener(async () => {
       //alert('Sidepanel closed.');
     });

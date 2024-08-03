@@ -39,7 +39,7 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["tabsets-content-script.js", "content-script.js"]
+      "js": ["tabsets-content-script.js"]
     }
   ],
   "sidebar_action": {
