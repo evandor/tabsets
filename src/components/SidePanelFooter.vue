@@ -4,12 +4,6 @@
     class="q-pa-xs q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey"
     :style="offsetBottom()">
 
-    <div class="row fit q-mb-sm" v-if="showLogin">
-      <keep-alive>
-        <SidePanelLoginWidget @hide-login="showLogin = false"/>
-      </keep-alive>
-    </div>
-
     <div class="row fit q-mb-sm" v-if="showWindowTable">
       <!-- https://michaelnthiessen.com/force-re-render -->
 

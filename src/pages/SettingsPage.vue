@@ -20,12 +20,6 @@
             v-model="tab"
             no-caps>
       <q-tab name="appearance" :label="t('appearance')"/>
-      <q-tab name="account" label="Account"/>
-      <q-tab name="subscription" label="Subscription" icon="o_shopping_bag"/>
-<!--      <q-tab name="sharing" label="Sharing"-->
-<!--             :class="useAuthStore().userMayAccess(AccessItem.SHARE) ? 'text-primary':'text-grey'"/>-->
-<!--      <q-tab name="syncing" label="Syncing"-->
-<!--             :class="useAuthStore().userMayAccess(AccessItem.SYNC) ? 'text-primary':'text-grey'"/>-->
       <q-tab name="thirdparty" label="Third Party Services"/>
       <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
       <q-tab name="archived" label="Archived Tabsets"
@@ -195,33 +189,6 @@
 
     </div>
 
-  </div>
-
-  <div v-if="tab === 'account'">
-    <AccountSettings/>
-  </div>
-
-  <div v-if="tab === 'subscription'">
-    <SubscriptionBexSettings v-if="inBexMode()"/>
-    <SubscriptionSettings v-else/>
-  </div>
-
-  <div v-if="tab === 'sharing'">
-    <div class="q-pa-md q-gutter-sm">
-      <SharingSettings v-if="useAuthStore().isAuthenticated"/>
-      <q-banner v-else rounded>
-        To use sharing, you need to have a (free) account.
-      </q-banner>
-    </div>
-  </div>
-
-  <div v-if="tab === 'syncing'">
-    <div class="q-pa-md q-gutter-sm">
-      <SyncingSettings v-if="useAuthStore().userMayAccess(AccessItem.SYNC)" @was-clicked="e => setTab(e)"/>
-      <q-banner v-else rounded style="border:1px solid orange">
-        To use Syncing, you need to have a account and subscribe to the 'SYNC' Plan.
-      </q-banner>
-    </div>
   </div>
 
   <div v-if="tab === 'internals'">
@@ -468,7 +435,6 @@ import SubscriptionBexSettings from "pages/helper/SubscriptionBexSettings.vue";
 import {Account} from "src/models/Account";
 import {AccessItem, useAuthStore} from "stores/authStore";
 import SharingSettings from "pages/helper/SharingSettings.vue";
-import AccountSettings from "pages/helper/AccountSettings.vue";
 import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
