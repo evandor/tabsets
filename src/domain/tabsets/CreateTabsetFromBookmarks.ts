@@ -44,7 +44,8 @@ export class CreateTabsetFromBookmarksCommand implements Command<object> {
       } else if (result['replaced' as keyof object]) {
         doneMsg = 'Existing Tabset ' + this.tabsetName + ' was overwritten'
       }
-      const executionResult = new ExecutionResult(result, doneMsg, new UndoCommand(result['tabsetId' as keyof object], result['updated' as keyof object]))
+      // const executionResult = new ExecutionResult(result, doneMsg, new UndoCommand(result['tabsetId' as keyof object], result['updated' as keyof object]))
+      const executionResult = new ExecutionResult(result, doneMsg, new Map([["Undo", new UndoCommand(result['tabsetId' as keyof object], result['updated' as keyof object])]]))
       return Promise.resolve(executionResult)
     } catch (err) {
       return Promise.reject(err)
