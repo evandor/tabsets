@@ -54,7 +54,6 @@
     "@types/lodash": "^4.17.4",
     "@types/pngjs": "^6.0.5",
     "@types/sanitize-html": "^2.11.0",
-    "axios": "^1.7.2",
     "buffer": "^6.0.3",
     "cheerio": "^1.0.0-rc.12",
     "date-fns": "^3.6.0",

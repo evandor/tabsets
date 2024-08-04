@@ -20,11 +20,6 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/StartPage.vue')}],
   },
   {
-    path: '/login',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/FullPageLoginPage.vue')}],
-  },
-  {
     path: '/fullpage',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('pages/FullpageStart.vue')}],

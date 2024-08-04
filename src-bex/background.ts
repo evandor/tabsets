@@ -1,9 +1,5 @@
 import {bexBackground} from 'quasar/wrappers';
 import OnInstalledReason = chrome.runtime.OnInstalledReason;
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
-import {getDatabase, ref, onValue} from "firebase/database";
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -110,87 +106,5 @@ chrome.runtime.onConnect.addListener(function (port) {
 
 
 export default bexBackground((bridge, cons/* , allActiveConnections */) => {
-
-  if (process.env.USE_FIREBASE == "true") {
-    //console.debug("[service-worker] about to obtain cloud messaging token")
-
-    const firebaseApp = firebase.initializeApp({
-      apiKey: process.env.FIREBASE_API_KEY,
-      authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      appId: process.env.FIREBASE_APP_ID,
-      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-      databaseURL: process.env.FIREBASE_DATABASE_URL
-    })
-
-    // @ts-ignore
-    const authUserLoginListener = ({data, respond}) => {
-      console.debug("[service-worker] got message 'auth.user.login'", data)
-      const currentUser = data.userId
-      const realtimeDb = getDatabase(firebaseApp)
-      const path = 'users/' + currentUser + '/access'
-      console.log("[service-worker] listening to changes on ", path)
-      const userAccessRef = ref(realtimeDb, path);
-      onValue(userAccessRef, (snapshot) => {
-        const data = snapshot.val();
-        console.debug("[service-worker] got change", data)
-        if (data && data['tabsetChanged']) {
-          bridge.send('fb.message.received', {
-            msg: 'event.tabset.updated',
-            tstamp: data['tabsetChanged'],
-            origin: data['origin']
-          })
-        }
-      })
-    }
-
-    //bridge.off('auth.user.login', authUserLoginListener)
-
-    if (Object.keys(cons).length < 2) { // don't know how to do this otherwise... we are getting too many listeners
-      bridge.on('auth.user.login', authUserLoginListener)
-    }
-
-    bridge.on('auth.user.logout', ({data, respond}) => {
-      console.debug("removing all bridge listeners")
-      bridge.removeAllListeners()
-    })
-
-    // === not using messaging (yet?) ===
-
-    // const messaging = getMessaging(firebaseApp)
-    //
-    // getToken(messaging, {
-    //   // @ts-ignore
-    //   serviceWorkerRegistration: self.registration, // note: we use the sw of ourself to register with
-    // }).then((token) => {
-    //   bridge.send('fcm.token.received', {token: token})
-    //     .then((data) => {
-    //       console.log('[service-worker] fcm.token.received response', data)
-    //     })
-    // }).catch((err) => {
-    //   console.log("[service-worker] got error:", err)
-    // })
-    //
-    // onBackgroundMessage(messaging, async (payload: any) => {
-    //   console.log(`[service-worker] Received FCM Message with payload2`, payload);
-    //
-    //   bridge.send('fb.message.received', payload)
-    //     .then((data) => {
-    //       console.log('[service-worker] fb.message.received response', data)
-    //     })
-    //     .catch((err) => {
-    //       console.log('[service-worker] error with fb.message.received', err)
-    //     })
-    //
-    //   const notificationTitle = 'Background Message Title!';
-    //   const notificationOptions = {
-    //     body: 'Background Message body.',
-    //     icon: '/firebase-logo.png'
-    //   };
-    //
-    //   // @ts-ignore
-    //   await self.registration.showNotification(notificationTitle, notificationOptions);
-    // })
-  }
 
 });

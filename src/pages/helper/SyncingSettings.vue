@@ -241,7 +241,6 @@ import {useUtils} from "src/core/services/Utils";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useAuthStore} from "stores/authStore";
-import {doc, updateDoc} from "firebase/firestore";
 import FirebaseServices from "src/services/firebase/FirebaseServices";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -320,21 +319,9 @@ const startGitSyncing = async () => {
 }
 
 const updateSyncing = async () => {
-  try {
-    await updateDoc(doc(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid), {sync: {type: tempSyncOption.value}})
-    LocalStorage.set(SYNC_TYPE, tempSyncOption.value)
-    if (tempSyncOption.value === SyncType.NONE) {
-      useUiStore().showSwitchedToLocalInfo = true
-    }
-    sendMsg('reload-application')
-    handleSuccess(new ExecutionResult<string>("done", "done"))
-  } catch (err) {
-    console.error("startGitSyncing Error", err)
-    handleError('could not start syncing')
-  }
 }
 
-const stopSyncMessage = () => (currentSyncType.value !== tempSyncOption.value) && currentSyncType.value === SyncType.GITHUB && tempSyncOption.value === SyncType.NONE
+const stopSyncMessage = () => (currentSyncType.value !== tempSyncOption.value) && tempSyncOption.value === SyncType.NONE
 
 
 </script>

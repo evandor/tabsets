@@ -11,7 +11,6 @@ import {uid} from "quasar";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {MonitoringType} from "src/models/Monitor";
 import {Router} from "vue-router";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
@@ -63,28 +62,7 @@ function runContentHousekeeping(fnc: (url: string) => boolean) {
     })
 }
 
-async function checkMonitors(router: Router) {
-  const monitoredContentHash: string[] = []
-  for (const ts of useTabsetsStore().tabsets.values()) {
-    for (const tab of ts.tabs) {
-      if (tab.monitor && tab.monitor.type === MonitoringType.CONTENT_HASH && tab.url) {
-        monitoredContentHash.push(tab.url)
-      }
-    }
-  }
-
-  if (monitoredContentHash.length > 0) {
-    //console.log("%croute", "color:orange", router, router.currentRoute.value.path)
-    // if (router.currentRoute.value.path.startsWith("/sidepanel")) {
-    //   useWindowsStore().openThrottledInWindow(monitoredContentHash, {focused: false, state: "minimized"})
-    // } else {
-    console.warn("not running openThrottledInWindow due to path not starting with /sidepanel", router.currentRoute.value.path)
-    // }
-  }
-}
-
 const persistenceService = IndexedDbPersistenceService
-
 
 class ChromeApi {
 
@@ -338,25 +316,6 @@ class ChromeApi {
     })
   }
 
-  async closeAllTabs() {
-    console.log(" --- closing all tabs: start ---")
-    const currentTab = await this.getCurrentTab()
-    // @ts-ignore
-    const t: chrome.tabs.Tab[] = await chrome.tabs.query({currentWindow: true})//, (t: chrome.tabs.Tab[]) => {
-    const ids: number[] = t.filter((r: chrome.tabs.Tab) => r.id !== currentTab.id)
-      .filter(r => r.id !== undefined)
-      .map(r => r.id || 0);
-    console.log("ids to close", ids)
-    ids.forEach(id => {
-      try {
-        chrome.tabs.remove(id)
-      } catch (err) {
-        console.warn("got error removing tabs", err, ids)
-      }
-    })
-    console.log(" --- closing all tabs: end ---")
-  }
-
   restore(tabset: Tabset, windowName: string | undefined = undefined, inNewWindow: boolean = true) {
     console.log("restoring tabset ", tabset.id, windowName, inNewWindow)
 
@@ -422,12 +381,6 @@ class ChromeApi {
     return chrome.bookmarks.getChildren(bookmarkFolderId)
   }
 
-  async getTab(tabId: number): Promise<chrome.tabs.Tab> {
-    console.log("call to chromeapi get tab", tabId)
-    // @ts-ignore
-    return chrome.tabs.get(tabId)
-  }
-
   createChromeTabObject(title: string, url: string, favIconUrl: string = "https://tabsets.web.app/icons/favicon-128x128.png") {
     return {
       active: false,
@@ -447,27 +400,6 @@ class ChromeApi {
       selected: false
     }
   }
-
-  createChromeBookmarkObject(title: string, url: string, favIconUrl: string) {
-    return {
-      id: uid(),
-      active: false,
-      discarded: true,
-      // @ts-ignore
-      groupId: -1,
-      autoDiscardable: true,
-      favIconUrl: favIconUrl,
-      index: 0,
-      highlighted: false,
-      title: title,
-      pinned: false,
-      url: url,
-      windowId: 0,
-      incognito: false,
-      selected: false
-    }
-  }
-
   createFolderNode(title: string, children: chrome.bookmarks.BookmarkTreeNode[] | undefined = undefined): chrome.bookmarks.BookmarkTreeNode {
     // index?: number | undefined;
     // dateAdded?: number | undefined;
@@ -490,16 +422,6 @@ class ChromeApi {
     }
   }
 
-  createChromeTabGroupObject(id: number, title: string, color: chrome.tabGroups.ColorEnum) {
-    return {
-      id: id,
-      title: title,
-      color: color,
-      collapsed: false,
-      windowId: 1
-    }
-  }
-
   createChromeWindowObject(id: number, top: number, left: number, tabs: chrome.tabs.Tab[] = []) {
     return {
       id,
@@ -514,18 +436,6 @@ class ChromeApi {
       type: 'normal' as chrome.windows.windowTypeEnum,
       tabs
     }
-  }
-
-  private chromeTabsCreateAsync(createProperties: object): Promise<chrome.tabs.Tab> {
-    return new Promise((resolve, reject) => {
-      chrome.tabs.create(createProperties, tab => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError)
-        } else {
-          resolve(tab);
-        }
-      });
-    });
   }
 
   executeClippingJS(tabId: number) {
