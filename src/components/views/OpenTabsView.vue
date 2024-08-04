@@ -26,7 +26,7 @@
                   <div class="col q-pa-xs text-right">
 
                     <q-checkbox v-if="useSelection"
-                                @update:model-value="val => toggleInvert(val)"
+                                @update:model-value="(val:boolean) => toggleInvert(val)"
                                 rigth-label
                                 class="text-primary text-uppercase q-mr-lg"
                                 style="font-size: 11px"
@@ -92,10 +92,10 @@ import TabsetService from "src/tabsets/services/TabsetService";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import Analytics from "src/core/utils/google-analytics";
-import OpenTabCard2 from "components/layouts/OpenTabCard2.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import OpenTabCard2 from "src/opentabs/components/OpenTabCard2.vue";
 
 const useSelection = ref(false)
 const invert = ref(false)
