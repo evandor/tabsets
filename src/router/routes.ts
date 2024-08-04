@@ -187,7 +187,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/bookmarks/:id',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelBookmarksPage.vue')}],
+    children: [{path: '', component: () => import('src/bookmarks/pages/MainPanelBookmarksPage.vue')}],
   },
   {
     path: '/mainpanel/tabAssignment/:id',

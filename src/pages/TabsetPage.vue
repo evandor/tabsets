@@ -269,8 +269,6 @@ import {onMounted, onUpdated, ref, unref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {date, openURL, uid, useQuasar} from "quasar";
 import TabsetService from "src/tabsets/services/TabsetService";
-import AddUrlDialog from "components/dialogues/AddUrlDialog.vue";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
@@ -283,13 +281,12 @@ import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue"
 import JsUtils from "src/utils/JsUtils";
 import {useUiStore} from "src/ui/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import Analytics from "src/core/utils/google-analytics";
 import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 import {useAuthStore} from "stores/authStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import AddUrlDialog from "src/tabsets/dialogues/AddUrlDialog.vue";
 
 const route = useRoute()
 const router = useRouter()

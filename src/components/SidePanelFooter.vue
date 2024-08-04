@@ -160,7 +160,6 @@ import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftBut
 import {useAuthStore} from "stores/authStore";
 import {Account} from "src/models/Account";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
-import SidePanelLoginWidget from "components/helper/SidePanelLoginWidget.vue";
 import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
 import {Window} from "src/windows/models/Window"
 import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
@@ -169,9 +168,9 @@ import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useTabsStore} from "src/bookmarks/stores/tabsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -184,8 +183,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
-const currentTabs = ref<Tab[]>([])
-const currentChromeTab = ref<chrome.tabs.Tab>(null as unknown as chrome.tabs.Tab)
+const currentTabs = ref<TabAndTabsetId[]>([])
+const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
 const showSuggestionButton = ref(false)
 const showSuggestionIcon = ref(false)
 const doShowSuggestionButton = ref(false)
@@ -257,7 +256,7 @@ watchEffect(() => {
     return
   }
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) //|| useTabsStore2().currentChromeTab
 })
 
 // watchEffect(() => {

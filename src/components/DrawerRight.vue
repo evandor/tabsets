@@ -74,7 +74,7 @@
   <SavedPdfs v-else-if="tab ===  DrawerTabs.SAVED_TABS_AS_PDF"/>
 <!--  <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>-->
 <!--  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>-->
-  <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>
+<!--  <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>-->
   <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
   <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
@@ -94,7 +94,6 @@
 
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
-import RssTabs from "src/components/RssTabs.vue"
 import {useRoute, useRouter} from "vue-router";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
@@ -118,7 +117,6 @@ const settingsStore = useSettingsStore()
 
 const openTabsCountRatio = ref(0)
 const tab = ref<DrawerTabs>(useUiStore().rightDrawer.activeTab)
-const rssTabsCount = ref(0)
 const filter = ref<string>('')
 
 const showOnlyFolders = ref(true)
@@ -128,8 +126,6 @@ watchEffect(() => tab.value = useUiStore().rightDrawer.activeTab)
 watchEffect(() => {
   openTabsCountRatio.value = Math.min((useTabsStore2().browserTabs?.length || 0) / settingsStore.thresholds['max' as keyof object], 1)
 })
-
-watchEffect(() => rssTabsCount.value = useTabsetsStore().rssTabs?.length)
 
 const toggleShowOnlyFolders = () => {
   console.log("****")
@@ -153,8 +149,6 @@ const drawerLabel = () => {
       return "Saved PDFs"
     case DrawerTabs.SAVED_TABS_AS_PNG:
       return "Saved Images"
-    case DrawerTabs.RSS:
-      return "RSS Sidebar"
     case DrawerTabs.SCHEDULED:
       return "Scheduled"
     case DrawerTabs.HISTORY:
