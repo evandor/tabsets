@@ -116,7 +116,6 @@ import {ref, watchEffect} from "vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {TabsetType} from "src/tabsets/models/Tabset";
-import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
@@ -129,6 +128,7 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
+import NewSessionDialog from "src/tabsets/dialogues/NewSessionDialog.vue";
 
 const {t} = useI18n({useScope: 'global'})
 

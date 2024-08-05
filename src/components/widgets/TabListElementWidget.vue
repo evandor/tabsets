@@ -141,7 +141,6 @@ import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useUtils} from "src/core/services/Utils"
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
-import EditNoteDialog from "components/dialogues/EditNoteDialog.vue";
 import {date, LocalStorage, useQuasar} from "quasar";
 import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";
@@ -150,12 +149,13 @@ import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import ShortUrl from "src/core/utils/ShortUrl.vue";
 import {useRouter} from "vue-router";
 import _ from "lodash";
-import CommentDialog from "components/dialogues/CommentDialog.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
-import PwaCommentDialog from "components/dialogues/PwaCommentDialog.vue";
 import {SHARING_AVATAR_IDENT} from "boot/constants";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import CommentDialog from "src/tabsets/dialogues/CommentDialog.vue";
+import EditNoteDialog from "src/tabsets/dialogues/EditNoteDialog.vue";
+import PwaCommentDialog from "src/tabsets/dialogues/PwaCommentDialog.vue";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},

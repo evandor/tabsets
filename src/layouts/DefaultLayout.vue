@@ -37,7 +37,7 @@
 
         <Transition name="colorized-appear">
           <div v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
-            <OpenTabsThresholdWidget/>
+            <OpenTabsThresholdWidget />
           </div>
         </Transition>
 
@@ -186,7 +186,6 @@ import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
 import _ from "lodash";
 import {useSpacesStore} from "src/spaces/stores/spacesStore"
-import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
@@ -195,8 +194,6 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
-import ExportDialog from "components/dialogues/ExportDialog.vue";
-import ImportDialog from "components/dialogues/ImportDialog.vue";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
@@ -206,6 +203,9 @@ import ToolbarButton from "components/widgets/ToolbarButton.vue";
 import {useAuthStore} from "stores/authStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import OpenTabsThresholdWidget from "src/opentabs/widgets/OpenTabsThresholdWidget.vue";
+import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
+import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
 
 const $q = useQuasar()
 const router = useRouter()
