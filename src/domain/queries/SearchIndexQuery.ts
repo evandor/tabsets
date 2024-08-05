@@ -28,7 +28,7 @@ export class SearchIndexQuery implements Query<Hits> {
         h.item.favIconUrl,
         0, 0,
         Math.round(100 - (100 * (h?.score || 1))),
-        h.item.tabsets,
+        [],//h.item.tabsets,
         [],
         _.map(h['matches' as keyof object], (m: any) => {
           return {
@@ -39,9 +39,9 @@ export class SearchIndexQuery implements Query<Hits> {
         h.item.description,
         h.item.keywords
       )
-      if (h.item.bookmarkId) {
-        theHit.bookmarkId = h.item.bookmarkId
-      }
+      // if (h.item.bookmarkId) {
+      //   theHit.bookmarkId = h.item.bookmarkId
+      // }
       count += 1
       if (count < 10) {
         theHits.push(theHit)

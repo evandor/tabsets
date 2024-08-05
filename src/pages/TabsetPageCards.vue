@@ -43,8 +43,6 @@
 
 <script lang="ts" setup>
 
-import TabList from "components/layouts/TabList.vue";
-import TabTable from "components/layouts/TabTable.vue";
 import TabGroups from "components/layouts/TabGroups.vue";
 import TabsExporter from "components/layouts/TabsExporter.vue";
 import {PropType, ref, watchEffect} from "vue";
@@ -57,6 +55,7 @@ import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
 import TabGrid from "components/layouts/TabGrid.vue";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import TabList from "src/tabsets/pages/pwa/TabList.vue";
 
 const route = useRoute()
 

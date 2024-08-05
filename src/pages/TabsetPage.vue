@@ -26,7 +26,7 @@
               @mouseout="showEditButton = false">
                   {{ useTabsetsStore().currentTabsetName }}
                    <q-popup-edit :model-value="tabset?.name" v-slot="scope"
-                                 @update:model-value="val => setNewName(  val)">
+                                 @update:model-value="(val:string) => setNewName(  val)">
                      <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
                    </q-popup-edit>
                 <span
@@ -148,7 +148,7 @@
           class="cursor-pointer q-ml-lg" size="12px"
           icon="o_filter_alt">
           <q-popup-edit :model-value="useUiStore().tabsFilter" v-slot="scope"
-                        @update:model-value="val => setFilter(  val)">
+                        @update:model-value="(val:string) => setFilter(  val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set"/>
           </q-popup-edit>
           <q-tooltip
@@ -275,18 +275,18 @@ import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
-import PageForTabset from "components/layouts/PageForTabset.vue";
 import TabsetPageCards from "pages/TabsetPageCards.vue";
 import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import JsUtils from "src/utils/JsUtils";
 import {useUiStore} from "src/ui/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import Analytics from "src/core/utils/google-analytics";
-import CanvasForTabset from "components/layouts/CanvasForTabset.vue";
 import {useAuthStore} from "stores/authStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import AddUrlDialog from "src/tabsets/dialogues/AddUrlDialog.vue";
+import CanvasForTabset from "src/tabsets/layouts/CanvasForTabset.vue";
+import PageForTabset from "src/tabsets/layouts/PageForTabset.vue";
 
 const route = useRoute()
 const router = useRouter()
