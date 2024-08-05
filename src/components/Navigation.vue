@@ -51,21 +51,15 @@
 
 <script setup lang="ts">
 
-import TabsetService from "src/tabsets/services/TabsetService";
-import {useRouter} from "vue-router";
 import _ from "lodash"
-import {ref} from "vue";
 import {useQuasar} from "quasar";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import TabsetService from "src/tabsets/services/TabsetService";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {useNotificationsStore} from "src/stores/notificationsStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useUtils} from "src/core/services/Utils";
 import NavTabsetsListWidgetNonBex from "components/widgets/NavTabsetsListWidgetNonBex.vue";
 import {FeatureIdent} from "src/models/FeatureIdent";
-import {useSettingsStore} from "src/stores/settingsStore"
 import SpacesSelectorWidget from "src/spaces/widgets/SpacesSelectorWidget.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

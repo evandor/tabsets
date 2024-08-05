@@ -71,7 +71,7 @@
   <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
   <ByDomainList v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
 <!--  <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
-  <SavedPdfs v-else-if="tab ===  DrawerTabs.SAVED_TABS_AS_PDF"/>
+<!--  <SavedPdfs v-else-if="tab ===  DrawerTabs.SAVED_TABS_AS_PDF"/>-->
 <!--  <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>-->
 <!--  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>-->
 <!--  <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>-->
@@ -104,7 +104,6 @@ import TabsetDetails from "components/views/TabsetDetails.vue";
 import TagsListViewer from "components/views/TagsListViewer.vue";
 import TagListViewer from "components/views/TagListViewer.vue";
 import ByDomainList from "src/tabsets/components/ByDomainList.vue";
-import SavedPdfs from "components/SavedPdfs.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import Features from "src/features/components/Features.vue";
