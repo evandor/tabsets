@@ -104,12 +104,11 @@ import TabsetDetails from "components/views/TabsetDetails.vue";
 import TagsListViewer from "components/views/TagsListViewer.vue";
 import TagListViewer from "components/views/TagListViewer.vue";
 import ByDomainList from "src/tabsets/components/ByDomainList.vue";
-import OpenTabsView from "components/views/OpenTabsView.vue";
 import SavedPdfs from "components/SavedPdfs.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import Features from "src/features/components/Features.vue";
+import OpenTabsView from "src/opentabs/views/OpenTabsView.vue";
 
 const route = useRoute()
 
