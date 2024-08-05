@@ -46,8 +46,6 @@
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
-import {useQuasar} from "quasar";
-import {useRouter} from "vue-router";
 
 import {useDialogPluginComponent} from 'quasar'
 import {useSearchStore} from "src/search/stores/searchStore";

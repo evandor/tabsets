@@ -400,8 +400,6 @@ import {onMounted, reactive, ref, watch, watchEffect} from "vue";
 import {LocalStorage, useQuasar} from "quasar";
 import {useSearchStore} from "src/search/stores/searchStore";
 import TabsetService from "src/tabsets/services/TabsetService";
-import ExportDialog from "components/dialogues/ExportDialog.vue";
-import ImportDialog from "components/dialogues/ImportDialog.vue";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
@@ -442,6 +440,8 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
+import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
+import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
 
 const { t } = useI18n()
 
