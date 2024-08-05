@@ -53,7 +53,6 @@ import _ from "lodash";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";

@@ -187,7 +187,6 @@ import Navigation from "src/components/Navigation.vue"
 import _ from "lodash";
 import {useSpacesStore} from "src/spaces/stores/spacesStore"
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
-import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {usePermissionsStore} from "src/stores/permissionsStore";
@@ -206,6 +205,7 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import OpenTabsThresholdWidget from "src/opentabs/widgets/OpenTabsThresholdWidget.vue";
 import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
 import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
+import SearchWidget from "src/search/widgets/SearchWidget.vue";
 
 const $q = useQuasar()
 const router = useRouter()

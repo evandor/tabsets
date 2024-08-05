@@ -75,16 +75,6 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTagsPage.vue')}],
   },
   {
-    path: '/sidepanel/rsslist',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelRssListViewer.vue')}],
-  },
-  {
-    path: '/sidepanel/rss/:encodedUrl',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelRssPage.vue')}],
-  },
-  {
     path: '/sidepanel/byDomainList',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelByDomainList.vue')}],
@@ -235,11 +225,6 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('src/bookmarks/pages/BookmarksPage.vue')}],
   },
   {
-    path: '/rss/:encodedUrl',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{path: '', component: () => import('pages/RssPage.vue')}],
-  },
-  {
     path: '/bydomain/:encodedUrl',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{path: '', component: () => import('src/tabsets/pages/ByDomainPage.vue')}],
@@ -274,11 +259,11 @@ const routes: RouteRecordRaw[] = [
   //   component: () => import('layouts/PwaPageLayout.vue'),
   //   children: [{path: '', component: () => import('pages/pwa/PwaTabsetPage.vue')}],
   // },
-  {
-    path: '/contentscript',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/contentscript/ContentScriptPage.vue')}],
-  },
+  // {
+  //   path: '/contentscript',
+  //   component: () => import('layouts/PlainLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/contentscript/ContentScriptPage.vue')}],
+  // },
   // {
   //   path: '/annotations/:tabId',
   //   component: () => import('layouts/PlainLayout.vue'),
