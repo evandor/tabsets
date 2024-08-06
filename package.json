@@ -59,7 +59,6 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "events": "^3.3.0",
-    "firebase": "^10.12.2",
     "fuse.js": "^7.0.0",
     "html-to-text": "^9.0.5",
     "idb": "^8.0.0",
