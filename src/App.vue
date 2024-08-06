@@ -5,7 +5,7 @@
 <script setup lang="ts">
 
 import {setCssVar, useQuasar} from "quasar";
-import AppService from "src/services/AppService";
+import AppService from "src/app/AppService";
 import {EventEmitter} from "events";
 import {useRouter} from "vue-router";
 import {useLogger} from "src/services/Logger";

@@ -12,6 +12,7 @@ import SnapshotsPersistence from "src/snapshots/persistence/SnapshotsPersistence
 import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSnapshotPersistence";
 import IndexedDbTabsetsGroupsPersistence from "src/tabsets/persistence/IndexedDbTabsetsGroupsPersistence";
 import TabsetsGroupsPersistence from "src/tabsets/persistence/TabsetsGroupsPersistence";
+import IndexedDbNotesPersistence from "src/notes/persistence/IndexedDbNotesPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
@@ -23,6 +24,7 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   const groupsIndexedDb: TabsetsGroupsPersistence = IndexedDbTabsetsGroupsPersistence
 
   const snapshotsIndexedDb: SnapshotsPersistence = IndexedDbSnapshotPersistence
+  const notesDb =  IndexedDbNotesPersistence
 
   let localDb = undefined as unknown as PersistenceService
   let featuresLocalStorage: FeaturesPersistence = undefined as unknown as FeaturesPersistence
@@ -36,7 +38,8 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
     tabsetsIndexedDb,
     featuresLocalStorage,
     snapshotsIndexedDb,
-    groupsIndexedDb
+    groupsIndexedDb,
+    notesDb
   }
 
 }

@@ -19,7 +19,6 @@ import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useAppStore} from "stores/appStore";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {User} from "firebase/auth";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
 import {useContentService} from "src/content/services/ContentService";
@@ -29,13 +28,14 @@ import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
+import {useNotesStore} from "src/notes/stores/NotesStore";
 
 class AppService {
 
   router: Router = null as unknown as Router
   initialized = false
 
-  async init(quasar: any, router: Router, forceRestart = false, user: User | undefined = undefined) {
+  async init(quasar: any, router: Router, forceRestart = false) {
 
     console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, forceRestart ? "font-weight:bold" : "")
 
@@ -127,6 +127,9 @@ class AppService {
      * make sure features are not used before this line in code.
      */
     await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
+
+    await useNotesStore().initialize(useDB().notesDb)
+    console.debug('')
 
     /**
      * windows store
