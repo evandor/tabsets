@@ -50,6 +50,11 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/SidePanelSearchPage.vue')}],
   },
   {
+    path: '/sidepanel/research/:sourceId',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('src/pages/SidePanelResearchPage.vue')}],
+  },
+  {
     path: '/sidepanel/tab/:tabId',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTabDetails.vue')}],

@@ -39,16 +39,16 @@ import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useUiStore} from "src/ui/stores/uiStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
-import TagsListViewerWidget from "components/widgets/TagsListViewerWidget.vue";
 import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
+import {SidePanelViews} from "src/models/SidePanelViews";
+import TagsListViewerWidget from "src/tabsets/widgets/TagsListViewerWidget.vue";
 
 const {handleError} = useNotificationHandler()
 
 const selectTag = (tag: string) => {
   console.log("selecting", tag)
   useUiStore().setSelectedTag(tag)
-  // router.push("/sidepanel/tags")
   useUiStore().sidePanelSetActiveView(SidePanelViews.TAG)
 }
 
