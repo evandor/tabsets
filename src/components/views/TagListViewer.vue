@@ -23,7 +23,6 @@ import _ from "lodash";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useUiStore} from "src/ui/stores/uiStore";
-import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import SearchHit from "components/layouts/SearchHit.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

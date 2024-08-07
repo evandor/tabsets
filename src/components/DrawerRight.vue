@@ -77,13 +77,13 @@
 <!--  <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>-->
   <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
-  <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
-  <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>
+<!--  <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
+  <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>-->
 
   <TagsListViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>
   <TagListViewer v-else-if="tab ===  DrawerTabs.TAG_VIEWER"/>
 
-  <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>
+<!--  <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
 
   <!-- only in sidepanel in chrome extension-->
   <!--  <TagsViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>-->
@@ -98,16 +98,13 @@ import {useRoute, useRouter} from "vue-router";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import BookmarksTree from "src/bookmarks/components/BookmarksTree.vue";
-import TabDetails from "components/views/TabDetails.vue";
-import TabsetHelp from "components/TabsetHelp.vue";
-import TabsetDetails from "components/views/TabsetDetails.vue";
-import TagsListViewer from "components/views/TagsListViewer.vue";
-import TagListViewer from "components/views/TagListViewer.vue";
 import ByDomainList from "src/tabsets/components/ByDomainList.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import Features from "src/features/components/Features.vue";
 import OpenTabsView from "src/opentabs/views/OpenTabsView.vue";
+import TagsListViewer from "src/tabsets/widgets/TagsListViewer.vue";
+import TagListViewer from "components/views/TagListViewer.vue";
 
 const route = useRoute()
 
