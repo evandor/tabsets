@@ -1,13 +1,13 @@
 
-<!--@include: ../../src/tabsets/docs/intro.md-->
+<!--@include: build/tabsets/docs/intro.md-->
 
 ### Installation
 
-Check out this page: [installation](../../src/tabsets/docs/installation.md)
+Check out this page: [installation](build/tabsets/docs/installation.md)
 
 ### Setup
 
-Once the submodule has been installed in your application, it needs to be [setup](../../src/tabsets/docs/setup.md).
+Once the submodule has been installed in your application, it needs to be [setup](build/tabsets/docs/setup.md).
 
 ### usage
 
@@ -15,7 +15,7 @@ Once the submodule has been installed in your application, it needs to be [setup
 
 ### messages
 
-[messages](../../src/tabsets/docs/messages.md)
+[messages](build/tabsets/docs/messages.md)
 
 ### code
 
