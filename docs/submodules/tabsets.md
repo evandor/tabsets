@@ -11,7 +11,7 @@ Once the submodule has been installed in your application, it needs to be [setup
 
 ### usage
 
-[usage](../../src/tabsets/docs/usage.md)
+[usage](build/tabsets/usage.md)
 
 ### messages
 

@@ -29,6 +29,10 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 import {useNotesStore} from "src/notes/stores/NotesStore";
+import {watch} from "vue";
+import _ from "lodash"
+import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
+import {TabsetInfo} from "src/core/models/TabsetInfo";
 
 class AppService {
 
@@ -120,7 +124,7 @@ class AppService {
   private async initCoreSerivces(quasar: any, router: Router) {
     const spacesStore = useSpacesStore()
     const groupsStore = useGroupsStore()
-    const tabsetsStore = useTabsetsStore()
+    const registryStore = useEntityRegistryStore()
 
     /**
      * features store: passing storage for better testing.
@@ -140,13 +144,24 @@ class AppService {
     const spacesPersistence = useDB().spacesIndexedDb
     await spacesStore.initialize(spacesPersistence)
 
-    const tabsetsPersistence = useDB().tabsetsIndexedDb
-    await tabsetsStore.initialize(tabsetsPersistence)
-    await useTabsetService().init(false)
+    /**
+     * Pattern: TODO
+     * initialize store with optional registry watcher and persistence
+     * run persistence init code in store init
+     * no persistence for service!
+     */
 
+    const tabsetsStore = useTabsetsStore()
+    watch(tabsetsStore.tabsets, (newTabsets:Map<string,any>) => {
+      const tsInfo = _.map([...newTabsets.values()], (ts: any) => new TabsetInfo(ts.id, ts.name, ts.window, ts.tabs.length))
+      registryStore.tabsetRegistry = tsInfo
+    })
+    await tabsetsStore.initialize(useDB().tabsetsIndexedDb)
+    await useTabsetService().init(false)
+    console.debug('')
     await useTabsStore2().initialize()
 
-    //await useGroupsStore().initialize(useDB().groupsIndexedDb)
+
 
     const existingUrls = useTabsetsStore().getAllUrls()
     await useContentService().populateSearch(existingUrls)
