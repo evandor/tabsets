@@ -25,11 +25,11 @@ export class CopyTabsetCommand implements Command<object> {
 
   async execute(): Promise<ExecutionResult<object>> {
     try {
-      const result = await useTabsetService().copyFromTabset(this.tabset, useSpacesStore().space)
+      const result = await useTabsetService().copyFromTabset(this.tabset, useSpacesStore().space?.id || undefined)
       return Promise.resolve(new ExecutionResult(
         result,
-        "Tabset has been copied",
-        new UndoCopyTabsetCommand(result['tabset' as keyof object]['id'])))
+        "Tabset has been copied"))
+        //new UndoCopyTabsetCommand(result['tabset' as keyof object]['id'])))
     } catch (err) {
       return Promise.reject(err)
     }

@@ -1,18 +1,13 @@
-import {FirebaseCall} from "src/services/firebase/FirebaseCall";
-import {AxiosResponse} from "axios";
-
+/**
+ * noop service to satisfy submodules dependencies
+ */
 export class BackendApi {
 
-  //getNotifications = (): Promise<Notification[]> => FirebaseCall.get("/notifications")
-
   createPdf(html: string) {
-    //return FirebaseCall.post("/pdf", {"html": html}, "blob")
-    return FirebaseCall.post("http://carsten.evandor.de:5000/pdf", {"html": html}, "blob", true)
   }
 
-  createPng(html: string): Promise<AxiosResponse<Blob>> {
-    // return FirebaseCall.post("/screenshot", {"html": html}, "blob")
-    return FirebaseCall.post("http://carsten.evandor.de:5000/screenshot", {"html": html}, "blob", true)
+  createPng(html: string) {
+    return Promise.reject("no op")
   }
 }
 

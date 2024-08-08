@@ -97,7 +97,7 @@ export class AppFeatures {
       .setActivateCommands([new GrantPermissionCommand('pageCapture')])
       .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
 
-    new Feature(FeatureIdent.NOTES, FeatureType.EXPERIMENTAL,
+    new Feature(FeatureIdent.NOTES, FeatureType.OPTIONAL,
       'Notes Feature',
       'CreateCreate notes and treat them like tabs',
       'o_note', '', ['all']),

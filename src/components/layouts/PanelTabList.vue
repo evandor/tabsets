@@ -47,7 +47,7 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabFromOpenTabsCommand} from "src/tabsets/commands/CreateTabFromOpenTabs";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
-import SidePanelTabListHelper from "components/layouts/sidepanel/SidePanelTabListHelper.vue";
+import SidePanelTabListHelper from "src/tabsets/layouts/SidePanelTabListHelper.vue";
 
 const props = defineProps({
   tabs: {type: Array as PropType<Tab[]>, required: true},

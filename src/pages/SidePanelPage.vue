@@ -152,7 +152,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";
-import AppService from "src/services/AppService";
+import AppService from "src/app/AppService";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -280,20 +280,10 @@ if (inBexMode()) {
       const tsId = message.data.tabsetId
       useTabsetsStore().selectCurrentTabset(tsId)
     } else if (message.name === 'feature-activated') {
-      console.log("===>", message)
-      // usePermissionsStore().addActivateFeature(message.data.feature)
       useFeaturesStore().activateFeature(message.data.feature)
-      // if (message.data.feature === 'help') {
-      //   useTabsetService().reloadTabset("HELP")
-      // } else if (message.data.feature === 'bookmarks') {
-      //   usePermissionsStore().load()
-      //     .then(() => {
-      //       useBookmarksStore().init()
-      //       useBookmarksStore().loadBookmarks()
-      //     })
-      // }
+    } else if (message.name === "text-selection") {
+      console.log("message", message)
     } else if (message.name === "feature-deactivated") {
-      // usePermissionsStore().removeActivateFeature(message.data.feature)
       useFeaturesStore().deactivateFeature(message.data.feature)
     } else if (message.name === "tabsets-imported") {
       useSpacesStore().reload()

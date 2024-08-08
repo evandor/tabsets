@@ -7,6 +7,10 @@ export default withMermaid({
   description: "description site",
   base: '/tabsets/', // needed for github pages
   srcDir: '../', // need to place the main index.md file on top to be able to reference relative paths
+  ignoreDeadLinks: true,
+  // rewrites: {
+  //   '../src/tabsets/doc/usage.md': 'pkg-a/index.md'
+  // },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

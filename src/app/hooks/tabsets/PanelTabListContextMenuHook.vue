@@ -30,6 +30,8 @@ import {useRouter} from "vue-router";
 import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 import {openURL} from "quasar";
+import _ from "lodash"
+import NavigationService from "src/services/NavigationService";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 
@@ -41,17 +43,15 @@ const props = defineProps({
 const router = useRouter()
 
 const openResearchPage = () => {
-  window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/mhtml/${props.tab.id}/0`));
+  openURL(props.tab.url!)
   router.push('/sidepanel/research/' + props.tab.id)
 }
 
-const hasResearchData = () => {
-  const mds: Map<string, BlobMetadata[]> = useSnapshotsStore().metadata
-  return mds.get(props.tab.id)
-}
+const hasResearchData = () =>
+  _.find(useSnapshotsStore().metadata, (md: BlobMetadata) => md.sourceId === props.tab.id)
 
 const startResearch = () => {
-  openURL(props.tab.url!)
+  NavigationService.openOrCreateTab([props.tab.url!])
   router.push('/sidepanel/research/' + props.tab.id)
 }
 

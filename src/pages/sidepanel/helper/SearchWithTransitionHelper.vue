@@ -13,8 +13,7 @@
 
 <script lang="ts" setup>
 
-import SearchWidget2 from "components/widgets/SearchWidget2.vue";
-import {ref} from "vue";
+import SearchWidget2 from "src/search/widgets/SearchWidget2.vue";
 
 const props = defineProps({
   searchTerm: {type: String, default: ''},

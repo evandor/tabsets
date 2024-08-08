@@ -78,3 +78,4 @@ docs/.vitepress/cache
 /.tabsets-backend-prd.env
 /.env.tmp
 /act.secrets.txt
+/docs/submodules/build/

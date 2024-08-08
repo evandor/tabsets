@@ -71,19 +71,19 @@
   <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
   <ByDomainList v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
 <!--  <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
-  <SavedPdfs v-else-if="tab ===  DrawerTabs.SAVED_TABS_AS_PDF"/>
+<!--  <SavedPdfs v-else-if="tab ===  DrawerTabs.SAVED_TABS_AS_PDF"/>-->
 <!--  <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>-->
 <!--  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>-->
-  <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>
+<!--  <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>-->
   <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
-  <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
-  <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>
+<!--  <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
+  <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>-->
 
   <TagsListViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>
   <TagListViewer v-else-if="tab ===  DrawerTabs.TAG_VIEWER"/>
 
-  <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>
+<!--  <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
 
   <!-- only in sidepanel in chrome extension-->
   <!--  <TagsViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>-->
@@ -94,23 +94,17 @@
 
 <script lang="ts" setup>
 import {ref, watch, watchEffect} from "vue";
-import RssTabs from "src/components/RssTabs.vue"
 import {useRoute, useRouter} from "vue-router";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import BookmarksTree from "src/bookmarks/components/BookmarksTree.vue";
-import TabDetails from "components/views/TabDetails.vue";
-import TabsetHelp from "components/TabsetHelp.vue";
-import TabsetDetails from "components/views/TabsetDetails.vue";
-import TagsListViewer from "components/views/TagsListViewer.vue";
-import TagListViewer from "components/views/TagListViewer.vue";
 import ByDomainList from "src/tabsets/components/ByDomainList.vue";
-import OpenTabsView from "components/views/OpenTabsView.vue";
-import SavedPdfs from "components/SavedPdfs.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import Features from "src/features/components/Features.vue";
+import OpenTabsView from "src/opentabs/views/OpenTabsView.vue";
+import TagsListViewer from "src/tabsets/widgets/TagsListViewer.vue";
+import TagListViewer from "components/views/TagListViewer.vue";
 
 const route = useRoute()
 
@@ -118,7 +112,6 @@ const settingsStore = useSettingsStore()
 
 const openTabsCountRatio = ref(0)
 const tab = ref<DrawerTabs>(useUiStore().rightDrawer.activeTab)
-const rssTabsCount = ref(0)
 const filter = ref<string>('')
 
 const showOnlyFolders = ref(true)
@@ -128,8 +121,6 @@ watchEffect(() => tab.value = useUiStore().rightDrawer.activeTab)
 watchEffect(() => {
   openTabsCountRatio.value = Math.min((useTabsStore2().browserTabs?.length || 0) / settingsStore.thresholds['max' as keyof object], 1)
 })
-
-watchEffect(() => rssTabsCount.value = useTabsetsStore().rssTabs?.length)
 
 const toggleShowOnlyFolders = () => {
   console.log("****")
@@ -153,8 +144,6 @@ const drawerLabel = () => {
       return "Saved PDFs"
     case DrawerTabs.SAVED_TABS_AS_PNG:
       return "Saved Images"
-    case DrawerTabs.RSS:
-      return "RSS Sidebar"
     case DrawerTabs.SCHEDULED:
       return "Scheduled"
     case DrawerTabs.HISTORY:

@@ -20,11 +20,6 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/StartPage.vue')}],
   },
   {
-    path: '/login',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/FullPageLoginPage.vue')}],
-  },
-  {
     path: '/fullpage',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('pages/FullpageStart.vue')}],
@@ -55,6 +50,11 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/SidePanelSearchPage.vue')}],
   },
   {
+    path: '/sidepanel/research/:sourceId',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('src/pages/SidePanelResearchPage.vue')}],
+  },
+  {
     path: '/sidepanel/tab/:tabId',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTabDetails.vue')}],
@@ -78,16 +78,6 @@ const routes: RouteRecordRaw[] = [
     path: '/sidepanel/tags',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTagsPage.vue')}],
-  },
-  {
-    path: '/sidepanel/rsslist',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelRssListViewer.vue')}],
-  },
-  {
-    path: '/sidepanel/rss/:encodedUrl',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelRssPage.vue')}],
   },
   {
     path: '/sidepanel/byDomainList',
@@ -142,17 +132,17 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/notes/:noteId/edit', // editorjs setup cannot toggle between readonly/write mode
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue')}],
+    children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
   },
   {
     path: '/mainpanel/notes/:noteId',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue')}],
+    children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
   },
   {
     path: '/mainpanel/notes/',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelNotePage.vue')}],
+    children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
   },
   {
     path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
@@ -162,7 +152,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/png/:tabId/:blobId',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue')}],
+    children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
   },
   {
     path: '/mainpanel/html/:tabId/:blobId',
@@ -192,7 +182,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/bookmarks/:id',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/mainpanel/MainPanelBookmarksPage.vue')}],
+    children: [{path: '', component: () => import('src/bookmarks/pages/MainPanelBookmarksPage.vue')}],
   },
   {
     path: '/mainpanel/tabAssignment/:id',
@@ -240,11 +230,6 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('src/bookmarks/pages/BookmarksPage.vue')}],
   },
   {
-    path: '/rss/:encodedUrl',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{path: '', component: () => import('pages/RssPage.vue')}],
-  },
-  {
     path: '/bydomain/:encodedUrl',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{path: '', component: () => import('src/tabsets/pages/ByDomainPage.vue')}],
@@ -279,11 +264,11 @@ const routes: RouteRecordRaw[] = [
   //   component: () => import('layouts/PwaPageLayout.vue'),
   //   children: [{path: '', component: () => import('pages/pwa/PwaTabsetPage.vue')}],
   // },
-  {
-    path: '/contentscript',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/contentscript/ContentScriptPage.vue')}],
-  },
+  // {
+  //   path: '/contentscript',
+  //   component: () => import('layouts/PlainLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/contentscript/ContentScriptPage.vue')}],
+  // },
   // {
   //   path: '/annotations/:tabId',
   //   component: () => import('layouts/PlainLayout.vue'),

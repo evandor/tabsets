@@ -4,13 +4,11 @@ import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/suggestion
 import {SearchDoc} from "src/search/models/SearchDoc";
 import {QVueGlobals, useQuasar} from "quasar";
 import {Tabset} from "src/tabsets/models/Tabset";
-import {Tab} from "src/tabsets/models/Tab";
 import {Notification} from "src/models/Notification";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
-import {BlobType, SavedBlob} from "src/models/SavedBlob";
 import {Message} from "src/models/Message";
-import {Account} from "src/models/Account";
+import {BlobType} from "src/snapshots/models/BlobMetadata";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -140,10 +138,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
   clear(name: string) {
   }
 
-  getBlobsForTab(blobId: string): Promise<SavedBlob[]> {
-    return Promise.resolve([]);
-  }
-
   saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {
     return Promise.resolve(undefined);
   }
@@ -194,13 +188,13 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve([]);
   }
 
-  getAccount(accountId: string): Promise<Account> {
-    return Promise.reject("not implemented")
-  }
-
-  upsertAccount(account: Account):void {
-    console.warn("not implemented")
-  }
+  // getAccount(accountId: string): Promise<Account> {
+  //   return Promise.reject("not implemented")
+  // }
+  //
+  // upsertAccount(account: Account):void {
+  //   console.warn("not implemented")
+  // }
 
 
 }
