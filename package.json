@@ -37,7 +37,7 @@
     "build pwa.prd & deploy to india032": "mv .env .env.tmp && cp .prd.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.tabsets.net && mv .env.tmp .env",
     "build pwa.dev & deploy to india032": "mv .env .env.tmp && cp .dev.env .env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.tabsets.net && mv .env.tmp .env",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "cp -r src/tabsets/docs docs/submodules/build/tabsets && vitepress build docs",
+    "docs:build": "./copySubmoduleDocs.sh && vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "info": "yarn list > docs/yarn.list.txt && quasar info > docs/quasar.info.txt"
   },
