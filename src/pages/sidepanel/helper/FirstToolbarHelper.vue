@@ -116,19 +116,18 @@ import {ref, watchEffect} from "vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {TabsetType} from "src/tabsets/models/Tabset";
-import NewSessionDialog from "components/dialogues/NewSessionDialog.vue";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
-import FilterWithTransitionHelper from "pages/sidepanel/helper/FilterWithTransitionHelper.vue";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useQuasar} from "quasar";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
+import NewSessionDialog from "src/tabsets/dialogues/NewSessionDialog.vue";
+import FilterWithTransitionHelper from "src/core/widget/FilterWithTransitionHelper.vue";
 
 const {t} = useI18n({useScope: 'global'})
 
@@ -191,16 +190,6 @@ const startSession = () => $q.dialog({
   component: NewSessionDialog,
   componentProps: {replaceSession: false, inSidePanel: true}
 })
-
-// const stopSession = () => {
-//   const tabsetWithSession = _.filter([...useTabsetsStore().tabsets.values()], (ts: Tabset) => ts.type === TabsetType.SESSION)
-//   console.log("tabsetWithSession", tabsetWithSession)
-//   if (tabsetWithSession && tabsetWithSession.length > 0) { // should be one at most
-//     useCommandExecutor().executeFromUi(new StopSessionCommand(tabsetWithSession[0]))
-//   }
-// }
-
-const webClipActive = () => useTabsStore2().currentChromeTab
 
 const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 

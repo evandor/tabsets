@@ -26,13 +26,14 @@ make sure you added the submodules: in the root folder, run
 
 ```
 git submodule add -b main https://github.com/evandor/submodule-core.git src/core
-git submodule add -b main https://github.com/evandor/submodule-tabsets.git src/tabsets
+git submodule add -b localstorage https://github.com/evandor/submodule-tabsets.git src/tabsets
+git submodule add -b localstorage https://github.com/evandor/submodule-spaces.git src/spaces
 git submodule add -b chrome-extension https://github.com/evandor/submodule-bookmarks.git src/bookmarks
 git submodule add -b main https://github.com/evandor/submodule-windows.git src/windows
 git submodule add -b main https://github.com/evandor/submodule-suggestions.git src/suggestions
 git submodule add -b main https://github.com/evandor/submodule-thumbnails.git src/thumbnails
 git submodule add -b main https://github.com/evandor/submodule-content.git src/content
-git submodule add -b main https://github.com/evandor/submodule-features.git src/features
+git submodule add -b localstorage https://github.com/evandor/submodule-features.git src/features
 git submodule add -b main https://github.com/evandor/submodule-opentabs.git src/opentabs
 git submodule add -b main https://github.com/evandor/submodule-snapshots.git src/snapshots
 git submodule add -b main https://github.com/evandor/submodule-ui.git src/ui

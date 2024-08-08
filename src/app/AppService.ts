@@ -19,7 +19,6 @@ import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import {useAppStore} from "stores/appStore";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {User} from "firebase/auth";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
 import {useContentService} from "src/content/services/ContentService";
@@ -29,13 +28,18 @@ import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
+import {useNotesStore} from "src/notes/stores/NotesStore";
+import {watch} from "vue";
+import _ from "lodash"
+import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
+import {TabsetInfo} from "src/core/models/TabsetInfo";
 
 class AppService {
 
   router: Router = null as unknown as Router
   initialized = false
 
-  async init(quasar: any, router: Router, forceRestart = false, user: User | undefined = undefined) {
+  async init(quasar: any, router: Router, forceRestart = false) {
 
     console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, forceRestart ? "font-weight:bold" : "")
 
@@ -120,13 +124,16 @@ class AppService {
   private async initCoreSerivces(quasar: any, router: Router) {
     const spacesStore = useSpacesStore()
     const groupsStore = useGroupsStore()
-    const tabsetsStore = useTabsetsStore()
+    const registryStore = useEntityRegistryStore()
 
     /**
      * features store: passing storage for better testing.
      * make sure features are not used before this line in code.
      */
     await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
+
+    await useNotesStore().initialize(useDB().notesDb)
+    console.debug('')
 
     /**
      * windows store
@@ -137,13 +144,24 @@ class AppService {
     const spacesPersistence = useDB().spacesIndexedDb
     await spacesStore.initialize(spacesPersistence)
 
-    const tabsetsPersistence = useDB().tabsetsIndexedDb
-    await tabsetsStore.initialize(tabsetsPersistence)
-    await useTabsetService().init(false)
+    /**
+     * Pattern: TODO
+     * initialize store with optional registry watcher and persistence
+     * run persistence init code in store init
+     * no persistence for service!
+     */
 
+    const tabsetsStore = useTabsetsStore()
+    watch(tabsetsStore.tabsets, (newTabsets:Map<string,any>) => {
+      const tsInfo = _.map([...newTabsets.values()], (ts: any) => new TabsetInfo(ts.id, ts.name, ts.window, ts.tabs.length))
+      registryStore.tabsetRegistry = tsInfo
+    })
+    await tabsetsStore.initialize(useDB().tabsetsIndexedDb)
+    await useTabsetService().init(false)
+    console.debug('')
     await useTabsStore2().initialize()
 
-    //await useGroupsStore().initialize(useDB().groupsIndexedDb)
+
 
     const existingUrls = useTabsetsStore().getAllUrls()
     await useContentService().populateSearch(existingUrls)

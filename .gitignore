@@ -77,3 +77,4 @@ docs/.vitepress/cache
 /.env.tmp
 /.tabsets-backend-prd.env
 /.env.tmp
+/docs/submodules/build/

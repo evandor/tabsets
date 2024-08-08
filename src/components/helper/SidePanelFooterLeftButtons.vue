@@ -128,7 +128,6 @@
 import {useUiStore} from "src/ui/stores/uiStore";
 import {FeatureIdent} from "src/models/FeatureIdent";
 import SidePanelFooterLeftButton from "components/helper/SidePanelFooterLeftButton.vue";
-import OpenTabsThresholdWidget from "components/widgets/OpenTabsThresholdWidget.vue";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
@@ -138,6 +137,7 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "../../tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
+import OpenTabsThresholdWidget from "src/opentabs/widgets/OpenTabsThresholdWidget.vue";
 
 const props = defineProps({
   showSuggestionIcon: {type: Boolean, required: true},

@@ -95,6 +95,7 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
 
 const props = defineProps({
   hit: {type: Hit, required: true},
@@ -192,6 +193,7 @@ const open = (hit: Hit) => {
       const spaceId =  (tabset && tabset.spaces.length > 0) ? tabset.spaces[0] : undefined
       console.log("selecting tabset/space", tabsetId, spaceId)
       useCommandExecutor().execute(new SelectTabsetCommand(tabsetId, spaceId))
+      useSpacesStore().setSpace(spaceId)
     } else {
       useCommandExecutor().execute(new SelectTabsetCommand(tabsetId))
     }
