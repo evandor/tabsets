@@ -33,6 +33,7 @@ import {watch} from "vue";
 import _ from "lodash"
 import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
 import {TabsetInfo} from "src/core/models/TabsetInfo";
+import {SpaceInfo} from "src/core/models/SpaceInfo";
 
 class AppService {
 
@@ -122,7 +123,6 @@ class AppService {
   }
 
   private async initCoreSerivces(quasar: any, router: Router) {
-    const spacesStore = useSpacesStore()
     const groupsStore = useGroupsStore()
     const registryStore = useEntityRegistryStore()
 
@@ -141,15 +141,20 @@ class AppService {
     await useWindowsStore().initialize()
     useWindowsStore().initListeners()
 
-    const spacesPersistence = useDB().spacesIndexedDb
-    await spacesStore.initialize(spacesPersistence)
-
     /**
      * Pattern: TODO
      * initialize store with optional registry watcher and persistence
      * run persistence init code in store init
      * no persistence for service!
      */
+
+    const spacesStore = useSpacesStore()
+    watch(spacesStore.spaces, (newSpaces:Map<string,any>) => {
+      const spacesInfo = _.map([...newSpaces.values()], (ts: any) => new SpaceInfo(ts.id, ts.name))
+      registryStore.spacesRegistry = spacesInfo
+    })
+    await spacesStore.initialize(useDB().spacesIndexedDb)
+    console.debug('')
 
     const tabsetsStore = useTabsetsStore()
     watch(tabsetsStore.tabsets, (newTabsets:Map<string,any>) => {
