@@ -5,7 +5,6 @@ import NavigationService from "src/services/NavigationService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useSearchStore} from "src/search/stores/searchStore";
 import {SearchDoc} from "src/search/models/SearchDoc";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
@@ -107,7 +106,7 @@ class ChromeApi {
       }
     )
 
-    if (usePermissionsStore().hasAllOrigins() && useFeaturesStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
+    if (useFeaturesStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
       this.startWebRequestListener()
     } else {
       this.stopWebRequestListener()

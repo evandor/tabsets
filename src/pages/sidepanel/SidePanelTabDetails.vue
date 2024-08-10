@@ -350,7 +350,6 @@ import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import TabsetService from "src/tabsets/services/TabsetService";
 import {Tab} from "src/tabsets/models/Tab";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import _ from "lodash";
 import {ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
@@ -358,7 +357,6 @@ import {formatDistance} from "date-fns";
 import NavigationService from "src/services/NavigationService";
 import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
-import PngViewHelper from "pages/sidepanel/helper/PngViewHelper.vue";
 import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
@@ -404,8 +402,6 @@ watchEffect(() => {
   // }
 })
 
-
-watchEffect(() => hasAllUrlsPermission.value = usePermissionsStore().hasAllOrigins())
 
 watchEffect(() => {
   if (tab.value) {
