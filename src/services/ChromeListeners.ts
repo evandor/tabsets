@@ -1,16 +1,15 @@
 import _ from "lodash";
-import {uid, useQuasar} from "quasar";
-import throttledQueue from 'throttled-queue';
+import {uid} from "quasar";
 import {MetaLink} from "src/models/MetaLink";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/core/utils/ContentUtils";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {HTMLSelection, Tab} from "src/tabsets/models/Tab";
+import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Extractor, Extractors, ExtractorType} from "src/core/config/Extractors";
 import {useUtils} from "src/core/services/Utils";
@@ -391,18 +390,18 @@ class ChromeListeners {
       return
     }
 
-    if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-      const tabForUrl = useTabsetsStore().tabForUrlInSelectedTabset(tab.url || '')
-      console.log("about to run annotationScript...", tabForUrl)
-      if (tabForUrl) {
-        chrome.scripting.executeScript({
-          target: {tabId: (tab.id || 0)},
-          func: annotationScript,
-          args: [tabForUrl.id, tabForUrl.annotations],
-        })
-          .then(() => console.log("injected a function"));
-      }
-    }
+    // if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+    //   const tabForUrl = useTabsetsStore().tabForUrlInSelectedTabset(tab.url || '')
+    //   console.log("about to run annotationScript...", tabForUrl)
+    //   if (tabForUrl) {
+    //     chrome.scripting.executeScript({
+    //       target: {tabId: (tab.id || 0)},
+    //       func: annotationScript,
+    //       args: [tabForUrl.id, tabForUrl.annotations],
+    //     })
+    //       .then(() => console.log("injected a function"));
+    //   }
+    // }
 
     const scripts: string[] = []
 
@@ -690,11 +689,7 @@ class ChromeListeners {
         sendResponse({error: 'could not find tab for url ' + url})
         return
       }
-      if (!t.annotations) {
-        t.annotations = []
-      }
-      t.annotations.push(new HTMLSelection(request.text, request.range))
-      useTabsetService().saveCurrentTabset()
+      await useTabsetService().saveCurrentTabset()
       sendResponse({capturedAnnotation: 'done'});
       return
     }

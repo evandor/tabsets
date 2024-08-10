@@ -273,9 +273,8 @@ import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {RenameTabsetCommand} from "src/tabsets/commands/RenameTabset";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {ToggleSortingCommand} from "src/domain/tabsets/ToggleSorting";
-import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import JsUtils from "src/utils/JsUtils";
 import {useUiStore} from "src/ui/stores/uiStore";
 import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
@@ -287,6 +286,7 @@ import AddUrlDialog from "src/tabsets/dialogues/AddUrlDialog.vue";
 import CanvasForTabset from "src/tabsets/layouts/CanvasForTabset.vue";
 import PageForTabset from "src/tabsets/layouts/PageForTabset.vue";
 import TabsetPageCards from "src/tabsets/pages/pwa/TabsetPageCards.vue";
+import OpenRightDrawerWidget from "src/ui/widgets/OpenRightDrawerWidget.vue";
 
 const route = useRoute()
 const router = useRouter()

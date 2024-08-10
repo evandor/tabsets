@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 import {computed, ref} from "vue";
-import {FeatureIdent} from "src/models/FeatureIdent";
-import {AppFeatures} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
+import {AppFeatures} from "src/app/models/AppFeatures";
 import {useUtils} from "src/core/services/Utils";
 import PersistenceService from "src/services/PersistenceService";
 import {LocalStorage} from "quasar";

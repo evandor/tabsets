@@ -34,7 +34,7 @@ import {ref, watchEffect} from "vue";
 import {useSettingsStore} from "stores/settingsStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ActivateFeatureCommand} from "src/features/commands/ActivateFeature";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {DeactivateFeatureCommand} from "src/features/commands/DeactivateFeature";
 
 const settingsStore = useSettingsStore()

@@ -126,7 +126,7 @@
 </template>
 <script setup lang="ts">
 import {useUiStore} from "src/ui/stores/uiStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {usePermissionsStore} from "stores/permissionsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {ref, watchEffect} from "vue";

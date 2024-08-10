@@ -75,8 +75,8 @@ import Analytics from "src/core/utils/google-analytics";
 import DialogButton from "src/core/dialog/buttons/DialogButton.vue";
 import {useAuthStore} from "stores/authStore";
 import {LocalStorage, openURL} from "quasar";
-import {FeatureIdent} from "src/models/FeatureIdent";
-import {AppFeatures} from "src/models/AppFeatures";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
+import {AppFeatures} from "src/app/models/AppFeatures";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
