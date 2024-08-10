@@ -12,12 +12,18 @@ const route = useRoute()
 export default bexDom((bridge) => {
 
   document.addEventListener('focusin', function (e: FocusEvent) {
-    console.log('focusin!', e)
+    if (!window.location.href.startsWith("chrome-extension://")) {
+      return
+    }
+    if (window.location.href.indexOf('/www/index.html#/mainpanel/') < 0) {
+      return
+    }
+    console.log('focusin!', window.location.href, e)
     const target = e.target!
     // console.log('focusin!', e.target)
     // console.log('focusin!', e.target?.innerHTML)
 
-      // @ts-ignore
+    // @ts-ignore
     if (target.dataset.changedHtml) {
       console.log("setting to changed HTML")
       // @ts-ignore
@@ -31,6 +37,12 @@ export default bexDom((bridge) => {
   })
 
   document.addEventListener('focusout', function (e: FocusEvent) {
+    if (!window.location.href.startsWith("chrome-extension://")) {
+      return
+    }
+    if (window.location.href.indexOf('/www/index.html#/mainpanel/') < 0) {
+      return
+    }
 
     const target = e.target!
     console.log('focusout!', e)
