@@ -143,7 +143,7 @@ import {useUiStore} from "src/ui/stores/uiStore";
 import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
@@ -159,6 +159,8 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import SidePanelTabsetsExpansionList from "src/tabsets/components/SidePanelTabsetsExpansionList.vue";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -354,6 +356,9 @@ if (inBexMode()) {
       useTabsetService().reloadTabset(tabsetId)
     } else if (message.name === 'reload-application') {
       AppService.restart("restarted=true")
+    // } else if (message.name === 'restore-tabset') {
+    //   debugger
+    //   useCommandExecutor().execute(new RestoreTabsetCommand(message.data.tabsetId, message.data.label, true))
     } else {
       console.log("got unmatched message", message)
     }

@@ -16,7 +16,7 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSearchStore} from "src/search/stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "src/tabsets/stores/groupsStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useAppStore} from "stores/appStore";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";

@@ -412,27 +412,18 @@ import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
-import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import {useUtils} from "src/core/services/Utils";
 import Analytics from "src/core/utils/google-analytics";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {useRoute} from "vue-router";
 import {
-  SHARING_AUTHOR_IDENT,
-  SHARING_AVATAR_IDENT,
-  APP_INSTALLATION_ID,
   STRIP_CHARS_IN_USER_INPUT,
   TITLE_IDENT
 } from "boot/constants";
-import SyncingSettings from "pages/helper/SyncingSettings.vue";
-import SubscriptionSettings from "pages/helper/SubscriptionSettings.vue";
-import SubscriptionBexSettings from "pages/helper/SubscriptionBexSettings.vue";
-import {Account} from "src/models/Account";
-import {AccessItem, useAuthStore} from "stores/authStore";
-import SharingSettings from "pages/helper/SharingSettings.vue";
+import {useAuthStore} from "stores/authStore";
 import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
@@ -442,6 +433,8 @@ import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
 import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
+import {useGroupsStore} from "../tabsets/stores/groupsStore";
+import OpenRightDrawerWidget from "src/ui/widgets/OpenRightDrawerWidget.vue";
 
 const { t } = useI18n()
 
@@ -488,8 +481,6 @@ const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore(
 const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
-
-const account = ref<Account | undefined>(undefined)
 
 const installationTitle = ref<string>(localStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
 

@@ -109,7 +109,7 @@
 <script lang="ts" setup>
 
 import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";

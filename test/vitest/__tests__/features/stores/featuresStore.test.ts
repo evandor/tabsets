@@ -6,7 +6,7 @@ import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 
 installQuasarPlugin();
 
