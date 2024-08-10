@@ -1,4 +1,3 @@
-import {usePermissionsStore} from "stores/permissionsStore";
 import ChromeListeners from "src/services/ChromeListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/bookmarks/services/BookmarksService";
@@ -69,7 +68,7 @@ class AppService {
     appStore.init()
 
     // init of stores and some listeners
-    await usePermissionsStore().initialize(useDB(quasar).localDb)
+    // await usePermissionsStore().initialize(useDB(quasar).localDb)
 
 
     await ChromeListeners.initListeners()

@@ -77,7 +77,6 @@ import {useAuthStore} from "stores/authStore";
 import {LocalStorage, openURL} from "quasar";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {AppFeatures} from "src/app/models/AppFeatures";
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
@@ -102,14 +101,14 @@ onMounted(() => {
 
 watchEffect(async () => {
   const feature = new AppFeatures().getFeature(FeatureIdent.NOTIFICATIONS)
-  if (activateNotifications.value && feature) {
-    const res = await useCommandExecutor().execute(new GrantPermissionCommand('notifications'))
-    if (!res.result) {
-      activateNotifications.value = false
-    }
-  } else if (!activateNotifications.value && feature) {
-    useFeaturesStore().deactivateFeature('notifications')
-  }
+  // if (activateNotifications.value && feature) {
+  //   const res = await useCommandExecutor().execute(new GrantPermissionCommand('notifications'))
+  //   if (!res.result) {
+  //     activateNotifications.value = false
+  //   }
+  // } else if (!activateNotifications.value && feature) {
+  //   useFeaturesStore().deactivateFeature('notifications')
+  // }
 })
 
 function setFeature(featureIdent: FeatureIdent, val: UnwrapRef<boolean>) {
@@ -129,24 +128,6 @@ watchEffect(async () => {
 
 watchEffect(() => {
   useUiStore().showLoginTable = login.value
-})
-
-watchEffect(() => {
-  const ar = useAuthStore().useAuthRequest
-  if (ar) {
-    console.log(">>> authRequest received @", window.location.href)
-    const baseLocation = window.location.href.split("?")[0]
-    if (window.location.href.indexOf("?") < 0) {
-      const tsIframe = window.parent.frames[0]
-      //console.log("iframe", tsIframe)
-      if (tsIframe) {
-        console.debug(">>> new window.location.href", baseLocation + "?" + ar)
-        tsIframe.location.href = baseLocation + "?" + ar
-        tsIframe.location.reload()
-      }
-    }
-    useAuthStore().setAuthRequest(null as unknown as string)
-  }
 })
 
 watchEffect(() => {

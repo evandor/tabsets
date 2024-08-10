@@ -147,7 +147,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/TabsetPage.vue')}],
+    children: [{path: '', component: () => import('src/tabsets/pages/TabsetPage.vue')}],
   },
   {
     path: '/mainpanel/png/:tabId/:blobId',
@@ -164,11 +164,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue')}],
   },
-  {
-    path: '/mainpanel/tab/:id',// TODO combine with Tag page
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('pages/TabPage.vue')}],
-  },
+  // {
+  //   path: '/mainpanel/tab/:id',// TODO combine with Tag page
+  //   component: () => import('layouts/PlainLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/TabPage.vue')}],
+  // },
   {
     path: '/mainpanel/suggestions/:suggestionId',
     component: () => import('layouts/PlainLayout.vue'),
@@ -207,23 +207,23 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/tabsets/:tabsetId',
     component: () => import('layouts/FullPageLayout.vue'),
-    children: [{path: '', component: () => import('pages/TabsetPage.vue')}],
+    children: [{path: '', component: () => import('src/tabsets/pages/TabsetPage.vue')}],
   },
   {
     path: '/tabsets',
     component: () => import('layouts/FullPageLayout.vue'),
-    children: [{path: '', component: () => import('pages/TabsetPage.vue')}],
+    children: [{path: '', component: () => import('src/tabsets/pages/TabsetPage.vue')}],
   },
   {
     path: '/dynamicTs/:tabsetId',
     component: () => import('layouts/FullPageLayout.vue'),
-    children: [{path: '', component: () => import('pages/TabsetPage.vue')}],
+    children: [{path: '', component: () => import('src/tabsets/pages/TabsetPage.vue')}],
   },
-  {
-    path: '/tab/:id',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{path: '', component: () => import('pages/TabPage.vue')}],
-  },
+  // {
+  //   path: '/tab/:id',
+  //   component: () => import('layouts/DefaultLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/TabPage.vue')}],
+  // },
   {
     path: '/bookmarks/:id',
     component: () => import('layouts/FullPageLayout.vue'),
@@ -255,30 +255,10 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/SearchResultPage.vue')}],
   },
   // {
-  //   path: '/pwa/imp/:sharedId',
-  //   component: () => import('layouts/PlainLayout.vue'),
-  //   children: [{path: '', component: () => import('pages/public/ImportPublicTabsetPage.vue')}],
+  //   path: '/iframe/:tabId',
+  //   component: () => import('layouts/DefaultLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/IFramePage.vue')}],
   // },
-  // {
-  //   path: '/pwa/tabsets/:tabsetId',
-  //   component: () => import('layouts/PwaPageLayout.vue'),
-  //   children: [{path: '', component: () => import('pages/pwa/PwaTabsetPage.vue')}],
-  // },
-  // {
-  //   path: '/contentscript',
-  //   component: () => import('layouts/PlainLayout.vue'),
-  //   children: [{path: '', component: () => import('pages/contentscript/ContentScriptPage.vue')}],
-  // },
-  // {
-  //   path: '/annotations/:tabId',
-  //   component: () => import('layouts/PlainLayout.vue'),
-  //   children: [{ path: '', component: () => import('pages/annotations/TabAnnotation.vue') }],
-  // },
-  {
-    path: '/iframe/:tabId',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{path: '', component: () => import('pages/IFramePage.vue')}],
-  },
   {
     path: '/preview/:tabId',
     component: () => import('layouts/DefaultLayout.vue'),
@@ -296,7 +276,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    component: () => import('src/app/pages/ErrorNotFound.vue'),
   },
 ];
 

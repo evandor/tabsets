@@ -189,7 +189,6 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore"
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
@@ -213,7 +212,6 @@ const router = useRouter()
 const leftDrawerOpen = ref($q.screen.gt.md)
 
 const notificationsStore = useNotificationsStore()
-const permissionsStore = usePermissionsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 

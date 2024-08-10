@@ -1,7 +1,6 @@
 import {defineStore} from 'pinia';
 import PersistenceService from "src/services/PersistenceService";
 import {computed, ref} from "vue";
-import {Account} from "src/models/Account";
 
 export enum AccessItem {
   TABSETS = "TABSETS",
@@ -39,7 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   const getAccount = computed(() => {
-    return (): Account | undefined => undefined
+    return (): undefined => undefined
   })
 
   // --- actions ---

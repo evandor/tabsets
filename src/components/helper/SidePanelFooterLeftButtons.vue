@@ -127,7 +127,6 @@
 <script setup lang="ts">
 import {useUiStore} from "src/ui/stores/uiStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {usePermissionsStore} from "stores/permissionsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {ref, watchEffect} from "vue";
 import {SuggestionState} from "src/suggestions/models/Suggestion";
@@ -145,8 +144,6 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['wasClicked'])
-
-const permissionsStore = usePermissionsStore()
 
 const buttonSize = ref('15px')
 const unreadMessagesCount = ref(0)

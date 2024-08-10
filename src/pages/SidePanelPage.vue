@@ -111,7 +111,7 @@
       <FirstToolbarHelper
         :showSearchBox="showSearchBox">
 
-        <template v-slot:title v-if="permissionsStore && useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
+        <template v-slot:title v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
           <div class="text-subtitle1" @click.stop="router.push('/sidepanel/spaces')">
             <q-btn flat no-caps :label="toolbarTitle(tabsets as Tabset[])"/>
             <q-tooltip :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
@@ -140,16 +140,13 @@ import {useUtils} from "src/core/services/Utils";
 import {LocalStorage, scroll, uid} from "quasar";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
-import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/app/AppService";
@@ -159,17 +156,13 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import SidePanelTabsetsExpansionList from "src/tabsets/components/SidePanelTabsetsExpansionList.vue";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
 const {inBexMode} = useUtils()
 
 const router = useRouter()
-const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
-const randomKey = ref<string>(uid())
 
 const showSearchBox = ref(false)
 const user = ref<any>()

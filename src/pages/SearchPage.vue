@@ -63,7 +63,6 @@ import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
 import {Hit} from "src/search/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
@@ -136,7 +135,5 @@ watchEffect(() => {
   }
 })
 
-const bookmarksEnabled = () => usePermissionsStore().hasPermission('bookmarks')
-const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
 
 </script>

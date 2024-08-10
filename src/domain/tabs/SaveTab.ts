@@ -1,13 +1,8 @@
 import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {Tab} from "src/tabsets/models/Tab";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {Tabset} from "src/tabsets/models/Tabset";
 import ChromeApi from "src/services/ChromeApi";
-import {useTabsStore} from "src/bookmarks/stores/tabsStore";
-
-const {handleSuccess, handleError} = useNotificationHandler()
 
 export class SaveTabCommand implements Command<any> {
 
@@ -19,10 +14,10 @@ export class SaveTabCommand implements Command<any> {
     }
 
     async execute(): Promise<ExecutionResult<any>> {
-        if (!usePermissionsStore().hasPermission('pageCapture')) {
-            handleError("missing permission pageCapture")
-            return Promise.reject("missing permission pageCapture!")
-        }
+        // if (!usePermissionsStore().hasPermission('pageCapture')) {
+        //     handleError("missing permission pageCapture")
+        //     return Promise.reject("missing permission pageCapture!")
+        // }
         if (!this.tab) {
             return Promise.reject("tab undefined")
         }
