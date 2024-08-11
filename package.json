@@ -1,7 +1,7 @@
 {
   "name": "tabsets.net",
   "version": "0.5.4",
-  "description": "Use the tabsets.net browser extension to safely keep track of all your tabs and links in the Side Panel, stored locally on your browser",
+  "description": "Use tabsets.net to safely keep track of all your tabs and links in the Side Panel, stored locally on your browser",
   "productName": "Tabsets.net",
   "author": "evandor <evandor@gmail.com>",
   "private": true,
@@ -19,7 +19,7 @@
     "build bex (publish)": "quasar build -m bex",
     "build pwa": "quasar build -m pwa",
     "build electron (prd)": "mv .env .env.tmp && cp .prd.env .env && quasar build -m electron && mv .env.tmp .env",
-    "build electron (publish)": "quasar build -m electron --debug --publish always",
+    "build electron (pubmodule foreach lish)": "quasar build -m electron --debug --publish always",
     "build capacitor": "quasar build -m capacitor -T ios",
     "icon": "icongenie generate -i src/assets/icon.png",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
