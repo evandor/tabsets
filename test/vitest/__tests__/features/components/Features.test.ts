@@ -5,7 +5,7 @@ import {createPinia, setActivePinia} from "pinia";
 import Features from "src/features/components/Features.vue";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 
 installQuasarPlugin();
 

@@ -33,7 +33,7 @@ import {openURL} from "quasar";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},

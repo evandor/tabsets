@@ -1,5 +1,5 @@
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 export class SidePanelViews {

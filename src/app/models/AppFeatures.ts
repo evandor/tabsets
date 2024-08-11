@@ -1,8 +1,6 @@
 import _ from "lodash"
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 import {Feature} from "src/features/models/Feature";
-import {FeatureIdent, FeatureType} from "src/models/FeatureIdent";
+import {FeatureIdent, FeatureType} from "src/app/models/FeatureIdent";
 
 export class AppFeatures {
   features: Feature[] = [
@@ -93,9 +91,9 @@ export class AppFeatures {
     new Feature(FeatureIdent.RESEARCH_SESSIONS, FeatureType.OPTIONAL,
       'Research Sessions',
       'Add Research Capabilities to tabsets - save snapshots of pages and annotate them',
-      'o_science', '', ['all'])
-      .setActivateCommands([new GrantPermissionCommand('pageCapture')])
-      .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
+      'o_science', '', ['all']),
+      // .setActivateCommands([new GrantPermissionCommand('pageCapture')])
+      // .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
 
     new Feature(FeatureIdent.NOTES, FeatureType.OPTIONAL,
       'Notes Feature',
@@ -110,9 +108,9 @@ export class AppFeatures {
     new Feature(FeatureIdent.NOTIFICATIONS, FeatureType.EXPERIMENTAL,
       'Browser Notifications',
       'Allow Tabsets to send Notifications via your Browser. Recommended.',
-      'o_notifications', '', ['all'])
-      .setActivateCommands([new GrantPermissionCommand('notifications')])
-      .setDeactivateCommands([new RevokePermissionCommand('notifications')]),
+      'o_notifications', '', ['all']),
+      // .setActivateCommands([new GrantPermissionCommand('notifications')])
+      // .setDeactivateCommands([ne0w RevokePermissionCommand('notifications')]),
 
     new Feature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL,
       'Annotate Websites',
@@ -140,14 +138,14 @@ export class AppFeatures {
       'its links and the received http headers are taken into account. ' +
       'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
       'o_tab', 'analyse.png', ['bex'])
-      .setActivateCommands([new GrantPermissionCommand('webRequest')])
+      // .setActivateCommands([new GrantPermissionCommand('webRequest')])
       .setImageWidth("700px"),
 
     new Feature(FeatureIdent.TAB_GROUPS, FeatureType.EXPERIMENTAL,
       'Chrome Tab Groups',
       'Utilize Chrome Tab Groups',
-      'o_view_list', '', ['chrome_bex'])
-      .setActivateCommands([new GrantPermissionCommand('tabGroups')]),
+      'o_view_list', '', ['chrome_bex']),
+      // .setActivateCommands([new GrantPermissionCommand('tabGroups')]),
 
     new Feature(FeatureIdent.AUTO_TAB_SWITCHER, FeatureType.EXPERIMENTAL,
       'Auto Tab Switcher',

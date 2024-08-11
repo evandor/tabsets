@@ -5,10 +5,10 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
 import {ActivateFeatureCommand} from "src/features/commands/ActivateFeature";
-import {AppFeatures} from "src/models/AppFeatures";
+import {AppFeatures} from "src/app/models/AppFeatures";
 import {DeactivateFeatureCommand} from "src/features/commands/DeactivateFeature";
 import {Feature} from "src/features/models/Feature";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 
 installQuasarPlugin();
 

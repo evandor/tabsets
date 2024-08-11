@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 
-import {computed, ref, watchEffect} from "vue";
+import {ref} from "vue";
 import {useDialogPluginComponent, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";

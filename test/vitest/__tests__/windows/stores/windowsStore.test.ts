@@ -9,7 +9,7 @@ import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindow
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

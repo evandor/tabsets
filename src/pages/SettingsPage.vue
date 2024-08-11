@@ -213,7 +213,7 @@
           Allowed Origins
         </div>
         <div class="col-9">
-          {{ usePermissionsStore().permissions?.origins }}
+          usePermissionsStore().permissions?.origins
         </div>
       </div>
 
@@ -408,31 +408,19 @@ import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
 import {DrawerTabs, ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
-import OpenRightDrawerWidget from "components/widgets/OpenRightDrawerWidget.vue";
 import {useUtils} from "src/core/services/Utils";
 import Analytics from "src/core/utils/google-analytics";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {useRoute} from "vue-router";
 import {
-  SHARING_AUTHOR_IDENT,
-  SHARING_AVATAR_IDENT,
-  APP_INSTALLATION_ID,
   STRIP_CHARS_IN_USER_INPUT,
   TITLE_IDENT
 } from "boot/constants";
-import SyncingSettings from "pages/helper/SyncingSettings.vue";
-import SubscriptionSettings from "pages/helper/SubscriptionSettings.vue";
-import SubscriptionBexSettings from "pages/helper/SubscriptionBexSettings.vue";
-import {Account} from "src/models/Account";
-import {AccessItem, useAuthStore} from "stores/authStore";
-import SharingSettings from "pages/helper/SharingSettings.vue";
+import {useAuthStore} from "stores/authStore";
 import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
@@ -442,6 +430,8 @@ import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
 import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
+import {useGroupsStore} from "../tabsets/stores/groupsStore";
+import OpenRightDrawerWidget from "src/ui/widgets/OpenRightDrawerWidget.vue";
 
 const { t } = useI18n()
 
@@ -482,14 +472,8 @@ const permissionsList = ref<string[]>([])
 const darkMode = ref<string>(localStorage.getItem('darkMode') || "auto")
 const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 
-//const installationId = ref<string>(localStorage.getItem(APP_INSTALLATION_ID) as string || '---')
-
-const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
-const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
 const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
 const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
-
-const account = ref<Account | undefined>(undefined)
 
 const installationTitle = ref<string>(localStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
 
@@ -513,7 +497,6 @@ const {handleError} = useNotificationHandler()
 
 onMounted(() => {
   Analytics.firePageViewEvent('SettingsPage', document.location.href);
-  account.value = useAuthStore().getAccount()
 })
 
 let suggestionsCounter = 0
@@ -530,42 +513,42 @@ watchEffect(() => {
   ignoreExtensionsEnabled.value = settingsStore.isEnabled('extensionsAsTabs')
 })
 
-watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
+// watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
+//
+// watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
+// watchEffect(() => pageCapturePermissionGranted.value = usePermissionsStore().hasPermission('pageCapture'))
 
-watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
-watchEffect(() => pageCapturePermissionGranted.value = usePermissionsStore().hasPermission('pageCapture'))
-
-watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
-  if (newValue === oldValue) {
-    return
-  }
-  if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
-    useCommandExecutor()
-      .executeFromUi(new GrantPermissionCommand("bookmarks"))
-      .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
-  } else if (!bookmarksPermissionGranted.value) {
-    useCommandExecutor()
-      .executeFromUi(new RevokePermissionCommand("bookmarks"))
-      .then(() => {
-        useBookmarksStore().loadBookmarks()
-      })
-  }
-})
+// watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
+//   if (newValue === oldValue) {
+//     return
+//   }
+//   // if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
+//   //   useCommandExecutor()
+//   //     .executeFromUi(new GrantPermissionCommand("bookmarks"))
+//   //     .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
+//   // } else if (!bookmarksPermissionGranted.value) {
+//   //   useCommandExecutor()
+//   //     .executeFromUi(new RevokePermissionCommand("bookmarks"))
+//   //     .then(() => {
+//   //       useBookmarksStore().loadBookmarks()
+//   //     })
+//   // }
+// })
 
 
-watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
-  if (newValue === oldValue) {
-    return
-  }
-  if (pageCapturePermissionGranted.value && !usePermissionsStore().hasPermission('pageCapture')) {
-    useCommandExecutor()
-      .executeFromUi(new GrantPermissionCommand("pageCapture"))
-      .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
-  } else if (!pageCapturePermissionGranted.value) {
-    useCommandExecutor()
-      .executeFromUi(new RevokePermissionCommand("pageCapture"))
-  }
-})
+// watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
+//   if (newValue === oldValue) {
+//     return
+//   }
+//   if (pageCapturePermissionGranted.value && !usePermissionsStore().hasPermission('pageCapture')) {
+//     useCommandExecutor()
+//       .executeFromUi(new GrantPermissionCommand("pageCapture"))
+//       .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
+//   } else if (!pageCapturePermissionGranted.value) {
+//     useCommandExecutor()
+//       .executeFromUi(new RevokePermissionCommand("pageCapture"))
+//   }
+// })
 
 watchEffect(() => {
   //console.log("***setting dark mode to ", typeof darkMode.value, darkMode.value)

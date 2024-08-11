@@ -37,24 +37,15 @@
 <script setup lang="ts">
 import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {useQuasar} from "quasar";
-import TabsCanvas from "src/components/layouts/TabsCanvas.vue";
 import _ from "lodash"
 import {Tab} from "src/tabsets/models/Tab";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
-import {useSettingsStore} from "src/stores/settingsStore"
 import Analytics from "src/core/utils/google-analytics"
-import PanelTabList from "components/layouts/PanelTabList.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import PanelTabList from "src/tabsets/layouts/PanelTabList.vue";
 
 const route = useRoute();
 const router = useRouter();
-
-const tabsetname = ref(useTabsetsStore().currentTabsetName)
-const filter = ref('')
-const $q = useQuasar()
-
-const highlightUrl = ref('')
 
 const domain = ref(null as unknown as string)
 
