@@ -1,4 +1,4 @@
-import ChromeListeners from "src/services/ChromeListeners";
+import ChromeListeners from "src/app/listeners/BrowserListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/bookmarks/services/BookmarksService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";

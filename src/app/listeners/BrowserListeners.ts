@@ -47,27 +47,6 @@ async function setCurrentTab() {
   }
 }
 
-function annotationScript(tabId: string, annotations: any[]) {
-  console.log("!!! here in annotation script", tabId, annotations)
-
-  var l: HTMLLinkElement = document.createElement('link');
-  l.setAttribute("href", chrome.runtime.getURL('www/css/ts-content-script.css'))
-  l.setAttribute("rel", "stylesheet")
-  document.head.appendChild(l)
-
-  // var s = document.createElement('script');
-  // //s.type = "module"
-  // s.src = chrome.runtime.getURL('www/js/rangy/rangy.js');
-  // s.setAttribute("type", 'text/javascript');
-  // //s.src = "https://cdn.jsdelivr.net/npm/rangy@1.3.1/lib/rangy-core.min.js";
-  // document.body.appendChild(s);
-
-  // var s3 = document.createElement('script');
-  // s3.dataset.id = 'tabsets-rangy-annotation-data';
-  // s3.dataset.annotations = JSON.stringify(annotations);
-  // (document.head || document.documentElement).appendChild(s3);
-
-}
 
 function inIgnoredMessages(request: any) {
   // TODO name vs. msg!
@@ -116,7 +95,7 @@ function runOnNotificationClick(notificationId: string, buttonIndex: number) {
   }
 }
 
-class ChromeListeners {
+class BrowserListeners {
 
   inProgress = false;
 
@@ -389,19 +368,6 @@ class ChromeListeners {
     if (tab.url && tab.url.startsWith("https://shared.tabsets.net")) {
       return
     }
-
-    // if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-    //   const tabForUrl = useTabsetsStore().tabForUrlInSelectedTabset(tab.url || '')
-    //   console.log("about to run annotationScript...", tabForUrl)
-    //   if (tabForUrl) {
-    //     chrome.scripting.executeScript({
-    //       target: {tabId: (tab.id || 0)},
-    //       func: annotationScript,
-    //       args: [tabForUrl.id, tabForUrl.annotations],
-    //     })
-    //       .then(() => console.log("injected a function"));
-    //   }
-    // }
 
     const scripts: string[] = []
 
@@ -771,5 +737,5 @@ class ChromeListeners {
   }
 }
 
-export default new ChromeListeners();
+export default new BrowserListeners();
 
