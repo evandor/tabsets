@@ -1,23 +1,23 @@
 
-<!--@include: ../../src/content/docs/intro.md-->
+<!--@include: build/content/intro.md-->
 
 ### Installation
 
-Check out this page: [installation](../../src/content/docs/installation.md)
+Check out this page: [installation](build/content/installation.md)
 
 ### Setup
 
-Once the submodule has been installed in your application, it needs to be [setup](../../src/content/docs/setup.md).
+Once the submodule has been installed in your application, it needs to be [setup](build/tabsets/setup.md).
 
 ### usage
 
-[usage](../../src/content/docs/usage.md)
+[usage](build/content/usage.md)
 
 ### messages
 
-[messages](../../src/content/docs/messages.md)
+[messages](build/content/messages.md)
 
 ### code
 
-[code](../../src/content/docs/code.md)
+[code](build/content/code.md)
 
