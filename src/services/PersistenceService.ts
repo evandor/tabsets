@@ -8,11 +8,11 @@ interface PersistenceService {
 
   getServiceName(): string
 
-  loadTabsets():Promise<void>
-  reloadTabset(tabsetId: string): void
-  saveTabset(tabset: Tabset): Promise<any>
-  deleteTabset(tabsetId: string):Promise<any>
-  cleanUpTabsets(): Promise<void>
+  // loadTabsets():Promise<void>
+  // reloadTabset(tabsetId: string): void
+  // saveTabset(tabset: Tabset): Promise<any>
+  // deleteTabset(tabsetId: string):Promise<any>
+  // cleanUpTabsets(): Promise<void>
 
   getRequest(url: string): Promise<string>
 

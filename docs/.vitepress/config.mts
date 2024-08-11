@@ -30,11 +30,12 @@ export default withMermaid({
         {
           text: 'Submodules',
           items: [
-            { text: 'Tabsets', link: 'docs/submodules/tabsets' },
             { text: 'Bookmarks', link: 'docs/submodules/bookmarks' },
+            { text: 'Content', link: 'docs/submodules/content' },
             { text: 'Features', link: 'docs/submodules/features' },
+            { text: 'Snapshots', link: 'docs/submodules/snapshots' },
             { text: 'Search', link: 'docs/submodules/search' },
-            { text: 'Snapshots', link: 'docs/submodules/snapshots' }
+            { text: 'Tabsets', link: 'docs/submodules/tabsets' }
           ]
         }
       ],

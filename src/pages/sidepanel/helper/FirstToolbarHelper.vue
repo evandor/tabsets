@@ -46,12 +46,12 @@
 
           <slot name="iconsRight">
 
-            <SidePanelToolbarButton
-              v-if="showToggleSessionIcon()"
-              :color="existingSession ? (useTabsetsStore().getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"
-              :icon="existingSession ? 'o_stop_circle':'o_play_circle'"
-              @click="toggleSessionState"
-              :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>
+<!--            <SidePanelToolbarButton-->
+<!--              v-if="showToggleSessionIcon()"-->
+<!--              :color="existingSession ? (useTabsetsStore().getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"-->
+<!--              :icon="existingSession ? 'o_stop_circle':'o_play_circle'"-->
+<!--              @click="toggleSessionState"-->
+<!--              :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>-->
 
             <template v-if="showSearchIcon()">
               <SidePanelToolbarButton icon="search"
@@ -108,14 +108,12 @@
 
 <script lang="ts" setup>
 
-import {usePermissionsStore} from "stores/permissionsStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
-import {TabsetType} from "src/tabsets/models/Tabset";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
@@ -126,7 +124,6 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
-import NewSessionDialog from "src/tabsets/dialogues/NewSessionDialog.vue";
 import FilterWithTransitionHelper from "src/core/widget/FilterWithTransitionHelper.vue";
 
 const {t} = useI18n({useScope: 'global'})
@@ -141,10 +138,8 @@ const props = defineProps({
 
 const $q = useQuasar()
 const router = useRouter()
-const permissionsStore = usePermissionsStore()
 
 const searching = ref(false)
-const existingSession = ref(false)
 const showFilter = ref(false)
 const windowLocation = ref('')
 const annimateNewTabsetButton = ref(false)
@@ -184,13 +179,6 @@ if ($q.platform.is.chrome && $q.platform.is.bex) {
   })
 }
 
-const toggleSessionState = () => existingSession ? stopSession() : startSession()
-
-const startSession = () => $q.dialog({
-  component: NewSessionDialog,
-  componentProps: {replaceSession: false, inSidePanel: true}
-})
-
 const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 
 const showToggleSessionIcon = () =>
@@ -207,10 +195,6 @@ const openNewTabsetDialog = () => {
       fromPanel: true
     }
   })
-}
-
-const showSyncInfo = () => {
-  return false
 }
 
 const selectTabsetForFirstMatchingTab = (tabAndTabsetId: TabAndTabsetId) => {

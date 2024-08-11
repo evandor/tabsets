@@ -58,7 +58,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import TabsetService from "src/tabsets/services/TabsetService";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import SpacesSelectorWidget from "src/spaces/widgets/SpacesSelectorWidget.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

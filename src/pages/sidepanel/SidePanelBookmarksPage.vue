@@ -49,6 +49,7 @@ import Analytics from "src/core/utils/google-analytics";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
+import {SidePanelViews} from "src/models/SidePanelViews";
 
 const showOnlyFolders = ref(true)
 
@@ -61,18 +62,5 @@ const toggleShowOnlyFolders = () => {
   showOnlyFolders.value = !showOnlyFolders.value
 }
 
-
-// const onMessageListener = async (message: any, sender: any, sendResponse: any) => {
-//   console.log(" <<< received message", message)
-//   if (message.name === "sidepanel-switch-view") {
-//     // const tsId = message.data.changedTabsetId
-//     // await useTabsetService().reloadTabset(tsId)
-//     // console.log("tsId", tsId)
-//     // sortedSpaces.value = getSortedSpaces()
-//     // tabsetsForSpaces.value = await getTabsetsForSpaces()
-//     // randomKey.value = uid()
-//     // //console.log("tabsetsForSpace", tabsetsForSpaces.value)
-//   }
-// }
 
 </script>

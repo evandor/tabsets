@@ -111,7 +111,7 @@
       <FirstToolbarHelper
         :showSearchBox="showSearchBox">
 
-        <template v-slot:title v-if="permissionsStore && useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
+        <template v-slot:title v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
           <div class="text-subtitle1" @click.stop="router.push('/sidepanel/spaces')">
             <q-btn flat no-caps :label="toolbarTitle(tabsets as Tabset[])"/>
             <q-tooltip :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
@@ -140,16 +140,13 @@ import {useUtils} from "src/core/services/Utils";
 import {LocalStorage, scroll, uid} from "quasar";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
-import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {FirebaseCall} from "src/services/firebase/FirebaseCall";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/app/AppService";
@@ -165,9 +162,7 @@ const {t} = useI18n({locale: navigator.language, useScope: "global"})
 const {inBexMode} = useUtils()
 
 const router = useRouter()
-const permissionsStore = usePermissionsStore()
 const uiStore = useUiStore()
-const randomKey = ref<string>(uid())
 
 const showSearchBox = ref(false)
 const user = ref<any>()
@@ -354,6 +349,9 @@ if (inBexMode()) {
       useTabsetService().reloadTabset(tabsetId)
     } else if (message.name === 'reload-application') {
       AppService.restart("restarted=true")
+    // } else if (message.name === 'restore-tabset') {
+    //   debugger
+    //   useCommandExecutor().execute(new RestoreTabsetCommand(message.data.tabsetId, message.data.label, true))
     } else {
       console.log("got unmatched message", message)
     }

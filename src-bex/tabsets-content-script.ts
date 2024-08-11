@@ -2,8 +2,6 @@
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/content-hooks
 // @ts-ignore
 import {bexContent} from 'quasar/wrappers'
-import {CURRENT_USER_EMAIL} from "boot/constants";
-
 
 export default bexContent((bridge: any) => {
 
@@ -14,7 +12,7 @@ export default bexContent((bridge: any) => {
     return
   }
 
-  console.log("tabsets: initializing content script for tab analysis")
+  console.log("tabsets: initializing content script for tab analysis...")
   // @ts-ignore
   window.contentScriptAnalysisAlredyCalled  = true
 
@@ -93,28 +91,5 @@ export default bexContent((bridge: any) => {
     })
     return result
   }
-
-  // chrome.runtime.sendMessage({
-  //   msg: "html2text",
-  //   html: document.documentElement.outerHTML,
-  //   metas: getMetas(document)
-  // }, function (response) {
-  //   console.log("tabsets: created text excerpt for tabsets")
-  //   if (chrome.runtime.lastError) {
-  //     console.warn("got runtime error", chrome.runtime.lastError)
-  //   }
-  // });
-
-  // chrome.runtime.sendMessage({
-  //   msg: "html2links",
-  //   anchors: getAnchors(document),
-  //   links: getLinks(document)
-  // }, function (response) {
-  //   console.log("tabsets: created links excerpt for tabsets")
-  //   if (chrome.runtime.lastError) {
-  //     console.warn("got runtime error", chrome.runtime.lastError)
-  //   }
-  // });
-
 
 })

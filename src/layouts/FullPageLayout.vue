@@ -205,14 +205,13 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore"
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import {DrawerTabs, UserLevel, useUiStore} from "src/ui/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
 import {FirebaseCall} from "src/services/firebase/FirebaseCall";
@@ -230,8 +229,6 @@ const router = useRouter()
 const leftDrawerOpen = ref($q.screen.gt.lg)
 
 const notificationsStore = useNotificationsStore()
-const permissionsStore = usePermissionsStore()
-const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 
 const spacesOptions = ref<object[]>([])
@@ -281,14 +278,6 @@ const goHome = () => router.push("/")
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
   useUiStore().toggleLeftDrawer()
-}
-
-const subscribe = async () => {
-  FirebaseCall.post("/stripe/create-checkout-session/tabsets", {})
-    .then((res) => {
-      console.log("res", res)
-      window.location.href = res.data.url
-    })
 }
 
 const installNewVersion = (version: string) => {

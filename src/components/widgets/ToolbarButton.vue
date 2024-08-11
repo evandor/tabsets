@@ -28,7 +28,7 @@
 
 <script lang="ts" setup>
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
-import {FeatureIdent} from "src/models/FeatureIdent";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const props = defineProps({

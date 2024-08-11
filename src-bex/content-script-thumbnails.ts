@@ -24,7 +24,7 @@ export default bexContent((bridge: any) => {
       //sendResponse({content: document.documentElement.outerHTML});
       sendResponse({
         html: document.documentElement.outerHTML,
-        metas: getMetas(document)
+       // metas: getMetas(document)
       });
     } else {
       sendResponse({content: "unknown request in content-scripts-thumbnails: " + request});
