@@ -7,7 +7,7 @@ Check out this page: [installation](build/content/installation.md)
 
 ### Setup
 
-Once the submodule has been installed in your application, it needs to be [setup](build/tabsets/setup.md).
+Once the submodule has been installed in your application, it needs to be [setup](build/content/setup.md).
 
 ### usage
 

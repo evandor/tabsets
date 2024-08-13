@@ -24,6 +24,7 @@ export default bexContent((bridge: any) => {
       //sendResponse({content: document.documentElement.outerHTML});
       sendResponse({
         html: document.documentElement.outerHTML,
+        metas: {}
        // metas: getMetas(document)
       });
     } else {
