@@ -372,7 +372,7 @@ class BrowserListeners {
     const scripts: string[] = []
 
     //if (useFeaturesStore().hasFeature(FeatureIdent.THUMBNAILS)) {
-    scripts.push("content-script-thumbnails.js")
+    //scripts.push("content-script-thumbnails.js")
     //}
     // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_HELPER)) {
     //   scripts.push("content-script-tab-helper.js")
