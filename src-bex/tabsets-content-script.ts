@@ -33,19 +33,17 @@ export default bexContent((bridge: any) => {
   })
 
   function getMetas(document: Document) {
-    console.log("tabsets: getting metas for document" )
+    //console.log("tabsets: getting metas for document" )
     const result: { [k: string]: string } = {}
     //const res: string[] = []
     const metaNodes: NodeList = document.querySelectorAll('meta')
-    console.log("metaNodes", metaNodes)
     metaNodes.forEach((node: Node) => {
       const element = <Element>node
-      //console.log("tabsets: node", <Element>node)
       const nameAttr = element.attributes.getNamedItem('name')
       const propAttr = element.attributes.getNamedItem('property')
       const contAttr = element.attributes.getNamedItem('content')
       const key: string = nameAttr ? (nameAttr.value.trim().toLowerCase() || 'undefName') : (propAttr?.value || 'undefProp')
-      console.log("tabsets: key", key, contAttr?.value || 'x')
+      //console.log("tabsets: key", key, contAttr?.value || 'x')
       if (key) {
         result[key] = contAttr?.value || ''
       }
