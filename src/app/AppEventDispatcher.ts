@@ -1,5 +1,6 @@
 import {useSearchStore} from "src/search/stores/searchStore";
 import {ContentItem} from "src/content/models/ContentItem";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 /**
  * meant for inter-submodule communication.
@@ -21,6 +22,9 @@ class AppEventDispatcher {
           break
         case 'upsert-in-search':
           useSearchStore().upsertObject(params)
+          break
+        case 'capture-screenshot':
+          useThumbnailsService().handleCaptureCallback(params['tabId' as keyof object], params['data' as keyof object])
           break
         default:
           console.log(`unknown event ${name}`)

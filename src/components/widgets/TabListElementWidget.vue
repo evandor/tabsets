@@ -140,7 +140,7 @@ import TabsetService from "src/tabsets/services/TabsetService";
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useUtils} from "src/core/services/Utils"
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {DeleteTabCommand} from "src/domain/tabs/DeleteTabCommand";
+import {DeleteTabCommand} from "src/tabsets/commands/DeleteTabCommand";
 import {date, LocalStorage, useQuasar} from "quasar";
 import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
 import {UpdateTabNameCommand} from "src/domain/tabs/UpdateTabName";

@@ -31,11 +31,22 @@ export default withMermaid({
           text: 'Submodules',
           items: [
             { text: 'Bookmarks', link: 'docs/submodules/bookmarks' },
-            { text: 'Content', link: 'docs/submodules/content' },
+            { text: 'Content', collapsed: true, items: [
+                {text: 'Home', link: 'docs/submodules/content'},
+                {text: 'Installation', link: 'docs/submodules/build/content/installation'},
+                {text: 'Setup', link: 'docs/submodules/build/content/setup'},
+                {text: 'Usage', link: 'docs/submodules/build/content/usage'},
+              ] },
             { text: 'Features', link: 'docs/submodules/features' },
             { text: 'Snapshots', link: 'docs/submodules/snapshots' },
             { text: 'Search', link: 'docs/submodules/search' },
-            { text: 'Tabsets', link: 'docs/submodules/tabsets' }
+            { text: 'Tabsets', link: 'docs/submodules/tabsets' },
+            { text: 'Thumbnails', collapsed: true, items: [
+                {text: 'Home', link: 'docs/submodules/thumbnails'},
+                {text: 'Installation', link: 'docs/submodules/build/thumbnails/installation'},
+                {text: 'Setup', link: 'docs/submodules/build/thumbnails/setup'},
+                {text: 'Usage', link: 'docs/submodules/build/thumbnails/usage'},
+              ] },
           ]
         }
       ],
