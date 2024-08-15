@@ -31,9 +31,29 @@
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "tabsets-content-script.js"
+      ]
+    }
+  ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'"
+    "extension_pages": "script-src 'self'; object-src 'self';"
   },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "*"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ],
   "omnibox": { "keyword": "ts" },
   "commands": {
     "_execute_action": {
@@ -64,15 +84,5 @@
       "description": "Forward to next tab (if available)"
     }
   },
-  "options_page": "www/index.html#/mainpanel/settings",
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "*"
-      ],
-      "matches": [
-        "*://*/*"
-      ]
-    }
-  ]
+  "options_page": "www/index.html#/mainpanel/settings"
 }
