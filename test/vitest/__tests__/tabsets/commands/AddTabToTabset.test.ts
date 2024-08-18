@@ -80,8 +80,8 @@ describe('AddTabToTabsetCommand', () => {
     expect(tabsetFromDB!.tabs[0].id).toBe("tabId")
     expect(useSearchStore().getIndex().size()).toBe(1)
     const content = await useContentService().getContent("tabId")
-    expect(content.content).toBe("some html")
-    expect(content.metas['description' as keyof object]).toBe("Description")
+    expect(content!.content).toBe("some html")
+    expect(content!.metas['description' as keyof object]).toBe("Description")
   });
 
   it('adding second tab to tabset', async () => {
@@ -94,8 +94,8 @@ describe('AddTabToTabsetCommand', () => {
     expect(tabsetFromDB!.tabs.length).toBe(2);
     expect(useSearchStore().getIndex().size()).toBe(2)
     const content = await useContentService().getContent("tabId2")
-    expect(content.content).toBe("some html")
-    expect(content.metas['description' as keyof object]).toBe("Description")
+    expect(content!.content).toBe("some html")
+    expect(content!.metas['description' as keyof object]).toBe("Description")
   });
 
   // TODO
