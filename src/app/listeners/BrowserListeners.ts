@@ -20,6 +20,7 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
+import BrowserApi from "src/app/BrowserApi";
 
 const {
   saveTabset,
@@ -354,10 +355,6 @@ class BrowserListeners {
   }
 
   private handleUpdateInjectScripts(info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
-    // TODO ignoring urls !?
-    // if (this.ignoreUrl(tab, info)) {
-    //   return
-    // }
     if (info.status !== "loading") {
       return
     }
@@ -371,18 +368,19 @@ class BrowserListeners {
 
     const scripts: string[] = []
 
-    //if (useFeaturesStore().hasFeature(FeatureIdent.THUMBNAILS)) {
-    //scripts.push("content-script-thumbnails.js")
-    //}
-    // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_HELPER)) {
-    //   scripts.push("content-script-tab-helper.js")
-    // }
+    // chrome.scripting.insertCSS({
+    //   target: {tabId: tab.id},
+    //   css: "body { border-top: 2px dotted red; }"
+    // })
+    //   .then((res) => console.log("res", res))
+    //   .catch((res) => console.log("err", res))
+
+    BrowserApi.addIndicatorIcon(tab.id, tab.url)
+
     if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
       scripts.push("highlight-annotations.js")
     }
-    //scripts.push("content-script.js")
-    //scripts.push("recogito2.js")
-    scripts.push("tabsets-content-script.js")
+    //scripts.push("tabsets-content-script.js")
     if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
 
       chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {

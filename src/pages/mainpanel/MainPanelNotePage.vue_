@@ -51,7 +51,7 @@ import {Tab, UrlExtension} from "src/tabsets/models/Tab";
 import {useUtils} from "src/core/services/Utils";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tabset} from "src/tabsets/models/Tabset";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
 //import 'regenerator-runtime/runtime'
 import Analytics from "src/core/utils/google-analytics";

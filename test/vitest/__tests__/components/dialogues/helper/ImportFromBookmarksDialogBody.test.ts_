@@ -12,7 +12,7 @@ import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import ImportFromBookmarksDialogBody from "components/dialogues/helper/ImportFromBookmarksDialogBody.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import {Bookmark} from "src/bookmarks/models/Bookmark";
 
 installQuasarPlugin({plugins: {Dialog, Notify}})

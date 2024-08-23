@@ -158,9 +158,15 @@ export class AppFeatures {
       'o_folder', '', ['all']),
 
     new Feature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL,
+      'Website Clip',
       'Create an image clip from a website and store it',
-      '',
       'filter_center_focus', '', ['bex']),
+    // .setActivateCommands([new GrantPermissionCommand('notifications')]),
+
+    new Feature(FeatureIdent.DYNAMIC_TABSET, FeatureType.EXPERIMENTAL,
+      'Dynamic Tabset',
+      'Create a "dynamic" tabset which retrieves its tabs by interpreting its "source" URL',
+      'dynamic_feed', '', ['bex']),
     // .setActivateCommands([new GrantPermissionCommand('notifications')]),
 
   ]

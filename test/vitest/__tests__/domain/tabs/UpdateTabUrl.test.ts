@@ -1,7 +1,7 @@
 import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {Tab} from "src/tabsets/models/Tab";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
