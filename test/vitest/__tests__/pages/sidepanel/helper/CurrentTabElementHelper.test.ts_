@@ -3,7 +3,7 @@ import {mount} from '@vue/test-utils';
 import {beforeAll, beforeEach, describe, expect, it} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import CurrentTabElementHelper from "pages/sidepanel/helper/CurrentTabElementHelper.vue";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 
 installQuasarPlugin();

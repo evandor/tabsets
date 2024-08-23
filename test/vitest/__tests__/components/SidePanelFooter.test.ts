@@ -7,7 +7,7 @@ import {DOMWrapper, mount, shallowMount, VueWrapper} from '@vue/test-utils';
 import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import SidePanelFooter from "components/SidePanelFooter.vue";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import {useDB} from "src/services/usePersistenceService";
 import {useQuasar} from "quasar";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";

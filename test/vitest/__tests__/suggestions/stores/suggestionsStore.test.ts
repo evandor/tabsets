@@ -6,7 +6,7 @@ import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import {StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
 import IndexedDbSuggestionsPersistence from "src/suggestions/persistence/IndexedDbSuggestionsPersistence";
 

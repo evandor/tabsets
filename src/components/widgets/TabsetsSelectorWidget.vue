@@ -14,28 +14,28 @@
           {{ useSpacesStore().space?.label ? 'Tabsets of ' + useSpacesStore().space.label : 'Tabsets w/o Space' }}
         </q-item>
 
-        <template
-          v-if="useFeaturesStore().hasFeature(FeatureIdent.BACKUP) || useFeaturesStore().hasFeature(FeatureIdent.IGNORE)">
-          <q-separator/>
-          <q-item disable>
-            Special Tabsets
-          </q-item>
-          <q-item v-for="ts in tabsetsWithTypes([TabsetType.SPECIAL])" clickable v-close-popup
-                  @click="switchTabset(ts)">
-            <q-item-section class="q-ml-sm">{{ ts.name }}</q-item-section>
-          </q-item>
-        </template>
+<!--        <template-->
+<!--          v-if="useFeaturesStore().hasFeature(FeatureIdent.BACKUP) || useFeaturesStore().hasFeature(FeatureIdent.IGNORE)">-->
+<!--          <q-separator/>-->
+<!--          <q-item disable>-->
+<!--            Special Tabsets-->
+<!--          </q-item>-->
+<!--          <q-item v-for="ts in tabsetsWithTypes([TabsetType.SPECIAL])" clickable v-close-popup-->
+<!--                  @click="switchTabset(ts)">-->
+<!--            <q-item-section class="q-ml-sm">{{ ts.name }}</q-item-section>-->
+<!--          </q-item>-->
+<!--        </template>-->
 
         <q-separator/>
         <q-item clickable v-close-popup @click="openNewTabsetDialog()">
           <q-item-section>Add new Tabset</q-item-section>
         </q-item>
         <q-separator/>
-        <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
+        <q-item v-if="useTabsetsStore().currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
           <q-item-section>Edit Tabset Name</q-item-section>
         </q-item>
         <q-separator/>
-        <q-item v-if="tabsStore.currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
+        <q-item v-if="useTabsetsStore().currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
           <q-item-section>Delete this Tabset...</q-item-section>
         </q-item>
       </q-list>
@@ -62,6 +62,7 @@ import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {SidePanelViews} from "src/models/SidePanelViews";
 
 const spacesStore = useSpacesStore()
 const router = useRouter()
@@ -134,7 +135,7 @@ const openEditTabsetDialog = () => {
 const switchTabset = (ts: any) => {
   console.log("settings tabset to ", ts)
   useCommandExecutor()
-    .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
+    .execute(new SelectTabsetCommand(ts.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
       useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
       if (!props.fromPanel) {

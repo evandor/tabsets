@@ -4,7 +4,7 @@ import {createPinia, setActivePinia} from "pinia";
 import {useDB} from "src/services/usePersistenceService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";

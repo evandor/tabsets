@@ -156,6 +156,7 @@
   <q-list>
 
     <q-expansion-item label="Tags" :default-opened="true">
+
       <q-card>
         <q-card-section>
           <q-select
@@ -163,6 +164,7 @@
               v-model="tags"
               use-input
               use-chips
+              multiple
               hide-dropdown-icon
               input-debounce="0"
               new-value-mode="add-unique"
@@ -328,7 +330,7 @@
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm">
-            <TabDetailsSearchIndex :tabId="route.params.tabId as string" />
+            <TabDetailsSearchIndex :tab="tab" />
           </div>
         </q-card-section>
       </q-card>
@@ -381,19 +383,23 @@ const tab = ref<Tab | undefined>(undefined)
 const pngs = ref<SavedBlob[]>([])
 const htmls = ref<BlobMetadata[]>([])
 const pdfs = ref<SavedBlob[]>([])
+const tabId = ref<string | undefined>(undefined)
 
 const tags = ref<string[]>([])
 
 watchEffect(() => {
-  const tabId = route.params.tabId as unknown as string
-  console.log("tabid", tabId)
-  const tabObject = useTabsetsStore().getTabAndTabsetId(tabId)
-      //.then((tabObject: TabAndTabsetId | undefined) => {
+  tabId.value = route.params.tabId as unknown as string
+  console.log("tabid", tabId.value)
+
+  const tabObject = useTabsetsStore().getTabAndTabsetId(tabId.value)
         if (tabObject) {
           tab.value = tabObject.tab
-          tags.value = tab.value.tags
+          if (tab.value.tags.constructor === Array) {
+            tags.value = tab.value.tags
+          } else {
+            tags.value = []
+          }
         }
-     // })
 
   // const selectedTab = tab.value
   // console.log("selectedTab", selectedTab)
@@ -515,6 +521,7 @@ const saveHtml = (tab: Tab | undefined) => {
 }
 
 const updatedTags = (val: string[]) => {
+  console.log("val", val)
   if (tab.value) {
     console.log("updating tag", val)
     tab.value.tags = val
@@ -526,7 +533,7 @@ const updatedTags = (val: string[]) => {
 const openTabset = (chip: any) => {
   console.log("chip", chip)
   useCommandExecutor()
-      .execute(new SelectTabsetCommand(chip['tabsetId'], undefined))
+      .execute(new SelectTabsetCommand(chip['tabsetId']))
 }
 
 </script>

@@ -20,34 +20,39 @@
 
 <script lang="ts" setup>
 
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useSearchStore} from "src/search/stores/searchStore";
 import _ from "lodash";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({
-  tabId: {type: String, required: true}
+  tab: {type: Object as PropType<Tab>, required: true}
 })
 
 const tab = ref<Tab | undefined>(undefined)
 const searchIndex = ref<any>()
 
-onMounted(() => {
-  const tabObject = useTabsetsStore().getTabAndTabsetId(props.tabId)
-  if (tabObject) {
-    tab.value = tabObject.tab
-  }
-})
+// onMounted(() => {
+//   console.log("===>tabId", props.tabId)
+//   const tabObject = useTabsetsStore().getTabAndTabsetId(props.tabId)
+//   if (tabObject) {
+//     console.log("===>tab", tabObject)
+//     tab.value = tabObject.tab
+//   }
+// })
 
 watchEffect(() => {
-
   const fuseIndex = useSearchStore().getIndex()
+  console.log("fuseIndex", fuseIndex)
   if (fuseIndex) {
     const keyMaps = fuseIndex['_keysMap' as keyof object]
     const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-      return tab.value?.url === r.$[2]?.v
+      console.log("tab", props.tab)
+      console.log("comparing", props.tab?.url, r.$[3]?.v, r)
+      return props.tab?.url === r.$[3]?.v
     })
+    console.log("res", res)
     const keys: Map<number, object> = new Map()
     Object.keys(keyMaps).forEach((k: any) => {
       keys.set(keyMaps[k], {

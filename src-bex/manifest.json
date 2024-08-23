@@ -32,16 +32,30 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'"
-  },
-  "omnibox": { "keyword": "ts" },
   "content_scripts": [
     {
-      "matches": ["*://*/*"],
-      "js": ["tabsets-content-script.js"]
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "tabsets-content-script.js"
+      ]
     }
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "*"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ],
+  "omnibox": { "keyword": "ts" },
   "sidebar_action": {
     "default_icon": "icons/icon-48x48.png",
     "default_title" : "Tabsets",
@@ -74,15 +88,5 @@
       },
       "description": "Forward to next tab (if available)"
     }
-  },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "*"
-      ],
-      "matches": [
-        "*://*/*"
-      ]
-    }
-  ]
+  }
 }

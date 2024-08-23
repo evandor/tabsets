@@ -2,7 +2,7 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {mount, config} from '@vue/test-utils';
 import {beforeEach, describe, expect, vi, it} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useRoute, useRouter} from "vue-router";
 import WelcomePage from "pages/sidepanel/WelcomePage.vue";
