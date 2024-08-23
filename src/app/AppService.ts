@@ -7,7 +7,7 @@ import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import tabsetService from "src/tabsets/services/TabsetService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";

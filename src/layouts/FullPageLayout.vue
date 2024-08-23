@@ -86,23 +86,23 @@
           </q-menu>
         </span>
 
-        <ToolbarButton
-          :feature="FeatureIdent.SAVE_TAB"
-          :drawer="DrawerTabs.SAVED_TABS"
-          icon="o_save"
-          tooltip="List of MTHML Snapshots"/>
+<!--        <ToolbarButton-->
+<!--          :feature="FeatureIdent.SAVE_TAB"-->
+<!--          :drawer="DrawerTabs.SAVED_TABS"-->
+<!--          icon="o_save"-->
+<!--          tooltip="List of MTHML Snapshots"/>-->
 
-        <ToolbarButton
-          :feature="FeatureIdent.SAVE_TAB_AS_PNG"
-          :drawer="DrawerTabs.SAVED_TABS_AS_PNG"
-          icon="o_image"
-          tooltip="The List of PNGs"/>
+<!--        <ToolbarButton-->
+<!--          :feature="FeatureIdent.SAVE_TAB_AS_PNG"-->
+<!--          :drawer="DrawerTabs.SAVED_TABS_AS_PNG"-->
+<!--          icon="o_image"-->
+<!--          tooltip="The List of PNGs"/>-->
 
-        <ToolbarButton
-          :feature="FeatureIdent.SAVE_TAB_AS_PDF"
-          :drawer="DrawerTabs.SAVED_TABS_AS_PDF"
-          icon="o_picture_as_pdf"
-          tooltip="The List of PDFs"/>
+<!--        <ToolbarButton-->
+<!--          :feature="FeatureIdent.SAVE_TAB_AS_PDF"-->
+<!--          :drawer="DrawerTabs.SAVED_TABS_AS_PDF"-->
+<!--          icon="o_picture_as_pdf"-->
+<!--          tooltip="The List of PDFs"/>-->
 
         <ToolbarButton
           :feature="FeatureIdent.GROUP_BY_DOMAIN"
@@ -148,14 +148,9 @@
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
-              <q-item v-if="!useAuthStore().isAuthenticated" clickable @click="router.push('/login')">Login</q-item>
-              <q-item v-else clickable @click="logout()">Logout</q-item>
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
               <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>
                 Activate more Features
-              </q-item>
-              <q-item clickable v-close-popup>
-                <q-item-section @click="subscribe()">Subscribe to Pro Features</q-item-section>
               </q-item>
               <q-item clickable @click="showImportDialog" v-close-popup>
                 Import Tabsets
@@ -312,9 +307,5 @@ const dependingOnStates = () =>
   _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
 
 const toggleSettings = () => settingsClicked.value = !settingsClicked.value
-
-const logout = () => {
-  useAuthStore().logout()
-}
 
 </script>

@@ -2,7 +2,7 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {mount} from '@vue/test-utils';
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
-import ChromeApi from "src/services/ChromeApi";
+import ChromeApi from "src/app/BrowserApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
