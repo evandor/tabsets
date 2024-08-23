@@ -63,7 +63,7 @@ function runContentHousekeeping(fnc: (url: string) => boolean) {
 
 const persistenceService = IndexedDbPersistenceService
 
-class ChromeApi {
+class BrowserApi {
 
   onHeadersReceivedListener = function (details: any) {
     if (details.url) {
@@ -399,6 +399,7 @@ class ChromeApi {
       selected: false
     }
   }
+
   createFolderNode(title: string, children: chrome.bookmarks.BookmarkTreeNode[] | undefined = undefined): chrome.bookmarks.BookmarkTreeNode {
     // index?: number | undefined;
     // dateAdded?: number | undefined;
@@ -505,7 +506,63 @@ class ChromeApi {
       }
     });
   }
+
+  tabsetIndication = (color: string, tooltip: string) => {
+    const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+    const iconTitle = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'title'
+    )
+    iconTitle.textContent = tooltip
+
+    const iconPath = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'path'
+    );
+
+    iconSvg.setAttribute('fill', 'none');
+    iconSvg.setAttribute('viewBox', '0 0 24 24');
+    iconSvg.setAttribute('stroke', color);
+    iconSvg.setAttribute('width', '20');
+    iconSvg.setAttribute('height', '20');
+    iconSvg.setAttribute('style', 'position:absolute;top:3;right:3;z-index:10000');
+    iconSvg.classList.add('post-icon');
+
+    iconPath.setAttribute(
+      'd',
+      'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'
+    );
+    iconPath.setAttribute('stroke-linecap', 'round');
+    iconPath.setAttribute('stroke-linejoin', 'round');
+    iconPath.setAttribute('stroke-width', '2');
+
+    iconSvg.appendChild(iconTitle)
+    iconSvg.appendChild(iconPath);
+    document.body.appendChild(iconSvg)
+  }
+
+  addIndicatorIcon(tabId: number, tabUrl: string | undefined, color: string = 'orange', tooltip: string = 'managed by tabsets') {
+    if (tabUrl) {
+      const tabsetIds = useTabsetService().tabsetsFor(tabUrl)
+      if (tabsetIds.length > 0 && tabId) {
+        const currentTabsetId =  useTabsetsStore().currentTabsetId
+        if (currentTabsetId && tabsetIds.indexOf(currentTabsetId) >= 0) {
+          color = "green"
+        }
+        chrome.scripting
+          .executeScript({
+            target: {tabId: tabId},
+            func: this.tabsetIndication,
+            args: [color, tooltip]
+          })
+          // .then(() => console.log("injected script file"))
+          .catch((res) => console.log("err", res))
+      }
+    }
+
+  }
 }
 
-export default new ChromeApi();
+export default new BrowserApi();
 

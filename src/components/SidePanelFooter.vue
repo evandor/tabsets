@@ -68,29 +68,48 @@
         &nbsp;
       </div>
       <div v-else class="col text-right">
-<!--        <q-btn icon="o_help" v-if="useFeaturesStore().hasFeature(FeatureIdent.HELP)"-->
-<!--               :class="rightButtonClass()"-->
-<!--               flat-->
-<!--               :size="getButtonSize()"-->
-<!--               @click="openHelpView()">-->
-<!--        </q-btn>-->
+        <!--        <q-btn icon="o_help" v-if="useFeaturesStore().hasFeature(FeatureIdent.HELP)"-->
+        <!--               :class="rightButtonClass()"-->
+        <!--               flat-->
+        <!--               :size="getButtonSize()"-->
+        <!--               @click="openHelpView()">-->
+        <!--        </q-btn>-->
 
-        <q-btn icon="o_settings" v-if="showSettingsButton()"
-               class="q-my-xs q-px-xs q-mr-none"
-               :class="{ shake: animateSettingsButton }"
-               flat
-               :size="getButtonSize()"
-               @click="openOptionsPage()">
-          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">{{ settingsTooltip() }}</q-tooltip>
-        </q-btn>
+        <span>
+          <q-btn icon="o_settings" v-if="showSettingsButton()"
+                 class="q-my-xs q-px-xs q-mr-none"
+                 :class="{ shake: animateSettingsButton }"
+                 flat
+                 :size="getButtonSize()">
+            <q-tooltip :delay="1000" class="tooltip_small" anchor="top left" self="bottom left">{{
+                settingsTooltip()
+              }}</q-tooltip>
+          </q-btn>
+          <q-menu :offset="[-50, 0]">
+            <q-list dense>
+              <q-item clickable v-close-popup @click="openOptionsPage()">
+                <q-item-section>Open Settings</q-item-section>
+              </q-item>
+              <q-separator/>
+              <q-item clickable v-close-popup
+                      @click="openURL('https://docs.google.com/forms/d/e/1FAIpQLSdUtiKIyhqmNoNkXXzZOEhnzTCXRKT-Ju83SyyEovnfx1Mapw/viewform?usp=pp_url')">
+                Feedback
+              </q-item>
+              <q-separator/>
+              <q-item clickable v-close-popup @click="openURL('https://docs.tabsets.net')">
+                Documentation
+              </q-item>
+            </q-list>
+          </q-menu>
+        </span>
 
         <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)"
-          icon="o_grid_view"
-          data-testid="buttonManageWindows"
-          :class="rightButtonClass()"
-          flat
-          :size="getButtonSize()"
-          @click="toggleShowWindowTable()">
+               icon="o_grid_view"
+               data-testid="buttonManageWindows"
+               :class="rightButtonClass()"
+               flat
+               :size="getButtonSize()"
+               @click="toggleShowWindowTable()">
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
         </q-btn>
 
