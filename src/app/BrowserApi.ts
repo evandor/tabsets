@@ -526,7 +526,7 @@ class BrowserApi {
     iconSvg.setAttribute('stroke', color);
     iconSvg.setAttribute('width', '20');
     iconSvg.setAttribute('height', '20');
-    iconSvg.setAttribute('style', 'position:absolute;top:3;right:3;z-index:10000');
+    iconSvg.setAttribute('style', 'position:fixed;top:3;right:3;z-index:10000');
     iconSvg.classList.add('post-icon');
 
     iconPath.setAttribute(
