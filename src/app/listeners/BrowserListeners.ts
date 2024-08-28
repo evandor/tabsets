@@ -75,7 +75,6 @@ function inIgnoredMessages(request: any) {
     request.name === 'reload-entities' ||
     request.name === 'api-changed' ||
     request.action === 'highlight-annotation'
-  //request.name === 'recogito-annotation-created'
 
 }
 
@@ -131,7 +130,6 @@ class BrowserListeners {
   async initListeners() {
 
     if (process.env.MODE === 'bex') {
-
       console.debug(" ...initializing chrome tab listeners")
 
       chrome.runtime.setUninstallURL("https://tabsets.web.app/#/uninstall")

@@ -79,13 +79,9 @@ import {FeatureIdent} from "src/app/models/FeatureIdent";
 
 const localstorage = useQuasar().localStorage
 
-const settingsStore = useSettingsStore()
-
 const rows = ref<object[]>([])
 const currentWindowName = ref('---')
 const statsSnapshot = ref<object | undefined>(undefined)
-
-const devMode = ref<boolean>(useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE))
 
 onMounted(() => {
   statsSnapshot.value = localstorage.getItem("stats") as object || undefined

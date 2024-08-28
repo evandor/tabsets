@@ -3,16 +3,12 @@ import {CLEANUP_PERIOD_IN_MINUTES, MONITORING_PERIOD_IN_MINUTES} from "boot/cons
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useSearchStore} from "src/search/stores/searchStore";
-import {SearchDoc} from "src/search/models/SearchDoc";
 import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Router} from "vue-router";
-import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
-import {useContentService} from "src/content/services/ContentService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
@@ -33,32 +29,6 @@ function runHousekeeping() {
 
   // TODO
   //TabService.checkScheduled()
-}
-
-function runThumbnailsHousekeeping(fnc: (url: string) => boolean) {
-  console.log("housekeeping thumbnails now...")
-  useThumbnailsService().cleanUpThumbnails(fnc)
-}
-
-function runContentHousekeeping(fnc: (url: string) => boolean) {
-  console.log("housekeeping content now...")
-  useContentService().cleanUpContent(fnc)
-    .then((searchDocs: object[]) => {
-      _.forEach(searchDocs, d => {
-        //console.log("got document", d)
-        useSearchStore().remove((doc: SearchDoc) => {
-          if (doc.url === d['url' as keyof object]) {
-            console.debug("removing", doc)
-          }
-          return doc.url === d['url' as keyof object]
-        })
-        useSearchStore().addObjectToIndex(d)
-        // useSearchStore().addToIndex(
-        //   d.id, d.name, d.title, d.url, d.description, d.content, d.tabsets, d.favIconUrl
-        // )
-      })
-      //useSearchStore().addToIndex()
-    })
 }
 
 const persistenceService = IndexedDbPersistenceService
@@ -88,8 +58,8 @@ class BrowserApi {
       (alarm: chrome.alarms.Alarm) => {
         if (alarm.name === "housekeeping") {
           runHousekeeping()
-          runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
-          runContentHousekeeping(useTabsetService().urlExistsInATabset)
+          //runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
+          //runContentHousekeeping(useTabsetService().urlExistsInATabset)
         } else if (alarm.name === "monitoring") {
           // if (useFeaturesStore().hasFeature(FeatureIdent.MONITORING)) {
           //   checkMonitors(router)
@@ -284,7 +254,7 @@ class BrowserApi {
           } else if (e.menuItemId === 'annotate_website') {
             console.log("creating annotation JS", tab)
             if (tab && tab.id) {
-              this.executeAnnotationJS(tab.id)
+             // this.executeAnnotationJS(tab.id)
             }
           } else if (e.menuItemId.toString().startsWith("save_as_tab|")) {
             //console.log("got", e, e.menuItemId.split("|"))
@@ -303,7 +273,6 @@ class BrowserApi {
     }
 
   }
-
 
   private createSubmenu(ts: Tabset, parentId: string, title: string) {
     chrome.contextMenus.create({
