@@ -53,10 +53,6 @@
               <q-item dense clickable v-close-popup @click="restoreInGroup(tabset.id)">
                 <q-item-section>in current window</q-item-section>
               </q-item>
-              <q-separator />
-              <q-item dense clickable v-close-popup @click="openOverviewPage(tabset.id)">
-                <q-item-section>as overview page</q-item-section>
-              </q-item>
             </q-list>
           </q-menu>
 
@@ -70,6 +66,13 @@
                          @was-clicked="restoreInGroup(tabset.id, tabset.window)"
                          icon="open_in_new"
                          label="Open in window..."/>
+      </template>
+
+      <template v-if="tabset.tabs.length > 0 && inBexMode()">
+        <ContextMenuItem v-close-popup
+                         @was-clicked="openOverviewPage(tabset.id)"
+                         icon="open_in_new"
+                         label="Show Overview"/>
       </template>
 
       <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 6"
