@@ -11,6 +11,7 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import _ from "lodash"
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {RefreshTabCommand} from "src/tabsets/commands/RefreshTabCommand";
+import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 
 /**
  * refactoring remark: uses many other modules, needs to be one-per-application
@@ -67,6 +68,13 @@ class NavigationService {
         // get all tabs with this url
         const tabsForUrl = useTabsetsStore().tabsForUrl(url) || []
         tabsForUrl.forEach(t => {
+
+          // const optionalThumbnail = useThumbnailsService().getThumbnailFor(t.tab.id)
+          // if (!optionalThumbnail) {
+          //   // saving thumbnail
+          //   useThumbnailsService().captureVisibleTab(this.tab.id)
+          // }
+
           if (t.tab.httpInfo) {
             t.tab.httpError = ''
             t.tab.httpInfo = ''
@@ -119,6 +127,17 @@ class NavigationService {
                   }
                   chrome.tabs.highlight({tabs: r.index, windowId: useWindowId});
                   chrome.windows.update(useWindowId, {focused: true})
+
+                  tabsForUrl.forEach(t => {
+                    useThumbnailsService().getThumbnailFor(t.tab.id)
+                      .then((optionalThumbnail: any) => {
+                        if (!optionalThumbnail) {
+                          // saving thumbnail
+                          useThumbnailsService().captureVisibleTab(t.tab.id)
+                        }
+                      })
+                  })
+
 
                   if (forceReload && r.id) {
                     console.debug("forced reload")
