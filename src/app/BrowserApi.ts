@@ -254,7 +254,7 @@ class BrowserApi {
           } else if (e.menuItemId === 'annotate_website') {
             console.log("creating annotation JS", tab)
             if (tab && tab.id) {
-              this.executeAnnotationJS(tab.id)
+             // this.executeAnnotationJS(tab.id)
             }
           } else if (e.menuItemId.toString().startsWith("save_as_tab|")) {
             //console.log("got", e, e.menuItemId.split("|"))
@@ -273,7 +273,6 @@ class BrowserApi {
     }
 
   }
-
 
   private createSubmenu(ts: Tabset, parentId: string, title: string) {
     chrome.contextMenus.create({

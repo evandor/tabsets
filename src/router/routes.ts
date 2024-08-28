@@ -147,7 +147,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('src/tabsets/pages/TabsetPage.vue')}],
+    children: [{path: '', component: () => import('src/tabsets/pages/MainPanelTabsetPage.vue')}],
   },
   {
     path: '/mainpanel/png/:tabId/:blobId',

@@ -36,7 +36,7 @@
           (!tabset.window || tabset.window === 'current'))">
         <ContextMenuItem
           icon="open_in_new"
-          label="Open all in...">
+          label="Open all...">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>
@@ -48,10 +48,14 @@
                 <q-item-section>switching tab</q-item-section>
               </q-item>
               <q-item dense clickable v-close-popup @click="restoreInNewWindow(tabset.id)">
-                <q-item-section>new window</q-item-section>
+                <q-item-section>in new window</q-item-section>
               </q-item>
               <q-item dense clickable v-close-popup @click="restoreInGroup(tabset.id)">
-                <q-item-section>current window</q-item-section>
+                <q-item-section>in current window</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item dense clickable v-close-popup @click="openOverviewPage(tabset.id)">
+                <q-item-section>as overview page</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -237,6 +241,11 @@ const startAutoSwitchingTab = (tabsetId: string) => {
 
 const restoreInGroup = (tabsetId: string, windowName: string | undefined = undefined) =>
   useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName, false))
+
+const openOverviewPage = (tabsetId: string) => {
+  NavigationService.openSingleTab(chrome.runtime.getURL(`www/index.html#/mainpanel/tabsets/${tabsetId}`))
+}
+
 
 const focus = (tabset: Tabset) =>
   router.push("/sidepanel/tabsets/" + tabset.id)
