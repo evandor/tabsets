@@ -20,7 +20,7 @@ export class SidePanelViews {
   static readonly RSS_LIST = new SidePanelViews('rssList', '/sidepanel/rsslist',
     () => useFeaturesStore().hasFeature(FeatureIdent.RSS));
 
-  static readonly NEWEST_TABS_LIST = new SidePanelViews('newestList', '/sidepanel/newestList',
+  static readonly NEWEST_TABS_LIST = new SidePanelViews('latestList', '/sidepanel/latestList',
     () => useFeaturesStore().hasFeature(FeatureIdent.NEWEST_TABS));
 
   static readonly TOP_10_TABS_LIST = new SidePanelViews('top10List', '/sidepanel/top10List',

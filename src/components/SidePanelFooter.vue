@@ -176,7 +176,6 @@ import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {ToastType} from "src/core/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
-import {Account} from "src/models/Account";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
 import {Window} from "src/windows/models/Window"
@@ -303,7 +302,7 @@ const additionalActions = (windowName: string) => {
 
 
 const updateWindows = () => {
-  useWindowsStore().setup('got window-updated message', true)
+  useWindowsStore().setup('window-updated', true)
     .then(() => windowRows.value = calcWindowRows())
 }
 
@@ -322,19 +321,21 @@ if (inBexMode()) {
 
   chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
     //console.log("***here we are", tabId, removeInfo)
-    useWindowsStore().setup('got window-updated message')
+    useWindowsStore().setup('on removed in SidePanelFooter')
       .then(() => windowRows.value = calcWindowRows())
       .catch((err) => handleError(err))
   })
 
 
   chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-    useWindowsStore().setup('got window-updated message')
-      .then(() => windowRows.value = calcWindowRows())
-      .catch((err) => {
-        console.log("could not yet calcWindowRows: " + err)
-        //handleError(err)
-      })
+    //console.log(`on updated: ${tabId}, ${JSON.stringify(changeInfo)}`)
+    if (changeInfo.status === "complete") {
+      useWindowsStore().setup('on updated in SidePanelFooter')
+        .then(() => windowRows.value = calcWindowRows())
+        .catch((err) => {
+          console.log("could not yet calcWindowRows: " + err)
+        })
+    }
   })
 }
 

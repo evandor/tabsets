@@ -85,64 +85,16 @@
       <div class="col-3 text-left">
 
 
-        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"
-               @click="showTabDetails"
-               round size="11px"
-               color="primary"
-               flat
-               icon="o_more_horiz">
-          <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>
-        </q-btn>
+<!--        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"-->
+<!--               @click="showTabDetails"-->
+<!--               round size="11px"-->
+<!--               color="primary"-->
+<!--               flat-->
+<!--               icon="o_more_horiz">-->
+<!--          <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>-->
+<!--        </q-btn>-->
       </div>
       <div class="col-9 text-right">
-        <!--        <q-btn round size="11px"-->
-        <!--               :color="tab?.note && tab.note.length > 0 ? 'white' : 'warning'"-->
-        <!--               :style="tab?.note && tab.note.length > 0 ? 'background: #FFBF46' : 'background: #ffffff'"-->
-        <!--               flat-->
-        <!--               icon="edit_note"-->
-        <!--               @click.stop="editNoteDialog(tab)">-->
-        <!--          <q-tooltip>Add a note to this tab or edit it</q-tooltip>-->
-        <!--        </q-btn>-->
-
-        <!--        <q-btn flat round color="primary" size="11px" icon="o_schedule" @click.stop="scheduleTab()">-->
-        <!--          <q-tooltip>Schedule this tab</q-tooltip>-->
-        <!--        </q-btn>-->
-
-        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
-          <q-btn
-              @click.stop="savePng(tab as Tab)"
-              flat round color="primary" size="11px" icon="image"
-              :disabled="!isOpen(tab as Tab)">
-            <q-tooltip v-if="isOpen(tab as Tab)">Save this tab as PNG</q-tooltip>
-            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
-              it.
-            </q-tooltip>
-          </q-btn>
-        </template>
-
-        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
-          <q-btn
-              @click.stop="saveHtml(tab as Tab)"
-              flat round color="primary" size="11px" icon="image"
-              :disabled="!isOpen(tab as Tab)">
-            <q-tooltip v-if="isOpen(tab as Tab)">Save this tab as HTML</q-tooltip>
-            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save
-              it.
-            </q-tooltip>
-          </q-btn>
-        </template>
-
-<!--        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB)">-->
-<!--          <q-btn-->
-<!--              @click.stop="saveTab(tab)"-->
-<!--              flat round color="primary" size="11px" icon="save"-->
-<!--              :disabled="!isOpen(tab)">-->
-<!--            <q-tooltip v-if="isOpen(tab)">Save this tab</q-tooltip>-->
-<!--            <q-tooltip v-else>The tab must be open if you want to save it. Click on the link and come back here to save-->
-<!--              it.-->
-<!--            </q-tooltip>-->
-<!--          </q-btn>-->
-<!--        </template>-->
 
 
       </div>
@@ -174,65 +126,6 @@
         </q-card-section>
       </q-card>
     </q-expansion-item>
-
-<!--    <q-expansion-item label="Archived Snapshots"-->
-<!--                      v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_TAB) && tab?.mhtmls?.length > 0"-->
-<!--                      :default-opened="true">-->
-<!--      <q-card>-->
-<!--        <q-card-section>-->
-<!--          <div class="row q-mx-sm q-mt-xs" v-for="mhtml in tab?.mhtmls">-->
-<!--&lt;!&ndash;            <MHtmlViewHelper :mhtmlId="mhtml" :tabId="tab?.id || 'unknown'"/>&ndash;&gt;-->
-<!--          </div>-->
-<!--        </q-card-section>-->
-<!--      </q-card>-->
-<!--    </q-expansion-item>-->
-
-<!--    <q-expansion-item label="Archived Images"-->
-<!--                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && pngs.length > 0">-->
-<!--      <q-card>-->
-<!--        <q-card-section>-->
-<!--          <div class="row q-mx-sm q-mt-xs" v-for="png in pngs">-->
-<!--            <PngViewHelper :pngId="png.id" :created="png.created" :tabId="tab?.id || 'unknown'" />-->
-<!--          </div>-->
-<!--        </q-card-section>-->
-<!--      </q-card>-->
-<!--    </q-expansion-item>-->
-
-    <q-expansion-item label="Archived HTML Snapshots"
-                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) ">
-      <q-card>
-        <q-card-section>
-          <div class="row q-mx-sm q-mt-xs" v-for="html in htmls">
-            pngViewHelper
-<!--            <PngViewHelper :pngId="html.sourceId" :created="html.created" :tabId="tab?.id || 'unknown'" extension="html"/>-->
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
-
-<!--    <q-expansion-item label="Archived PDFs"-->
-<!--                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) && pdfs.length > 0">-->
-<!--      <q-card>-->
-<!--        <q-card-section>-->
-<!--          <div class="row q-mx-sm q-mt-xs" v-for="pdf in pdfs">-->
-<!--            <PngViewHelper extension='pdf' :pngId="pdf.id" :created="pdf.created" :tabId="tab?.id || 'unknown'"/>-->
-<!--          </div>-->
-<!--        </q-card-section>-->
-<!--      </q-card>-->
-<!--    </q-expansion-item>-->
-
-    <!--    <q-expansion-item label="Note"-->
-    <!--                      group="somegroup"-->
-
-    <!--                      :default-opened="false">-->
-    <!--      <q-card>-->
-    <!--        <q-card-section>-->
-    <!--          <div class="text-caption">-->
-    <!--            {{ tab?.note }}-->
-    <!--          </div>-->
-    <!--        </q-card-section>-->
-    <!--      </q-card>-->
-    <!--    </q-expansion-item>-->
 
     <q-expansion-item label="Meta Data"
                       group="somegroup"
@@ -330,7 +223,7 @@
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm">
-            <TabDetailsSearchIndex :tab="tab" />
+            <TabDetailsSearchIndex v-if="tab" :tab="tab" />
           </div>
         </q-card-section>
       </q-card>
@@ -374,15 +267,12 @@ const {handleSuccess, handleError} = useNotificationHandler()
 const router = useRouter()
 const route = useRoute()
 
-const hasAllUrlsPermission = ref<boolean | undefined>(false)
-
 const thumbnail = ref('')
 const content = ref('')
 const metaRows = ref<object[]>([])
 const tab = ref<Tab | undefined>(undefined)
 const pngs = ref<SavedBlob[]>([])
 const htmls = ref<BlobMetadata[]>([])
-const pdfs = ref<SavedBlob[]>([])
 const tabId = ref<string | undefined>(undefined)
 
 const tags = ref<string[]>([])

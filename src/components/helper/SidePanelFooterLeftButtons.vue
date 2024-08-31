@@ -34,7 +34,7 @@
                                      label="Newest Tabs"
                                      icon="o_schedule"
                                      :size="buttonSize"
-                                     tooltip="Newest Tabs List"/>
+                                     tooltip="Latest Tabs List"/>
         <SidePanelFooterViewMenuItem :side-panel-view="SidePanelViews.TOP_10_TABS_LIST"
                                      label="Top 10 Tabs"
                                      icon="o_workspace_premium"
@@ -75,7 +75,7 @@
       :side-panel-view="SidePanelViews.NEWEST_TABS_LIST"
       :size="props.size"
       icon="o_schedule"
-      tooltip="Newest Tabs List"/>
+      tooltip="Latest Tabs List"/>
 
     <SidePanelFooterLeftButton
       :side-panel-view="SidePanelViews.TABS_AS_TREE"

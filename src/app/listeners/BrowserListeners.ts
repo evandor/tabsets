@@ -211,32 +211,10 @@ class BrowserListeners {
     this.inProgress = true
   }
 
-  createThumbnails(b: boolean) {
-    console.log("thumbnails active set to ", b)
-    this.thumbnailsActive = b
-  }
-
   onCreated(tab: chrome.tabs.Tab) {
-    // if (!useTabsStore().listenersOn) {
-    //   console.debug(`onCreated: tab ${tab.id}: >>> listeners off, returning <<<`)
-    //   return
-    // }
     this.eventTriggered()
-    console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`, tab)
+    // console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`, tab)
     //sendMsg('window-updated', {initiated: "ChromeListeners#onCreated"})
-
-    let foundSession = false
-    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
-      if (ts.type === TabsetType.SESSION) {
-        foundSession = true
-        console.debug("pushing to", ts.id, tab)
-        ts.tabs.push(new Tab(uid(), tab))
-      }
-    })
-    if (!foundSession) {
-      console.debug("pushing to pending", tab)
-      //tabsStore.pendingTabset.tabs.push(new Tab(uid(), tab))
-    }
   }
 
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
@@ -252,11 +230,9 @@ class BrowserListeners {
 
     this.eventTriggered()
 
-    if (!info.status || (Object.keys(info).length > 1)) {
+    if (info.status === "complete") {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
 
-      // handle pending Tabset
-      //this.handleUpdate(tabsStore.pendingTabset as Tabset, chromeTab)
       this.handleUpdateInjectScripts(info, chromeTab)
 
       // handle existing tabs
@@ -277,78 +253,11 @@ class BrowserListeners {
         }
       }
 
-      // handle sessions
-      let foundSession = false
-      _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
-        if (ts.type === TabsetType.SESSION) {
-          foundSession = true
-          this.handleUpdate(ts, chromeTab)
-        }
-      })
-
       // matching tabs for url
       if (chromeTab.url) {
         useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
       }
 
-      // handle windowsStore related pages
-      //sendMsg('window-updated', {initiated: "ChromeListeners#onUpdated"})
-    }
-  }
-
-  /**
-   *
-   * @param tabset: usually the "pendingTabset", or any one which is a session
-   * @param tab
-   * @private
-   */
-  private handleUpdate(tabset: Tabset, tab: chrome.tabs.Tab) {
-    // find tab which was created by "onCreate" moments ago
-    const index = _.findIndex(tabset?.tabs, t => t.chromeTabId === tab.id);
-    if (index >= 0) {
-      const existingPendingTab = tabset.tabs[index]
-      const updatedTab = new Tab(uid(), tab)
-
-      //console.log("updatedTab A", updatedTab)
-
-      // (chrome) Group
-      //console.log("updating updatedTab group for group id", updatedTab.groupId)
-      updatedTab.groupName = useGroupsStore().currentGroupForId(updatedTab.groupId)?.title || '?' + updatedTab.groupId + '?'
-      //console.log("group set to", updatedTab.groupName)
-
-      updatedTab.setHistoryFrom(existingPendingTab)
-      if (existingPendingTab.url !== updatedTab.url && existingPendingTab.url !== 'chrome://newtab/') {
-        if (existingPendingTab.url) {
-          updatedTab.addToHistory(existingPendingTab.url)
-        }
-      }
-      const urlExistsAlready = _.filter(tabset.tabs, pT => pT.url === tab.url).length >= 2
-      if (urlExistsAlready) {
-        tabset.tabs.splice(index, 1);
-        //console.log("Tabset spliced", tabset.tabs)
-      } else {
-        tabset.tabs.splice(index, 1, updatedTab);
-        //console.log("Tabset spliced and deleted", tabset.tabs)
-      }
-
-    } else {
-      console.debug(`onUpdated: tab ${tab.id}: pending tab cannot be found in ${tabset.name}`)
-      if (tab.url !== undefined) {
-
-        const newTab = new Tab(uid(), tab)
-
-        // (chrome) Group
-        if (tab.groupId >= 0) {
-          console.log("updating updatedTab group for group id", tab.groupId)
-          //newTab.group = useGroupsStore().groupForId(tab.groupId)
-          //const g = await browser.tabGroups.get(tab.groupId)
-
-          newTab.groupName = useGroupsStore().currentGroupForId(tab.groupId)?.title || '???'
-        }
-
-        console.debug(`onUpdated: tab ${tab.id}: missing tab added for url ${tab.url}`)
-        tabset.tabs.push(newTab)
-      }
     }
   }
 
@@ -363,46 +272,7 @@ class BrowserListeners {
     if (tab.url && tab.url.startsWith("https://shared.tabsets.net")) {
       return
     }
-
-    const scripts: string[] = []
-
-    // chrome.scripting.insertCSS({
-    //   target: {tabId: tab.id},
-    //   css: "body { border-top: 2px dotted red; }"
-    // })
-    //   .then((res) => console.log("res", res))
-    //   .catch((res) => console.log("err", res))
-
     BrowserApi.addIndicatorIcon(tab.id, tab.url)
-
-    if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-      scripts.push("highlight-annotations.js")
-    }
-    //scripts.push("tabsets-content-script.js")
-    if (scripts.length > 0 && tab.id !== null) { // && !this.injectedScripts.get(.chromeTabId)) {
-
-      chrome.tabs.get(tab.id, (chromeTab: chrome.tabs.Tab) => {
-        if (chrome.runtime.lastError) {
-          console.warn("got runtime error:" + chrome.runtime.lastError);
-        }
-        if (tab.id && !tab.url?.startsWith("chrome")) {
-          scripts.forEach((script: string) => {
-            //console.debug("executing scripts", tab.id, script)
-
-
-            // @ts-ignore
-            chrome.scripting.executeScript({
-              target: {tabId: tab.id || 0, allFrames: false},
-              files: [script]
-            }, (callback: any) => {
-              if (chrome.runtime.lastError) {
-                console.warn("could not execute script: " + chrome.runtime.lastError.message, info.url);
-              }
-            });
-          })
-        }
-      })
-    }
   }
 
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
@@ -450,7 +320,7 @@ class BrowserListeners {
   }
 
   onHighlighted(info: chrome.tabs.TabHighlightInfo) {
-    console.debug(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
+    //console.debug(`onHighlighted: tab ${info.tabIds} highlighted: ${JSON.stringify(info)}`)
   }
 
   onZoomChange(info: chrome.tabs.ZoomChangeInfo) {
