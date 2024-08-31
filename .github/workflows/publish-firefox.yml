@@ -1,0 +1,65 @@
+#run locally:
+#carstengraef@Carstens-MBP tabsets % act -W '.github/workflows/publish.yml' -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:js-latest \
+# --secret-file act.secrets.txt --container-architecture linux/amd64
+
+
+name: Publish
+#on:
+#  push:
+#    branches: [ firefox-extension ]
+on:
+  push:
+    tags:
+      - 'v*.*.*-firefox'
+
+jobs:
+  build:
+    name: Publish webextension
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo STAGE=PRD >> .env
+          echo BACKEND_URL="https://tabsets-72089.web.app" >> .env
+          echo TABSETS_PWA_URL="https://pwa.tabsets.net" >> .env
+      - name: Build
+        run: |
+          yarn install
+          npm run "build bex (publish)"
+      - name: "web-ext build"
+        id: web-ext-build
+        uses: kewisch/action-web-ext@v1
+        with:
+          cmd: build
+          source: dist/bex
+          #          filename: "{name}-{version}.xpi"
+          filename: "{name}.xpi"
+          ignoreFiles: '[ "package.json","package-lock.json","yarn.lock" ]'
+
+      - uses: trmcnvn/firefox-addon@v1
+        with:
+          # uuid is only necessary when updating an existing addon,
+          # omitting it will create a new addon
+          uuid: '{5809ba95-274e-4fd3-a92d-5baf03026290}'
+          xpi: web-ext-artifacts/tabsets.net.xpi
+          manifest: dist/bex/manifest.json
+          api-key: ${{ secrets.FIREFOX_API_KEY }}
+          api-secret: ${{ secrets.FIREFOX_API_SECRET }}
+
+#      - name: Upload & release
+#        uses: mnao305/chrome-extension-upload@v4.0.1
+#        with:
+#          file-path: dist/bex/Packaged.tabsets.net.zip
+#          extension-id: afkknkdbgondbbfjehipnjmojndnjhjg
+#          client-id: ${{ secrets.CLIENT_ID }}
+#          client-secret: ${{ secrets.CLIENT_SECRET }}
+#          refresh-token: ${{ secrets.REFRESH_TOKEN }}
+#          publish: false

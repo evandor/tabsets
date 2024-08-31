@@ -1,11 +1,11 @@
-import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
-import TabsetService from "src/services/TabsetService";
-import {Group} from "src/models/Group";
+import Command from "src/core/domain/Command";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import TabsetService from "src/tabsets/services/TabsetService";
+import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {uid} from "quasar";
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
-import {useTabsetService} from "src/services/TabsetService2";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import _ from "lodash"
 
 class UndoCommand implements Command<any> {
@@ -14,7 +14,7 @@ class UndoCommand implements Command<any> {
   }
 
   execute(): Promise<ExecutionResult<any>> {
-    this.tabset.groups = _.filter(this.tabset.groups, (g: Group) => g.id !== this.groupId)
+    this.tabset.columns = _.filter(this.tabset.columns, (g: TabsetColumn) => g.id !== this.groupId)
     return useTabsetService().saveTabset(this.tabset)
       .then((res) =>
         Promise.resolve(new ExecutionResult("done", `Group was deleted again`)))
@@ -32,15 +32,17 @@ export class CreateGroupCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<any>> {
     const trustedTitle = this.title.replace(STRIP_CHARS_IN_USER_INPUT, '')
-    const group = new Group(uid(), trustedTitle)
-    const existingGroups = this.tabset.groups
+    const group = new TabsetColumn(uid(), trustedTitle)
+    const existingGroups = this.tabset.columns
     if (existingGroups.find(existingGroup => existingGroup.title === this.title)) {
       return Promise.reject(`Group ${trustedTitle} already exists`)
     }
-    this.tabset.groups.push(group)
+    this.tabset.columns.push(group)
     return useTabsetService().saveTabset(this.tabset)
       .then((res) =>
-        Promise.resolve(new ExecutionResult("done", `Group ${trustedTitle} was created`, new UndoCommand(this.tabset, group.id))))
+        Promise.resolve(new ExecutionResult("done",
+          `Group ${trustedTitle} was created`,
+          new Map([["Undo", new UndoCommand(this.tabset, group.id)]]))))
       .catch(err => Promise.reject("could not create group"))
   }
 

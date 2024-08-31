@@ -1,0 +1,35 @@
+name: E2E
+run-name: E2E Tests
+on:
+  push:
+    branches: [ main, chrome-extension ]
+  pull_request:
+    branches: [ main, chrome-extension ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn install
+      - run: npm run "build bex (publish)"
+      - run: npx playwright install
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

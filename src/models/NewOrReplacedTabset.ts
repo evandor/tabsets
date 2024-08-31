@@ -1,4 +1,4 @@
-import {Tabset} from "src/models/Tabset";
+import {Tabset} from "src/tabsets/models/Tabset";
 
 export class NewOrReplacedTabset {
 

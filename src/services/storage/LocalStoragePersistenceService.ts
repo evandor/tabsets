@@ -1,12 +1,14 @@
 import PersistenceService from "src/services/PersistenceService";
-import {Space} from "src/models/Space";
-import {Suggestion} from "src/models/Suggestion";
-import {SearchDoc} from "src/models/SearchDoc";
+import {Space} from "src/spaces/models/Space";
+import {StaticSuggestionIdent, Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
+import {SearchDoc} from "src/search/models/SearchDoc";
 import {QVueGlobals, useQuasar} from "quasar";
-import {Tabset} from "src/models/Tabset";
-import {Tab} from "src/models/Tab";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {Notification} from "src/models/Notification";
-import {MHtml} from "src/models/MHtml";
+import {MetaLink} from "src/models/MetaLink";
+import {RequestInfo} from "src/models/RequestInfo";
+import {Message} from "src/models/Message";
+import {BlobType} from "src/snapshots/models/BlobMetadata";
 
 export class LocalStoragePersistenceService implements PersistenceService {
 
@@ -16,8 +18,18 @@ export class LocalStoragePersistenceService implements PersistenceService {
     this.quasar = quasar
   }
 
+  getServiceName(): string { return "LocalStoragePersistenceService" }
+
+  deleteSpace(spaceId: string): void {
+    throw new Error("Method not implemented.");
+  }
+
   saveActiveFeatures(val: string[]) {
-    this.quasar.localStorage.set("ui.activeFeatures", val)
+    if (this.quasar.localStorage) {
+      this.quasar.localStorage.set("ui.activeFeatures", val)
+    } else {
+      console.warn("local storage not defined")
+    }
   }
 
   setInactiveDefaultFeatures(val: string[]) {
@@ -25,11 +37,11 @@ export class LocalStoragePersistenceService implements PersistenceService {
   }
 
   getActiveFeatures(): Promise<string[]> {
-    return Promise.resolve( this.quasar.localStorage?.getItem('ui.activeFeatures') as string[] || [])
+    return Promise.resolve(this.quasar.localStorage?.getItem('ui.activeFeatures') as string[] || [])
   }
 
   getInactiveDefaultFeatures(): Promise<string[]> {
-    return Promise.resolve( this.quasar.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
+    return Promise.resolve(this.quasar.localStorage?.getItem('ui.inActiveDefaultFeatures') as string[] || [])
   }
 
   addNotification(notification: Notification): Promise<any> {
@@ -44,15 +56,19 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
+  removeSuggestion(ident: string) {
+    throw new Error("Method not implemented.");
+  }
+
+  setSuggestionState(id: string, state: SuggestionState) {
+    throw new Error("Method not implemented.");
+  }
+
   cleanUpContent(): Promise<SearchDoc[]> {
     return Promise.resolve([]);
   }
 
   cleanUpRequests(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
-  cleanUpThumbnails(): Promise<void> {
     return Promise.resolve(undefined);
   }
 
@@ -68,16 +84,12 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  deleteThumbnail(url: string): Promise<void> {
+  cleanUpTabsets(): Promise<void> {
     return Promise.resolve(undefined);
   }
 
   getContent(url: string): Promise<object> {
     return Promise.resolve({});
-  }
-
-  getContents(): Promise<any[]> {
-    return Promise.resolve([]);
   }
 
   getLinks(url: string): Promise<object> {
@@ -90,10 +102,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
 
   getMHtmlInline(url: string): Promise<object> {
     return Promise.resolve({});
-  }
-
-  getMHtmls(): Promise<MHtml[]> {
-    return Promise.resolve([]);
   }
 
   getMetaLinks(url: string): Promise<object> {
@@ -112,14 +120,6 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve([]);
   }
 
-  getThumbnail(url: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  loadSpaces(): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
   loadTabsets(): Promise<void> {
     return Promise.resolve(undefined);
   }
@@ -128,31 +128,73 @@ export class LocalStoragePersistenceService implements PersistenceService {
     return Promise.resolve(undefined);
   }
 
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
-  saveMHtml(tab: Tab, mhtml: Blob): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  saveStats(date: string, dataset: object): void {
-  }
-
   saveTabset(tabset: Tabset): Promise<any> {
     return Promise.resolve(undefined);
   }
 
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string): Promise<void> {
+  reloadTabset(tabsetId: string): void {
+  }
+
+  clear(name: string) {
+  }
+
+  saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {
     return Promise.resolve(undefined);
   }
 
-  updateContent(url: string): Promise<object> {
-    return Promise.resolve({});
-  }
-
-  updateThumbnail(url: string): Promise<void> {
+  saveLinks(url: string, links: any): Promise<void> {
     return Promise.resolve(undefined);
   }
+
+  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  deleteGroupByTitle(title: string): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  deleteMHtml(id: string): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
+    return Promise.resolve([]);
+  }
+
+  updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
+    return Promise.resolve(undefined);
+  }
+
+  getBlobs(type: BlobType): Promise<any[]> {
+    return Promise.resolve([]);
+  }
+
+  deleteBlob(tabId: string, elementId: string): void {
+  }
+
+  addMessage(msg: Message): void {
+  }
+
+  getMessages(): Promise<Message[]> {
+    return Promise.resolve([]);
+  }
+
+  // getAccount(accountId: string): Promise<Account> {
+  //   return Promise.reject("not implemented")
+  // }
+  //
+  // upsertAccount(account: Account):void {
+  //   console.warn("not implemented")
+  // }
+
 
 }

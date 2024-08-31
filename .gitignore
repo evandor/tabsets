@@ -13,8 +13,8 @@ node_modules
 /src-cordova/www
 
 # Capacitor related directories and files
-/src-capacitor/www
-/src-capacitor/node_modules
+/src-capacitor2/www
+/src-capacitor2/node_modules
 
 # BEX related directories and files
 /src-bex/www
@@ -31,6 +31,10 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
+
+# vitepress
+docs/.vitepress/dist
+docs/.vitepress/cache
 
 /config/.env.local
 /.env
@@ -58,8 +62,20 @@ yarn-error.log*
 /releases/0.3.0/
 /releases/0.3.1/
 /releases/0.3.2/
+/releases/0.4.0/
 /public/cat.png
+/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/model.safetensors
+/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/pytorch_model.bin
+/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/rust_model.ot
+/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/tf_model.h5
+/public/vids/
+/coverage/
+/docs/vids/
+/Tabsets - Manage Tabs and Bookmarks with Ease/
 /.dev.env
 /.prd.env
 /.env.tmp
 /.tabsets-backend-prd.env
+/.env.tmp
+/docs/submodules/build/
+/src-bex/manifest.tmp

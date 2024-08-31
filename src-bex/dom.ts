@@ -3,10 +3,5 @@
 import {bexDom} from 'quasar/wrappers'
 
 export default bexDom((bridge) => {
-  //console.log("bexDom", bridge)
-  //if (!usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-  // bridge.on('initDomScripts', ({ data, respond }) => {
-  //   console.log("tabsets: got event initDomScripts")
-  // })
 
 })

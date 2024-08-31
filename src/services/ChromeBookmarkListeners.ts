@@ -1,4 +1,4 @@
-import {useBookmarksStore} from "src/stores/bookmarksStore";
+import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 
 class ChromeBookmarkListeners {
 
@@ -17,12 +17,12 @@ class ChromeBookmarkListeners {
       {permissions: ["bookmarks"]},
       (res: boolean) => {
         if (res) {
-          console.log("init chrome bookmark listeners")
+          console.debug(" ...init chrome bookmark listeners")
           chrome.bookmarks.onCreated.addListener(this.onCreatedListener)
           chrome.bookmarks.onMoved.addListener(this.onMovedListener)
           chrome.bookmarks.onRemoved.addListener(this.onRemovedListener)
           chrome.bookmarks.onChanged.addListener(this.onChangedListener)
-          chrome.bookmarks.onChildrenReordered.addListener(this.onChildrenReorderedListener)
+          //chrome.bookmarks.onChildrenReordered.addListener(this.onChildrenReorderedListener)
         }
       })
     }
@@ -35,7 +35,7 @@ class ChromeBookmarkListeners {
       chrome.bookmarks.onMoved.removeListener(this.onMovedListener)
       chrome.bookmarks.onRemoved.removeListener(this.onRemovedListener)
       chrome.bookmarks.onChanged.removeListener(this.onChangedListener)
-      chrome.bookmarks.onChildrenReordered.removeListener(this.onChildrenReorderedListener)
+      //chrome.bookmarks.onChildrenReordered.removeListener(this.onChildrenReorderedListener)
     }
   }
 

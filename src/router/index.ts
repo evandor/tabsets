@@ -32,5 +32,9 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   });
 
+  Router.beforeEach((to, from) => {
+    console.log(`%crouter event ${from.fullPath} -> ${to.fullPath}`,"color:green")
+  })
+
   return Router;
 });

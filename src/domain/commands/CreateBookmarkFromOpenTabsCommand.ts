@@ -1,6 +1,6 @@
-import Command from "src/domain/Command";
-import {ExecutionResult} from "src/domain/ExecutionResult";
-import {Tab} from "src/models/Tab";
+import Command from "src/core/domain/Command";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {Tab} from "src/tabsets/models/Tab";
 
 
 
@@ -19,8 +19,8 @@ export class CreateBookmarkFromOpenTabsCommand implements Command<any> {
     const newBookmark = {
       parentId: this.parentBookmark,
       index: useIndex,
-      title: this.tab.chromeTab.title,
-      url: this.tab.chromeTab.url
+      title: this.tab.title,
+      url: this.tab.url
     }
     console.log("newBookmark", newBookmark)
     // @ts-ignore

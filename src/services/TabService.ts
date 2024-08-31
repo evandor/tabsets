@@ -1,66 +1,31 @@
-import {useTabsStore} from "src/stores/tabsStore";
-import {Tab} from "src/models/Tab";
-import _ from "lodash"
-import {useDB} from "src/services/usePersistenceService";
+import {Tab} from "src/tabsets/models/Tab";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {useUtils} from "src/core/services/Utils";
 
-const {db} = useDB()
+const {inBexMode} = useUtils()
 
 class TabService {
 
-  updateThumbnail(url: string | undefined): Promise<void> {
-    if (url) {
-      return db.updateThumbnail(url)
+  isCurrentTab = (tab: Tab) => {
+    if (!inBexMode() || !tab.url) {
+      return false
     }
-    console.log("could not update thumbnail")
-    return Promise.resolve()
+    const windowId = useWindowsStore().currentChromeWindow?.id || 0
+    const currentChromeTab = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+    //console.log("checking current tab", currentChromeTab.url, tab.url, currentChromeTab.url === tab.url)
+    if (currentChromeTab?.url === tab.url) {
+      tab.chromeTabId = currentChromeTab.id
+      return true
+    }
+    //console.log("checking", currentChromeTab.url, "/" + btoa(tab.url || ''), currentChromeTab.url?.indexOf("/" + btoa(tab.url || '')) )
+    if (currentChromeTab?.url && currentChromeTab.url?.indexOf("/" + btoa(tab.url || '')) >= 0) {
+      return true
+    }
+    return false
   }
 
-  updateContent(url: string | undefined): Promise<object> {
-    if (url) {
-      return db.updateContent(url)
-    }
-    console.log("could not update thumbnail")
-    return Promise.resolve({})
-  }
 
-
-
-  checkScheduled() {
-    const tabs = useTabsStore().scheduledTabs
-    const dueTabs: Tab[] = []
-    const now = new Date().getTime()
-    _.forEach(tabs, (t: Tab) => {
-      if (t.scheduledFor && t.scheduledFor <= now) {
-        dueTabs.push(t)
-      }
-    })
-    if (dueTabs.length > 0) {
-      chrome.notifications.create(
-        dueTabs[0].id,
-        {
-          title: "Tabset Extension Message",
-          type: "basic",
-          //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-          iconUrl: chrome.runtime.getURL("www/favicon.ico"),
-          message: "scheduled tab is due: " + dueTabs[0].chromeTab.url,
-          buttons: [
-            {title: "open Tabsets Extension"}
-          ]
-        },
-        (a) => {
-          //console.log("a", a)
-          /*chrome.tabs.query({title: `Tabsets Extension`}, (result: chrome.tabs.Tab[]) => {
-            if (result && result.length > 0) {
-              const tab = result[0]
-              if (tab.id) {
-                chrome.tabs.update(tab.id, {active: true})
-              }
-            }
-          })*/
-        }
-      )
-    }
-  }
 }
 
 export default new TabService()

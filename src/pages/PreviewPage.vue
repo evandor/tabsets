@@ -27,7 +27,7 @@
           color="primary"
           label="Back to tabsets"
           class="q-mr-md"
-          @click="router.push('/tabsets/' + useTabsStore().currentTabsetId )"
+          @click="router.push('/tabsets/' + useTabsetsStore().currentTabsetId )"
         >
           <q-tooltip>Back to tabsets</q-tooltip>
         </q-btn>
@@ -52,10 +52,10 @@
 import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {date} from "quasar"
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-import TabsetService from "src/services/TabsetService";
-import InfoMessageWidget from "components/widgets/InfoMessageWidget.vue";
+import TabsetService from "src/tabsets/services/TabsetService";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const route = useRoute()
 const router = useRouter()
@@ -80,16 +80,16 @@ onMounted(() => {
 watchEffect(async () => {
   tabId.value = route.params.tabId as string
   console.log("checking tabId", tabId.value)
-  const found = _.find(useTabsStore().getCurrentTabs, t => t.id === route.params.tabId)
+  const found = _.find(useTabsetsStore().getCurrentTabs, t => t.id === route.params.tabId)
   console.log("found", found)
-  if (found && found.chromeTab.url) {
-    title.value = found.chromeTab?.title || 'unknown'
-    const request = await TabsetService.getRequestForUrl(found.chromeTab.url)
+  if (found && found.url) {
+    title.value = found.title || 'unknown'
+    const request = await TabsetService.getRequestForUrl(found.url)
     if (request && request.requestInfo && _.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
       src.value = 'data:text/html,<p>cannot open this page in iFrame ;(</p>'
     } else {
-      if (found.chromeTab.url) {
-        src.value = `${process.env.BACKEND_URL}/preview/${btoa(found.chromeTab.url)}`
+      if (found.url) {
+        src.value = `${process.env.BACKEND_URL}/preview/${btoa(found.url)}`
       } else {
         src.value = 'data:text/html,<p>loading....</p>'
       }
@@ -99,11 +99,5 @@ watchEffect(async () => {
 })
 
 const openInNewTab = () => console.log("not implemented")
-
-const iFrameStyle = () => {
-  const v = "overflow:hidden;height:" + (window.innerHeight - 80) + "px;width:100%;border:0px"
-  console.log("v", v)
-  return v
-}
 
 </script>

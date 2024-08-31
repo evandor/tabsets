@@ -1,8 +1,6 @@
 # Tabsets Extension
 
-Browser Extension to manage tabsets and bookmarks.
-
-Please switch the branch according to the developer documentation.
+Browser Extension to manage tabsets and bookmarks
 
 # Developer Documentation
 

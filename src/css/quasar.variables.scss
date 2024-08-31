@@ -8,23 +8,31 @@
 // Your own variables (that are declared here) and Quasar's own
 // ones will be available out of the box in your .vue/.scss/.sass files
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,500;1,700;1,900&display=swap');
+
+// Set the default font-family
+//$typography-font-family : 'Montserrat', sans-serif !default;
+
 // It's highly recommended to change the default colors
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary    : #648381;
-$secondary  : #8ACB88;
-$accent     : #ACBCBB;
+$primary    : #304269;
+$secondary  : #91BED4;
+$accent     : #D9E8F5;
 
 $dark       : #575761;
 $dark-page  : #121212;
 
 $positive   : #8ACB88;
-$negative   : #C10015;
-$info       : #31CCEC;
-$warning    : #FFBF46;
+$negative   : #F26101;
+$info       : #333366;
+$warning    : #ea9900;
 
 $lightgrey  : #efefef;
 $bordergrey : #e0e0e0;
 
+$separator : #e0e0e0;
+
 //$body-font-size : 14px;
+//$dark-page: #333;

@@ -1,27 +1,46 @@
-name: Node.js CI
-run-name: CI Build
+name: 'build'
 on:
+#  pull_request:
+#    branches:
+#      - master
+#      - main
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+    branches: [ chrome-extension ]
 jobs:
-  build:
-
+  coverage:
     runs-on: ubuntu-latest
+    permissions:
+      # Required to checkout the code
+      contents: read
+      # Required to put a comment into the pull-request
+      pull-requests: write
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
+      - name: 'Install Deps'
+        run: yarn install
+      - name: 'Test'
+        run: npx vitest --coverage
+      - name: 'Report Coverage'
+        if: always() # Also generate the report if tests are failing
+        uses:  davelosert/vitest-coverage-report-action@v2
+
+      - run: npm run "build bex (publish)"
       - run: npx playwright install
-      - run: npm build
-      - run: npm run test:unit:ci
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+#        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

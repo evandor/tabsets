@@ -1,9 +1,8 @@
 <template>
 
-
   <template v-if="restricted">
     <Transition name="colorized-appear">
-      <q-btn v-if="permissionsStore.hasFeature(FeatureIdent[props.feature])"
+      <q-btn v-if="!props.feature || useFeaturesStore().hasFeature(FeatureIdent[props.feature as keyof typeof FeatureIdent])"
              :flat="!outlinedIfActive()"
              :outline="outlinedIfActive()"
              name="sidebar" :icon="props.icon" :size="btnSize"
@@ -28,15 +27,9 @@
 </template>
 
 <script lang="ts" setup>
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {PropType} from "vue";
-import {useUiService} from "src/services/useUiService";
-import {FeatureIdent} from "src/models/AppFeature";
-
-const permissionsStore = usePermissionsStore()
-const uiService = useUiService()
-const uiStore = useUiStore()
+import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
 
 const props = defineProps({
   feature: {type: String, required: false},
@@ -56,7 +49,7 @@ const outlinedIfActive = (): boolean => {
   return false
 }
 
-const tabsClicked = (tab: DrawerTabs, data: object = {}) => uiService.rightDrawerSetActiveTab(tab, data)
+const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab)
 
 
 </script>

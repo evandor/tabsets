@@ -21,9 +21,7 @@
 
 import {onMounted, ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
-import _ from "lodash"
-import TabsetService from "src/services/TabsetService";
+import Analytics from "src/core/utils/google-analytics";
 
 const route = useRoute()
 const router = useRouter()
@@ -36,6 +34,7 @@ const created = ref('')
 const iFrameRef = ref(null);
 
 onMounted(() => {
+  Analytics.firePageViewEvent('HelpPage', document.location.href);
   const iFrame = iFrameRef.value
   if (iFrame) {
     // @ts-ignore
@@ -61,16 +60,4 @@ watchEffect(async () => {
 
 })
 
-const iFrameStyle = () => "overflow:hidden;height:" + (window.innerHeight - 130) + "px;width:100%;border:0px"
-
 </script>
-
-<style lang="sass" scoped>
-
-.lightgrey
-  background-color: $lightgrey
-
-.greyBorderTop
-  border-top: 1px solid $bordergrey
-
-</style>

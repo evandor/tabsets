@@ -1,53 +1,43 @@
-import {Tabset} from "src/models/Tabset";
-import {Space} from "src/models/Space";
-import {MHtml} from "src/models/MHtml";
-import {Tab} from "src/models/Tab";
+import {Tabset} from "src/tabsets/models/Tabset";
 import {Notification} from "src/models/Notification";
-import {SearchDoc} from "src/models/SearchDoc";
-import {Suggestion} from "src/models/Suggestion";
+import {MetaLink} from "src/models/MetaLink";
+import {RequestInfo} from "src/models/RequestInfo";
+import {Message} from "src/models/Message";
 
 interface PersistenceService {
 
-  loadTabsets():Promise<void>
-  saveTabset(tabset: Tabset): Promise<any>
-  deleteTabset(tabsetId: string):Promise<any>
+  getServiceName(): string
 
-  updateThumbnail(url: string):Promise<void>
-  saveThumbnail(tab: chrome.tabs.Tab, thumbnail: string):Promise<void>
-  getThumbnail(url: string):Promise<string>
-  deleteThumbnail(url: string):Promise<void>
-  cleanUpThumbnails():Promise<void>
-
-  getContent(url: string):Promise<object>
-  updateContent(url: string):Promise<object>
-  deleteContent(url: string):Promise<void>
-  saveContent(tab: chrome.tabs.Tab, text: string, metas: object, title: string, tabsetIds: string[]):Promise<any>
-  cleanUpContent(): Promise<SearchDoc[]>
-  getContents(): Promise<any[]>
+  // loadTabsets():Promise<void>
+  // reloadTabset(tabsetId: string): void
+  // saveTabset(tabset: Tabset): Promise<any>
+  // deleteTabset(tabsetId: string):Promise<any>
+  // cleanUpTabsets(): Promise<void>
 
   getRequest(url: string): Promise<string>
 
   getMetaLinks(url: string): Promise<object>
+  saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void | IDBValidKey>
   getLinks(url: string): Promise<object>
-  saveMHtml(tab: Tab, mhtml: Blob): Promise<string>
-  getMHtml(url: string):Promise<object>
-  getMHtmlInline(url: string): Promise<object>
-  getMHtmls(): Promise<MHtml[]>
+  saveLinks(url: string, links: any): Promise<void | IDBValidKey>
 
-  loadSpaces(): Promise<any>
-
-  addSpace(space: Space): Promise<any>
+  saveRequest(url: string, requestInfo: RequestInfo): Promise<void>
 
   cleanUpRequests(): Promise<void>
-
-  saveStats(date: string, dataset: object): void
 
   getNotifications(onlyNew: boolean): Promise<Notification[]>
   addNotification(notification: Notification): Promise<any>
   notificationRead(notificationId: string): Promise<void>
 
-  getSuggestions(): Promise<Suggestion[]>
-  addSuggestion(suggestion: Suggestion): Promise<any>
+  compactDb(): Promise<any>
+
+  getActiveFeatures(): Promise<string[]>
+  saveActiveFeatures(val: string[]): any
+
+  getMessages(): Promise<Message[]>
+  addMessage(msg: Message):void
+
+  clear(name: string):any
 
 }
 

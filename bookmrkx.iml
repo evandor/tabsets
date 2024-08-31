@@ -3,7 +3,32 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.quasar" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/e2e/screenshots" />
+      <excludeFolder url="file://$MODULE_DIR$/playwright-report" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.1.0/Packaged.tabsets" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.1.1" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.1.2" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.0" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.1" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.10" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.11" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.12" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.2" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.3" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.4 (first public)" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.5" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.6" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.7" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.8" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.2.9" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.3.0" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.3.1" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.3.2" />
+      <excludeFolder url="file://$MODULE_DIR$/releases/0.4.0" />
+      <excludeFolder url="file://$MODULE_DIR$/test-results" />
+      <excludeFolder url="file://$MODULE_DIR$/test/jest/coverage/lcov-report" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

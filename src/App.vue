@@ -3,112 +3,51 @@
 </template>
 
 <script setup lang="ts">
-import {useTabsStore} from "src/stores/tabsStore";
-import {useTabGroupsStore} from "src/stores/tabGroupsStore";
-import {useQuasar} from "quasar";
-import tabsetService from "src/services/TabsetService";
-import spacesService from "src/services/SpacesService";
-import {useBookmarksStore} from "src/stores/bookmarksStore";
-import {useSearchStore} from "src/stores/searchStore";
-import {useNotificationsStore} from "src/stores/notificationsStore";
-import ChromeApi from "src/services/ChromeApi";
-import {useWindowsStore} from "src/stores/windowsStores";
-import {useSpacesStore} from "src/stores/spacesStore";
-import MHtmlService from "src/services/MHtmlService";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import ChromeListeners from "src/services/ChromeListeners";
-import {useRoute, useRouter} from "vue-router";
-import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import NotificationsService from "src/services/NotificationsService";
-import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {useUiStore} from "src/stores/uiStore";
-import {useTabsetService} from "src/services/TabsetService2";
-import {INDEX_DB_NAME} from "boot/constants";
-import {useSettingsStore} from "src/stores/settingsStore";
-import BookmarksService from "src/services/BookmarksService";
-import {useUtils} from "src/services/Utils";
 
-const {inBexMode} = useUtils()
+import {setCssVar, useQuasar} from "quasar";
+import AppService from "src/app/AppService";
+import {EventEmitter} from "events";
+import {useRouter} from "vue-router";
+import {useLogger} from "src/services/Logger";
 
-// function isNewTabPage() {
-//   return route.path === '/newtab';
-// }
-//
-// $q.dark.set($q.localStorage.getItem('darkMode') || false)
-
-// https://stackoverflow.com/questions/19846078/how-to-read-from-chromes-console-in-javascript
-// console.debug("initializing logs store")
-// // @ts-ignore
-// // console.defaultLog = console.log.bind(console);
-// console.defaultError = console.error.bind(console);
-// // logs.value = [];
-// // console.log = function () {
-// console.error = function(){
-//   // @ts-ignore
-//   //console.defaultLog.apply(console, arguments);
-//   console.defaultError.apply(console, arguments);
-//   // new & array data
-//   //console.debug("adding to logs", arguments)
-//   useLogsStore().push(Array.from(arguments));
-// }
-
-const tabsStore = useTabsStore()
-const tabGroupsStore = useTabGroupsStore()
-const settingsStore = useSettingsStore()
-const suggestionsStore = useSuggestionsStore()
-const bookmarksStore = useBookmarksStore()
-const windowsStore = useWindowsStore()
-const searchStore = useSearchStore()
-const spacesStore = useSpacesStore()
-const uiStore = useUiStore()
-const router = useRouter()
-const route = useRoute()
 const $q = useQuasar()
+const router = useRouter()
 
-// init of stores and some listeners
-usePermissionsStore().initialize()
-  .then(() => {
-    ChromeListeners.initListeners(false)
-    ChromeBookmarkListeners.initListeners()
-    bookmarksStore.init()
-    BookmarksService.init()
+const {info} = useLogger()
 
-    // console.log("activating dom script", usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS))
-    // if (usePermissionsStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-    //   $q.bex.send('initDomScripts')
-    // }
-  })
-settingsStore.initialize(useQuasar().localStorage);
-tabsStore.initialize(useQuasar().localStorage);
+// https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
+const emitter = new EventEmitter()
+emitter.setMaxListeners(12)
 
-searchStore.init()
-windowsStore.init()
+let useDarkMode: string = $q.localStorage.getItem('darkMode') || "auto" as string
 
-const localStorage = useQuasar().localStorage
-
-// init db
-IndexedDbPersistenceService.init(INDEX_DB_NAME)
-  .then(() => {
-    // init services
-    NotificationsService.init()
-    useSuggestionsStore().init()
-    tabsetService.setLocalStorage(localStorage)
-    spacesService.init()
-      .then(() => {
-        useTabsetService().init(false)
-          .then(() => {
-            MHtmlService.init()
-            ChromeApi.init()
-          })
-      })
-  })
-
-
-useNotificationsStore().bookmarksExpanded = $q.localStorage.getItem("bookmarks.expanded") || []
-
-if (!inBexMode()) {
-  router.push("/start")
+if ($q.platform.is.safari && !$q.platform.is.bex) {
+  console.log("switching dark mode default to false on safari non-bex")
+  useDarkMode = $q.localStorage.getItem('darkMode') || "false" as string
 }
+
+if (useDarkMode === "true") {
+  $q.dark.set(true)
+} else if (useDarkMode === "false") {
+  $q.dark.set(false)
+} else {
+  $q.dark.set("auto")
+}
+
+if (useDarkMode === "true") {
+  setCssVar('primary', '#D9E8F5');
+  setCssVar('secondary', '#26A69A');
+  setCssVar('accent', '#9C27B0');
+  setCssVar('dark', '#1d1d1d');
+  setCssVar('positive', '#21BA45');
+  setCssVar('negative', '#C10015');
+  setCssVar('info', '#31CCEC');
+  setCssVar('separator', '#AA0099');
+  // setCssVar('warning', 'green');
+}
+
+AppService.init($q, router, false)
+
+info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
 
 </script>

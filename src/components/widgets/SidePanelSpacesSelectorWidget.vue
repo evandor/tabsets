@@ -11,33 +11,31 @@
 
 <script lang="ts" setup>
 
-import {useTabsStore} from "src/stores/tabsStore";
 import {ref, watchEffect} from "vue";
-import {useRouter} from "vue-router";
-import {useSpacesStore} from "src/stores/spacesStore";
-import NewSpaceDialog from "components/dialogues/NewSpaceDialog.vue"
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import NewSpaceDialog from "src/spaces/dialogues/NewSpaceDialog.vue"
 import {useQuasar} from "quasar";
 import _ from "lodash";
-import {Space} from "src/models/Space";
-import {Tabset} from "src/models/Tabset";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
-const tabsStore = useTabsStore()
 const spacesStore = useSpacesStore()
-const router = useRouter()
 const $q = useQuasar()
 
 const spaces = ref<object>(null as unknown as object)
 const spacesOptions = ref<object[]>([])
 
 watchEffect(() => {
-  if (useTabsStore().tabsets) {
+  if (useTabsetsStore().tabsets) {
     spacesOptions.value = _.map([...spacesStore.spaces.keys()], (key: string) => {
       const label = spacesStore.spaces.get(key)?.label || 'undef'
       return {id: key, label: label}
     })
-    if (spacesOptions.value.length > 0) {
-      spaces.value = spacesOptions.value[0]
-    }
+    // if (spacesOptions.value.length > 0) {
+       spaces.value = spacesStore.space //spacesOptions.value[0]
+    // }
+    spacesOptions.value = spacesOptions.value.concat({id: "unassigned-tabsets", label: "Show Unassigned tabsets"})
+    spacesOptions.value = spacesOptions.value.concat({id: "add-space", label: "Add new Space"})
+
   }
 })
 
@@ -63,7 +61,18 @@ watchEffect(() => {
 
 const switchSpace = (s: any) => {
   console.log("settings space to ", s)
-  spacesStore.space = s
+  if (s.id === 'add-space') {
+    $q.dialog({
+      component: NewSpaceDialog,
+      componentProps: {
+        tabsetId: useTabsetsStore().currentTabsetId,
+        fromPanel: true
+      }
+    })
+  } else {
+    spacesStore.space = s
+  }
+
 }
 
 

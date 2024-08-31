@@ -18,19 +18,25 @@
       </div>
       <div class="col-xs-12 col-md-7 text-right">
 
-        <q-btn
-          flat dense icon="restore_page"
-          color="green" :label="$q.screen.gt.sm ? 'Search with browser...' : ''"
-          class="q-mr-md"
-          @click="searchWithBrowser">
-          <q-tooltip>Use your browsers default search provider to search for {{ searchStore.term }}</q-tooltip>
-        </q-btn>
+<!--        <q-btn-->
+<!--          flat dense icon="restore_page"-->
+<!--          color="green" :label="$q.screen.gt.sm ? 'Search with browser...' : ''"-->
+<!--          class="q-mr-md"-->
+<!--          @click="searchWithBrowser">-->
+<!--          <q-tooltip>Use your browsers default search provider to search for {{ searchStore.term }}</q-tooltip>-->
+<!--        </q-btn>-->
 
       </div>
     </div>
   </q-toolbar>
 
   <div class="row fit greyBorderTop"></div>
+
+  <InfoMessageWidget
+    :probability="1"
+    ident="searchPage_info"
+    hint="Please note that only pages you've visted with Tabsets already active are contained in the search index."/>
+
 
   <div class="row">
     <div class="col-8 q-ma-md">
@@ -51,21 +57,17 @@
 <script setup lang="ts">
 import {ref, watchEffect} from 'vue';
 import {useRoute} from "vue-router";
-import {useTabsStore} from "src/stores/tabsStore";
 import _ from "lodash"
-import {useSearchStore} from "src/stores/searchStore";
-import {Tabset} from "src/models/Tabset";
+import {useSearchStore} from "src/search/stores/searchStore";
 import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
-import ChromeApi from "src/services/ChromeApi";
-import {Hit} from "src/models/Hit";
+import {Hit} from "src/search/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
+import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 
 const route = useRoute()
-const tabsStore = useTabsStore()
 const searchStore = useSearchStore()
 
 const termFromParams = route.query.t as string
@@ -83,9 +85,14 @@ const newSearch = (term: string) => {
       //console.log("h", h.item.bookmarkId)
       const theHit = new Hit(
         uid(),
-        ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl), 0, 0,
+        //ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl),
+        h.item.title,
+        h.item.url,
+        h.item.favIconUrl,
+        0, 0,
         Math.round(100 - (100 * (h?.score || 1))),
         h.item.tabsets,
+        [],
         _.map(h['matches' as keyof object], (m: any) => {
           return {
             key: m['key' as keyof object],
@@ -128,12 +135,5 @@ watchEffect(() => {
   }
 })
 
-const searchWithBrowser = () => {
-  // @ts-ignore
-  chrome.search.query({disposition: 'NEW_TAB', text: searchStore.term})
-}
-
-const bookmarksEnabled = () => usePermissionsStore().hasPermission('bookmarks')
-const grant = (permission: string) => useCommandExecutor().executeFromUi(new GrantPermissionCommand(permission))
 
 </script>

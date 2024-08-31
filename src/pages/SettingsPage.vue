@@ -1,78 +1,142 @@
 <template>
 
 
-  <q-toolbar class="text-primary lightgrey" v-if="tabsStore.tabsets.size > 0">
+  <q-toolbar v-if="useTabsetsStore().tabsets.size > 0">
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          Tabsets Extension Settings
+          <div class="col-10">Tabsets Extension Settings</div>
+          <div class="col-2 text-right">
+            <OpenRightDrawerWidget/>
+          </div>
         </div>
       </q-toolbar-title>
     </div>
   </q-toolbar>
 
   <div class="justify-start items-start greyBorderTop">
-    <q-tabs align="left" class="bg-grey-1"
+    <q-tabs align="left"
+            inline-label
             v-model="tab"
             no-caps>
-      <q-tab name="appearance" label="Appearance"/>
-      <q-tab name="permissions" label="Permissions" v-if="devEnabled" />
-      <q-tab name="thirdparty" label="Third Party Services" />
-<!--      <q-tab name="ignored" label="Ignored Urls"/>-->
-      <q-tab name="archived" label="Archived Tabsets"/>
-      <q-tab name="search" label="Search Engine"  v-if="devEnabled" />
-<!--      <q-tab name="importExport" label="Import/Export"/>-->
+      <q-tab name="appearance" :label="t('appearance')"/>
+      <q-tab name="thirdparty" label="Third Party Services"/>
+      <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
+      <q-tab name="archived" label="Archived Tabsets"
+             v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
+      <q-tab name="search" label="Search Engine" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
+      <q-tab name="importExport" label="Import/Export"/>
+      <q-tab name="internals" label="Internals" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
+      <!--      <q-tab name="featureToggles" label="Feature Toggles"-->
+      <!--             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>-->
       <q-tab name="featureToggles" label="Feature Toggles"/>
     </q-tabs>
   </div>
 
   <div v-if="tab === 'appearance'">
 
-
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust the general appearance of
-        the tabsets extension.
+      <q-banner rounded style="border:1px solid orange">
+        {{ t('settings_adjust_general_appearance')}}
       </q-banner>
 
-      <div class="row items-baseline q-ma-md">
+      <div class="row items-baseline q-ma-md q-gutter-md">
+
+        <InfoLine :label="t('title')">
+          <q-input type="text" color="primary" filled v-model="installationTitle" label="">
+            <template v-slot:prepend>
+              <q-icon name="o_edit_note"/>
+            </template>
+          </q-input>
+        </InfoLine>
+
+        <InfoLine :label="t('dark_mode')">
+          <q-radio v-model="darkMode" val="auto" :label="t('Auto')"/>
+          <q-radio v-model="darkMode" val="true" :label="t('Enabled')"/>
+          <q-radio v-model="darkMode" val="false" :label="t('Disabled')"/>
+          &nbsp;&nbsp;&nbsp;{{t('changing_needs_restart')}}
+        </InfoLine>
+
+        <InfoLine :label="t('keyboard_shortcuts')">
+          <div class="text-blue-8 cursor-pointer" @click="NavigationService.openSingleTab('chrome://extensions/shortcuts')">{{t('click_here')}}</div>
+        </InfoLine>
+
         <div class="col-3">
-          Dark Mode (experimental)
+          {{ t('language') }} ({{ t('experimental') }})
+        </div>
+        <div class="col-7">
+          <q-select
+            v-model="locale"
+            :options="localeOptions"
+            dense
+            borderless
+            emit-value
+            map-options
+            options-dense
+            style="min-width: 150px"
+          />
+        </div>
+        <div class="col"></div>
+
+        <InfoLine :label="t('tab_info_detail_level', {detailLevelPerTabset: (detailLevelPerTabset ? ' (Default)' : '')})">
+          <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
+          <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
+          <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details"/>
+        </InfoLine>
+
+        <InfoLine label="">
+          <q-checkbox v-model="detailLevelPerTabset" :label="t('individually_per_tabset')"/>
+        </InfoLine>
+
+        <InfoLine label="URLs">
+          <q-checkbox v-model="fullUrls" :label="t('show_full_url')"/>
+        </InfoLine>
+
+<!--        <InfoLine label="Ignore Browser Extensions as tabs">-->
+<!--          <q-toggle v-model="ignoreExtensionsEnabled"-->
+<!--                    @click="updateSettings('extensionsAsTabs', ignoreExtensionsEnabled)"/>-->
+<!--        </InfoLine>-->
+
+      </div>
+
+      <div class="row items-baseline q-ma-md q-gutter-md"
+           v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
+        <div class="col-3">
+          {{t('tab_switching_time')}}
         </div>
         <div class="col-9">
-          <q-radio v-model="darkMode" :val="true" label="Enabled"/>
-          <q-radio v-model="darkMode" :val="false" label="Disabled"/>
+          <q-select
+            :label="t('tab_switcher_settings')"
+            filled
+            v-model="autoSwitcherOption"
+            :options="autoSwitcherOptions"
+            map-options
+            emit-value
+            style="width: 250px"
+          />
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
+      <div class="row items-baseline q-ma-md q-gutter-md">
         <div class="col-3">
-          Ignore Browser Extensions as tabs
-        </div>
-        <div class="col-9">
-          <q-toggle v-model="ignoreExtensionsEnabled"/>
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          Restore Info Messages
+          {{ t('restore_info_msg')}}
         </div>
         <div class="col-3">
-         If you accidentally closed an info message box with a hint, you can restore them all by clicking here:
+          {{t('accidentally_closed_info_msgs')}}
         </div>
         <div class="col-1"></div>
         <div class="col">
-          <q-btn label="Restore Hints" @click.stop="restoreHints" />
+          <q-btn :label="t('restore_hints')" @click.stop="restoreHints"/>
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
+      <div class="row items-baseline q-ma-md q-gutter-md"
+           v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
         <div class="col-3">
-          Warning Thresholds
+          {{ t('warning_thresholds')}}
         </div>
         <div class="col-3">
-          warnings start when minimum open tabs count is reached<br>
-          Reaching the maximum will turn the bar red.
+          {{t('warnings_info')}}
         </div>
         <div class="col q-ma-xl">
           <q-range
@@ -85,12 +149,12 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="usePermissionsStore().hasFeature(FeatureIdent.THUMBNAILS)">
+      <div class="row items-baseline q-ma-md q-gutter-md">
         <div class="col-3">
-          Thumbnail Quality in %
+          {{t('thumbnail_quality')}}
         </div>
         <div class="col-3">
-          larger Thumbnails look better but need more (local) storage.
+          {{t('larger_thumbs_info')}}
         </div>
         <div class="col q-ma-xl">
           <q-slider v-model="settingsStore.thumbnailQuality"
@@ -99,7 +163,7 @@
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md" v-if="devEnabled">
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <div class="col-3">
           New Version Simulation
         </div>
@@ -111,15 +175,29 @@
         </div>
       </div>
 
+      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+        <div class="col-3">
+          New Suggestion Simulation
+        </div>
+        <div class="col-3">
+          Simulate that there is a new suggestion to use a (new) feature (refresh sidebar for effects)
+        </div>
+        <div class="col q-ma-xl">
+          <span class="text-blue cursor-pointer" @click="simulateStaticSuggestion()">Simulate</span>
+        </div>
+      </div>
+
     </div>
 
   </div>
 
-  <div v-if="tab === 'permissions'">
+  <div v-if="tab === 'internals'">
 
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded class="bg-grey-1 text-primary">On this settings page, you can adjust some of the permissions needed for the tabsets extension.
-      </q-banner>
+
+      <div class="text-h6">Permissions</div>
+
+      <q-banner rounded>The active permissions for the Tabset Extension</q-banner>
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
@@ -135,84 +213,55 @@
           Allowed Origins
         </div>
         <div class="col-9">
-          {{ usePermissionsStore().permissions?.origins }}
+          usePermissionsStore().permissions?.origins
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          Bookmarks (optional permission)
-        </div>
-        <div class="col-9">
-          <q-radio v-model="bookmarksPermissionGranted" :val="true" label="Granted"/>
-          <q-radio v-model="bookmarksPermissionGranted" :val="false" label="Revoked"/>
-        </div>
-      </div>
+      <div class="text-h6">Groups</div>
+
+      <q-banner rounded>All Chrome Groups, active and non-active</q-banner>
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
-          All URLs
+          All Groups
         </div>
         <div class="col-9">
-          <q-radio v-model="allUrlsOriginGranted" :val="true" label="Granted"/>
-          <q-radio v-model="allUrlsOriginGranted" :val="false" label="Revoked"/>
+          {{ useGroupsStore().tabGroups }}
         </div>
       </div>
 
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">
-          History
-        </div>
-        <div class="col-9">
-          <q-radio v-model="historyPermissionGranted" :val="true" label="Granted"/>
-          <q-radio v-model="historyPermissionGranted" :val="false" label="Revoked"/>
-        </div>
-      </div>
+      <q-banner rounded>All active Chrome Groups</q-banner>
 
       <div class="row items-baseline q-ma-md">
         <div class="col-3">
-          Page Capture
+          Active Groups
         </div>
         <div class="col-9">
-          <q-radio v-model="pageCapturePermissionGranted" :val="true" label="Granted"/>
-          <q-radio v-model="pageCapturePermissionGranted" :val="false" label="Revoked"/>
+          {{ useGroupsStore().currentTabGroups }}
         </div>
       </div>
+
 
     </div>
 
-
-    <div class="row items-baseline q-ma-lg">
-      <div class="col-3 text-h6">All URLs</div>
-      <div class="col-9">
-
-      </div>
-    </div>
-
-    <div class="row items-baseline q-ma-lg">
-      <div class="col-3 text-h6">History</div>
-      <div class="col-9">
-
-      </div>
-    </div>
   </div>
 
   <div v-if="tab === 'ignored'">
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">Urls can be ignored so that the tabsets extension will not
+      <q-banner rounded>Urls can be ignored so that the tabsets extension will not
         notifiy you about changes.
       </q-banner>
 
-      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">
-        <div class="col-3"><b>{{ tabset.chromeTab?.url }}</b></div>
-        <div class="col-3"></div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <!--          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>-->
-        </div>
-      </div>
+      <!--      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">-->
+      <!--        <div class="col-3"><b>{{ tabset.url }}</b></div>-->
+      <!--        <div class="col-3"></div>-->
+      <!--        <div class="col-1"></div>-->
+      <!--        <div class="col-5">-->
+      <!--          &lt;!&ndash;          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>&ndash;&gt;-->
+      <!--        </div>-->
+      <!--      </div>-->
     </div>
 
   </div>
@@ -220,7 +269,7 @@
   <div v-if="tab === 'archived'">
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">Tabsets can be archived to remove them from direct view. Here's
+      <q-banner rounded style="border:1px solid orange">Tabsets can be archived to remove them from direct view. Here's
         the list of archived tabsets so that
         they can be restored if needed.
       </q-banner>
@@ -230,7 +279,7 @@
         <div class="col-3"></div>
         <div class="col-1"></div>
         <div class="col-5">
-          <q-btn label="Un-Archive" @click="unarchive(tabset)"/>
+          <q-btn label="Un-Archive" @click="unarchive(tabset as Tabset)"/>
         </div>
       </div>
     </div>
@@ -240,7 +289,7 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">This Browser Extension tracks your tabsets and provides a
+      <q-banner rounded style="border:1px solid orange">This Browser Extension tracks your tabsets and provides a
         search
         bar to search for keywords.
       </q-banner>
@@ -254,6 +303,12 @@
           <span class="text-blue cursor-pointer" @click="clearIndex">[clear Index]</span>&nbsp;
         </div>
       </div>
+      <div class="row">
+        <vue-json-pretty style="font-size: 80%" :show-length="true" :deep="2"
+                         v-model:data="state.data"
+                         :show-double-quotes="true"
+        />
+      </div>
     </div>
 
   </div>
@@ -262,19 +317,64 @@
 
     <div class="q-pa-md q-gutter-sm">
 
-      <q-banner rounded class="bg-grey-1 text-primary">
+      <q-banner rounded style="border:1px solid orange">
         TODO
       </q-banner>
 
       <div class="row q-pa-md">
         <div class="col-3"><b>DuckDuckGo FavIcon Service</b></div>
-        <div class="col-5">Usually, the favicon (the little icon displayed next to a tab url) is provided by the page you are visiting.
-          Sometimes, Tabsets does not have the information (yet) and might defer to a third party service, here duckduckgo. Switch this off
+        <div class="col-5">Usually, the favicon (the little icon displayed next to a tab url) is provided by the page
+          you are visiting.
+          Sometimes, Tabsets does not have the information (yet) and might defer to a third party service, here
+          duckduckgo. Switch this off
           if you do not want to use this service.
         </div>
         <div class="col-1"></div>
         <div class="col-3">
-          <q-toggle v-model="ddgEnabled"/>
+          <q-toggle v-model="ddgEnabled" @click="updateSettings('noDDG', ddgEnabled)"/>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div v-if="tab === 'importExport'">
+
+    <div class="q-pa-md q-gutter-sm">
+
+      <q-banner rounded style="border:1px solid orange">You can export your data in various formats and re-import them
+        from json. Please
+        note that it is not guaranteed that older exports can be imported with newer versions of the tabsets
+        extension.
+      </q-banner>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Export</b></div>
+        <div class="col-3">json or as bookmarks</div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-btn
+            @click="showExportDialog"
+            flat round dense icon="file_download" color="primary">
+            <q-tooltip>Export your tabsets</q-tooltip>
+          </q-btn>
+        </div>
+      </div>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Import</b></div>
+        <div class="col-3">
+          from json<br>
+          You might need to restart tabsets.
+        </div>
+        <div class="col-1"></div>
+        <div class="col-5">
+          <q-btn
+            @click="showImportDialog"
+            flat round dense icon="file_upload" color="primary">
+            <q-tooltip>Import your tabsets backup</q-tooltip>
+          </q-btn>
         </div>
       </div>
 
@@ -283,162 +383,208 @@
   </div>
 
   <div v-if="tab === 'featureToggles'">
-
-    <div class="q-pa-md q-gutter-sm">
-
-      <q-banner rounded class="bg-grey-1 text-primary">Switch on experimental features (or off). These feature toggles are meant for developers
-        only as they might break functionality and/or destroy data. Once they are considered 'safe enough', they will be available at the
-        "experimental features" view on the left.</q-banner>
-
-      <div class="row q-pa-md">
-        <div class="col-3"><b>Developer Mode</b></div>
-        <div class="col-3">activates a couple of experimental features and debug insights. You should only use this
-          if you can live with loosing data.
-        </div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-toggle v-model="devEnabled"/>
-        </div>
-      </div>
-
-    </div>
-
+    <FeatureToggleSettings/>
   </div>
 
 </template>
 
 <script setup lang="ts">
-import {useTabsStore} from "src/stores/tabsStore"
-import {useRouter} from "vue-router";
-import {ref, watch, watchEffect} from "vue";
-import {useQuasar} from "quasar";
-import {useSearchStore} from "src/stores/searchStore";
-import TabsetService from "src/services/TabsetService";
+
+
+/**
+ * refactoring remark: uses many other modules, needs to be one-per-application
+ *
+ */
+
+import {onMounted, reactive, ref, watch, watchEffect} from "vue";
+import {LocalStorage, useQuasar} from "quasar";
+import {useSearchStore} from "src/search/stores/searchStore";
+import TabsetService from "src/tabsets/services/TabsetService";
 import _ from "lodash";
-import {Tabset, TabsetStatus} from "src/models/Tabset";
-import {MarkTabsetAsDefaultCommand} from "src/domain/tabsets/MarkTabsetAsDefault";
-import {useNotificationHandler} from "src/services/ErrorHandler";
-import {useCommandExecutor} from "src/services/CommandExecutor";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
+import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
-import {useUiStore} from "src/stores/uiStore";
-import {useBookmarksStore} from "src/stores/bookmarksStore";
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {ExecutionResult} from "src/domain/ExecutionResult";
-import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
-import {GrantOriginCommand} from "src/domain/commands/GrantOriginCommand";
-import {RevokeOriginCommand} from "src/domain/commands/RevokeOriginCommand";
-import {FeatureIdent} from "src/models/AppFeature";
+import {DrawerTabs, ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
+import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
+import {useUtils} from "src/core/services/Utils";
+import Analytics from "src/core/utils/google-analytics";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
+import {useRoute} from "vue-router";
+import {
+  STRIP_CHARS_IN_USER_INPUT,
+  TITLE_IDENT
+} from "boot/constants";
+import {useAuthStore} from "stores/authStore";
+import InfoLine from "pages/helper/InfoLine.vue";
+import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
+import {useI18n} from "vue-i18n";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import VueJsonPretty from "vue-json-pretty";
+import 'vue-json-pretty/lib/styles.css';
+import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
+import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
+import {useGroupsStore} from "../tabsets/stores/groupsStore";
+import OpenRightDrawerWidget from "src/ui/widgets/OpenRightDrawerWidget.vue";
 
+const { t } = useI18n()
 
-const tabsStore = useTabsStore()
-const featuresStore = useSettingsStore()
+const {sendMsg, inBexMode} = useUtils()
+
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
 
-const router = useRouter()
 const localStorage = useQuasar().localStorage
 const $q = useQuasar()
+const route = useRoute()
+
+useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 
 const view = ref('grid')
 const indexSize = ref(0)
+const searchIndexAsJson = ref(null)
 
-//const syncEnabled = ref<boolean>(featuresStore.isEnabled('sync'))
-// const statsEnabled = ref<boolean>(featuresStore.isEnabled('stats'))
-const devEnabled = ref<boolean>(featuresStore.isEnabled('dev'))
-const ddgEnabled = ref<boolean>(!featuresStore.isEnabled('noDDG'))
-const ignoreExtensionsEnabled = ref<boolean>(!featuresStore.isEnabled('extensionsAsTabs'))
+
+const { locale } = useI18n({locale: navigator.language, useScope: "global"})
+
+const localeOptions = ref([
+  {value: 'en', label: 'English'},
+  {value: 'de', label: 'German'},
+  {value: 'bg', label: 'Bulgarian'}
+])
+
+const state = reactive({
+  val: JSON.stringify(searchIndexAsJson),
+  data: searchIndexAsJson
+})
+
+
+const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
+const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
 const permissionsList = ref<string[]>([])
 
-const darkMode = ref<boolean>(localStorage.getItem('darkMode') || false)
-const bookmarksPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('bookmarks'))
-const historyPermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
-const pageCapturePermissionGranted = ref<boolean | undefined>(usePermissionsStore().hasPermission('history'))
-const allUrlsOriginGranted = ref<boolean | undefined>(usePermissionsStore().hasAllOrigins())
-// const showBookmarks = ref<boolean>(localStorage.getItem('showBookmarks') || false)
-const tab = ref('appearance')
+const darkMode = ref<string>(localStorage.getItem('darkMode') || "auto")
+const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
+
+const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
+const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
+
+const installationTitle = ref<string>(localStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
+
+const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
+
+const autoSwitcherOption = ref<number>(localStorage.getItem('ui.tabSwitcher') as number || 5000)
+
+const autoSwitcherOptions = [
+  {label: '1 sec.', value: 1000},
+  {label: '2 sec.', value: 2000},
+  {label: '3 sec.', value: 3000},
+  {label: '5 sec.', value: 5000},
+  {label: '10 sec.', value: 10000},
+  {label: '30 sec.', value: 30000},
+  {label: '1 min.', value: 60000},
+  {label: '2 min.', value: 120000},
+  {label: '5 min.', value: 300000}
+]
 
 const {handleError} = useNotificationHandler()
 
-watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
-
-watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
-watchEffect(() => historyPermissionGranted.value = usePermissionsStore().hasPermission('history'))
-watchEffect(() => pageCapturePermissionGranted.value = usePermissionsStore().hasPermission('pageCapture'))
-
-watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
-  if (newValue === oldValue) {
-    return
-  }
-  if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
-    useCommandExecutor()
-      .executeFromUi(new GrantPermissionCommand("bookmarks"))
-      .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
-  } else if (!bookmarksPermissionGranted.value) {
-    useCommandExecutor()
-      .executeFromUi(new RevokePermissionCommand("bookmarks"))
-      .then(() => {
-        useBookmarksStore().loadBookmarks()
-      })
-  }
+onMounted(() => {
+  Analytics.firePageViewEvent('SettingsPage', document.location.href);
 })
 
-watch(() => historyPermissionGranted.value, (newValue, oldValue) => {
-  if (newValue === oldValue) {
-    return
-  }
-  if (historyPermissionGranted.value && !usePermissionsStore().hasPermission('history')) {
-    useCommandExecutor()
-      .executeFromUi(new GrantPermissionCommand("history"))
-      .then((res: ExecutionResult<boolean>) => historyPermissionGranted.value = res.result)
-  } else if (!historyPermissionGranted.value) {
-    useCommandExecutor()
-      .executeFromUi(new RevokePermissionCommand("history"))
-  }
-})
+let suggestionsCounter = 0
 
-watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
-  if (newValue === oldValue) {
-    return
-  }
-  if (pageCapturePermissionGranted.value && !usePermissionsStore().hasPermission('pageCapture')) {
-    useCommandExecutor()
-      .executeFromUi(new GrantPermissionCommand("pageCapture"))
-      .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
-  } else if (!pageCapturePermissionGranted.value) {
-    useCommandExecutor()
-      .executeFromUi(new RevokePermissionCommand("pageCapture"))
-  }
-})
-
-watch(() => allUrlsOriginGranted.value, (newValue, oldValue) => {
-  if (newValue === oldValue) {
-    return
-  }
-  if (allUrlsOriginGranted.value && !usePermissionsStore().hasAllOrigins()) {
-    useCommandExecutor()
-      .executeFromUi(new GrantOriginCommand("none"))
-      .then((res: ExecutionResult<boolean>) => allUrlsOriginGranted.value = res.result)
-  } else if (!allUrlsOriginGranted.value) {
-    useCommandExecutor()
-      .executeFromUi(new RevokeOriginCommand("all"))
-      .then(() => {
-        // useBookmarksStore().loadBookmarks()
-      })
-  }
+watchEffect(() => {
+  const data = JSON.stringify(searchStore?.getIndex())
+  console.log("search index data", data)
+  searchIndexAsJson.value = JSON.parse(data)
 })
 
 watchEffect(() => {
-  $q.dark.set(darkMode.value)
+  //console.log("watching settingsStore.activeToggles...", settingsStore.activeToggles)
+  ddgEnabled.value = settingsStore.isEnabled('noDDG')
+  ignoreExtensionsEnabled.value = settingsStore.isEnabled('extensionsAsTabs')
+})
+
+// watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
+//
+// watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
+// watchEffect(() => pageCapturePermissionGranted.value = usePermissionsStore().hasPermission('pageCapture'))
+
+// watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
+//   if (newValue === oldValue) {
+//     return
+//   }
+//   // if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
+//   //   useCommandExecutor()
+//   //     .executeFromUi(new GrantPermissionCommand("bookmarks"))
+//   //     .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
+//   // } else if (!bookmarksPermissionGranted.value) {
+//   //   useCommandExecutor()
+//   //     .executeFromUi(new RevokePermissionCommand("bookmarks"))
+//   //     .then(() => {
+//   //       useBookmarksStore().loadBookmarks()
+//   //     })
+//   // }
+// })
+
+
+// watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
+//   if (newValue === oldValue) {
+//     return
+//   }
+//   if (pageCapturePermissionGranted.value && !usePermissionsStore().hasPermission('pageCapture')) {
+//     useCommandExecutor()
+//       .executeFromUi(new GrantPermissionCommand("pageCapture"))
+//       .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
+//   } else if (!pageCapturePermissionGranted.value) {
+//     useCommandExecutor()
+//       .executeFromUi(new RevokePermissionCommand("pageCapture"))
+//   }
+// })
+
+watchEffect(() => {
+  //console.log("***setting dark mode to ", typeof darkMode.value, darkMode.value)
+  switch (darkMode.value) {
+    case "true":
+      $q.dark.set(true)
+      break
+    case "false":
+      $q.dark.set(false)
+      break;
+    default:
+      $q.dark.set("auto")
+  }
+  // $q.dark.set(darkMode.value === "true" ? true : (darkMode.value === 'false' ? false : 'auto'))
   localStorage.set('darkMode', darkMode.value)
 })
 
 watchEffect(() => {
-  //featuresStore.setFeatureToggle("stats", statsEnabled.value)
-  featuresStore.setFeatureToggle("dev", devEnabled.value)
-  featuresStore.setFeatureToggle("noDDG", !ddgEnabled.value)
-  featuresStore.setFeatureToggle("extensionsAsTabs", !ignoreExtensionsEnabled.value)
+  (installationTitle.value && installationTitle.value.trim().length > 0) ?
+    LocalStorage.set(TITLE_IDENT, installationTitle.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
+    LocalStorage.remove(TITLE_IDENT)
+})
+
+watchEffect(() => {
+  localStorage.set('ui.detailLevel', detailLevel.value)
+  sendMsg('detail-level-changed', {level: detailLevel.value})
+})
+
+watchEffect(() => {
+  localStorage.set('ui.fullUrls', fullUrls.value)
+  sendMsg('fullUrls-changed', {value: fullUrls.value})
+})
+
+watchEffect(() => {
+  localStorage.set('ui.detailsPerTabset', detailLevelPerTabset.value)
+  sendMsg('detail-level-perTabset-changed', {level: detailLevelPerTabset.value})
 })
 
 watchEffect(() => {
@@ -447,7 +593,11 @@ watchEffect(() => {
 
 watchEffect(() => {
   // @ts-ignore
-  indexSize.value = searchStore?.getIndex().size()
+  indexSize.value = searchStore?.getIndex()?.size()
+})
+
+watchEffect(() => {
+  LocalStorage.set("ui.tabSwitcher", autoSwitcherOption.value)
 })
 
 const downloadIndex = () => {
@@ -458,17 +608,35 @@ const downloadIndex = () => {
 const clearIndex = () => searchStore.init()
 
 const archivedTabsets = () => {
-  let tabsets = [...tabsStore.tabsets.values()]
+  let tabsets = [...useTabsetsStore().tabsets.values()]
   return _.sortBy(_.filter(tabsets, (ts: Tabset) => ts.status === TabsetStatus.ARCHIVED), ['name'])
 }
 
-const unarchive = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+const unarchive = (tabset: Tabset) =>
+  useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
+    .then((res) => {
+      sendMsg('reload-tabset', {tabsetId: tabset.id})
+    })
 
 // const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
 
 const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
 
 const restoreHints = () => useUiStore().restoreHints()
+
+const showExportDialog = () => $q.dialog({component: ExportDialog, componentProps: {inSidePanel: true}})
+const showImportDialog = () => $q.dialog({component: ImportDialog, componentProps: {inSidePanel: true}})
+
+const simulateStaticSuggestion = () => {
+  const suggestions: [Suggestion] = [
+    // @ts-ignore
+    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE),
+    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
+  ]
+  useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
+}
+
+const setTab = (a: any) => tab.value = a['tab' as keyof object]
 
 </script>
 

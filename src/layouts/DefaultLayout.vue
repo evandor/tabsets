@@ -10,7 +10,7 @@
             src="favicon.ico" height="32px" width="32px">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-img>
-          <q-toolbar-title v-if="!usePermissionsStore().hasFeature(FeatureIdent.SPACES)"
+          <q-toolbar-title v-if="!useFeaturesStore().hasFeature(FeatureIdent.SPACES)"
             @click.stop="goHome()" class="cursor-pointer"
             style="min-width:200px" shrink>
             {{ title() }}
@@ -33,33 +33,13 @@
         <q-space/>
 
         <SearchWidget style="position: absolute; left:300px;top:5px;max-width:500px"
-                      v-if="tabsStore.tabsets.size > 1 || useSettingsStore().isEnabled('dev')"/>
+                      v-if="useTabsetsStore().tabsets.size > 1 || useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
 
         <Transition name="colorized-appear">
-          <div v-if="permissionsStore.hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && tabsStore.tabsets.size > 0">
-            <OpenTabsThresholdWidget/>
+          <div v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
+            <OpenTabsThresholdWidget />
           </div>
         </Transition>
-
-        <!--        <div v-if="tabsStore.pendingTabset?.tabs.length > 0 && tabsStore.tabsets.size >= 1"-->
-        <!--             class="q-mr-lg cursor-pointer no-wrap" style="min-width:200px">-->
-        <!--          <UnassignedTabsWidget/>-->
-        <!--        </div>-->
-
-        <div v-if="tabsStore.audibleTabs.length > 0">
-          <span v-if="tabsStore.audibleTabs.length > 1">{{ tabsStore.audibleTabs.length }}x</span>
-          <q-icon name="volume_up" size="22px" class="q-mr-md">
-            <!--            <q-tooltip>{{tabsStore.audibleTabs}}</q-tooltip>-->
-          </q-icon>
-          <q-menu :offset="[0, 15]">
-            <q-list style="min-width: 200px">
-              <q-item v-for="tab in tabsStore.audibleTabs"
-                      clickable v-close-popup @click="NavigationService.openTab(tab.id)">
-                <q-item-section>{{ tab.title }}</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </div>
 
         <q-btn v-if="settingsStore.isEnabled('stats')"
                class="q-mr-md" icon="o_query_stats" size="12px" style="min-width:24px" flat
@@ -87,19 +67,19 @@
         <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
         <!--        </q-tab>-->
 
-        <span v-if="useSuggestionsStore().getSuggestions().length > 0">
+        <span v-if="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0">
           <q-btn
             flat
             :color="dependingOnStates()"
             name="rss" icon="o_assistant">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">You have suggestions
             </q-tooltip>
-            <q-badge :label="useSuggestionsStore().getSuggestions().length"/>
+            <q-badge :label="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length"/>
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item clickable v-close-popup v-ripple @click="suggestionDialog(s)"
-                      v-for="s in useSuggestionsStore().getSuggestions()">
+                      v-for="s in useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])">
                 <q-item-section avatar>
                   <q-icon color="primary" :name="s.img ? s.img : 'rss_feed'"/>
                 </q-item-section>
@@ -111,24 +91,6 @@
             </q-list>
           </q-menu>
         </span>
-
-        <ToolbarButton
-          :feature="FeatureIdent.TAGS"
-          :drawer="DrawerTabs.TAGS_VIEWER"
-          icon="o_label"
-          tooltip="List the tags assigned to your tabs"/>
-
-        <ToolbarButton
-          :feature="FeatureIdent.NEW_TAB"
-          :drawer="DrawerTabs.NEW_TAB_URLS"
-          icon="o_create_new_folder"
-          tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
-
-        <ToolbarButton
-          :feature="FeatureIdent.HISTORY"
-          :drawer="DrawerTabs.HISTORY"
-          icon="o_history"
-          tooltip="Access to your browsers History"/>
 
         <ToolbarButton
           :feature="FeatureIdent.SAVE_TAB"
@@ -155,21 +117,9 @@
           tooltip="Access to your bookmarks"/>
 
         <ToolbarButton
-          :feature="FeatureIdent.SIDEBAR"
-          :drawer="DrawerTabs.SIDEBAR"
-          icon="o_input"
-          tooltip="Your current tabset as 'sidebar'"/>
-
-        <ToolbarButton
           :drawer="DrawerTabs.UNASSIGNED_TABS"
           icon="o_playlist_add"
           tooltip="Show add tabs view"
-          :restricted="false"/>
-
-        <ToolbarButton
-          :drawer="DrawerTabs.HELP"
-          icon="o_help"
-          tooltip="Help Pages"
           :restricted="false"/>
 
         <div>
@@ -181,6 +131,9 @@
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
+              <q-item v-if="!useAuthStore().isAuthenticated" clickable @click="router.push('/login')">Login</q-item>
+              <q-item v-else clickable @click="router.push('/logout')">Logout</q-item>
+
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
               <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>
                 Activate more Features
@@ -191,14 +144,11 @@
               <q-item clickable @click="showExportDialog" v-close-popup>
                 Export Tabsets
               </q-item>
-              <q-item clickable @click="router.push('/about')" v-close-popup>
-                About Tabsets
-              </q-item>
             </q-list>
           </q-menu>
         </div>
 
-        <div class="cursor-pointer" @click="router.push('/about')" v-if="notificationsStore.updateToVersion !== ''">
+        <div class="cursor-pointer" @click="router.push('/')" v-if="notificationsStore.updateToVersion !== ''">
           <q-btn
             class="text-primary bg-warning"
             @click="installNewVersion(notificationsStore.updateToVersion)"
@@ -216,7 +166,6 @@
               content-class="column justify-between no-wrap bg-grey-1">
       <DrawerRight/>
 
-      <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
 
     </q-drawer>
 
@@ -232,57 +181,42 @@
 <script setup lang="ts">
 import {ref, watchEffect} from 'vue';
 import {useMeta, useQuasar} from "quasar";
-import {useTabsStore} from "src/stores/tabsStore";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
-import NavigationService from "src/services/NavigationService"
-import {useSearchStore} from "src/stores/searchStore";
 import _ from "lodash";
-import {useSpacesStore} from "src/stores/spacesStore"
-import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
-import SpacesSelectorWidget from 'src/components/widgets/SpacesSelectorWidget.vue'
-import SearchWidget from 'src/components/widgets/SearchWidget.vue'
-import {useUiService} from "src/services/useUiService";
-import {DrawerTabs, useUiStore} from "src/stores/uiStore";
+import {useSpacesStore} from "src/spaces/stores/spacesStore"
+import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
+import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {Notification, NotificationStatus} from "src/models/Notification";
-import {useUtils} from "src/services/Utils";
+import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
-import ExportDialog from "components/dialogues/ExportDialog.vue";
-import ImportDialog from "components/dialogues/ImportDialog.vue";
-import {Suggestion, SuggestionState} from "src/models/Suggestion";
-import SuggestionDialog from "components/dialogues/SuggestionDialog.vue";
-import {useSuggestionsStore} from "src/stores/suggestionsStore";
-import {FeatureIdent} from "src/models/AppFeature";
+import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
+import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
-import TabsetsSelectorWidget from "components/widgets/TabsetsSelectorWidget.vue";
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
+import {useAuthStore} from "stores/authStore";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import OpenTabsThresholdWidget from "src/opentabs/widgets/OpenTabsThresholdWidget.vue";
+import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
+import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
+import SearchWidget from "src/search/widgets/SearchWidget.vue";
 
+const $q = useQuasar()
 const router = useRouter()
-const tabsStore = useTabsStore()
-const searchStore = useSearchStore()
-const uiStore = useUiStore()
 
-const localStorage = useQuasar().localStorage
-
-const rightDrawerOpen = ref(true)
-const leftDrawerOpen = ref(true)
-const filter = ref<string>('')
-const model = ref(85)
+const leftDrawerOpen = ref($q.screen.gt.md)
 
 const notificationsStore = useNotificationsStore()
-const permissionsStore = usePermissionsStore()
 const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
-const uiService = useUiService()
-const route = useRoute()
 
 const spacesOptions = ref<object[]>([])
-const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions())
-const search = ref('')
-const $q = useQuasar()
+const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]))
 
 const {inBexMode} = useUtils()
 
@@ -295,7 +229,7 @@ $q.loadingBar.setDefaults({
 const settingsClicked = ref(false)
 
 watchEffect(() => {
-  suggestions.value = useSuggestionsStore().getSuggestions()
+  suggestions.value = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
 })
 
 watchEffect(() => {
@@ -307,21 +241,12 @@ watchEffect(() => {
     .concat({id: '', label: 'create new space'})
 })
 
-//@ts-ignore
-const appVersion = import.meta.env.PACKAGE_VERSION
-
 useMeta(() => {
   return {
     // @ts-ignore
     title: 'Tabsets Extension' //+ appVersion
   }
 })
-
-
-function submitSearch() {
-  searchStore.term = search.value
-  router.push("/search")
-}
 
 const title = () => {
   return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ? 'Tabsets Web' : 'Tabsets (' + process.env.MODE + ')'
@@ -331,11 +256,7 @@ const goHome = () => router.push("/")
 
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
-  useUiService().toggleLeftDrawer()
-}
-
-const toggleRightDrawer = () => {
-  rightDrawerOpen.value = !rightDrawerOpen.value
+  useUiStore().toggleLeftDrawer()
 }
 
 const installNewVersion = (version: string) => {
@@ -355,7 +276,7 @@ const showNotificationDialog = (nId: string) => $q.dialog({
   }
 })
 
-const tabsClicked = (tab: DrawerTabs, data: object = {}) => uiService.rightDrawerSetActiveTab(tab, data)
+const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab)
 
 const showExportDialog = () => $q.dialog({component: ExportDialog})
 const showImportDialog = () => $q.dialog({component: ImportDialog})
@@ -367,7 +288,7 @@ const suggestionDialog = (s: Suggestion) => $q.dialog({
 })
 
 const dependingOnStates = () =>
-  _.find(useSuggestionsStore().getSuggestions(), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
+  _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
 
 const toggleSettings = () => settingsClicked.value = !settingsClicked.value
 

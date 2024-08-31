@@ -5,8 +5,8 @@
       <router-view/>
     </q-page-container>
 
-    <q-footer elevated class="bg-grey-8 text-white">
-      <SidePanelFooter />
+    <q-footer elevated>
+      <SidePanelFooter/>
     </q-footer>
 
   </q-layout>
@@ -17,9 +17,20 @@
 
 import {ref, watchEffect} from "vue";
 import SidePanelFooter from "components/SidePanelFooter.vue";
+import {useMeta, useQuasar} from "quasar";
 
 const location = ref('')
 
+useMeta(() => {
+  //console.debug("using meta...")
+  return {
+    // @ts-ignore
+    title: 'Tabsets Extension...' //+ appVersion
+  }
+})
+
+
 watchEffect(() => location.value = window.location.href.split('/www/')[1] || window.location.href)
+
 
 </script>

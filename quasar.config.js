@@ -13,21 +13,24 @@ const { configure } = require('quasar/wrappers');
 const path = require('path');
 const fs = require("fs");
 
-module.exports = configure(function (/* ctx */) {
+module.exports = configure(function (ctx) {
+
+  require('dotenv').config()
+
+  //console.log("======>", path.resolve(__dirname, './src/i18n/**'))
+
   return {
 
 
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
-    // preFetch: true,
+    //preFetch: true,
 
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
       'i18n',
-      'constants',
-      'konva',
-      'firebase'
+      'constants'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
@@ -40,21 +43,30 @@ module.exports = configure(function (/* ctx */) {
       // 'ionicons-v4',
       // 'mdi-v5',
       // 'fontawesome-v6',
-      // 'eva-icons',
+      'eva-icons',
       // 'themify',
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
-      'roboto-font', // optional, you are not bound to it
-      'material-icons', // optional, you are not bound to it
-      'material-icons-outlined'
+      'roboto-font',
+      'material-icons',
+      'material-icons-outlined',
+      'material-symbols-outlined'
     ],
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
       target: {
-        browser: [ 'es2019', 'edge88', 'firefox78', 'chrome87', 'safari13.1' ],
+        browser: [ 'es2020', 'edge88', 'firefox78', 'chrome87' ],
         node: 'node16'
+      },
+
+      viteVuePluginOptions: {
+        template: {
+          compilerOptions: {
+            isCustomElement: (tag) => tag.startsWith('webview')
+          }
+        }
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
@@ -66,26 +78,64 @@ module.exports = configure(function (/* ctx */) {
 
       //publicPath: '/www/',
       // analyze: true,
-      env: require('dotenv').config({
-        //path: (process.env.stage) ? 'config/.env.' + process.env.stage : 'config/.env',
-        //BACKEND_URL: process.env.BACKEND_URL
-      }).parsed,
+      env: {
+        BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
+        BACKEND_URL: process.env.BACKEND_URL,
+
+        TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
+        TABSETS_STAGE: process.env.STAGE,
+
+        COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
+        COUCHDB_URL: process.env.COUCHDB_URL,
+
+        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+        STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
+        STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
+        STRIPE_SYNC_PRODUCT_LINK: process.env.STRIPE_SYNC_PRODUCT_LINK,
+
+        LOCALE: process.env.LOCALE,
+
+        USE_FIREBASE: process.env.FIREBASE_ACTIVE || false,
+
+        FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
+        FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
+        FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
+        FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
+        FIREBASE_MESSAGING_SENDER_ID:process.env.FIREBASE_MESSAGING_SENDER_ID,
+        FIREBASE_MESSAGING_KEY: process.env.FIREBASE_MESSAGING_KEY,
+        FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
+        FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      // !== MIT
+      extendViteConf (viteConf) {
+
+          if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+            // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
+            viteConf.define.global = {}
+          }
+          viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
+
+        // this caused an issue with the electron build
+        // //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+        // if (!ctx.mode.bex && !ctx.mode.pwa) {
+        //   // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
+        //   viteConf.define.global = {}
+        //   //https://stackoverflow.com/questions/77061323/error-pouchdb-on-vite-referenceerror-global-is-not-defined
+        //   //viteConf.define.window.global = window.global
+        // }
+        // viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
+      },
       // viteVuePluginOptions: {},
 
       vitePlugins: [
-        ['@intlify/vite-plugin-vue-i18n', {
-          // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
-          // compositionOnly: false,
-
-          // you need to set i18n resource including paths !
-          include: path.resolve(__dirname, './src/i18n/**')
+        ['@intlify/unplugin-vue-i18n/vite', {
+          include: [path.resolve(__dirname, './src/i18n/**')],
         }],
         ['vite-plugin-package-version' ,{}]
       ]
@@ -101,7 +151,7 @@ module.exports = configure(function (/* ctx */) {
     framework: {
       config: {},
 
-      // iconSet: 'material-icons', // Quasar icon set
+      iconSet: 'eva-icons',
       // lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
@@ -146,7 +196,7 @@ module.exports = configure(function (/* ctx */) {
       // extendSSRWebserverConf (esbuildConf) {},
       // extendPackageJson (json) {},
 
-      pwa: false,
+      pwa: true,
 
       // manualStoreHydration: true,
       // manualPostHydrationTrigger: true,
@@ -189,7 +239,7 @@ module.exports = configure(function (/* ctx */) {
 
       inspectPort: 5858,
 
-      bundler: 'packager', // 'packager' or 'builder'
+      bundler: 'builder', // 'packager' or 'builder'
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -198,6 +248,12 @@ module.exports = configure(function (/* ctx */) {
         // appCategoryType: '',
         // osxSign: '',
         // protocol: 'myapp://path',
+        protocols: [
+          {
+            name: 'Electron Tabsets',
+            schemes: ['electron-tabsets']
+          }
+        ]
 
         // Windows only
         // win32metadata: { ... }
@@ -206,24 +262,20 @@ module.exports = configure(function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'bookmrkx'
+        appId: 'tabsets.net',
+        publish: {
+          'provider': 'github',
+          'private': false,
+          'timeout': 480000
+        }
       }
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
     bex: {
       contentScripts: [
-        'content-script',
-        'tabsets-content-script',
-        'content-script-thumbnails',
-        'clipping',
-        'quoting',
-        'highlighting'
-      ],
-      css: ['clipping.css']
-
-      // extendBexScriptsConf (esbuildConf) {}
-      // extendBexManifestJson (json) {}
+        'tabsets-content-script'
+      ]
     }
   }
 });
