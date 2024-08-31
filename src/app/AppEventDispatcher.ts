@@ -16,7 +16,7 @@ import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 class AppEventDispatcher {
 
   dispatchEvent(name: string, params: object) {
-    console.debug(" >>> dispatching event", name, params)
+    // console.debug(" >>> dispatching event", name, params)
     try {
       switch (name) {
         case 'add-to-search':

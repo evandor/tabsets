@@ -90,9 +90,9 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelSharedTsList.vue')}],
   },
   {
-    path: '/sidepanel/newestList',
+    path: '/sidepanel/latestList',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelNewestTabsPage.vue')}],
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelLatestTabsPage.vue')}],
   },
   {
     path: '/sidepanel/tabsAsTree',
@@ -145,9 +145,14 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
   },
   {
-    path: '/mainpanel/tabsets/:tabsetId', // TODO combine with Tabset page
+    path: '/mainpanel/tabsets/overview/:tabsetId',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{path: '', component: () => import('src/tabsets/pages/MainPanelTabsetPage.vue')}],
+    children: [{path: '', component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue')}],
+  },
+  {
+    path: '/mainpanel/tabsets/overview',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/tabsets/pages/MainPanelTabsetsOverviewPage.vue')}],
   },
   {
     path: '/mainpanel/png/:tabId/:blobId',

@@ -84,8 +84,8 @@ export class AppFeatures {
       'account_tree', '', ['all']),
 
     new Feature(FeatureIdent.NEWEST_TABS, FeatureType.OPTIONAL,
-      'Newest Tabs',
-      'A quick access view for your newest tabs',
+      'Latest Tabs',
+      'A quick access view for your latest tabs',
       'schedule', '', ['all']),
 
     new Feature(FeatureIdent.RESEARCH_SESSIONS, FeatureType.OPTIONAL,
