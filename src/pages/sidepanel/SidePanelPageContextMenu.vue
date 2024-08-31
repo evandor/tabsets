@@ -245,10 +245,8 @@ const startAutoSwitchingTab = (tabsetId: string) => {
 const restoreInGroup = (tabsetId: string, windowName: string | undefined = undefined) =>
   useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName, false))
 
-const openOverviewPage = (tabsetId: string) => {
-  NavigationService.openSingleTab(chrome.runtime.getURL(`www/index.html#/mainpanel/tabsets/${tabsetId}`))
-}
-
+const openOverviewPage = (tabsetId: string) =>
+  NavigationService.openOrCreateTab([chrome.runtime.getURL(`www/index.html#/mainpanel/tabsets/overview/${tabsetId}`)])
 
 const focus = (tabset: Tabset) =>
   router.push("/sidepanel/tabsets/" + tabset.id)
