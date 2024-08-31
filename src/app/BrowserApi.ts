@@ -426,13 +426,6 @@ class BrowserApi {
     });
   }
 
-  executeAnnotationJS(tabId: number) {
-    // chrome.scripting.executeScript({
-    //   target: {tabId: tabId},
-    //   files: ['annotation.js']
-    // });
-  }
-
   async executeMoveToWindow(tabId: number, windowId: number) {
     try {
       const tab = await chrome.tabs.get(tabId)
