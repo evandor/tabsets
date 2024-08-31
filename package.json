@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "quasar dev -m bex",
+    "dev-firefox": "mv src-bex/manifest.json src-bex/manifest.tmp && cp src-bex/manifest-firefox.json src-bex/manifest.json && quasar dev -m bex && mv src-bex/manifest.tmp src-bex/manifest.json",
     "dev spa (only for testing)": "quasar dev -m spa",
     "dev pwa": "quasar dev -m pwa",
     "dev ssr": "quasar dev -m ssr",
@@ -14,6 +15,8 @@
     "dev electron": "quasar dev -m electron",
     "dev capacitor": "quasar dev -m capacitor -T ios",
     "dev cordova": "quasar dev -m cordova -T ios",
+    "web-ext run": "cd dist/bex && web-ext run --verbose",
+    "web-ext build": "quasar build -m bex &&  zip dist/tabset.src.zip -r src/ src-bex/ package.json && cd dist/bex && web-ext build",
     "build bex (dev)": "mv .env .env.tmp && cp .dev.env .env && quasar build -m bex && mv .env.tmp .env",
     "build bex (prd)": "mv .env .env.tmp && cp .prd.env .env && quasar build -m bex && mv .env.tmp .env",
     "build bex (publish)": "quasar build -m bex",
