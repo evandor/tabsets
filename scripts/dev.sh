@@ -7,7 +7,7 @@ if [ $# -eq 0 ]
 fi
 
 if [ "$1" = "chrome" ]; then
-  manifest="manifest.json"
+  manifest="manifest-chrome.json"
 elif [ "$1" = "firefox" ]; then
   manifest="manifest-firefox.json"
 elif [ "$1" = "edge" ]; then
