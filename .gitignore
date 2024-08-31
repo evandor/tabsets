@@ -78,3 +78,4 @@ docs/.vitepress/cache
 /.tabsets-backend-prd.env
 /.env.tmp
 /docs/submodules/build/
+/src-bex/manifest.tmp
