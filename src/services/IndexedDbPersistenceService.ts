@@ -264,13 +264,6 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
   /** messages **/
 
-  getMessages(): Promise<Message[]> {
-    return this.db.getAll('messages')
-  }
-
-  addMessage(msg: Message) {
-    this.db.put('messages', msg, msg.id)
-  }
 
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {
     console.debug(" ...about to initialize indexedDB")
@@ -402,16 +395,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     console.warn("not implemented")
   }
 
-  async getAccount(accountId: string): Promise<Account> {
-    return await this.db.get('accounts', accountId)
-  }
-
-  upsertAccount(account: Account): void {
-    const normalizedAccount = JSON.parse(JSON.stringify(account))
-    //console.log("upserting account", account)
-    //console.log("upserting account", normalizedAccount)
-    this.db.put('accounts', normalizedAccount, normalizedAccount.id)
-  }
 
 }
 

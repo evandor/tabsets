@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "quasar dev -m bex",
     "dev-firefox": "mv src-bex/manifest.json src-bex/manifest.tmp && cp src-bex/manifest-firefox.json src-bex/manifest.json && quasar dev -m bex && mv src-bex/manifest.tmp src-bex/manifest.json",
+    "dev-edge": "mv src-bex/manifest.json src-bex/manifest.tmp && cp src-bex/manifest-edge.json src-bex/manifest.json && quasar dev -m bex && mv src-bex/manifest.tmp src-bex/manifest.json",
+    "dev-opera": "scripts/dev.sh opera",
     "dev spa (only for testing)": "quasar dev -m spa",
     "dev pwa": "quasar dev -m pwa",
     "dev ssr": "quasar dev -m ssr",
