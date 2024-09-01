@@ -7,9 +7,6 @@
   "private": true,
   "scripts": {
     "dev": "quasar dev -m bex",
-    "dev-firefox": "scripts/dev.sh firefox",
-    "dev-edge": "scripts/dev.sh edge",
-    "dev-opera": "scripts/dev.sh opera",
     "dev spa (only for testing)": "quasar dev -m spa",
     "dev pwa": "quasar dev -m pwa",
     "dev ssr": "quasar dev -m ssr",
@@ -22,6 +19,7 @@
     "build bex (dev)": "mv .env .env.tmp && cp .dev.env .env && quasar build -m bex && mv .env.tmp .env",
     "build bex (prd)": "mv .env .env.tmp && cp .prd.env .env && quasar build -m bex && mv .env.tmp .env",
     "build bex (publish)": "quasar build -m bex",
+    "build bex firefox": "scripts/build.sh firefox",
     "build pwa": "quasar build -m pwa",
     "build electron (prd)": "mv .env .env.tmp && cp .prd.env .env && quasar build -m electron && mv .env.tmp .env",
     "build electron (pubmodule foreach lish)": "quasar build -m electron --debug --publish always",
