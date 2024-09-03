@@ -25,11 +25,6 @@
     "<all_urls>",
     "*://*/*"
   ],
-  "sidebar_action": {
-    "default_icon": "icons/icon-48x48.png",
-    "default_title": "tabsets.bet - Better Bookmarks",
-    "default_panel": "www/sidepanel.html"
-  },
   "background": {
     "service_worker": "background.js"
   },

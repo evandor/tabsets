@@ -286,7 +286,7 @@ class BrowserApi {
 
   restore(tabset: Tabset, windowName: string | undefined = undefined, inNewWindow: boolean = true) {
     console.log("restoring tabset ", tabset.id, windowName, inNewWindow)
-
+debugger
     const urlAndGroupArray: object[] = _.map(tabset.tabs, (t: Tab) => {
       return {url: t.url, group: t.groupName} || {url: '', group: undefined}
     })
@@ -305,13 +305,6 @@ class BrowserApi {
         _.map(urlAndGroupArray, a => a['url' as keyof object]),
         undefined,
         _.map(urlAndGroupArray, a => a['group' as keyof object]))
-      // TODO deactivate listeners - needed?
-      // useTabsStore().deactivateListeners()
-      // this.getCurrentTab()
-      //     ...
-      //     Promise.all(promisedTabs)
-      //       .then(() => useTabsStore().activateListeners())
-      //   })
     } else {
       console.log("opening urls", urlAndGroupArray)
       NavigationService.openOrCreateTab(_.map(urlAndGroupArray, a => a['url' as keyof object]),

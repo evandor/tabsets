@@ -1,6 +1,6 @@
 {
   "name": "tabsets.net",
-  "version": "0.5.9",
+  "version": "0.5.10",
   "description": "Use tabsets.net to safely keep track of all your tabs and links in the Side Panel, stored locally on your browser",
   "productName": "Tabsets.net",
   "author": "evandor <evandor@gmail.com>",
@@ -107,7 +107,7 @@
     "@quasar/app-vite": "^1.9.5",
     "@quasar/babel-preset-app": "^2.0.3",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^1.0.0",
-    "@types/node": "^22.5.1",
+    "@types/node": "^22.5.2",
     "@types/uuid": "^10.0.0",
     "@vitest/coverage-c8": "^0.33.0",
     "@vitest/coverage-v8": "^1.6.0",
