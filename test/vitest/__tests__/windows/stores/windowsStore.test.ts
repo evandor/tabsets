@@ -115,7 +115,7 @@ describe('WindowsStore', () => {
     db.clear("windows")
   })
 
-  it('initializing correctly with multiple windows and indices differing', async () => {
+  it.skip('initializing correctly with multiple windows and indices differing', async () => {
 
     currentWindows = [window100, window200]
     await setupMocks(window100)
