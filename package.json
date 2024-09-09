@@ -103,7 +103,7 @@
     "@editorjs/raw": "^2.5.0",
     "@editorjs/table": "^2.4.1",
     "@electron/packager": "^18.3.4",
-    "@playwright/test": "^1.46.1",
+    "@playwright/test": "^1.47.0",
     "@quasar/app-vite": "^1.9.5",
     "@quasar/babel-preset-app": "^2.0.3",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^1.0.0",
