@@ -115,7 +115,7 @@ describe('WindowsStore', () => {
     db.clear("windows")
   })
 
-  it.skip('initializing correctly with multiple windows and indices differing', async () => {
+  it('initializing correctly with multiple windows and indices differing', async () => {
 
     currentWindows = [window100, window200]
     await setupMocks(window100)
@@ -129,13 +129,13 @@ describe('WindowsStore', () => {
     const window = await windowsDb.getWindow(100)
     expect(window?.id).toBe(100)
     expect(window?.index).toBe(0)
-    expect(window?.hostList).toStrictEqual(['www.skysail.io', 'www.tabsets.net'])
+    expect(window?.hostList).toStrictEqual(['https://www.skysail.io', 'https://www.tabsets.net'])
     expect(useWindowsStore().currentChromeWindow.id).toBe(100)
 
     const w200 = await windowsDb.getWindow(200)
     expect(w200?.id).toBe(200)
     expect(w200?.index).toBe(1)
-    expect(w200?.hostList).toStrictEqual(['www.tabsets.net'])
+    expect(w200?.hostList).toStrictEqual(['https://www.tabsets.net'])
 
   })
 

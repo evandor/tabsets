@@ -262,9 +262,9 @@ class BrowserListeners {
   }
 
   private handleUpdateInjectScripts(info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) {
-    if (info.status !== "loading") {
-      return
-    }
+    // if (info.status !== "loading") {
+    //   return
+    // }
     if (!tab.id) {
       return
     }

@@ -1,5 +1,4 @@
 import {useSearchStore} from "src/search/stores/searchStore";
-import {ContentItem} from "src/content/models/ContentItem";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
@@ -16,7 +15,7 @@ import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
 class AppEventDispatcher {
 
   dispatchEvent(name: string, params: object) {
-    // console.debug(" >>> dispatching event", name, params)
+    //console.debug(" >>> dispatching event", name, params)
     try {
       switch (name) {
         case 'add-to-search':

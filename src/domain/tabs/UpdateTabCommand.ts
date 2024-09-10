@@ -23,7 +23,7 @@ class UndoCommand implements Command<any> {
 
 }
 
-export class UpdateTabUrlCommand implements Command<any> {
+export class UpdateTabCommand implements Command<any> {
 
   constructor(
     public tab: Tab,
@@ -56,6 +56,6 @@ export class UpdateTabUrlCommand implements Command<any> {
 
 }
 
-UpdateTabUrlCommand.prototype.toString = function cmdToString() {
+UpdateTabCommand.prototype.toString = function cmdToString() {
   return `UpdateTabNameCommand: {tabId=${this.tab.id}, newUrl=${this.newUrl}, placeholders=${this.placeholders}, placeholderValues=${this.placeholderValues}}`;
 };

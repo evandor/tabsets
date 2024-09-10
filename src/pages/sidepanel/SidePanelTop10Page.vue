@@ -20,15 +20,17 @@
     <div v-if="!loading" class="row q-ma-none q-pa-none">
       <div class="col-12 q-ma-none q-pa-none">
 
-        <q-list separator class="q-ma-none">
-          <q-item v-for="tab in top10"
+        <q-list class="q-ma-none">
+          <q-item v-for="tabAndTabsetId in top10"
                   clickable
                   v-ripple
                   class="q-ma-none q-pa-sm">
 
             <PanelTabListElementWidget
-              :header="'accessed ' + (tab.activatedCount !== 1) ?   tab.activatedCount + ' times' : tab.activatedCount + ' time'"
-              :tab="tab"/>
+              :header="'accessed ' + (tabAndTabsetId.tab.activatedCount !== 1) ?   tabAndTabsetId.tab.activatedCount + ' times' : tabAndTabsetId.tab.activatedCount + ' time'"
+              :tab="tabAndTabsetId.tab"
+              :tabsetId="tabAndTabsetId.tabsetId"
+            />
 
           </q-item>
         </q-list>
@@ -67,8 +69,9 @@ import Analytics from "src/core/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
-const top10 = ref<Tab[]>([])
+const top10 = ref<TabAndTabsetId[]>([])
 const loading = ref(true)
 
 onMounted(() => {
@@ -83,11 +86,12 @@ onMounted(() => {
 watchEffect(() => {
   loading.value = true
   setTimeout(() => {
-    top10.value = _.orderBy(
-      _.flatMap([...useTabsetsStore().tabsets.values()] as Tabset[],
-        (tabset: Tabset) =>
-          _.flatMap(tabset.tabs)),
-      (t: Tab) => t.activatedCount, "desc")
+    const r: TabAndTabsetId[] = _.flatMap([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
+      return _.map(
+        _.filter(tabset.tabs, (t: Tab) => t.url !== undefined && t.url.trim() !== ''),
+        (t: Tab) => new TabAndTabsetId(t, tabset.id))
+    })
+    top10.value = _.take(_.orderBy(r, (t: TabAndTabsetId) => t.tab.activatedCount || 0, "desc"), 25)
     loading.value = false
   }, 500)
 })

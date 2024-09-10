@@ -18,6 +18,17 @@
       Start Research
     </q-item-section>
   </q-item>
+
+  <q-item clickable v-if="route.path === '/sidepanel/top10List'"
+          v-close-popup @click="resetActivationCounter()">
+    <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">
+      <q-icon size="xs" name="sym_o_reset_settings" color="primary"/>
+    </q-item-section>
+    <q-item-section>
+      Reset Activation Counter
+    </q-item-section>
+  </q-item>
+
   <!--  <q-separator inset/>-->
 </template>
 
@@ -26,7 +37,7 @@
 import {PropType} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
 import {Tabset} from "src/tabsets/models/Tabset";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
 import {useSnapshotsStore} from "src/snapshots/stores/SnapshotsStore";
 import {openURL} from "quasar";
@@ -34,6 +45,7 @@ import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true},
@@ -41,6 +53,7 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const route = useRoute()
 
 const openResearchPage = () => {
   openURL(props.tab.url!)
@@ -53,6 +66,20 @@ const hasResearchData = () =>
 const startResearch = () => {
   NavigationService.openOrCreateTab([props.tab.url!])
   router.push('/sidepanel/research/' + props.tab.id)
+}
+
+const resetActivationCounter = () => {
+  //const tab = props.tab
+  const tabAndTabsetId = useTabsetsStore().getTabAndTabsetId(props.tab.id)
+  console.log("resetting", tabAndTabsetId)
+  if (tabAndTabsetId) {
+    //const tab = _.find(tabset.tabs, (t:Tab) => t.id === props.tab.id)
+    if (tabAndTabsetId.tab) {
+      tabAndTabsetId.tab.activatedCount = 0
+      const tabset = useTabsetsStore().getTabset(tabAndTabsetId.tabsetId)
+      useTabsetsStore().saveTabset(tabset)
+    }
+  }
 }
 
 </script>

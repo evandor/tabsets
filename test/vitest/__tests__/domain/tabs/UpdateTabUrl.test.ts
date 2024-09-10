@@ -7,7 +7,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
-import {UpdateTabUrlCommand} from "src/domain/tabs/UpdateTabUrl";
+import {UpdateTabCommand} from "src/domain/tabs/UpdateTabUrl";
 import {useSearchStore} from "src/search/stores/searchStore";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
@@ -47,7 +47,7 @@ describe('UpdateTabUrl', () => {
     const tab = new Tab("tabId", skysailChromeTab)
     await new AddTabToTabsetCommand(tab, tabset).execute()
 
-    const result = await new UpdateTabUrlCommand(
+    const result = await new UpdateTabCommand(
         tab, "https://skysail.io", "newName", "").execute()
     expect(result.message).toBe("Tab updated")
     expect(result.result).toBe("https://skysail.io")
@@ -62,7 +62,7 @@ describe('UpdateTabUrl', () => {
     const tab = new Tab("tabId", skysailChromeTab)
     await new AddTabToTabsetCommand(tab, tabset).execute()
 
-    const result = await new UpdateTabUrlCommand(
+    const result = await new UpdateTabCommand(
         tab, "https://skysail.io", "newName", "").execute()
     await result.nextCommands.values().next().value.execute()
 
