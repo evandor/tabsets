@@ -7,7 +7,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
-import {UpdateTabCommand} from "src/domain/tabs/UpdateTabUrl";
+import {UpdateTabCommand} from "src/domain/tabs/UpdateTabCommand";
 import {useSearchStore} from "src/search/stores/searchStore";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";

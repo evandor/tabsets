@@ -146,7 +146,7 @@ describe('WindowsStore', () => {
 
     const window = await windowsDb.getWindow(100)
     if (window) {
-      await useWindowsStore().upsertWindow(window.browserWindow!, "theTitle")
+      await useWindowsStore().upsertWindow(window.browserWindow!, "","theTitle")
       const updatedWindow = await windowsDb.getWindow(100)
       expect(updatedWindow?.title).toBe("theTitle")
     } else {
@@ -161,7 +161,7 @@ describe('WindowsStore', () => {
 
     const window = await windowsDb.getWindow(300)
     if (window) {
-      await useWindowsStore().upsertWindow(window.browserWindow!, "theTitle")
+      await useWindowsStore().upsertWindow(window.browserWindow!, "","theTitle")
       await onRemovedListener(300)
       const window300FromDb = await windowsDb.getWindow(300)
       expect(window300FromDb?.id).toBe(300)
@@ -195,7 +195,7 @@ describe('WindowsStore', () => {
       expect(true).toBeFalsy()
     }
     // @ts-ignore
-    await useWindowsStore().upsertWindow(window100FromDb?.browserWindow, "theTitle")
+    await useWindowsStore().upsertWindow(window100FromDb?.browserWindow, "","theTitle")
 
     const window: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0)
     currentWindows = [window100, window200, window]
