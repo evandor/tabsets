@@ -17,6 +17,7 @@ chrome.runtime.onInstalled.addListener((callback) => {
   console.log("[service-worker] ga: fire event install", callback.reason, callback.previousVersion)
   // getting error: "Service worker registration failed. Status code: 15"
   // Analytics.fireEvent('install-' + callback.reason);
+    console.log("callback:::", callback)
   if (callback.reason !== OnInstalledReason.CHROME_UPDATE) {
     chrome.tabs.create({
       active: false,

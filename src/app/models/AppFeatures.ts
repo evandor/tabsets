@@ -11,12 +11,12 @@ export class AppFeatures {
     new Feature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED,
       'Bookmarks Manager',
       'Activate a Bookmark Manager in the Side Panel',
-      'o_bookmark', '', ['all']),
+      'o_bookmark', 'bookmarks.png', ['all']),
 
     new Feature(FeatureIdent.STATS, FeatureType.OPTIONAL,
       'Stats Widget',
       'Activate a little Widget to display some statistics (tabs count etc)',
-      'show_chart', '', ['all']),
+      'show_chart', 'stats.png', ['all']),
 
     new Feature(FeatureIdent.TOP10, FeatureType.OPTIONAL,
       'Top 10 Tabs',
@@ -32,7 +32,7 @@ export class AppFeatures {
       'Open Tabs',
       'Quick access to all your open tabs of the current browsers window<br><br>' +
       'Adds quick navigation to jump back and forth to recently opened tabs.',
-      'o_playlist_add', '', ['bex']),
+      'o_playlist_add', 'opentabs.png', ['bex']),
 
     new Feature(FeatureIdent.GROUP_BY_DOMAIN, FeatureType.OPTIONAL,
       'Group By Domain View',

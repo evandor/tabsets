@@ -287,7 +287,7 @@ class BrowserApi {
   restore(tabset: Tabset, windowName: string | undefined = undefined, inNewWindow: boolean = true) {
     console.log("restoring tabset ", tabset.id, windowName, inNewWindow)
     const urlAndGroupArray: object[] = _.map(tabset.tabs, (t: Tab) => {
-      return {url: t.url, group: t.groupName} || {url: '', group: undefined}
+      return {url: t.url || '', group: t.groupName || undefined} //|| {url: '', group: undefined}
     })
     console.log("restoring urls and groups:", urlAndGroupArray)
     if (inNewWindow && !windowName) {
