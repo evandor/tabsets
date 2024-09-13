@@ -84,27 +84,8 @@ module.exports = configure(function (ctx) {
 
         TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
         TABSETS_STAGE: process.env.STAGE,
-
-        COUCHDB_PROTOCOL: process.env.COUCHDB_PROTOCOL,
-        COUCHDB_URL: process.env.COUCHDB_URL,
-
-        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
-        STRIPE_ACCOUNT: process.env.STRIPE_ACCOUNT,
-        STRIPE_API_VERSION: process.env.STRIPE_API_VERSION,
-        STRIPE_SYNC_PRODUCT_LINK: process.env.STRIPE_SYNC_PRODUCT_LINK,
-
         LOCALE: process.env.LOCALE,
-
-        USE_FIREBASE: process.env.FIREBASE_ACTIVE || false,
-
-        FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
-        FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
-        FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-        FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
-        FIREBASE_MESSAGING_SENDER_ID:process.env.FIREBASE_MESSAGING_SENDER_ID,
-        FIREBASE_MESSAGING_KEY: process.env.FIREBASE_MESSAGING_KEY,
-        FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
-        FIREBASE_DATABASE_URL: process.env.FIREBASE_DATABASE_URL
+        SENTRY_DSN: process.env.SENTRY_DSN
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

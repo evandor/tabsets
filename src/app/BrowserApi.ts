@@ -480,7 +480,7 @@ class BrowserApi {
     iconSvg.setAttribute('stroke', color);
     iconSvg.setAttribute('width', '20');
     iconSvg.setAttribute('height', '20');
-    iconSvg.setAttribute('style', 'position:fixed;top:3;right:3;z-index:10000');
+    iconSvg.setAttribute('style', 'position:fixed;top:3;right:3;z-index:2147483647');
     iconSvg.classList.add('post-icon');
 
     iconPath.setAttribute(
@@ -497,6 +497,7 @@ class BrowserApi {
   }
 
   addIndicatorIcon(tabId: number, tabUrl: string | undefined, color: string = 'orange', tooltip: string = 'managed by tabsets') {
+    //console.log("addIndicatorIcon", tabId, tabUrl)
     if (tabUrl && chrome && chrome.scripting) {
       const tabsetIds = useTabsetService().tabsetsFor(tabUrl)
       if (tabsetIds.length > 0 && tabId) {
@@ -510,7 +511,7 @@ class BrowserApi {
             func: this.tabsetIndication,
             args: [color, tooltip]
           })
-          // .then(() => console.log("injected script file"))
+          //.then(() => console.log("injected script file tabsetIndication"))
           .catch((res) => console.log("err", res))
       }
     }

@@ -503,7 +503,6 @@ let suggestionsCounter = 0
 
 watchEffect(() => {
   const data = JSON.stringify(searchStore?.getIndex())
-  console.log("search index data", data)
   searchIndexAsJson.value = JSON.parse(data)
 })
 
@@ -512,43 +511,6 @@ watchEffect(() => {
   ddgEnabled.value = settingsStore.isEnabled('noDDG')
   ignoreExtensionsEnabled.value = settingsStore.isEnabled('extensionsAsTabs')
 })
-
-// watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
-//
-// watchEffect(() => bookmarksPermissionGranted.value = usePermissionsStore().hasPermission('bookmarks'))
-// watchEffect(() => pageCapturePermissionGranted.value = usePermissionsStore().hasPermission('pageCapture'))
-
-// watch(() => bookmarksPermissionGranted.value, (newValue, oldValue) => {
-//   if (newValue === oldValue) {
-//     return
-//   }
-//   // if (bookmarksPermissionGranted.value && !usePermissionsStore().hasPermission('bookmarks')) {
-//   //   useCommandExecutor()
-//   //     .executeFromUi(new GrantPermissionCommand("bookmarks"))
-//   //     .then((res: ExecutionResult<boolean>) => bookmarksPermissionGranted.value = res.result)
-//   // } else if (!bookmarksPermissionGranted.value) {
-//   //   useCommandExecutor()
-//   //     .executeFromUi(new RevokePermissionCommand("bookmarks"))
-//   //     .then(() => {
-//   //       useBookmarksStore().loadBookmarks()
-//   //     })
-//   // }
-// })
-
-
-// watch(() => pageCapturePermissionGranted.value, (newValue, oldValue) => {
-//   if (newValue === oldValue) {
-//     return
-//   }
-//   if (pageCapturePermissionGranted.value && !usePermissionsStore().hasPermission('pageCapture')) {
-//     useCommandExecutor()
-//       .executeFromUi(new GrantPermissionCommand("pageCapture"))
-//       .then((res: ExecutionResult<boolean>) => pageCapturePermissionGranted.value = res.result)
-//   } else if (!pageCapturePermissionGranted.value) {
-//     useCommandExecutor()
-//       .executeFromUi(new RevokePermissionCommand("pageCapture"))
-//   }
-// })
 
 watchEffect(() => {
   //console.log("***setting dark mode to ", typeof darkMode.value, darkMode.value)
