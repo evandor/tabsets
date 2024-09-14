@@ -241,7 +241,7 @@ watchEffect(() => {
   showSuggestionButton.value =
     doShowSuggestionButton.value ||
     (useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
-      _.findIndex(suggestions, s => {
+      _.findIndex(suggestions, (s:Suggestion) => {
         return s.state === SuggestionState.NEW ||
           (s.state === SuggestionState.NOTIFICATION && !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
       }) >= 0)
@@ -249,7 +249,7 @@ watchEffect(() => {
   showSuggestionIcon.value =
     !doShowSuggestionButton.value &&
     useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
-    _.findIndex(suggestions, s => {
+    _.findIndex(suggestions, (s:Suggestion) => {
       return s.state === SuggestionState.DECISION_DELAYED
     }) >= 0
 })

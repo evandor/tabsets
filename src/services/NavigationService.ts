@@ -68,13 +68,6 @@ class NavigationService {
         // get all tabs with this url
         const tabsForUrl = useTabsetsStore().tabsForUrl(url) || []
         tabsForUrl.forEach(t => {
-
-          // const optionalThumbnail = useThumbnailsService().getThumbnailFor(t.tab.id)
-          // if (!optionalThumbnail) {
-          //   // saving thumbnail
-          //   useThumbnailsService().captureVisibleTab(this.tab.id)
-          // }
-
           if (t.tab.httpInfo) {
             t.tab.httpError = ''
             t.tab.httpInfo = ''
