@@ -254,7 +254,7 @@ class BrowserApi {
           } else if (e.menuItemId === 'annotate_website') {
             console.log("creating annotation JS", tab)
             if (tab && tab.id) {
-             // this.executeAnnotationJS(tab.id)
+              // this.executeAnnotationJS(tab.id)
             }
           } else if (e.menuItemId.toString().startsWith("save_as_tab|")) {
             //console.log("got", e, e.menuItemId.split("|"))
@@ -317,10 +317,10 @@ class BrowserApi {
     }
 
     return new Promise((resolve, reject) => {
-      let queryOptions = {active: true, lastFocusedWindow: true};
+      let queryOptions = {active: true};
       try {
         chrome.tabs.query(queryOptions, function (tabs) {
-          //console.log("got tab", tabs[0])
+          console.log("got tabs", tabs)
           resolve(tabs[0]);
         })
       } catch (e) {
@@ -501,7 +501,7 @@ class BrowserApi {
     if (tabUrl && chrome && chrome.scripting) {
       const tabsetIds = useTabsetService().tabsetsFor(tabUrl)
       if (tabsetIds.length > 0 && tabId) {
-        const currentTabsetId =  useTabsetsStore().currentTabsetId
+        const currentTabsetId = useTabsetsStore().currentTabsetId
         if (currentTabsetId && tabsetIds.indexOf(currentTabsetId) >= 0) {
           color = "green"
         }

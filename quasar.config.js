@@ -11,8 +11,8 @@
 
 const {configure} = require('quasar/wrappers');
 const path = require('path');
-const fs = require("fs");
-const {sentryVitePlugin} = require("@sentry/vite-plugin");
+// const fs = require("fs");
+// const {sentryVitePlugin} = require("@sentry/vite-plugin");
 
 module.exports = configure(function (ctx) {
 
@@ -58,8 +58,10 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
-      sourcemap: true,
-      
+
+      // https://github.com/quasarframework/quasar/issues/14589
+      sourcemap: 'true',
+
       target: {
         browser: ['es2020', 'edge88', 'firefox78', 'chrome87'],
         node: 'node16'
@@ -123,11 +125,16 @@ module.exports = configure(function (ctx) {
           include: [path.resolve(__dirname, './src/i18n/**')],
         }],
         ['vite-plugin-package-version', {}],
-        sentryVitePlugin({
-          authToken: process.env.SENTRY_AUTH_TOKEN,
-          org: "skysail-dk",
-          project: "tabsets",
-        })
+        // sentryVitePlugin({
+        //   authToken: process.env.SENTRY_AUTH_TOKEN,
+        //   org: "skysail-dk",
+        //   project: "tabsets",
+        // })
+        [require('@sentry/vite-plugin').sentryVitePlugin,{
+            authToken: "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",
+            org: "skysail-dk",
+            project: "tabsets"
+        }]
       ]
     },
 

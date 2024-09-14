@@ -26,8 +26,10 @@ export default boot(async ({app}) => {
   client.init();
 
   app.config.errorHandler = (err:any, vm, info) => {
-    scope.captureException(new Error(err.toString()));
+    //console.log("got error!", typeof err, err)
+    scope.captureException(new Error(err.toString() + ": " + err.stack));
 
+    //console.error("-- Scope:", res);
     console.error("-- Error:", err);
     console.error("-- Vue component:", vm);
     console.error("-- Additional info:", info);
