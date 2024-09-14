@@ -36,5 +36,10 @@ export default route(function (/* { store, ssrContext } */) {
     console.log(`%crouter event ${from.fullPath} -> ${to.fullPath}`,"color:green")
   })
 
+  Router.onError((error:any) => {
+    console.error('Router error:', error);
+    throw new Error(error)
+  });
+
   return Router;
 });

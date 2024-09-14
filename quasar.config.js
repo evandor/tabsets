@@ -9,9 +9,10 @@
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
 
-const { configure } = require('quasar/wrappers');
+const {configure} = require('quasar/wrappers');
 const path = require('path');
 const fs = require("fs");
+const {sentryVitePlugin} = require("@sentry/vite-plugin");
 
 module.exports = configure(function (ctx) {
 
@@ -57,8 +58,10 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
+      sourcemap: true,
+      
       target: {
-        browser: [ 'es2020', 'edge88', 'firefox78', 'chrome87' ],
+        browser: ['es2020', 'edge88', 'firefox78', 'chrome87'],
         node: 'node16'
       },
 
@@ -95,13 +98,13 @@ module.exports = configure(function (ctx) {
       // distDir
 
       // !== MIT
-      extendViteConf (viteConf) {
+      extendViteConf(viteConf) {
 
-          if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
-            // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
-            viteConf.define.global = {}
-          }
-          viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
+        if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+          // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
+          viteConf.define.global = {}
+        }
+        viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
 
         // this caused an issue with the electron build
         // //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
@@ -119,7 +122,12 @@ module.exports = configure(function (ctx) {
         ['@intlify/unplugin-vue-i18n/vite', {
           include: [path.resolve(__dirname, './src/i18n/**')],
         }],
-        ['vite-plugin-package-version' ,{}]
+        ['vite-plugin-package-version', {}],
+        sentryVitePlugin({
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          org: "skysail-dk",
+          project: "tabsets",
+        })
       ]
     },
 
@@ -173,7 +181,7 @@ module.exports = configure(function (ctx) {
     // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
     ssr: {
       // ssrPwaHtmlFilename: 'offline.html', // do NOT use index.html as name!
-                                          // will mess up SSR
+      // will mess up SSR
 
       // extendSSRWebserverConf (esbuildConf) {},
       // extendPackageJson (json) {},

@@ -1,8 +1,8 @@
 import { boot } from 'quasar/wrappers'
 import {BrowserClient, defaultStackParser, getDefaultIntegrations, makeFetchTransport, Scope} from "@sentry/browser";
 
-// "async" is optional;
-// more info on params: https://v2.quasar.dev/quasar-cli/boot-files
+
+//https://enterprisevue.dev/blog/error-handling-in-vue-3/
 export default boot(async ({app}) => {
 
   const integrations = getDefaultIntegrations({}).filter(
