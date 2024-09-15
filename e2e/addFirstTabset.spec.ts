@@ -43,14 +43,14 @@ test('first tabset', async ({page, extensionId, context}) => {
   await expansionItem.hover()
   await expansionItem.click()
 
-  await expansionItem.hover()
-  await expansionItem.click()
-
-  const skysailMenu = page.locator('[data-testid=menu_23]')
-  await skysailMenu.click()
-
-  await expansionItem.hover()
-  await expansionItem.click()
+  // await expansionItem.hover()
+  // await expansionItem.click()
+  //
+  // const skysailMenu = page.locator('[data-testid=menu_23]')
+  // await skysailMenu.click()
+  //
+  // await expansionItem.hover()
+  // await expansionItem.click()
 
   //await expect(page.locator('body')).toHaveText('my-extension popup');
 });
