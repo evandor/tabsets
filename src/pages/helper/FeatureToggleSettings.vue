@@ -21,7 +21,7 @@
       </div>
       <div class="col-1"></div>
       <div class="col-5">
-        <q-toggle v-model="devEnabled" @click="updateSettings('dev', devEnabled)"/>
+        <q-toggle v-model="devEnabled" @click="updateSettings(FeatureIdent.DEV_MODE.toString(), devEnabled)"/>
       </div>
     </div>
 
@@ -49,10 +49,8 @@ import {DeactivateFeatureCommand} from "src/features/commands/DeactivateFeature"
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 
-import {BrowserClient, defaultStackParser, getDefaultIntegrations, makeFetchTransport, Scope,} from "@sentry/browser";
-
 const settingsStore = useSettingsStore()
-const {handleSuccess, handleError} = useNotificationHandler()
+const {handleError} = useNotificationHandler()
 
 const devEnabled = ref<boolean>(settingsStore.isEnabled('dev'))
 
@@ -63,9 +61,9 @@ watchEffect(() => {
 const updateSettings = (ident: string, val: boolean) => {
   console.log("settings updated to", ident, val)
   if (val) {
-    useCommandExecutor().execute(new ActivateFeatureCommand(FeatureIdent.DEV_MODE.toString()))
+    useCommandExecutor().execute(new ActivateFeatureCommand(ident))
   } else {
-    useCommandExecutor().execute(new DeactivateFeatureCommand(FeatureIdent.DEV_MODE.toString()))
+    useCommandExecutor().execute(new DeactivateFeatureCommand(ident))
   }
   // TODO deprecated
   settingsStore.setFeatureToggle(ident, val)

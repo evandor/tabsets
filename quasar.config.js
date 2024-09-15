@@ -125,13 +125,8 @@ module.exports = configure(function (ctx) {
           include: [path.resolve(__dirname, './src/i18n/**')],
         }],
         ['vite-plugin-package-version', {}],
-        // sentryVitePlugin({
-        //   authToken: process.env.SENTRY_AUTH_TOKEN,
-        //   org: "skysail-dk",
-        //   project: "tabsets",
-        // })
         [require('@sentry/vite-plugin').sentryVitePlugin,{
-            authToken: "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",
+            authToken: process.env.SENTRY_AUTH_TOKEN,
             org: "skysail-dk",
             project: "tabsets"
         }]
