@@ -191,13 +191,6 @@ onUnmounted(() => {
 })
 
 watchEffect(() => {
-  // const ar = useAuthStore().useAuthRequest
-  // if (ar) {
-  //   AppService.restart(ar)
-  // }
-})
-
-watchEffect(() => {
   if (useAuthStore().user) {
     user.value = useAuthStore().user
   }
@@ -315,13 +308,13 @@ if (inBexMode()) {
       useTabsetService().reloadTabset(message.data.tabsetId)
     } else if (message.name === "tabset-added") {
       useTabsetService().reloadTabset(message.data.tabsetId)
-    } else if (message.name === "mark-tabset-deleted") {
-      TabsetService.markAsDeleted(message.data.tabsetId)
+    // } else if (message.name === "mark-tabset-deleted") {
+    //   TabsetService.markAsDeleted(message.data.tabsetId)
     } else if (message.name === "tabset-renamed") {
       TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
     } else if (message.name === "progress-indicator") {
       if (message.percent) {
-        uiStore.progress = message.percent
+        uiStore.setProgress(message.percent)
         // uiStore.progressLabel = message.label
       }
       if (message.status === "done") {
@@ -401,26 +394,6 @@ const importSharedTabset = () => {
     console.log("Importing", currentTabUrl)
     const urlSplit = currentTabUrl.split("/")
     const tabsetId = urlSplit[urlSplit.length - 1]
-    /*FirebaseCall.get("/share/public/" + tabsetId + "?cb=" + new Date().getTime(), false)
-      .then((res: any) => {
-        const newTabset = res as Tabset
-        newTabset.sharing = TabsetSharing.UNSHARED
-        //_.forEach(newTabset.tabs, t => t.preview = TabPreview.THUMBNAIL)
-        useTabsetService().saveTabset(newTabset)
-        useTabsetService().reloadTabset(newTabset.id)
-      })*/
-  }
-}
-
-const drop = (evt: any, folder: Tabset) => {
-  console.log("drop", evt, folder)
-  const tabToDrag = useUiStore().tabBeingDragged
-  const tabset = useTabsetsStore().getCurrentTabset as Tabset | undefined
-  if (tabToDrag && tabset) {
-    console.log("tabToDrag", tabToDrag)
-    const moveToFolderId = folder.id
-    console.log("moveToFolderId", moveToFolderId)
-    useTabsetService().moveTabToFolder(tabset, tabToDrag, moveToFolderId)
   }
 }
 

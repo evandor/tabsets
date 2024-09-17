@@ -26,12 +26,30 @@
     </div>
 
     <div class="row q-pa-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
-      <div class="col-3"><b>Trigger Error Handler</b></div>
-      <div class="col-3">this should initiate a rollbar error message.
+      <div class="col-3"><b>Trigger CommandExecution Error Handler</b></div>
+      <div class="col-3">this should initiate a sentry error message like the ones happening when running into a problem executing a command.
       </div>
       <div class="col-1"></div>
       <div class="col-5">
         <q-btn label="Trigger Error" no-caps @click="triggerErrorHandler()"/>
+      </div>
+    </div>
+    <div class="row q-pa-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+      <div class="col-3"><b>Trigger Catch-All Error Handler</b></div>
+      <div class="col-3">this should initiate a sentry error message from the vue error interceptor.
+      </div>
+      <div class="col-1"></div>
+      <div class="col-5">
+        <q-btn label="Trigger Error" no-caps @click="triggerCatchAll()"/>
+      </div>
+    </div>
+    <div class="row q-pa-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+      <div class="col-3"><b>Collect User Feedback</b></div>
+      <div class="col-3">
+      </div>
+      <div class="col-1"></div>
+      <div class="col-5">
+        <q-btn label="User Feedback" no-caps @click="collectUserFeedback()"/>
       </div>
     </div>
     <!--    </template>-->
@@ -48,6 +66,16 @@ import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {DeactivateFeatureCommand} from "src/features/commands/DeactivateFeature";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {
+  BrowserClient,
+  defaultStackParser,
+  feedbackIntegration,
+  getDefaultIntegrations,
+  makeFetchTransport,
+  captureMessage,
+  captureFeedback,
+  Scope
+} from "@sentry/browser";
 
 const settingsStore = useSettingsStore()
 const {handleError} = useNotificationHandler()
@@ -70,7 +98,23 @@ const updateSettings = (ident: string, val: boolean) => {
 }
 
 const triggerErrorHandler = () =>
-  handleError("an user-initated error message from tabsets")
+  handleError("an user-initiated error message from tabsets at " + new Date().getTime())
 
+const triggerCatchAll = () => {
+  throw new Error('user triggered catch-all-Error at' + new Date().getTime())
+}
+
+const collectUserFeedback = async () => {
+  const eventId = captureMessage("User Feedback");
+// OR: const eventId = Sentry.lastEventId();
+
+  const userFeedback = {
+    name: "John Doe",
+    email: "john@doe.com",
+    message: "I really like your App, thanks!",
+    associatedEventId: eventId,
+  };
+  captureFeedback(userFeedback);
+}
 
 </script>

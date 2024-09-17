@@ -151,15 +151,10 @@ import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefau
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "src/core/components/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
-import {UnShareTabsetCommand} from "src/tabsets/commands/UnShareTabsetCommand"
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tab} from "src/tabsets/models/Tab";
-import {CopyToClipboardCommand} from "src/core/domain/commands/CopyToClipboard";
-import ShareTabsetPubliclyDialog from "src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue";
 import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
-import NewWindowDialog from "src/windows/dialogues/NewWindowDialog.vue";
 import {useRouter} from "vue-router";
-import {MarkTabsetDeletedCommand} from "src/tabsets/commands/MarkTabsetDeleted";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {NotificationType} from "src/core/services/ErrorHandler";
 import NewSubfolderDialog from "src/tabsets/dialogues/NewSubfolderDialog.vue";
@@ -257,22 +252,6 @@ const pin = (tabset: Tabset) =>
 const unpin = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
-const removePublicShare = (tabsetId: string, sharedId: string) => useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId, sharedId))
-
-const openPublicShare = (tabsetId: string) => {
-  const ts = useTabsetsStore().getTabset(tabsetId)
-  if (ts && ts.sharedId) {
-    openURL(getPublicTabsetLink(ts))
-  }
-}
-
-const copyPublicShareToClipboard = (tabsetId: string) => {
-  const ts = useTabsetsStore().getTabset(tabsetId)
-  if (ts && ts.sharedId) {
-    useCommandExecutor().executeFromUi(new CopyToClipboardCommand(getPublicTabsetLink(ts)))
-  }
-}
-
 const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
@@ -295,40 +274,12 @@ const changeWindow = (tabset: Tabset, window: string) => {
 }
 
 const deleteTabsetDialog = (tabset: Tabset) => {
-  // $q.dialog({
-  //   title: 'Delete Tabset',
-  //   message: "Would you like to delete the tabset '"+tabset.name +"'?",
-  //   cancel: true
-  // }).onOk(() => {
-  //   deleteTabset(tabset)
-  // })
 
   $q.dialog({
     component: DeleteTabsetDialog,
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name
-    }
-  })
-}
-
-const deleteTabset = (tabset: Tabset) => useCommandExecutor().executeFromUi(new MarkTabsetDeletedCommand(tabset.id))
-  .then((res: any) => {
-    //if (props.sidePanelMode) {
-    useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
-    //}
-    return res
-  })
-
-
-const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
-  $q.dialog({
-    component: ShareTabsetPubliclyDialog,
-    componentProps: {
-      tabsetId: tabset.id,
-      sharedId: tabset.sharedId,
-      tabsetName: tabset.name,
-      republish: republish
     }
   })
 }
