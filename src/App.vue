@@ -7,11 +7,24 @@
 import {setCssVar, useQuasar} from "quasar";
 import AppService from "src/app/AppService";
 import {EventEmitter} from "events";
-import {useRouter} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {useLogger} from "src/services/Logger";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {useSettingsStore} from "stores/settingsStore";
+import {useAppStore} from "stores/appStore";
 
 const $q = useQuasar()
 const router = useRouter()
+const route = useRoute()
+
+const {handleError} = useNotificationHandler()
+
+const settingsStore = useSettingsStore()
+settingsStore.initialize($q.localStorage)
+//const localMode = settingsStore.isEnabled('localMode')
+//console.log(` ...config: localMode=${localMode}`)
+
+useAppStore().init()
 
 const {info} = useLogger()
 

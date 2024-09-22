@@ -1,5 +1,3 @@
-import {api} from "boot/axios";
-
 const version = import.meta.env.PACKAGE_VERSION
 
 function log(msg: string, level:number) {
