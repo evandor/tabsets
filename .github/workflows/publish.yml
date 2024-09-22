@@ -24,6 +24,7 @@ jobs:
           echo TABSETS_PWA_URL="https://pwa.tabsets.net" >> .env
           echo SENTRY_PROJECT_NAME="tabsets" >> .env
           echo SENTRY_DSN="${{ secrets.SENTRY_DNS }}" >> .env
+          echo HOST="chrome.extension" >> .env
       - name: Build
         run: |
           yarn install

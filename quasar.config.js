@@ -30,6 +30,7 @@ module.exports = configure(function (ctx) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
+      'axios',
       'errorhandling',
       'i18n',
       'constants'
@@ -87,6 +88,7 @@ module.exports = configure(function (ctx) {
       env: {
         BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
         BACKEND_URL: process.env.BACKEND_URL,
+        HOST: process.env.HOST,
 
         TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
         TABSETS_STAGE: process.env.STAGE,
@@ -128,6 +130,7 @@ module.exports = configure(function (ctx) {
         [require('@sentry/vite-plugin').sentryVitePlugin,{
             authToken: process.env.SENTRY_AUTH_TOKEN,
             org: "skysail-dk",
+            disable: ctx.dev,
             project: "tabsets"
         }]
       ]

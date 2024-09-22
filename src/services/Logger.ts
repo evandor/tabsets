@@ -1,20 +1,27 @@
+import {api} from "boot/axios";
+
 const version = import.meta.env.PACKAGE_VERSION
 
-function log(msg: string, level:number) {
+let graylogErrorLogged = false
+
+function log(msg: string, level: number) {
   const gelfMessage = {
     "version": "1.1",
-    "host": "browser.local",
+    "host": process.env.HOST,
     "short_message": msg,
-    "level":level,
+    "level": level,
     _mode: process.env.MODE,
     _version: version,
     _stage: process.env.TABSETS_STAGE
   }
-  // api.post("http://graylog.backend:12201/gelf", gelfMessage, {headers: {
-  //     "Content-Type": "application/json"}
-  // }).catch((err) => {
-  //   console.log("error with logging server")
-  // })
+  api.post("http://graylog.tabsets.net:12201/gelf", gelfMessage, {headers: {"Content-Type": "application/json"}})
+    .catch((err: any) => {
+      if (!graylogErrorLogged) {
+        graylogErrorLogged = true
+        console.warn("could not log to graylog")
+      }
+    })
+
 }
 
 export function useLogger() {
