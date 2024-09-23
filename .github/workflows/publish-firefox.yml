@@ -10,7 +10,7 @@ name: Publish
 on:
   push:
     tags:
-      - 'v*.*.*-firefox-test'
+      - 'v*.*.*-firefox'
 
 jobs:
   build:
