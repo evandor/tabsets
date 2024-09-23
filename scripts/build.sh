@@ -2,7 +2,7 @@
 VERSION="$1"
 if [ $# -eq 0 ]
   then
-    echo "run with 'chrome', 'firfox', 'edge' or 'opera' as parameter"
+    echo "run with 'chrome', 'firefox', 'edge' or 'opera' as parameter"
     exit
 fi
 

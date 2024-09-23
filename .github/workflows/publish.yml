@@ -3,6 +3,7 @@ on:
   push:
     tags:
       - 'v*.*.*'
+      - '!v*.*.*-firefox'
 
 jobs:
   build:

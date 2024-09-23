@@ -30,6 +30,9 @@ jobs:
           echo STAGE=PRD >> .env
           echo BACKEND_URL="https://tabsets-72089.web.app" >> .env
           echo TABSETS_PWA_URL="https://pwa.tabsets.net" >> .env
+          echo SENTRY_PROJECT_NAME="tabsets" >> .env
+          echo SENTRY_DSN="${{ secrets.SENTRY_DNS }}" >> .env
+          echo HOST="firefox.extension" >> .env
       - name: Build
         run: |
           yarn install
