@@ -36,7 +36,7 @@ jobs:
       - name: Build
         run: |
           yarn install
-          npm run "build bex (publish)"
+          npm run "build bex firefox"
       - name: "web-ext build"
         id: web-ext-build
         uses: kewisch/action-web-ext@v1
