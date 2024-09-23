@@ -10,6 +10,7 @@ function log(msg: string, level: number) {
     "host": process.env.HOST,
     "short_message": msg,
     "level": level,
+    _app: "tabsets",
     _mode: process.env.MODE,
     _version: version,
     _stage: process.env.TABSETS_STAGE

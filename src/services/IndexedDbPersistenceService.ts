@@ -25,19 +25,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     useUiStore().dbReady = true
   }
 
-  async deleteDatabase(dbName: string) {
-    useUiStore().dbReady = false
-    console.warn(" ...deleting indexeddb database: not implemented", dbName)
-    // if (this.db) {
-    //   await this.db.close()
-    // }
-    // console.log("db closed, deleting now")
-    // deleteDB(dbName, (cb) => {
-    //   console.log("deleting cb", cb)
-    // })
-
-  }
-
   async loadTabsets(): Promise<any> {
     console.debug(" ...loading tabsets indexeddb")
     return await this.db.getAll('tabsets')
@@ -52,22 +39,8 @@ class IndexedDbPersistenceService implements PersistenceService {
       }))
   }
 
-  async reloadTabset(tabsetId: string) {
-    const ts = await this.db.get('tabsets', tabsetId) as Tabset | undefined
-    if (ts) {
-      console.log("reloaded tabset", ts.id, ts.tabs.length)
-      useTabsetsStore().tabsets.set(ts.id, ts)
-    } else {
-      console.warn("could not reload tabset with id", tabsetId)
-    }
-  }
-
   async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
     return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
-  }
-
-  deleteTabset(tabsetId: string): Promise<void> {
-    return this.db.delete('tabsets', tabsetId)
   }
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
@@ -196,72 +169,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     }
   }
 
-  // async saveBlob(id: string, url: string, data: Blob, type: BlobType, remark: string | undefined = undefined): Promise<any> {
-  //   //const encodedTabUrl = btoa(tab.url)
-  //   const existing = await this.db.get('blobs', id)
-  //   const arrayToSave: object[] = []
-  //   const savedBlob = new SavedBlob(uid(), type, url, data, remark)
-  //   if (existing) {
-  //     existing.push(savedBlob)
-  //     return this.db.put('blobs', existing, id)
-  //   } else {
-  //     return this.db.put('blobs', [savedBlob], id)
-  //   }
-  // }
-  //
-  // getBlobs(type: BlobType): Promise<any[]> {
-  //   if (!this.db) { // can happen for some reason
-  //     return Promise.resolve([])
-  //   }
-  //   try {
-  //     console.log("hier", type)
-  //     return this.db.getAll('blobs')
-  //       .then((b: any[]) => {
-  //         console.log("got b", b)
-  //         const blobs = _.flatten(b)
-  //         return _.filter(blobs, d => d.type === type)
-  //       })
-  //   } catch (ex) {
-  //     console.log("got error in getBlobs", ex)
-  //     return Promise.reject("got error in getBlobs")
-  //   }
-  // }
-  //
-  // getBlobsForTab(tabId: string): Promise<SavedBlob[]> {
-  //   if (!this.db) { // can happen for some reason
-  //     return Promise.resolve([])
-  //   }
-  //   return this.db.get('blobs', tabId)
-  // }
-  //
-  // async deleteBlob(tabId: string, elementId: string) {
-  //   let blobsForTab = await this.getBlobsForTab(tabId)
-  //   blobsForTab = _.filter(blobsForTab, b => b.id !== elementId)
-  //   await this.db.put('blobs', blobsForTab, tabId)
-  // }
-
-  addGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
-    console.debug("adding group", group)
-    return this.db.add('groups', group, group.title)
-      .catch((err) => {
-        if (!err.toString().indexOf('Key already exists')) {
-          console.log("error adding group", group, err)
-        }
-      })
-  }
-
-  updateGroup(group: chrome.tabGroups.TabGroup): Promise<any> {
-    console.log("updating group", group)
-    return this.db.put('groups', group, group.title)
-  }
-
-  getGroups(): Promise<chrome.tabGroups.TabGroup[]> {
-    return this.db.getAll('groups')
-  }
-
-  async deleteGroupByTitle(title: string): Promise<void> {
-    return this.db.delete('groups', title)
-  }
   /** messages **/
 
 
@@ -274,20 +181,6 @@ class IndexedDbPersistenceService implements PersistenceService {
           console.log("creating db tabsets")
           db.createObjectStore('tabsets');
         }
-        /*        if (!db.objectStoreNames.contains('tabs')) {
-                  console.log("creating db tabs")
-                  db.createObjectStore('tabs');
-                }*/
-        // if (!db.objectStoreNames.contains('thumbnails')) {
-        //   console.log("creating db thumbnails")
-        //   let store = db.createObjectStore('thumbnails');
-        //   store.createIndex("expires", "expires", {unique: false});
-        // }
-        // if (!db.objectStoreNames.contains('content')) {
-        //   console.log("creating db content")
-        //   let store = db.createObjectStore('content');
-        //   store.createIndex("expires", "expires", {unique: false});
-        // }
         if (!db.objectStoreNames.contains('spaces')) {
           console.log("creating db spaces")
           db.createObjectStore('spaces');

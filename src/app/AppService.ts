@@ -55,17 +55,11 @@ class AppService {
 
     this.initialized = true
 
-    const appStore = useAppStore()
-    const settingsStore = useSettingsStore()
-    const bookmarksStore = useBookmarksStore()
-    const searchStore = useSearchStore()
-    const uiStore = useUiStore()
-
     this.router = router
 
-    uiStore.appLoading = "loading tabsets..."
+    useUiStore().appLoading = "loading tabsets..."
 
-    appStore.init()
+    useAppStore().init()
 
     // init of stores and some listeners
     // await usePermissionsStore().initialize(useDB(quasar).localDb)
@@ -73,20 +67,25 @@ class AppService {
 
     await ChromeListeners.initListeners()
 
+    // Bookmarks
     ChromeBookmarkListeners.initListeners()
-    await bookmarksStore.init()
+    await useBookmarksStore().init()
     await BookmarksService.init()
+    console.debug('')
 
     //settingsStore.initialize(quasar.localStorage);
 
+    // Snapshots
+    await useSnapshotsStore().initialize(useDB().snapshotsDb)
     await useSnapshotsService().init()
-    await useSnapshotsStore().initialize(useDB().snapshotsIndexedDb)
+    console.debug('')
 
     // should be initialized before search submodule
-    await useThumbnailsService().init(IndexedDbThumbnailsPersistence)
+    await useThumbnailsService().init(useDB().thumbnailsDb)
     await useContentService().init(IndexedDbContentPersistence)
+    console.debug('')
 
-    await searchStore.init().catch((err) => console.error(err))
+    await useSearchStore().init().catch((err:any) => console.error(err))
 
     // init db
     await IndexedDbPersistenceService.init("db")
@@ -94,6 +93,7 @@ class AppService {
     // init services
     await useNotificationsStore().initialize(useDB(undefined).db)
     await useSuggestionsStore().init()
+    console.debug('')
 
     tabsetService.setLocalStorage(localStorage)
 
@@ -122,23 +122,23 @@ class AppService {
   }
 
   private async initCoreSerivces(quasar: any, router: Router) {
-    const groupsStore = useGroupsStore()
-    const registryStore = useEntityRegistryStore()
+
+    console.log(`%cinitializing AppService: initCoreSerivces`, "font-weight:bold")
+
+    // if (useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)) {
+      await useWindowsStore().initialize()
+      useWindowsStore().initListeners()
+    // }
 
     /**
      * features store: passing storage for better testing.
      * make sure features are not used before this line in code.
      */
-    await useFeaturesStore().initialize(useDB(quasar).featuresLocalStorage)
+    const featuresStorage = useDB(quasar).featuresDb
+    await useFeaturesStore().initialize(featuresStorage)
 
     await useNotesStore().initialize(useDB().notesDb)
     console.debug('')
-
-    /**
-     * windows store
-     */
-    await useWindowsStore().initialize()
-    useWindowsStore().initListeners()
 
     /**
      * Pattern: TODO
@@ -147,36 +147,37 @@ class AppService {
      * no persistence for service!
      */
 
-    const spacesStore = useSpacesStore()
-    watch(spacesStore.spaces, (newSpaces:Map<string,any>) => {
+    watch(useSpacesStore().spaces, (newSpaces:Map<string,any>) => {
       const spacesInfo = _.map([...newSpaces.values()], (ts: any) => new SpaceInfo(ts.id, ts.name))
-      registryStore.spacesRegistry = spacesInfo
+      useEntityRegistryStore().spacesRegistry = spacesInfo
     })
-    await spacesStore.initialize(useDB().spacesIndexedDb)
+    await useSpacesStore().initialize(useDB().spacesDb)
     console.debug('')
 
     const tabsetsStore = useTabsetsStore()
     watch(tabsetsStore.tabsets, (newTabsets:Map<string,any>) => {
       const tsInfo = _.map([...newTabsets.values()], (ts: any) => new TabsetInfo(ts.id, ts.name, ts.window, ts.tabs.length))
-      registryStore.tabsetRegistry = tsInfo
+      useEntityRegistryStore().tabsetRegistry = tsInfo
     })
     await tabsetsStore.initialize(useDB().tabsetsIndexedDb)
     await useTabsetService().init(false)
     console.debug('')
-    await useTabsStore2().initialize()
 
+    await useTabsStore2().initialize()
+    console.debug('')
 
 
     const existingUrls = useTabsetsStore().getAllUrls()
     await useContentService().populateSearch(existingUrls)
     await useTabsetService().populateSearch()
+    console.debug('')
 
 
     ChromeApi.init(router)
 
     if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-      await groupsStore.initialize(useDB().groupsIndexedDb)
-      groupsStore.initListeners()
+      await useGroupsStore().initialize(useDB().groupsIndexedDb)
+      useGroupsStore().initListeners()
     }
 
     useUiStore().appLoading = undefined

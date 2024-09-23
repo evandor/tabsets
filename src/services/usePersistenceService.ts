@@ -13,31 +13,36 @@ import IndexedDbSnapshotPersistence from "src/snapshots/persistence/IndexedDbSna
 import IndexedDbTabsetsGroupsPersistence from "src/tabsets/persistence/IndexedDbTabsetsGroupsPersistence";
 import TabsetsGroupsPersistence from "src/tabsets/persistence/TabsetsGroupsPersistence";
 import IndexedDbNotesPersistence from "src/notes/persistence/IndexedDbNotesPersistence";
+import ThumbnailsPersistence from "src/thumbnails/persistence/ThumbnailsPersistence";
+import IndexedDbThumbnailsPersistence from "src/thumbnails/persistence/IndexedDbThumbnailsPersistence";
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
   const db: PersistenceService = IndexedDbPersistenceService
 
-  const spacesIndexedDb: SpacesPersistence = IndexedDbSpacesStorage
+  const spacesDb: SpacesPersistence = IndexedDbSpacesStorage
 
   const tabsetsIndexedDb: TabsetsPersistence = IndexedDbTabsetsPersistence
   const groupsIndexedDb: TabsetsGroupsPersistence = IndexedDbTabsetsGroupsPersistence
 
-  const snapshotsIndexedDb: SnapshotsPersistence = IndexedDbSnapshotPersistence
+  const snapshotsDb: SnapshotsPersistence = IndexedDbSnapshotPersistence
   const notesDb =  IndexedDbNotesPersistence
 
+  const thumbnailsDb: ThumbnailsPersistence = IndexedDbThumbnailsPersistence
+
   let localDb = undefined as unknown as PersistenceService
-  let featuresLocalStorage: FeaturesPersistence = undefined as unknown as FeaturesPersistence
+  let featuresDb: FeaturesPersistence = undefined as unknown as FeaturesPersistence
   if (quasar) {
     localDb = new LocalStoragePersistenceService(quasar)
-    featuresLocalStorage = new LocalStorageFeaturesPersistence(quasar)
+    featuresDb = new LocalStorageFeaturesPersistence(quasar)
   }
 
   return {
-    db, localDb, spacesIndexedDb,
+    db, localDb, spacesDb,
     tabsetsIndexedDb,
-    featuresLocalStorage,
-    snapshotsIndexedDb,
+    featuresDb,
+    snapshotsDb,
+    thumbnailsDb,
     groupsIndexedDb,
     notesDb
   }
