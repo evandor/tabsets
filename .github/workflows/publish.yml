@@ -4,6 +4,7 @@ on:
     tags:
       - 'v*.*.*'
       - '!v*.*.*-firefox'
+      - '!v*.*.*-firefox-test'
 
 jobs:
   build:
