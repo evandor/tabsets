@@ -10,17 +10,17 @@ Global packages
   cordova - 12.0.0 (cordova-lib@12.0.1)
 
 Important local packages
-  quasar - 2.16.11 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
-  @quasar/app-vite - 1.9.5 -- Quasar Framework App CLI with Vite
+  quasar - 2.17.0 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
+  @quasar/app-vite - 1.10.0 -- Quasar Framework App CLI with Vite
   @quasar/extras - 1.16.12 -- Quasar Framework fonts, icons and animations
   eslint-plugin-quasar - Not installed
-  vue - 3.5.4 -- The progressive JavaScript framework for building modern web UI.
+  vue - 3.5.8 -- The progressive JavaScript framework for building modern web UI.
   vue-router - 4.4.5
   pinia - 2.2.2 -- Intuitive, type safe and flexible Store for Vue
   vuex - Not installed
   vite - 2.9.18 -- Native-ESM powered web dev build tool
   eslint - Not installed
-  electron - 32.1.0 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
+  electron - 32.1.2 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
   electron-packager - 17.1.2 -- Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI
   @electron/packager - 18.3.5 -- Customize and package your Electron app with OS-specific bundles (.app, .exe, etc.) via JS or CLI
   electron-builder - Not installed

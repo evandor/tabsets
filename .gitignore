@@ -77,6 +77,7 @@ docs/.vitepress/cache
 /.env.tmp
 /.tabsets-backend-prd.env
 /.env.tmp
+/.opera.env
 /docs/submodules/build/
 /src-bex/manifest.tmp
 
@@ -85,3 +86,4 @@ docs/.vitepress/cache
 
 # Sentry Config File
 .sentryclirc
+/.edge.env

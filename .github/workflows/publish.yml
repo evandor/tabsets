@@ -5,6 +5,7 @@ on:
       - 'v*.*.*'
       - '!v*.*.*-firefox'
       - '!v*.*.*-firefox-test'
+      - '!v*.*.*-firefox-edge'
 
 jobs:
   build:

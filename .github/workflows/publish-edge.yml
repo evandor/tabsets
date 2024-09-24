@@ -2,8 +2,7 @@ name: Publish
 on:
   push:
     tags:
-      #      - 'v*.*.*'
-      - 'never'
+      - 'v*.*.*-edge'
 jobs:
   build:
     name: Publish webextension
@@ -22,6 +21,9 @@ jobs:
           echo STAGE=PRD >> .env
           echo BACKEND_URL="https://tabsets-72089.web.app" >> .env
           echo TABSETS_PWA_URL="https://pwa.tabsets.net" >> .env
+          echo SENTRY_PROJECT_NAME="tabsets" >> .env
+          echo SENTRY_DSN="${{ secrets.SENTRY_DNS }}" >> .env
+          echo HOST="edge.extension" >> .env
       - name: Build
         run: |
           yarn install
