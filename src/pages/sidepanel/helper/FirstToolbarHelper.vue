@@ -4,7 +4,7 @@
       <div class="row q-ma-none q-pa-none">
 
         <!-- we have spaces -->
-        <div v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)" class="col-6 q-ma-none q-pa-none">
+        <div v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)" class="col-5 q-ma-none q-pa-none">
 
           <!-- spaces and no back button -->
 
@@ -22,7 +22,7 @@
         </div>
 
         <!-- no spaces here -->
-        <div v-else class="col q-ma-none q-pa-none">
+        <div v-else class="col-5 q-ma-none q-pa-none">
 
           <!-- no spaces && searching -->
           <SearchWithTransitionHelper v-if="searching"
@@ -42,52 +42,34 @@
         </div>
 
         <!-- spaces or not, here's the icons on the right side -->
-        <div class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm" v-if="!useUiStore().appLoading">
+        <div class="col-7 text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm" v-if="!useUiStore().appLoading">
 
           <slot name="iconsRight">
 
-<!--            <SidePanelToolbarButton-->
-<!--              v-if="showToggleSessionIcon()"-->
-<!--              :color="existingSession ? (useTabsetsStore().getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"-->
-<!--              :icon="existingSession ? 'o_stop_circle':'o_play_circle'"-->
-<!--              @click="toggleSessionState"-->
-<!--              :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>-->
+            <!--            <SidePanelToolbarButton-->
+            <!--              v-if="showToggleSessionIcon()"-->
+            <!--              :color="existingSession ? (useTabsetsStore().getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"-->
+            <!--              :icon="existingSession ? 'o_stop_circle':'o_play_circle'"-->
+            <!--              @click="toggleSessionState"-->
+            <!--              :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>-->
 
             <template v-if="showSearchIcon()">
               <SidePanelToolbarButton icon="search"
                                       id="toggleSearchBtn"
                                       size="11px"
                                       @click="toggleSearch"/>
-              <span class="q-ma-none q-pa-none q-mx-sm text-grey-5">|</span>
             </template>
 
             <SidePanelToolbarTabNavigationHelper/>
 
-            <!--            <SidePanelToolbarButton-->
-            <!--              v-if="showSyncInfo()"-->
-            <!--              icon="o_sync_alt"-->
-            <!--              tooltip="This account is being synced"-->
-            <!--              :color="useUiStore().syncing ? 'green':'grey'"-->
-            <!--              size="9px"-->
-            <!--              class="q-ml-sm q-mr-sm"/>-->
-
             <SidePanelToolbarButton
               v-if="useTabsetsUiStore().matchingTabs.length > 0 && useTabsetsUiStore().matchingTabs[0].tabsetId !== useTabsetsStore().currentTabsetId"
-              icon="system_update_alt"
+              icon="link"
               :tooltip="`open current tab (${useTabsetsUiStore().matchingTabs[0].tab.url}) in tabset(s)`"
-              :color="useUiStore().syncing ? 'green':'grey'"
-              size="9px"
+              color="green"
+              size="11px"
               @click="selectTabsetForFirstMatchingTab(useTabsetsUiStore().matchingTabs[0] as TabAndTabsetId)"
-              class="q-ml-sm q-mr-sm"/>
-
-            <!--            <SidePanelToolbarButton-->
-            <!--              icon="o_add_circle"-->
-            <!--              :tooltip="newTabsetTooltip()"-->
-            <!--              color="warning"-->
-            <!--              class="q-ml-sm"-->
-            <!--              :class="{ shake: annimateNewTabsetButton }"-->
-            <!--              data-testid="addTabsetBtn"-->
-            <!--              @click="openNewTabsetDialog()"/>-->
+              class="q-ma-none q-pa-none q-mr-none"/>
 
             <q-btn outline
                    label="New Tabset"
@@ -96,7 +78,7 @@
                    :class="{ shake: annimateNewTabsetButton }"
                    data-testid="addTabsetBtn"
                    @click="openNewTabsetDialog()"
-                   class="q-ma-none q-px-sm q-py-none"
+                   class="q-ma-none q-ml-sm q-px-sm q-py-none"
                    name="o_bookmark_add"/>
 
           </slot>

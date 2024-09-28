@@ -6,7 +6,7 @@ import ChromeApi from "src/app/BrowserApi";
 import SidePanelPage from "pages/SidePanelPage.vue";
 import {useDB} from "src/services/usePersistenceService";
 import {useQuasar} from "quasar";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";

@@ -407,8 +407,6 @@ import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import NavigationService from "src/services/NavigationService";
 import {DrawerTabs, ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
-import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {useUtils} from "src/core/services/Utils";
@@ -534,17 +532,17 @@ watchEffect(() => {
     LocalStorage.remove(TITLE_IDENT)
 })
 
-watchEffect(() => {
+watch(() => detailLevel.value, () => {
   localStorage.set('ui.detailLevel', detailLevel.value)
   sendMsg('detail-level-changed', {level: detailLevel.value})
 })
 
-watchEffect(() => {
+watch(() => fullUrls.value, (a:any,b:any) => {
   localStorage.set('ui.fullUrls', fullUrls.value)
   sendMsg('fullUrls-changed', {value: fullUrls.value})
 })
 
-watchEffect(() => {
+watch(() => detailLevelPerTabset.value, (v:any) => {
   localStorage.set('ui.detailsPerTabset', detailLevelPerTabset.value)
   sendMsg('detail-level-perTabset-changed', {level: detailLevelPerTabset.value})
 })

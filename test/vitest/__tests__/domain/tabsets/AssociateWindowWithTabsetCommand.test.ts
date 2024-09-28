@@ -2,7 +2,7 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
 import {useDB} from "src/services/usePersistenceService";
 import PersistenceService from "src/services/PersistenceService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";

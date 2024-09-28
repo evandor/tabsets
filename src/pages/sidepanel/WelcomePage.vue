@@ -69,17 +69,13 @@ import {useUiStore} from "src/ui/stores/uiStore";
 import {onMounted, ref, UnwrapRef, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
 import {STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT} from "boot/constants";
 import Analytics from "src/core/utils/google-analytics";
 import DialogButton from "src/core/dialog/buttons/DialogButton.vue";
-import {useAuthStore} from "stores/authStore";
 import {LocalStorage, openURL} from "quasar";
-import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {AppFeatures} from "src/app/models/AppFeatures";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
 
 const {t} = useI18n()

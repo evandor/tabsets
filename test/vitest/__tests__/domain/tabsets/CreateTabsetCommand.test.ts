@@ -2,7 +2,7 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
 import {useDB} from "src/services/usePersistenceService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
@@ -19,8 +19,7 @@ describe('CreateTabsetCommand', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
-    db = useDB().tabsetsIndexedDb//useDB(undefined).db
-    //await useTabsetService().init(db)
+    db = useDB().tabsetsIndexedDb
     await useTabsetsStore().initialize(db)
   })
 
@@ -40,7 +39,7 @@ describe('CreateTabsetCommand', () => {
     expect(executionResult.result.tabset.name).toBe("tabsetName")
     expect(executionResult.message).toBe("Tabset created")
 
-    const db = useDB(undefined).db
+    const db = useDB(undefined).tabsetsIndexedDb
     await db.loadTabsets()
     const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(1)

@@ -160,6 +160,7 @@ import {NotificationType} from "src/core/services/ErrorHandler";
 import NewSubfolderDialog from "src/tabsets/dialogues/NewSubfolderDialog.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {DeleteTabsetCommand} from "src/tabsets/commands/DeleteTabset";
 
 const {inBexMode} = useUtils()
 
@@ -273,8 +274,11 @@ const changeWindow = (tabset: Tabset, window: string) => {
   useTabsetService().saveTabset(tabset)
 }
 
-const deleteTabsetDialog = (tabset: Tabset) => {
-
+const deleteTabsetDialog = (tabset: Tabset):void => {
+  if (tabset.tabs.length === 0) {
+    useCommandExecutor().executeFromUi(new DeleteTabsetCommand(tabset.id))
+    return
+  }
   $q.dialog({
     component: DeleteTabsetDialog,
     componentProps: {

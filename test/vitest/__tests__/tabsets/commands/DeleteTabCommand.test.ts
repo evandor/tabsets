@@ -4,7 +4,7 @@ import {createPinia, setActivePinia} from "pinia";
 import ChromeApi from "src/app/BrowserApi";
 import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {Tab} from "src/tabsets/models/Tab";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabset";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useDB} from "src/services/usePersistenceService";
 import {useSearchStore} from "src/search/stores/searchStore";

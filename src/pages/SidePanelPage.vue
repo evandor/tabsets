@@ -1,5 +1,5 @@
 <template>
-
+  <!-- SidePanelPage -->
   <q-page style="padding-top: 50px">
 
     <div class="wrap" v-if="useUiStore().appLoading">
@@ -132,12 +132,12 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
+import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import _ from "lodash"
-import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/core/services/Utils";
-import {LocalStorage, scroll, uid} from "quasar";
+import {LocalStorage} from "quasar";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
@@ -222,8 +222,7 @@ function determineTabsets() {
 }
 
 watchEffect(() => {
-
-//console.log("==== watch effect ====")
+  console.log("==== watch effect ====")
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
@@ -238,6 +237,7 @@ watchEffect(() => {
           ts.status !== TabsetStatus.ARCHIVED
       }),
       getTabsetOrder, ["asc"])
+    console.log("tabsets:", tabsets.value)
   } else {
     tabsets.value = determineTabsets()
   }
@@ -308,8 +308,8 @@ if (inBexMode()) {
       useTabsetService().reloadTabset(message.data.tabsetId)
     } else if (message.name === "tabset-added") {
       useTabsetService().reloadTabset(message.data.tabsetId)
-    // } else if (message.name === "mark-tabset-deleted") {
-    //   TabsetService.markAsDeleted(message.data.tabsetId)
+      // } else if (message.name === "mark-tabset-deleted") {
+      //   TabsetService.markAsDeleted(message.data.tabsetId)
     } else if (message.name === "tabset-renamed") {
       TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
     } else if (message.name === "progress-indicator") {
@@ -342,9 +342,9 @@ if (inBexMode()) {
       useTabsetService().reloadTabset(tabsetId)
     } else if (message.name === 'reload-application') {
       AppService.restart("restarted=true")
-    // } else if (message.name === 'restore-tabset') {
-    //   debugger
-    //   useCommandExecutor().execute(new RestoreTabsetCommand(message.data.tabsetId, message.data.label, true))
+      // } else if (message.name === 'restore-tabset') {
+      //   debugger
+      //   useCommandExecutor().execute(new RestoreTabsetCommand(message.data.tabsetId, message.data.label, true))
     } else {
       console.log("got unmatched message", message)
     }
@@ -366,7 +366,7 @@ function checkKeystroke(e: KeyboardEvent) {
   }
 }
 
-const toolbarTitle = (tabsets: Tabset[]) => {
+const toolbarTitle = (tabsets: Tabset[]): string => {
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     const spaceName = useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
     return tabsets.length > 6 ?
