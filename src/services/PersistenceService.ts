@@ -2,6 +2,7 @@ import {Notification} from "src/models/Notification";
 import {MetaLink} from "src/models/MetaLink";
 import {RequestInfo} from "src/models/RequestInfo";
 
+// Deprecated
 interface PersistenceService {
 
   getServiceName(): string

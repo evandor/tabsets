@@ -15,14 +15,10 @@ import {useAppStore} from "stores/appStore";
 
 const $q = useQuasar()
 const router = useRouter()
-const route = useRoute()
-
-const {handleError} = useNotificationHandler()
 
 const settingsStore = useSettingsStore()
 settingsStore.initialize($q.localStorage)
-//const localMode = settingsStore.isEnabled('localMode')
-//console.log(` ...config: localMode=${localMode}`)
+console.log("")
 
 useAppStore().init()
 

@@ -2,7 +2,6 @@ import {IDBPDatabase, openDB, deleteDB} from "idb";
 import _ from "lodash";
 import {EXPIRE_DATA_PERIOD_IN_MINUTES, INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
-import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {MetaLink} from "src/models/MetaLink";
 import {uid} from "quasar";
 import {Notification, NotificationStatus} from "src/models/Notification";
@@ -12,6 +11,7 @@ import {RequestInfo} from "src/models/RequestInfo";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
+// Deprecated
 class IndexedDbPersistenceService implements PersistenceService {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
@@ -20,28 +20,29 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   async init(dbName: string) {
-    console.debug(" ...initializing indexeddb database", dbName)
+    // console.debug(" ...initializing indexeddb database", dbName)
     this.db = await this.initDatabase(dbName)
     useUiStore().dbReady = true
   }
 
-  async loadTabsets(): Promise<any> {
-    console.debug(" ...loading tabsets indexeddb")
-    return await this.db.getAll('tabsets')
-      .then((res: any) => res.forEach((r: Tabset) => {
-        // make sure some fields are correctly initialized even for old(er) tabsets
-        if (!r.columns) {
-          r.columns = []
-        }
-        delete r['groups' as keyof object]
-        //console.log("r", ['groups' as keyof object])
-        useTabsetsStore().addTabset(r)
-      }))
-  }
-
-  async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
-    return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
-  }
+  // async loadTabsets(): Promise<any> {
+  //   debugger
+  //   console.debug(" ...loading tabsets indexeddb")
+  //   return await this.db.getAll('tabsets')
+  //     .then((res: any) => res.forEach((r: Tabset) => {
+  //       // make sure some fields are correctly initialized even for old(er) tabsets
+  //       if (!r.columns) {
+  //         r.columns = []
+  //       }
+  //       delete r['groups' as keyof object]
+  //       //console.log("r", ['groups' as keyof object])
+  //       useTabsetsStore().addTabset(r)
+  //     }))
+  // }
+  //
+  // async saveTabset(tabset: Tabset): Promise<IDBValidKey> {
+  //   return await this.db.put('tabsets', JSON.parse(JSON.stringify(tabset)), tabset.id);
+  // }
 
   saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
     const encodedTabUrl = btoa(url)
@@ -124,17 +125,17 @@ class IndexedDbPersistenceService implements PersistenceService {
     return this.db.get('links', encodedUrl)
   }
 
-  async cleanUpTabsets(): Promise<void> {
-    const objectStore = this.db.transaction("tabsets", "readwrite").objectStore("tabsets");
-    let cursor = await objectStore.openCursor()
-    while (cursor) {
-      if (cursor.value.status === TabsetStatus.DELETED) {
-        console.log("cleanup: deleteing stale tabset", cursor.key)
-        objectStore.delete(cursor.key)
-      }
-      cursor = await cursor.continue();
-    }
-  }
+  // async cleanUpTabsets(): Promise<void> {
+  //   const objectStore = this.db.transaction("tabsets", "readwrite").objectStore("tabsets");
+  //   let cursor = await objectStore.openCursor()
+  //   while (cursor) {
+  //     if (cursor.value.status === TabsetStatus.DELETED) {
+  //       console.log("cleanup: deleteing stale tabset", cursor.key)
+  //       objectStore.delete(cursor.key)
+  //     }
+  //     cursor = await cursor.continue();
+  //   }
+  // }
 
 
   async cleanUpRequests(): Promise<void> {

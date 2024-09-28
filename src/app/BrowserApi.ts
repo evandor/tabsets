@@ -19,8 +19,6 @@ function runHousekeeping() {
 
   console.log("housekeeping now...")
 
-  persistenceService.cleanUpTabsets()
-
   persistenceService.cleanUpRequests()
 
   persistenceService.cleanUpMetaLinks()
@@ -104,10 +102,10 @@ class BrowserApi {
       return
     }
     if (chrome && chrome.contextMenus) {
-      console.log("chrome.contextMenus", chrome.contextMenus)
+      //console.log("chrome.contextMenus", chrome.contextMenus)
       chrome.contextMenus.removeAll(
         () => {
-          console.debug("creating contextmenu for tabset_extension")
+          console.debug(" ...creating contextmenu for tabset_extension")
           chrome.contextMenus.create({
               id: 'tabset_extension',
               title: 'Tabsets Extension',
@@ -140,7 +138,7 @@ class BrowserApi {
               //   contexts: ['all']
               // })
               //}
-              console.debug(" > context menu: save_to_currentTS")
+             // console.debug(" > context menu: save_to_currentTS")
               chrome.contextMenus.create({
                 id: 'save_to_currentTS',
                 parentId: 'tabset_extension',
@@ -162,17 +160,17 @@ class BrowserApi {
                 // rest of logic in windowsStore
               }
 
-              if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
-                console.debug(" > context menu: annotate_website")
-                chrome.contextMenus.create({
-                  id: 'annotate_website',
-                  parentId: 'tabset_extension',
-                  title: 'Annotate',
-                  documentUrlPatterns: ['https://*/*', 'https://*/'],
-                  contexts: ['all']
-                })
-              }
-              console.debug(` > context menu: save_as_tabset for ${useTabsetsStore().tabsets.size} tabset(s)`)
+              // if (useFeaturesStore().hasFeature(FeatureIdent.ANNOTATIONS)) {
+              //   console.debug(" > context menu: annotate_website")
+              //   chrome.contextMenus.create({
+              //     id: 'annotate_website',
+              //     parentId: 'tabset_extension',
+              //     title: 'Annotate',
+              //     documentUrlPatterns: ['https://*/*', 'https://*/'],
+              //     contexts: ['all']
+              //   })
+              // }
+              //console.debug(` > context menu: save_as_tabset for ${useTabsetsStore().tabsets.size} tabset(s)`)
               const allTabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
 
               if (allTabsets.length > 0) {

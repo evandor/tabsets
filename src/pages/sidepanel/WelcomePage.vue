@@ -88,8 +88,6 @@ const router = useRouter()
 const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
-const activateNotifications = ref(false)
-const activateFullPageApp = ref(false)
 const login = ref(false)
 
 
@@ -99,32 +97,20 @@ onMounted(() => {
   LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
 })
 
-watchEffect(async () => {
-  const feature = new AppFeatures().getFeature(FeatureIdent.NOTIFICATIONS)
-  // if (activateNotifications.value && feature) {
-  //   const res = await useCommandExecutor().execute(new GrantPermissionCommand('notifications'))
-  //   if (!res.result) {
-  //     activateNotifications.value = false
-  //   }
-  // } else if (!activateNotifications.value && feature) {
-  //   useFeaturesStore().deactivateFeature('notifications')
-  // }
-})
+// function setFeature(featureIdent: FeatureIdent, val: UnwrapRef<boolean>) {
+//   const feature = new AppFeatures().getFeature(featureIdent)
+//   if (val && feature) {
+//     console.log("activating", featureIdent)
+//     useFeaturesStore().activateFeature(featureIdent.toLowerCase())
+//   } else if (!val && feature) {
+//     console.log("deactivateing", featureIdent)
+//     useFeaturesStore().deactivateFeature(featureIdent.toLowerCase())
+//   }
+// }
 
-function setFeature(featureIdent: FeatureIdent, val: UnwrapRef<boolean>) {
-  const feature = new AppFeatures().getFeature(featureIdent)
-  if (val && feature) {
-    console.log("activating", featureIdent)
-    useFeaturesStore().activateFeature(featureIdent.toLowerCase())
-  } else if (!val && feature) {
-    console.log("deactivateing", featureIdent)
-    useFeaturesStore().deactivateFeature(featureIdent.toLowerCase())
-  }
-}
-
-watchEffect(async () => {
-  setFeature(FeatureIdent.STANDALONE_APP, activateFullPageApp.value)
-})
+// watchEffect(async () => {
+//   setFeature(FeatureIdent.STANDALONE_APP, activateFullPageApp.value)
+// })
 
 watchEffect(() => {
   useUiStore().showLoginTable = login.value
@@ -142,7 +128,7 @@ watchEffect(() => {
 const addFirstTabset = () => {
   useCommandExecutor()
     .executeFromUi(new CreateTabsetCommand(tabsetName.value, []))
-    .then((res) => {
+    .then((res:any) => {
       useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
       router.push("/sidepanel?first=true")
     })

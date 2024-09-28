@@ -41,7 +41,7 @@ class AppService {
 
   async init(quasar: any, router: Router, forceRestart = false) {
 
-    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, quasar set=${quasar !== undefined}, router set=${router !== undefined}`, forceRestart ? "font-weight:bold" : "")
+    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, router set=${router !== undefined}`,"font-weight:bold")
 
     if (this.initialized && !forceRestart) {
       console.debug("stopping AppService initialization; already initialized and not forcing restart")
@@ -61,19 +61,15 @@ class AppService {
 
     useAppStore().init()
 
-    // init of stores and some listeners
-    // await usePermissionsStore().initialize(useDB(quasar).localDb)
-
-
     await ChromeListeners.initListeners()
+    console.debug('')
 
     // Bookmarks
     ChromeBookmarkListeners.initListeners()
-    await useBookmarksStore().init()
+
+    useBookmarksStore().init()
     await BookmarksService.init()
     console.debug('')
-
-    //settingsStore.initialize(quasar.localStorage);
 
     // Snapshots
     await useSnapshotsStore().initialize(useDB().snapshotsDb)
@@ -82,16 +78,22 @@ class AppService {
 
     // should be initialized before search submodule
     await useThumbnailsService().init(useDB().thumbnailsDb)
+    console.debug('')
+
     await useContentService().init(IndexedDbContentPersistence)
     console.debug('')
 
     await useSearchStore().init().catch((err:any) => console.error(err))
+    console.debug('')
 
     // init db
     await IndexedDbPersistenceService.init("db")
+    console.log("")
 
     // init services
     await useNotificationsStore().initialize(useDB(undefined).db)
+    console.log("")
+
     await useSuggestionsStore().init()
     console.debug('')
 
@@ -125,10 +127,11 @@ class AppService {
 
     console.log(`%cinitializing AppService: initCoreSerivces`, "font-weight:bold")
 
-    // if (useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)) {
-      await useWindowsStore().initialize()
-      useWindowsStore().initListeners()
-    // }
+    await useWindowsStore().initialize()
+    console.debug("")
+
+    useWindowsStore().initListeners()
+    console.debug("")
 
     /**
      * features store: passing storage for better testing.
@@ -136,6 +139,7 @@ class AppService {
      */
     const featuresStorage = useDB(quasar).featuresDb
     await useFeaturesStore().initialize(featuresStorage)
+    console.debug("")
 
     await useNotesStore().initialize(useDB().notesDb)
     console.debug('')

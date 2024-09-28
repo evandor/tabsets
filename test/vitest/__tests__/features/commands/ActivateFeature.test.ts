@@ -4,7 +4,7 @@ import {createPinia, setActivePinia} from "pinia";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
-import {ActivateFeatureCommand} from "src/features/commands/ActivateFeature";
+import {ActivateFeatureCommand} from "src/features/commands/ActivateFeatureCommand";
 import {AppFeatures} from "src/app/models/AppFeatures";
 import {Feature} from "src/features/models/Feature";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
