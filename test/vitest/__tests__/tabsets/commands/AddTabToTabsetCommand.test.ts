@@ -12,6 +12,7 @@ import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useContentService} from "src/content/services/ContentService";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
+import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
 
 installQuasarPlugin();
 
@@ -98,26 +99,26 @@ describe('AddTabToTabsetCommand', () => {
     expect(content!.metas['description' as keyof object]).toBe("Description")
   });
 
-  // TODO
-  // it('adding tab with content to tabset\'s subfolder', async () => {
-  //   const theTab = new Tab("tabId3", testDeChromeTab)
-  //   await db.saveContent(theTab, "text", {}, "title", [])
-  //
-  //   const createdTabset = (await new CreateTabsetCommand("new Tabset2", []).execute()).result.tabset
-  //   const subfolder = (await new CreateFolderCommand("subfolder", [], createdTabset.id).execute()).result
-  //
-  //   const result = await new AddTabToTabsetCommand(theTab, createdTabset, subfolder).execute()
-  //   expect(result.message).toBe("Tab was added")
-  //
-  //   const tabsetFromDB = useTabsetsStore().getTabset(createdTabset.id)!
-  //   console.log("tabsetFromDB", tabsetFromDB)
-  //   expect(tabsetFromDB.tabs.length).toBe(1)
-  //   expect(tabsetFromDB.name).toBe("new Tabset2")
-  //   expect(tabsetFromDB.folders.length).toBe(1)
-  //   expect(tabsetFromDB.folders[0].name).toBe("subfolder")
-  //   // @ts-ignore
-  //   expect(useSearchStore().getIndex().size()).toBe(1)
-  // });
+  it('adding tab with content to tabset\'s subfolder', async () => {
+    const theTab = new Tab("tabId3", testDeChromeTab)
+   // await db.saveContent(theTab, "text", {}, "title", [])
+
+    const createdTabset = (await new CreateTabsetCommand("new Tabset2", []).execute()).result.tabset
+    const subfolder = (await new CreateFolderCommand("subfolder", [], createdTabset.id).execute()).result
+    createdTabset.folderActive = subfolder
+
+    const result = await new AddTabToTabsetCommand(theTab, createdTabset, subfolder).execute()
+    expect(result.message).toBe("Link was added")
+
+    const tabsetFromDB = useTabsetsStore().getTabset(createdTabset.id)!
+    console.log("tabsetFromDB", tabsetFromDB)
+    expect(tabsetFromDB.tabs.length).toBe(0)
+    expect(tabsetFromDB.name).toBe("new Tabset2")
+    expect(tabsetFromDB.folders.length).toBe(1)
+    expect(tabsetFromDB.folders[0].name).toBe("subfolder")
+    // @ts-ignore
+    expect(useSearchStore().getIndex().size()).toBe(1)
+  });
 
 
 });

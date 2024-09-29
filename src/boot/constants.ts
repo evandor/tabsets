@@ -19,7 +19,6 @@ const TITLE_IDENT = 'title';
 
 const APP_INSTALLATION_ID = 'app.installation.id'
 
-
 const SUBSCRIPTION_ID_IDENT = 'subscription.id';
 
 const SHARING_AUTHOR_IDENT = 'sharing.author';

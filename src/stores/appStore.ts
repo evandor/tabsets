@@ -13,6 +13,7 @@ export const useAppStore = defineStore('app', () => {
 
   const installationId = ref<string | undefined>(LocalStorage.getItem(APP_INSTALLATION_ID) as string || undefined)
 
+  const logflowId = ref<string> ((Math.random() * 10).toString(36).replace('.', ''))
   //const user = ref<object | undefined>(undefined)
 
   function init() {
@@ -32,6 +33,7 @@ export const useAppStore = defineStore('app', () => {
 
   return {
     init,
+    logflowId,
     getInstallationId
   }
 })

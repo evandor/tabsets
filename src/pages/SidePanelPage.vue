@@ -222,7 +222,6 @@ function determineTabsets() {
 }
 
 watchEffect(() => {
-  console.log("==== watch effect ====")
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
     tabsets.value = _.sortBy(
@@ -237,7 +236,7 @@ watchEffect(() => {
           ts.status !== TabsetStatus.ARCHIVED
       }),
       getTabsetOrder, ["asc"])
-    console.log("tabsets:", tabsets.value)
+    // console.log("tabsets:", tabsets.value)
   } else {
     tabsets.value = determineTabsets()
   }

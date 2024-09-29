@@ -1,4 +1,5 @@
 import {api} from "boot/axios";
+import {useAppStore} from "stores/appStore";
 
 const version = import.meta.env.PACKAGE_VERSION
 
@@ -13,6 +14,7 @@ function log(msg: string, level: number) {
     _app: "tabsets",
     _mode: process.env.MODE,
     _version: version,
+    _logflowId: useAppStore().logflowId,
     _stage: process.env.TABSETS_STAGE
   }
   api.post("http://graylog.tabsets.net:12201/gelf", gelfMessage, {headers: {"Content-Type": "application/json"}})
