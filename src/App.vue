@@ -12,12 +12,16 @@ import {useLogger} from "src/services/Logger";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useSettingsStore} from "stores/settingsStore";
 import {useAppStore} from "stores/appStore";
+import {usePermissionsStore} from "stores/usePermissionsStore";
 
 const $q = useQuasar()
 const router = useRouter()
 
 const settingsStore = useSettingsStore()
 settingsStore.initialize($q.localStorage)
+console.log("")
+
+usePermissionsStore().initialize()
 console.log("")
 
 useAppStore().init()

@@ -34,6 +34,8 @@ const persistenceService = IndexedDbPersistenceService
 class BrowserApi {
 
   onHeadersReceivedListener = function (details: any) {
+    debugger
+    console.log("WebRequestListener:", details)
     if (details.url) {
       persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode as number, details.responseHeaders || []))
         .then(() => console.debug("added request"))

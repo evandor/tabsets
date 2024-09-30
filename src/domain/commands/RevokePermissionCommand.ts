@@ -1,10 +1,10 @@
 import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {usePermissionsStore} from "src/stores/permissionsStore";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {usePermissionsStore} from "stores/usePermissionsStore";
 
 class UndoCommand implements Command<boolean> {
 

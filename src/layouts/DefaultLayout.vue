@@ -92,11 +92,11 @@
           </q-menu>
         </span>
 
-        <ToolbarButton
-          :feature="FeatureIdent.SAVE_TAB"
-          :drawer="DrawerTabs.SAVED_TABS"
-          icon="o_save"
-          tooltip="The List of Urls displayed when you open a new tab in your Browser"/>
+<!--        <ToolbarButton-->
+<!--          :feature="FeatureIdent.SAVE_TAB"-->
+<!--          :drawer="DrawerTabs.SAVED_TABS"-->
+<!--          icon="o_save"-->
+<!--          tooltip="The List of Urls displayed when you open a new tab in your Browser"/>-->
 
         <ToolbarButton
           :feature="FeatureIdent.GROUP_BY_DOMAIN"

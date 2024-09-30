@@ -1,6 +1,7 @@
 import _ from "lodash"
 import {Feature} from "src/features/models/Feature";
 import {FeatureIdent, FeatureType} from "src/app/models/FeatureIdent";
+import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
 
 export class AppFeatures {
   features: Feature[] = [
@@ -11,12 +12,12 @@ export class AppFeatures {
     new Feature(FeatureIdent.BOOKMARKS, FeatureType.RECOMMENDED,
       'Bookmarks Manager',
       'Activate a Bookmark Manager in the Side Panel',
-      'o_bookmark', 'bookmarks.png', ['all']),
+      'o_bookmark', 'bookmarks.png', ['all'], [], false, 'warning'),
 
     new Feature(FeatureIdent.STATS, FeatureType.OPTIONAL,
       'Stats Widget',
       'Activate a little Widget to display some statistics (tabs count etc)',
-      'show_chart', 'stats.png', ['all']),
+      'show_chart', 'stats.png', ['bex']),
 
     new Feature(FeatureIdent.TOP10, FeatureType.OPTIONAL,
       'Top 10 Tabs',
@@ -138,7 +139,7 @@ export class AppFeatures {
       'its links and the received http headers are taken into account. ' +
       'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
       'o_tab', 'analyse.png', ['bex'])
-      // .setActivateCommands([new GrantPermissionCommand('webRequest')])
+      .setActivateCommands([new GrantPermissionCommand('webRequest')])
       .setImageWidth("700px"),
 
     new Feature(FeatureIdent.TAB_GROUPS, FeatureType.EXPERIMENTAL,

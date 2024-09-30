@@ -107,6 +107,7 @@
 
   <SidePanelFooterLeftButton :side-panel-view="SidePanelViews.BOOKMARKS"
                              icon="o_bookmark"
+                             defaultColor="warning"
                              :class="{ shake: animateBookmarksButton }"
                              :size="props.size"
                              tooltip="Show the Bookmarks Browser"/>

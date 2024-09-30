@@ -6,6 +6,7 @@ import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent} from "src/suggestions/models/Suggestion";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {usePermissionsStore} from "stores/usePermissionsStore";
 
 class UndoCommand implements Command<boolean> {
 

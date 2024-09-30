@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh LpR lFr">
     <q-header elevated>
-      <q-toolbar class="">
+      <q-toolbar class="bg-grey-2 text-primary">
 
         <template v-if="leftDrawerOpen">
           <q-img
@@ -39,7 +39,8 @@
                       v-if="useTabsetsStore().tabsets.size > 1 || useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
 
         <Transition name="colorized-appear">
-          <div v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
+          <div
+            v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
             <OpenTabsThresholdWidget/>
           </div>
         </Transition>
@@ -86,23 +87,23 @@
           </q-menu>
         </span>
 
-<!--        <ToolbarButton-->
-<!--          :feature="FeatureIdent.SAVE_TAB"-->
-<!--          :drawer="DrawerTabs.SAVED_TABS"-->
-<!--          icon="o_save"-->
-<!--          tooltip="List of MTHML Snapshots"/>-->
+        <!--        <ToolbarButton-->
+        <!--          :feature="FeatureIdent.SAVE_TAB"-->
+        <!--          :drawer="DrawerTabs.SAVED_TABS"-->
+        <!--          icon="o_save"-->
+        <!--          tooltip="List of MTHML Snapshots"/>-->
 
-<!--        <ToolbarButton-->
-<!--          :feature="FeatureIdent.SAVE_TAB_AS_PNG"-->
-<!--          :drawer="DrawerTabs.SAVED_TABS_AS_PNG"-->
-<!--          icon="o_image"-->
-<!--          tooltip="The List of PNGs"/>-->
+        <!--        <ToolbarButton-->
+        <!--          :feature="FeatureIdent.SAVE_TAB_AS_PNG"-->
+        <!--          :drawer="DrawerTabs.SAVED_TABS_AS_PNG"-->
+        <!--          icon="o_image"-->
+        <!--          tooltip="The List of PNGs"/>-->
 
-<!--        <ToolbarButton-->
-<!--          :feature="FeatureIdent.SAVE_TAB_AS_PDF"-->
-<!--          :drawer="DrawerTabs.SAVED_TABS_AS_PDF"-->
-<!--          icon="o_picture_as_pdf"-->
-<!--          tooltip="The List of PDFs"/>-->
+        <!--        <ToolbarButton-->
+        <!--          :feature="FeatureIdent.SAVE_TAB_AS_PDF"-->
+        <!--          :drawer="DrawerTabs.SAVED_TABS_AS_PDF"-->
+        <!--          icon="o_picture_as_pdf"-->
+        <!--          tooltip="The List of PDFs"/>-->
 
         <ToolbarButton
           :feature="FeatureIdent.GROUP_BY_DOMAIN"
@@ -117,23 +118,21 @@
           tooltip="Access to your rss feed"/>
 
         <ToolbarButton
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS)"
           :drawer="DrawerTabs.BOOKMARKS"
+          color="warning"
           icon="o_bookmark"
           tooltip="Access to your bookmarks"/>
 
-        <!--        <ToolbarButton-->
-        <!--            :drawer="DrawerTabs.UNASSIGNED_TABS"-->
-        <!--            icon="o_playlist_add"-->
-        <!--            tooltip="Show add tabs view"-->
-        <!--            :restricted="false"/>-->
-
         <ToolbarButton
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.OPEN_TABS)"
           :drawer="DrawerTabs.OPEN_TABS"
           icon="o_playlist_add"
           tooltip="Show Open Tabs View"
           :restricted="$q.platform.is.chrome"/>
 
         <ToolbarButton
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)"
           :drawer="DrawerTabs.TAGS_VIEWER"
           icon="o_label"
           tooltip="Show tags viewer"
@@ -198,7 +197,7 @@ import Navigation from "src/components/Navigation.vue"
 import _ from "lodash";
 import {useSpacesStore} from "src/spaces/stores/spacesStore"
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
-import {DrawerTabs, UserLevel, useUiStore} from "src/ui/stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
 import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/core/services/Utils";
@@ -207,10 +206,7 @@ import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {useSettingsStore} from "src/stores/settingsStore"
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
-import {FirebaseCall} from "src/services/firebase/FirebaseCall";
-import {useAuthStore} from "stores/authStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import OpenTabsThresholdWidget from "src/opentabs/widgets/OpenTabsThresholdWidget.vue";
@@ -221,7 +217,7 @@ import SearchWidget from "src/search/widgets/SearchWidget.vue";
 const $q = useQuasar()
 const router = useRouter()
 
-const leftDrawerOpen = ref($q.screen.gt.lg)
+const leftDrawerOpen = ref($q.screen.gt.md)
 
 const notificationsStore = useNotificationsStore()
 const spacesStore = useSpacesStore()

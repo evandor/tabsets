@@ -2370,11 +2370,6 @@
   dependencies:
     langium "3.0.0"
 
-"@mozilla/readability@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@mozilla/readability/-/readability-0.5.0.tgz#a6d5055bbadd0f329cc3e72089d4f176ed96c1d5"
-  integrity sha512-Z+CZ3QaosfFaTqvhQsIktyGrjFjSC0Fa4EMph4mqKnWhmyoGICsV/8QK+8HpXut6zV7zwfWwqDmEjtk1Qf6EgQ==
-
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -2917,11 +2912,6 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.2.tgz#821f8442f4175d8f0467b9daf26e3a18e2d02af2"
   integrity sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==
 
-"@stripe/stripe-js@^4.4.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-4.5.0.tgz#0beda9beefc05143ef6955d7bb7960064aecc53c"
-  integrity sha512-dMOzc58AOlsF20nYM/avzV8RFhO/vgYTY7ajLMH6mjlnZysnOHZxsECQvjEmL8Q/ukPwHkOnxSPW/QGCCnp7XA==
-
 "@szmarczak/http-timer@^4.0.5":
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-4.0.6.tgz#b4a914bb62e7c272d4e5989fe4440f812ab1d807"
@@ -3165,7 +3155,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@>=10.0.0", "@types/node@^22.5.4", "@types/node@^22.5.5":
+"@types/node@*", "@types/node@>=10.0.0", "@types/node@^22.5.5":
   version "22.6.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-22.6.1.tgz#e531a45f4d78f14a8468cb9cdc29dc9602afc7ac"
   integrity sha512-V48tCfcKb/e6cVUigLAaJDAILdMP0fUW6BidkPK4GpGjXcfbnoHasCZDwz3N3yVt5we2RHm4XTQCpv0KJz9zqw==
@@ -3176,6 +3166,13 @@
   version "20.16.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.16.6.tgz#0bf99fcebcee68ecdc2c45b160a10a0fe5c652b8"
   integrity sha512-T7PpxM/6yeDE+AdlVysT62BX6/bECZOmQAgiFg5NoBd5MQheZ3tzal7f1wvzfiEcmrcJNRi2zRr2nY2zF+0uqw==
+  dependencies:
+    undici-types "~6.19.2"
+
+"@types/node@^22.7.4":
+  version "22.7.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.7.4.tgz#e35d6f48dca3255ce44256ddc05dee1c23353fcc"
+  integrity sha512-y+NPi1rFzDs1NdQHHToqeiX2TIS79SWEAw9GYhkkx8bD0ChpfqC+n2j5OXOCpzfojBEBt6DnEnnG9MY0zk1XLg==
   dependencies:
     undici-types "~6.19.2"
 

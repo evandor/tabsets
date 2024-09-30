@@ -283,7 +283,8 @@ const deleteTabsetDialog = (tabset: Tabset):void => {
     component: DeleteTabsetDialog,
     componentProps: {
       tabsetId: tabset.id,
-      tabsetName: tabset.name
+      tabsetName: tabset.name,
+      tabsCount: tabsets.tabs.length
     }
   })
 }

@@ -372,7 +372,7 @@ const toolbarTitle = (tabsets: Tabset[]): string => {
       spaceName + ' (' + tabsets.length.toString() + ')' :
       spaceName
   }
-  const title = LocalStorage.getItem(TITLE_IDENT) || ('My Tabsets' + stageIdentifier())
+  const title: string = LocalStorage.getItem(TITLE_IDENT) || ('My Tabsets' + stageIdentifier())
   return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 

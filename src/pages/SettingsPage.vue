@@ -213,7 +213,7 @@
           Allowed Origins
         </div>
         <div class="col-9">
-          usePermissionsStore().permissions?.origins
+          {{ usePermissionsStore().permissions?.origins }}
         </div>
       </div>
 
@@ -430,6 +430,7 @@ import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
 import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
 import {useGroupsStore} from "../tabsets/stores/groupsStore";
 import OpenRightDrawerWidget from "src/ui/widgets/OpenRightDrawerWidget.vue";
+import {usePermissionsStore} from "stores/usePermissionsStore";
 
 const { t } = useI18n()
 
@@ -509,6 +510,9 @@ watchEffect(() => {
   ddgEnabled.value = settingsStore.isEnabled('noDDG')
   ignoreExtensionsEnabled.value = settingsStore.isEnabled('extensionsAsTabs')
 })
+
+watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
+
 
 watchEffect(() => {
   //console.log("***setting dark mode to ", typeof darkMode.value, darkMode.value)

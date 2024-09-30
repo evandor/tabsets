@@ -16,19 +16,29 @@
           </div>
           <div class="col-xs-12 col-md-6 text-right">
 
-            <q-icon
-              class="cursor-pointer" size="22px" color="warning"
-              style="position: relative;top:5px;right:-2px"
-              name="add_circle" @click="addTabset">
-              <q-tooltip
-                class="tooltip"
-                :delay="200"
-                anchor="center left" self="center right">
-                {{ useFeaturesStore().hasFeature(FeatureIdent.SPACES) ?
-                  'Click here to add a new tabset to the current Space':
-                  'Click here to add a new tabset'}}
-              </q-tooltip>
-            </q-icon>
+            <q-btn outline
+                   label="New Tabset"
+                   color="primary"
+                   size="sm"
+                   data-testid="addTabsetBtn"
+                   @click="addTabset()"
+                   class="q-ma-none q-ml-sm q-px-sm q-py-none q-mt-sm"
+                   name="o_bookmark_add"/>
+
+
+<!--            <q-icon-->
+<!--              class="cursor-pointer" size="22px" color="warning"-->
+<!--              style="position: relative;top:5px;right:-2px"-->
+<!--              name="add_circle" @click="addTabset">-->
+<!--              <q-tooltip-->
+<!--                class="tooltip"-->
+<!--                :delay="200"-->
+<!--                anchor="center left" self="center right">-->
+<!--                {{ useFeaturesStore().hasFeature(FeatureIdent.SPACES) ?-->
+<!--                  'Click here to add a new tabset to the current Space':-->
+<!--                  'Click here to add a new tabset'}}-->
+<!--              </q-tooltip>-->
+<!--            </q-icon>-->
 
           </div>
         </div>
