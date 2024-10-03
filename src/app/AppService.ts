@@ -19,7 +19,6 @@ import {useAppStore} from "stores/appStore";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";
-import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
@@ -31,6 +30,9 @@ import _ from "lodash"
 import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
 import {TabsetInfo} from "src/core/models/TabsetInfo";
 import {SpaceInfo} from "src/core/models/SpaceInfo";
+import {useRequestsService} from "src/requests/services/ContentService";
+import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
+import IndexedDbRequestPersistence from "src/requests/persistence/IndexedDbRequestPersistence";
 
 class AppService {
 
@@ -79,6 +81,9 @@ class AppService {
     console.debug('')
 
     await useContentService().init(IndexedDbContentPersistence)
+    console.debug('')
+
+    await useRequestsService().init(IndexedDbRequestPersistence)
     console.debug('')
 
     await useSearchStore().init().catch((err:any) => console.error(err))

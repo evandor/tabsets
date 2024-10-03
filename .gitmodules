@@ -54,3 +54,7 @@
 	path = src/notes
 	url = https://github.com/evandor/submodule-notes.git
 	branch = main
+[submodule "src/requests"]
+	path = src/requests
+	url = https://github.com/evandor/submodule-requests.git
+	branch = main

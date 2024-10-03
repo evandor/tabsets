@@ -37,6 +37,8 @@ git submodule add -b localstorage https://github.com/evandor/submodule-features.
 git submodule add -b main https://github.com/evandor/submodule-opentabs.git src/opentabs
 git submodule add -b main https://github.com/evandor/submodule-snapshots.git src/snapshots
 git submodule add -b main https://github.com/evandor/submodule-ui.git src/ui
+git submodule add -b main https://github.com/evandor/submodule-requests.git src/requests
+
 ```
 
 if you run into problems (e.g. src/bookmarks already exists, but is empty), run this:

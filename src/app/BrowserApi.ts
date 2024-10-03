@@ -6,12 +6,13 @@ import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceServic
 import {Tab} from "src/tabsets/models/Tab";
 import {uid} from "quasar";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {RequestInfo} from "src/models/RequestInfo";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Router} from "vue-router";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import IndexedDbRequestPersistence from "src/requests/persistence/IndexedDbRequestPersistence";
+import {useRequestsService} from "src/requests/services/ContentService";
 
 
 function runHousekeeping() {
@@ -33,13 +34,9 @@ const persistenceService = IndexedDbPersistenceService
 
 class BrowserApi {
 
-  onHeadersReceivedListener = function (details: any) {
-    debugger
-    console.log("WebRequestListener:", details)
+  onHeadersReceivedListener = function (details: chrome.webRequest.WebResponseHeadersDetails) {
     if (details.url) {
-      persistenceService.saveRequest(details.url, new RequestInfo(details.statusCode as number, details.responseHeaders || []))
-        .then(() => console.debug("added request"))
-        .catch(err => console.warn("err", err))
+      useRequestsService().logWebRequest(details)
     }
   }
 

@@ -12,7 +12,7 @@ import {useSearchStore} from "src/search/stores/searchStore";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
+import IndexedDbContentPersistence from "src/content/persistence/IndexedDbRequestPersistence";
 import {useContentService} from "src/content/services/ContentService";
 
 installQuasarPlugin();
