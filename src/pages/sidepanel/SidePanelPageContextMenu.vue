@@ -7,14 +7,14 @@
                        icon="o_note"
                        label="Edit Tabset"/>
 
-<!--      <ContextMenuItem v-close-popup-->
-<!--                       @was-clicked="emits('editHeaderDescription')"-->
-<!--                       icon="o_description"-->
-<!--                       label="Tabset Description..."/>-->
+      <!--      <ContextMenuItem v-close-popup-->
+      <!--                       @was-clicked="emits('editHeaderDescription')"-->
+      <!--                       icon="o_description"-->
+      <!--                       label="Tabset Description..."/>-->
 
       <template v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
 
-        <q-separator inset />
+        <q-separator inset/>
 
         <ContextMenuItem v-close-popup
                          @was-clicked="createSubfolder(tabset)"
@@ -26,9 +26,9 @@
       <q-separator inset v-if="useTabsetsStore().tabsets.size > 1"/>
 
       <ContextMenuItem v-close-popup
-                       v-if="useFeaturesStore().hasFeature(FeatureIdent.NOTES)"
+                       v-if="showCreateNoteItem()"
                        @was-clicked="startTabsetNote(tabset)"
-                       icon="o_add_circle"
+                       icon="o_description"
                        label="Create Note"/>
 
 
@@ -72,7 +72,7 @@
         <ContextMenuItem v-close-popup
                          @was-clicked="openOverviewPage(tabset.id)"
                          icon="open_in_new"
-                         label="Show Overview"/>
+                         label="Show Gallery"/>
       </template>
 
       <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 6"
@@ -110,14 +110,14 @@
 
       <q-separator inset/>
 
-      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
-        <ContextMenuItem v-close-popup
-                         @was-clicked="useSearchStore().reindexTabset(tabset.id)"
-                         icon="o_note"
-                         label="Re-Index Search (dev)"/>
+      <!--      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">-->
+      <!--        <ContextMenuItem v-close-popup-->
+      <!--                         @was-clicked="useSearchStore().reindexTabset(tabset.id)"-->
+      <!--                         icon="o_note"-->
+      <!--                         label="Re-Index Search (dev)"/>-->
 
-        <q-separator inset/>
-      </template>
+      <!--        <q-separator inset/>-->
+      <!--      </template>-->
 
       <ContextMenuItem v-close-popup
                        @was-clicked="deleteTabsetDialog(tabset as Tabset)"
@@ -138,11 +138,10 @@
 <script lang="ts" setup>
 
 import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {Tabset, TabsetSharing, TabsetStatus} from "src/tabsets/models/Tabset";
-import {useSearchStore} from "src/search/stores/searchStore";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import NavigationService from "src/services/NavigationService";
 import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
-import {LocalStorage, openURL, useQuasar} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import {useUtils} from "src/core/services/Utils";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
@@ -150,7 +149,7 @@ import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavo
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "src/core/components/helper/ContextMenuItem.vue";
-import {PropType} from "vue";
+import {PropType, watchEffect} from "vue";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tab} from "src/tabsets/models/Tab";
 import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
@@ -161,6 +160,7 @@ import NewSubfolderDialog from "src/tabsets/dialogues/NewSubfolderDialog.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {DeleteTabsetCommand} from "src/tabsets/commands/DeleteTabset";
+import {CreateNotebookCommand} from "src/notes/commands/CreateNotebookCommand"
 
 const {inBexMode} = useUtils()
 
@@ -175,12 +175,9 @@ const emits = defineEmits(['editHeaderDescription'])
 
 const publictabsetsPath = "https://public.tabsets.net/tabsets/"
 
-const startTabsetNote = (tabset: Tabset) => {
-  const url = chrome && chrome.runtime && chrome.runtime.getURL ?
-    chrome.runtime.getURL('www/index.html') + "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true" :
-    "#/mainpanel/notes/?tsId=" + tabset.id + "&edit=true"
-  NavigationService.openOrCreateTab([url])
-}
+const startTabsetNote = (tabset: Tabset) =>
+  useCommandExecutor().executeFromUi(new CreateNotebookCommand(tabset))
+
 
 const createSubfolder = (tabset: Tabset) => {
   $q.dialog({
@@ -253,6 +250,10 @@ const pin = (tabset: Tabset) =>
 const unpin = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
 
+const showCreateNoteItem = () =>
+  useFeaturesStore().hasFeature(FeatureIdent.NOTES)
+
+
 const getPublicTabsetLink = (ts: Tabset) => {
   let image = "https://tabsets.web.app/favicon.ico"
   if (ts && ts.sharedId) {
@@ -274,7 +275,7 @@ const changeWindow = (tabset: Tabset, window: string) => {
   useTabsetService().saveTabset(tabset)
 }
 
-const deleteTabsetDialog = (tabset: Tabset):void => {
+const deleteTabsetDialog = (tabset: Tabset): void => {
   if (tabset.tabs.length === 0) {
     useCommandExecutor().executeFromUi(new DeleteTabsetCommand(tabset.id))
     return
@@ -284,7 +285,7 @@ const deleteTabsetDialog = (tabset: Tabset):void => {
     componentProps: {
       tabsetId: tabset.id,
       tabsetName: tabset.name,
-      tabsCount: tabsets.tabs.length
+      tabsCount: tabset.tabs.length
     }
   })
 }

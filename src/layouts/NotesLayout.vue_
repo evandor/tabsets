@@ -1,0 +1,78 @@
+<template>
+  <q-layout view="hHh lpR fFf">
+
+    <q-header class="bg-white text-primary">
+      <q-toolbar>
+        <q-btn dense flat round icon="menu" @click="toggleLeftDrawer"/>
+
+        <q-toolbar-title>
+          <q-avatar>
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+          </q-avatar>
+          Notes
+        </q-toolbar-title>
+        <q-btn flat round dense>
+<!--          <q-btn class="cursor-pointer q-mr-md" @click="createSubfolder()"-->
+<!--                 icon="edit" size="sm" label="New Sub-Page"/>-->
+          <q-btn class="cursor-pointer q-mr-md" @click="openInEditMode()"
+                 icon="edit" size="sm"  label="Edit"/>
+<!--          <q-btn class="cursor-pointer q-mr-md" @click="deleteNote()"-->
+<!--                 icon="edit" size="sm"  label="Delete"/>-->
+        </q-btn>
+        <q-icon name="save" @click="saveInPage"/>
+        <q-icon name="save" v-if="savingIndicator" />
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer show-if-above v-model="leftDrawerOpen" side="left" bordered>
+      <!-- drawer content -->
+    </q-drawer>
+
+    <q-page-container>
+      <router-view ref="routerView"/>
+    </q-page-container>
+
+  </q-layout>
+</template>
+
+<script lang="ts" setup>
+import {ref, useTemplateRef, watchEffect} from 'vue'
+import {useRoute, useRouter} from "vue-router";
+import {useUiStore} from "src/ui/stores/uiStore";
+import MainPanelNotePage from "src/notes/pages/mainpanel/MainPanelNotePage.vue";
+
+// https://stackoverflow.com/questions/42632711/how-to-call-function-on-child-component-on-parent-events
+// https://vuejs.org/guide/typescript/composition-api.html#typing-component-template-refs
+type MainPanelNotePageType = InstanceType<typeof MainPanelNotePage>
+
+const compRef = useTemplateRef<MainPanelNotePageType>('routerView')
+
+const route = useRoute()
+const router = useRouter()
+
+const leftDrawerOpen = ref(false)
+const savingIndicator = ref(false)
+const noteId = ref<string | undefined>(undefined)
+const tabsetId = ref<string | undefined>(route.query.tsId as string)
+
+watchEffect(async () => {
+  noteId.value = route.params.noteId as unknown as string
+})
+
+watchEffect(() => {
+  console.log("hier", useUiStore().saving)
+  savingIndicator.value = useUiStore().saving
+})
+
+const saveInPage = () => {
+  console.log("compRef", compRef.value)
+  compRef.value?.save()
+}
+
+const toggleLeftDrawer = () => {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+const openInEditMode = () => router.push('./' + noteId.value + '?edit=true&tsId=' + tabsetId.value)
+
+</script>

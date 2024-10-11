@@ -142,6 +142,11 @@
   color: black;
 }
 
+::highlight(yellow-highlight) {
+  color: orange;
+  text-decoration: underline;
+}
+
 // for notification (bottom) not to hide the panel footer
 .q-notifications__list {
   margin-bottom: 45px

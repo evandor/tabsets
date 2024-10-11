@@ -44,6 +44,7 @@ import ToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import TabsAsTree from "components/TabsAsTree.vue";
+import {SidePanelViews} from "src/models/SidePanelViews";
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelTabsAsTreePage', document.location.href);

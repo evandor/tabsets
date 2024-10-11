@@ -1128,6 +1128,13 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
+"@babel/runtime@^7.7.7":
+  version "7.25.7"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.25.7.tgz#7ffb53c37a8f247c8c4d335e89cdf16a2e0d0fb6"
+  integrity sha512-FjoyLe754PMiYsFaN5C94ttGiOmBNYTf6pLr4xXHAT5uctHb092PBszndLDR5XA/jghQvn4n7JMHl7dmTgbm9w==
+  dependencies:
+    regenerator-runtime "^0.14.0"
+
 "@babel/template@^7.24.7", "@babel/template@^7.25.0":
   version "7.25.0"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.25.0.tgz#e733dc3134b4fede528c15bc95e89cb98c52592a"
@@ -1736,6 +1743,35 @@
     cross-fetch "^4.0.0"
     fast-xml-parser "^4.3.6"
     html-entities "^2.5.2"
+
+"@he-tree/dnd-utils@^0.1.0-alpha.4":
+  version "0.1.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@he-tree/dnd-utils/-/dnd-utils-0.1.0-alpha.4.tgz#7438684dba7b69abc5f8b1aa386a910d9091cf7a"
+  integrity sha512-DuxkFOQ8eztoHrX1/VelqOnQphQbRszemfMKSKlAEEhVjqR/IkaOE2QSRlAdj6OC6AfMvHDPvIZOiEPFwP6/ZQ==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
+    drag-event-service "^2.0.0"
+    helper-js "^3.1.2"
+
+"@he-tree/tree-utils@^0.1.0-alpha.6":
+  version "0.1.0-alpha.6"
+  resolved "https://registry.yarnpkg.com/@he-tree/tree-utils/-/tree-utils-0.1.0-alpha.6.tgz#fd42b54bd4eca5a0f64c17dedd4339c36776be97"
+  integrity sha512-TIH1iIRLpn3sjd4EuIfKQzFd6ToY8GLYk3i5bfK1njCW7lBBDHLqSyK0mlJPbCPk4PfkZBC4K+sMcYyH4hokyg==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
+    drag-event-service "^2.0.0"
+    helper-js "^3.1.2"
+
+"@he-tree/vue@^2.8.7":
+  version "2.8.7"
+  resolved "https://registry.yarnpkg.com/@he-tree/vue/-/vue-2.8.7.tgz#5aa54157222d9dae883adba9088d7931e5b7fbfa"
+  integrity sha512-Ii6lRTtj7F9wylCZ23H001ucVGgtOrHmmLB3LA8KY4LolmCNwHb8VOnfRSMnk5JccoQuYLPIFAEnRdFbqzdFSA==
+  dependencies:
+    "@he-tree/dnd-utils" "^0.1.0-alpha.4"
+    "@he-tree/tree-utils" "^0.1.0-alpha.6"
+    "@virtual-list/vue" "^1.2.0"
+    helper-js "^3.1.2"
+    vue-demi latest
 
 "@iconify/types@^2.0.0":
   version "2.0.0"
@@ -3299,6 +3335,14 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
+
+"@virtual-list/vue@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@virtual-list/vue/-/vue-1.2.0.tgz#f0e1f6a5b97034e047b5812afb7d3c40838a894f"
+  integrity sha512-sTWCJAIU6NoRWU+6Nzw6TDJcwxnFgK3NmwGu4iDgV6Nhh/iaCEZDDhmChTV+CoXbShLfsgasQRhaVyC7SmkDDg==
+  dependencies:
+    helper-js "^3.1.0"
+    vue-demi latest
 
 "@vitejs/plugin-vue@^2.2.0":
   version "2.3.4"
@@ -5739,6 +5783,14 @@ dotenv@^16.3.1, dotenv@^16.4.5:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.5.tgz#cdd3b3b604cb327e286b4762e13502f717cb099f"
   integrity sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==
 
+drag-event-service@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/drag-event-service/-/drag-event-service-2.0.0.tgz#7e9fd5beacdf9c3e7c502c717164a4fc284a696f"
+  integrity sha512-JVEnOEbbNDS3RrWd+tVVIDu2SHQZ9luhEFGSQ1hXMjl+ABw0PxhHmnkGjzPVE836Tsg+k7rkm5GM9Ln/UgbYpA==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
+    helper-js "^3.0.0"
+
 eastasianwidth@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/eastasianwidth/-/eastasianwidth-0.2.0.tgz#696ce2ec0aa0e6ea93a397ffcf24aa7840c827cb"
@@ -7242,6 +7294,18 @@ hast-util-whitespace@^3.0.0:
   integrity sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==
   dependencies:
     "@types/hast" "^3.0.0"
+
+helper-js@^3.0.0, helper-js@^3.1.0, helper-js@^3.1.2:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/helper-js/-/helper-js-3.1.5.tgz#ab81bbe99bd9807d00a9293060354c150707c2f2"
+  integrity sha512-CQ56onWqmWwJRUK55/aJ6EeJUV/eqoRiayG6bk2i0Bhs79U94M+aRdA2QLOUGXp/Hy5yAos+YQK1LQHRWiSOHw==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
+
+highlight-words-core@^1.2.2:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/highlight-words-core/-/highlight-words-core-1.2.3.tgz#781f37b2a220bf998114e4ef8c8cb6c7a4802ea8"
+  integrity sha512-m1O9HW3/GNHxzSIXWw1wCNXXsgLlxrP0OI6+ycGUhiUHkikqW3OrwVHz+lxeNBe5yqLESdIcj8PowHQ2zLvUvQ==
 
 hookable@^5.5.3:
   version "5.5.3"
@@ -11630,7 +11694,7 @@ vue-component-type-helpers@^2.0.0:
   resolved "https://registry.yarnpkg.com/vue-component-type-helpers/-/vue-component-type-helpers-2.1.6.tgz#f350515b252ed9e76960ac51f135636f8baef3fe"
   integrity sha512-ng11B8B/ZADUMMOsRbqv0arc442q7lifSubD0v8oDXIFoMg/mXwAPUunrroIDkY+mcD0dHKccdaznSVp8EoX3w==
 
-vue-demi@>=0.14.10, vue-demi@^0.14.10:
+vue-demi@>=0.14.10, vue-demi@^0.14.10, vue-demi@latest:
   version "0.14.10"
   resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.10.tgz#afc78de3d6f9e11bf78c55e8510ee12814522f04"
   integrity sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==
@@ -11654,6 +11718,13 @@ vue-grid-layout-v3@^3.0.3:
     "@interactjs/modifiers" "^1.10.17"
     element-resize-detector "^1.2.4"
     mitt "^3.0.0"
+
+vue-highlight-words@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/vue-highlight-words/-/vue-highlight-words-3.0.1.tgz#530b490ea09528b7595bd3946f25d0cb07383175"
+  integrity sha512-t6L0+KRaMzX5RVubWl6Sog+Aa+U0kHsbUlDIrln1VfajR2SEg+zQYfXov8UmX3MLNOfd6cv7MCM6LclqNlW4ww==
+  dependencies:
+    highlight-words-core "^1.2.2"
 
 vue-i18n@^10.0.3:
   version "10.0.3"

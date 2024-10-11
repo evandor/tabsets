@@ -35,23 +35,4 @@ export class AboutPage extends TabsetPage {
     await expect(this.page.locator('text=Add new Tabset')).not.toBeVisible()
   }
 
-  async submitNewTabsetDialog(tabsetName: string): Promise<TabsetTestPage> {
-    await this.createFirstTabsetBtn.click()
-    await this.newTabsetName.fill(tabsetName)
-    // await this.newTabsetAutoAdd.uncheck()
-    await this.fillByTestId(this.page, 'newTabsetName', tabsetName)
-    await this.newTabsetNameSubmit.click()
-    return new TabsetTestPage(this.page, this.extensionId)
-  }
-
-  async submitAddUrlDialog(url: string): Promise<TabsetTestPage> {
-    await this.screenshot(this.page, 'addTabset','beforeAddUrl.png');
-    await this.addUrlDialogBtn.click()
-    //await this.page.waitForSelector('text="NEW TAB"')
-    //await this.page.locator('text="NEW TAB"').click()
-    await this.addUrlDialogSubmit.fill(url)
-    await this.screenshot(this.page, 'addTabset','afterAddUrl.png');
-    await this.submitUrlDialogSubmit.click()
-    return new TabsetTestPage(this.page, this.extensionId)
-  }
 }

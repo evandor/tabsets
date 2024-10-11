@@ -1,23 +1,51 @@
 <template>
+  <!-- TabsAsTree -->
 
-  <q-list class="q-mt-md">
+  <div class="row q-mt-xs">
+    <div class="col-12 q-mb-xs">
+      <q-input
+        dense
+        autofocus
+        ref="filterRef"
+        filled
+        v-model="filter"
+        label="Filter Urls">
+        <template v-slot:append>
+          <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter"/>
+        </template>
+      </q-input>
+    </div>
+  </div>
 
-    <!--      v-model:expanded="useNotificationsStore().bookmarksExpanded"-->
-    <q-tree
-      :nodes="tabNodes"
-      node-key="id"
-      selected-color="dark"
-      @mouseenter="entered(true)"
-      @mouseleave="entered(false)"
-      v-model:selected="selected">
+  <q-tree v-if="!loading"
+          :nodes="tabNodes"
+          node-key="id"
+          :filter="filter"
+          :filter-method="filterMethod"
+          selected-color="dark"
+          @mouseenter="entered(true)"
+          @mouseleave="entered(false)"
+          v-model:selected="selected">
 
-      <template v-slot:header-node="prop">
-        <q-icon name="o_folder" class="q-mr-sm"/>
-        <span class="cursor-pointer fit no-wrap">{{ prop.node.label }}</span>
-      </template>
-    </q-tree>
+    <template v-slot:default-header="prop">
 
-  </q-list>
+      <q-img v-if="prop.node.header === 'root'"
+             class="rounded-borders q-mr-sm"
+             width="20px"
+             height="20px"
+             :src="getFaviconUrl(prop.node)">
+      </q-img>
+
+      <q-icon v-else name="o_folder" class="q-mr-sm"/>
+
+      <Highlighter class="cursor-pointer fit no-wrap my-highlight"
+                   :highlightStyle="{backgroundColor:'yellow'}"
+                   :searchWords="[filter]"
+                   :autoEscape="true"
+                   :textToHighlight="prop.node.label"/>
+    </template>
+  </q-tree>
+  <q-spinner v-else></q-spinner>
 
 </template>
 
@@ -29,10 +57,14 @@ import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import NavigationService from "src/services/NavigationService";
-import DeleteBookmarkFolderDialog from "src/bookmarks/dialogues/DeleteBookmarkFolderDialog.vue";
 import _ from "lodash"
 import {TreeNode} from "src/bookmarks/models/Tree";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import Highlighter from 'vue-highlight-words'
+import {useSettingsStore} from "stores/settingsStore";
+import {useUtils} from "src/core/services/Utils";
+
+const {favIconFromUrl} = useUtils()
 
 const $q = useQuasar();
 const localStorage = useQuasar().localStorage
@@ -40,8 +72,11 @@ const localStorage = useQuasar().localStorage
 const mouseHover = ref(false)
 const selected = ref('')
 const deleteButtonId = ref('')
-const nodesToUrl = ref<Map<string, object>>(new Map())
+const nodesToUrl = ref<Map<string, string>>(new Map())
 const bookmarksPermissionGranted = ref<boolean | undefined>(undefined)
+const filterRef = ref(null)
+const filter = ref('')
+const loading = ref(true)
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -70,22 +105,23 @@ function createNodes(tabs: object[], level = 0): TreeNode[] {
       return (segments && segments.length > level + 1 && segments[level] === name)
     })
     const children: TreeNode[] = createNodes(filteredTabs, level + 1)
-   // console.log("calculated children", children.length)
+    // console.log("calculated children", children.length)
     const newNodeId = uid()
-    let url = t['protocol' as keyof object] + "//" + t['hostname' as keyof object]
+    let url: string = t['protocol' as keyof object] + "//" + t['hostname' as keyof object]
     for (let i = 1; i <= level; i++) {
       url += "/" + t['segments' as keyof object][i]
     }
     children.length === 0 ?
       nodesToUrl.value.set(newNodeId, t['url' as keyof object]) :
       nodesToUrl.value.set(newNodeId, url)
-    const newNode = new TreeNode(newNodeId, name as string, name as string, undefined, "", children)
+    const newNode = new TreeNode(newNodeId, name as string, name as string, url, "", children, level)
     nodes.push(newNode)
   }
   return nodes
 }
 
 watchEffect(() => {
+  loading.value = true
   const tabs: object[] = []
   for (const ts of useTabsetsStore().tabsets.values()) {
     for (const t of ts.tabs) {
@@ -110,8 +146,13 @@ watchEffect(() => {
     }
   }
   const nodes = createNodes(tabs, 0);
-  console.log("nodes", nodes)
   tabNodes.value = JSON.parse(JSON.stringify(nodes))
+  // console.log("v", tabNodes.value)
+  loading.value = false
+})
+
+watchEffect(() => {
+  console.log("loading", loading.value)
 })
 
 watchEffect(() => {
@@ -141,17 +182,47 @@ $q.loadingBar.setDefaults({
   position: 'bottom'
 })
 
-const deleteBookmarksFolderDialog = () => {
-  $q.dialog({
-    component: DeleteBookmarkFolderDialog,
-    componentProps: {
-      folderId: selected.value
-    }
-  })
+const resetFilter = () => {
+  filter.value = ''
+  if (filterRef.value) {
+    // @ts-ignore
+    filterRef.value.focus()
+  }
 }
+
+const filterMethod = (node: TreeNode, filter: any): boolean =>
+  (node.url !== undefined) && (node.url.toLowerCase().indexOf(filter.toLowerCase()) > -1)
+
 
 const entered = (b: boolean) => mouseHover.value = b
 
+const getFaviconUrl = (n: TreeNode) => {
+  // if (!useSettingsStore().isEnabled('noDDG')) {
+  let theUrl = n.url || ''
+  //   let theRealUrl
+  //   try {
+  //     theRealUrl = new URL(theUrl)
+  //   } catch (err) {
+  //     if (!theUrl.startsWith('http')) {
+  //       theUrl = 'https://' + theUrl
+  //       try {
+  //         theRealUrl = new URL(theUrl)
+  //       } catch (err) {
+  //       }
+  //     }
+  //   }
+  //   return theRealUrl ? "https://icons.duckduckgo.com/ip3/" + theRealUrl.hostname + ".ico" : 'favicon-unknown-32x32.png'
+  //}
+
+    //const chromeTab = tab?.chromeTab
+    if (theUrl.startsWith("chrome")) {
+      return ''
+    }
+    if (!useSettingsStore().isEnabled('noDDG')) {
+      return favIconFromUrl(theUrl)
+    }
+    return ''
+}
 </script>
 
 <style lang="sass" scoped>

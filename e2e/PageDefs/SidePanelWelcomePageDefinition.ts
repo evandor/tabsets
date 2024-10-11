@@ -27,25 +27,4 @@ export class SidePanelWelcomePageDefinition extends TabsetPageDefinition {
     //await expect(this.page.locator('text=Add')).not.toBeVisible()
   }
 
-  async submitNewTabsetDialog(tabsetName: string) {
-    console.log("page url 1", this.page.url())
-    await this.newTabsetName.fill(tabsetName)
-    await this.addTabsetSubmitBtn.click()
-    //await delay(2000)
-    console.log(`checking for chrome-extension://${this.extensionId}/www/index.html#/sidepanel`)
-    await this.page.waitForURL("**\/sidepanel**")
-    console.log("page url 2", this.page.url())
-    //return Promise.resolve(new SidePanelPageDefinition(this.page, this.extensionId))
-  }
-
-  // async submitAddUrlDialog(url: string): Promise<TabsetTestPage> {
-  //   await this.screenshot(this.page, 'addTabset','beforeAddUrl.png');
-  //   await this.addUrlDialogBtn.click()
-  //   //await this.page.waitForSelector('text="NEW TAB"')
-  //   //await this.page.locator('text="NEW TAB"').click()
-  //   await this.addUrlDialogSubmit.fill(url)
-  //   await this.screenshot(this.page, 'addTabset','afterAddUrl.png');
-  //   await this.submitUrlDialogSubmit.click()
-  //   return new TabsetTestPage(this.page, this.extensionId)
-  // }
 }
