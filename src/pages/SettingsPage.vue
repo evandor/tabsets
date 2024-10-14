@@ -26,6 +26,7 @@
              v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"/>
       <q-tab name="search" label="Search Engine" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
       <q-tab name="importExport" label="Import/Export"/>
+      <q-tab name="backup" label="Backup"/>
       <q-tab name="internals" label="Internals" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"/>
       <!--      <q-tab name="featureToggles" label="Feature Toggles"-->
       <!--             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>-->
@@ -341,45 +342,12 @@
 
   <div v-if="tab === 'importExport'">
 
-    <div class="q-pa-md q-gutter-sm">
+    <ImportExportSettings />
 
-      <q-banner rounded style="border:1px solid orange">You can export your data in various formats and re-import them
-        from json. Please
-        note that it is not guaranteed that older exports can be imported with newer versions of the tabsets
-        extension.
-      </q-banner>
+  </div>
 
-      <div class="row q-pa-md">
-        <div class="col-3"><b>Export</b></div>
-        <div class="col-3">json or as bookmarks</div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-btn
-            @click="showExportDialog"
-            flat round dense icon="file_download" color="primary">
-            <q-tooltip>Export your tabsets</q-tooltip>
-          </q-btn>
-        </div>
-      </div>
-
-      <div class="row q-pa-md">
-        <div class="col-3"><b>Import</b></div>
-        <div class="col-3">
-          from json<br>
-          You might need to restart tabsets.
-        </div>
-        <div class="col-1"></div>
-        <div class="col-5">
-          <q-btn
-            @click="showImportDialog"
-            flat round dense icon="file_upload" color="primary">
-            <q-tooltip>Import your tabsets backup</q-tooltip>
-          </q-btn>
-        </div>
-      </div>
-
-    </div>
-
+  <div v-if="tab === 'backup'">
+    <BackupSettings />
   </div>
 
   <div v-if="tab === 'featureToggles'">
@@ -418,7 +386,6 @@ import {
   STRIP_CHARS_IN_USER_INPUT,
   TITLE_IDENT
 } from "boot/constants";
-import {useAuthStore} from "stores/authStore";
 import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
@@ -426,11 +393,11 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
-import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
-import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
 import {useGroupsStore} from "../tabsets/stores/groupsStore";
 import OpenRightDrawerWidget from "src/ui/widgets/OpenRightDrawerWidget.vue";
 import {usePermissionsStore} from "stores/usePermissionsStore";
+import BackupSettings from "pages/helper/BackupSettings.vue";
+import ImportExportSettings from "pages/helper/ImportExportSettings.vue";
 
 const { t } = useI18n()
 
@@ -587,9 +554,6 @@ const unarchive = (tabset: Tabset) =>
 const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
 
 const restoreHints = () => useUiStore().restoreHints()
-
-const showExportDialog = () => $q.dialog({component: ExportDialog, componentProps: {inSidePanel: true}})
-const showImportDialog = () => $q.dialog({component: ImportDialog, componentProps: {inSidePanel: true}})
 
 const simulateStaticSuggestion = () => {
   const suggestions: [Suggestion] = [

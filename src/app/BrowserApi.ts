@@ -1,18 +1,19 @@
 import {Tabset} from "src/tabsets/models/Tabset";
-import {CLEANUP_PERIOD_IN_MINUTES, MONITORING_PERIOD_IN_MINUTES} from "boot/constants";
+import {CLEANUP_PERIOD_IN_MINUTES, GITHUB_AUTO_BACKUP, MONITORING_PERIOD_IN_MINUTES} from "boot/constants";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {Tab} from "src/tabsets/models/Tab";
-import {uid} from "quasar";
+import {LocalStorage, uid} from "quasar";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Router} from "vue-router";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import IndexedDbRequestPersistence from "src/requests/persistence/IndexedDbRequestPersistence";
 import {useRequestsService} from "src/requests/services/ContentService";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {GithubBackupCommand} from "src/tabsets/commands/GithubBackupCommand";
 
 
 function runHousekeeping() {
@@ -49,6 +50,9 @@ class BrowserApi {
     console.debug(" ...initializing ChromeApi")
 
     chrome.alarms.create("housekeeping", {periodInMinutes: CLEANUP_PERIOD_IN_MINUTES})
+
+    chrome.alarms.create("hourlyTasks", {periodInMinutes: 30})
+
     chrome.alarms.create("monitoring", {periodInMinutes: MONITORING_PERIOD_IN_MINUTES})
 
     chrome.alarms.onAlarm.addListener(
@@ -61,6 +65,10 @@ class BrowserApi {
           // if (useFeaturesStore().hasFeature(FeatureIdent.MONITORING)) {
           //   checkMonitors(router)
           // }
+        } else if (alarm.name === "hourlyTasks") {
+          if (LocalStorage.getItem(GITHUB_AUTO_BACKUP) as boolean) {
+            useCommandExecutor().execute(new GithubBackupCommand());
+          }
         } else {
           console.log("unknown alarm", alarm)
         }
@@ -137,7 +145,7 @@ class BrowserApi {
               //   contexts: ['all']
               // })
               //}
-             // console.debug(" > context menu: save_to_currentTS")
+              // console.debug(" > context menu: save_to_currentTS")
               chrome.contextMenus.create({
                 id: 'save_to_currentTS',
                 parentId: 'tabset_extension',

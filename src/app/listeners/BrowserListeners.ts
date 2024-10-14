@@ -7,7 +7,6 @@ import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/core/utils/ContentUtils";
 import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
@@ -272,6 +271,7 @@ class BrowserListeners {
     if (tab.url && tab.url.startsWith("https://shared.tabsets.net")) {
       return
     }
+
     BrowserApi.addIndicatorIcon(tab.id, tab.url)
   }
 
@@ -293,6 +293,25 @@ class BrowserListeners {
     console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
 
     await setCurrentTab()
+
+    // debugger
+    // //const fromPageLocalStore = await chrome.scripting.executeScript({ target: { tabId: info.tabId }}, () => {localStorage['excalidraw']});
+    // const returned = await chrome.scripting.executeScript({
+    //   target: {tabId: info.tabId},
+    //   func: (items) => {
+    //     //Object.keys(items).forEach((key) => {
+    //     localStorage.setItem("tabsetkey", "tabsetvalue")
+    //     const res = localStorage.getItem("excalidraw")
+    //     console.log("got res", res)
+    //     return res
+    //     //})
+    //   },
+    //   args: ['excalidraw'] // pass any parameters to function
+    // })
+    // console.log("returned", returned)
+
+
+    //console.log("fromPage", fromPageLocalStore)
 
     chrome.tabs.get(info.tabId, tab => {
       if (chrome.runtime.lastError) {

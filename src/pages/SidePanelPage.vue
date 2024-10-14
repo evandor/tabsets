@@ -280,23 +280,24 @@ if (inBexMode()) {
       useUiStore().draggingTab(message.data.tabId, null as unknown as any)
     } else if (message.name === "note-changed") {
       // TODO needed?
-      const tabset = useTabsetsStore().getTabset(message.data.tabsetId) as Tabset
-      if (message.data.noteId) {
-        console.log("updating note", message.data.noteId)
-        const res = useTabsetsStore().getTabAndTabsetId(message.data.noteId)
-        //.then((res: TabAndTabsetId | undefined) => {
-        if (res) {
-          const note = res.tab
-          note.title = message.data.tab.title
-          note.description = message.data.tab.description
-          note.longDescription = message.data.tab.longDescription
-        }
-        useTabsetService().saveTabset(tabset)
+     //const tabset = useTabsetsStore().getTabset(message.data.tabsetId) as Tabset
+      if (message.data.notebookId) {
+        console.log("updating notebook/tabset", message.data.notebookId, message.data.tabsetId)
+        useTabsetService().reloadTabset(message.data.tabsetId)
+        // const res = useTabsetsStore().getTabAndTabsetId(message.data.noteId)
+        // //.then((res: TabAndTabsetId | undefined) => {
+        // if (res) {
+        //   const note = res.tab
+        //   note.title = message.data.tab.title
+        //   note.description = message.data.tab.description
+        //   note.longDescription = message.data.tab.longDescription
+        // }
+       // useTabsetService().saveTabset(tabset)
         //    })
       } else {
         console.log("adding tab", message.data.tab)
-        tabset.tabs.push(message.data.tab)
-        useTabsetService().saveTabset(tabset)
+        //tabset.tabs.push(message.data.tab)
+        //useTabsetService().saveTabset(tabset)
       }
     } else if (message.name === "tab-added") {
       // hmm - getting this twice...
