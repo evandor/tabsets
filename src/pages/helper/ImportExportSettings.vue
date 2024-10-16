@@ -11,7 +11,7 @@
       <div class="col-3"><b>Export</b></div>
       <div class="col-3">
         as json or as bookmarks<br>
-        export to github is available <em @click="router.push('/mainpanel/settings?tab=backup')">here</em>.
+        export to github is available <span class="cursor-pointer text-blue-8" @click="emits('showTab', 'backup')">here</span>.
       </div>
       <div class="col-1"></div>
       <div class="col-5">
@@ -26,7 +26,7 @@
     <div class="row q-pa-md">
       <div class="col-3"><b>Import</b></div>
       <div class="col-3">
-        from json<br>
+        from json or <span class="cursor-pointer text-blue-8" @click="emits('showTab','backup')">github backup</span><br>
         You might need to restart tabsets.
       </div>
       <div class="col-1"></div>
@@ -47,10 +47,10 @@
 import ExportDialog from "src/tabsets/dialogues/ExportDialog.vue";
 import ImportDialog from "src/tabsets/dialogues/ImportDialog.vue";
 import {useQuasar} from "quasar";
-import {useRouter} from "vue-router";
 
 const $q = useQuasar()
-const router = useRouter()
+
+const emits = defineEmits(['showTab'])
 
 const showExportDialog = () => $q.dialog({component: ExportDialog, componentProps: {inSidePanel: true}})
 const showImportDialog = () => $q.dialog({component: ImportDialog, componentProps: {inSidePanel: true}})

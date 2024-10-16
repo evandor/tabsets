@@ -13,7 +13,7 @@ import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useRequestsService} from "src/requests/services/ContentService";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {GithubBackupCommand} from "src/tabsets/commands/GithubBackupCommand";
+import {GithubBackupCommand} from "src/tabsets/commands/github/GithubBackupCommand";
 
 
 function runHousekeeping() {

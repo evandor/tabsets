@@ -342,7 +342,7 @@
 
   <div v-if="tab === 'importExport'">
 
-    <ImportExportSettings />
+    <ImportExportSettings @show-tab="(t:string) => setTab(t)"/>
 
   </div>
 
@@ -549,8 +549,6 @@ const unarchive = (tabset: Tabset) =>
       sendMsg('reload-tabset', {tabsetId: tabset.id})
     })
 
-// const ignoredUrls = () => useTabsStore().ignoredTabset?.tabs
-
 const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
 
 const restoreHints = () => useUiStore().restoreHints()
@@ -564,7 +562,7 @@ const simulateStaticSuggestion = () => {
   useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
 }
 
-const setTab = (a: any) => tab.value = a['tab' as keyof object]
+const setTab = (t: string) => tab.value = t
 
 </script>
 
