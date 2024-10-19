@@ -30,9 +30,10 @@ import _ from "lodash"
 import {useEntityRegistryStore} from "src/core/stores/entityRegistryStore";
 import {TabsetInfo} from "src/core/models/TabsetInfo";
 import {SpaceInfo} from "src/core/models/SpaceInfo";
-import {useRequestsService} from "src/requests/services/ContentService";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import IndexedDbRequestPersistence from "src/requests/persistence/IndexedDbRequestPersistence";
+import {useRequestsService} from "src/requests/services/RequestsService";
+import {useNavigationService} from "src/navigation/services/NavigationService";
 
 class AppService {
 
@@ -84,6 +85,9 @@ class AppService {
     console.debug('')
 
     await useRequestsService().init(IndexedDbRequestPersistence)
+    console.debug('')
+
+    await useNavigationService().init()
     console.debug('')
 
     await useSearchStore().init().catch((err:any) => console.error(err))

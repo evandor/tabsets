@@ -38,6 +38,7 @@ git submodule add -b main https://github.com/evandor/submodule-opentabs.git src/
 git submodule add -b main https://github.com/evandor/submodule-snapshots.git src/snapshots
 git submodule add -b main https://github.com/evandor/submodule-ui.git src/ui
 git submodule add -b main https://github.com/evandor/submodule-requests.git src/requests
+git submodule add -b main https://github.com/evandor/submodule-navigation.git src/navigation
 
 ```
 

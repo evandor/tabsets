@@ -11,9 +11,9 @@ import {Router} from "vue-router";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {useRequestsService} from "src/requests/services/ContentService";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {GithubBackupCommand} from "src/tabsets/commands/github/GithubBackupCommand";
+import {useRequestsService} from "src/requests/services/RequestsService";
 
 
 function runHousekeeping() {

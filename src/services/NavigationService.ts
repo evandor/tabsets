@@ -28,6 +28,14 @@ class NavigationService {
     }
   }
 
+  /**
+   * superseded by useNavigationService().openOrCreateTab(...)
+   * @param withUrls
+   * @param matcher
+   * @param groups
+   * @param forceCurrent
+   * @param forceReload
+   */
   async openOrCreateTab(
     withUrls: string[],
     matcher: string | undefined = undefined,
@@ -153,27 +161,6 @@ class NavigationService {
             }, (tab: chrome.tabs.Tab) => {
               chrome.windows.update(useWindowId, {focused: true})
 
-              // if (!useFeaturesStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-              //   setTimeout(() => {
-              //     // check potential redirect
-              //     chrome.tabs.get(tab.id || 0, (potentiallyChangedTab: chrome.tabs.Tab) => {
-              //       if (tab.url !== potentiallyChangedTab.url && tab.url?.trim() !== "" && potentiallyChangedTab.url?.trim() !== "") {
-              //         console.log("tab's URL change during one second, assuming 30x redirect, creating suggestion", tab, potentiallyChangedTab)
-              //         const suggestionId = uid()
-              //         const suggestion = new Suggestion(suggestionId,
-              //           "Tab's URL changed", "Seems like the tab's URL has changed according to the server. " +
-              //           "Should the URL be updated?",
-              //           "/suggestions/" + suggestionId,
-              //           SuggestionType.REDIRECT_HAPPENED_FOR_TAB)
-              //         suggestion.setData({url, location: potentiallyChangedTab.url})
-              //         useSuggestionsStore().addSuggestion(suggestion).catch((err) => {
-              //           console.log("got error", err)
-              //         })
-              //       }
-              //     })
-              //   }, 1000)
-              // }
-
               if (groups.length > i) {
                 ctx.handleGroup(groups[i], useWindowId, tab);
               }
@@ -274,14 +261,6 @@ class NavigationService {
 
   private async createNewWindow(createData: any, useWindowIdent: string, withUrls: string[], groups: string[]) {
     console.log("opening new window with", createData)
-    // https://developer.chrome.com/articles/window-management/
-    //let screenlabel: string | undefined = undefined
-    // if ('getScreenDetails' in window) {
-    //     // @ts-ignore
-    //     const screens = await window.getScreenDetails();
-    //     screenlabel = screens.currentScreen.label
-    //     console.log("setting screenlabel to", screenlabel)
-    // }
 
     chrome.windows.create(createData, (window) => {
       //console.log("creating window", useWindowIdent, window)
@@ -300,18 +279,19 @@ class NavigationService {
   }
 
   private createWindow(useWindowIdent: string, window: chrome.windows.Window, index: number = 0, withUrls: string[], groups: string[]) {
+    console.log("todo!")
     //useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
-    useWindowsStore().upsertWindow(window, useWindowIdent, index)
-    const ctx = this
-    withUrls.forEach(function (url, i) {
-      if (groups.length > i) {
-        const group = groups[i]
-        if (group && window.id && window.tabs && window.tabs.length > i) {
-          console.log("assiging group", group, i)
-          ctx.handleGroup(group, window.id, window.tabs[i]);
-        }
-      }
-    })
+    // useWindowsStore().upsertWindow(window, useWindowIdent, index)
+    // const ctx = this
+    // withUrls.forEach(function (url, i) {
+    //   if (groups.length > i) {
+    //     const group = groups[i]
+    //     if (group && window.id && window.tabs && window.tabs.length > i) {
+    //       console.log("assiging group", group, i)
+    //       ctx.handleGroup(group, window.id, window.tabs[i]);
+    //     }
+    //   }
+    // })
   }
 }
 
