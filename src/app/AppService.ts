@@ -87,9 +87,6 @@ class AppService {
     await useRequestsService().init(IndexedDbRequestPersistence)
     console.debug('')
 
-    await useNavigationService().init()
-    console.debug('')
-
     await useSearchStore().init().catch((err:any) => console.error(err))
     console.debug('')
 

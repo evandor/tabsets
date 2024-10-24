@@ -1,0 +1,170 @@
+import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {createPinia, setActivePinia} from "pinia";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import {useDB} from "src/services/usePersistenceService";
+import {useSearchStore} from "src/search/stores/searchStore";
+import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useContentService} from "src/content/services/ContentService";
+import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
+import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
+import {LoadDynamicTabsCommand} from "src/tabsets/commands/LoadDynamicTabsCommand";
+import {uid} from "quasar";
+
+installQuasarPlugin();
+
+vi.mock('vue-router')
+
+global.fetch = vi.fn()
+
+async function createTabset() {
+  const createTabsetResult = await new CreateTabsetCommand("new Tabset", []).execute()
+  return createTabsetResult.result.tabset;
+}
+
+describe('LoadDynamicTabsCommand', () => {
+
+  let db = null as unknown as TabsetsPersistence
+
+  beforeEach(async () => {
+    setActivePinia(createPinia())
+    // await IndexedDbPersistenceService.init("db")
+    db = useDB(undefined).tabsetsIndexedDb
+    await useTabsetsStore().initialize(db)
+    await useTabsetService().init()
+    await useSearchStore().init()
+    await useContentService().init(IndexedDbContentPersistence)
+
+    const chromeMock = {
+      tabs: {
+        sendMessage: vi.fn((id:any, msg:any) => {
+          return Promise.resolve({
+            html: "some html",
+            metas: {description: "Description"}
+          })
+        }),
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {
+        })
+      }
+    };
+
+    vi.stubGlobal('chrome', chromeMock);
+
+  })
+
+  afterEach(async () => {
+    db.clear("tabsets")
+   // db.clear("content")
+  })
+
+  it('needs dynamic url', async () => {
+    const tabset = await createTabset();
+    const res = await new LoadDynamicTabsCommand(tabset).execute()
+    expect(res.message).toBe("not a dynamic tabset/folder")
+  });
+
+  it('creates folder structure for simple markdown', async () => {
+    const tabset = await createTabset();
+    const res = await new CreateFolderCommand(uid(),"extracted links", [], tabset.id).execute()
+    const extractedLinksFolder = res.result
+    //console.log("extractedLinksFolder",extractedLinksFolder)
+    const subfolder = tabset.folders[0]
+    subfolder.dynamicUrl = "https://some.md"
+
+    // @ts-ignore
+    fetch.mockResolvedValue({text: () => new Promise((resolve) => resolve(`
+# Git.io
+[Git.io](http://git.io) is a simple URL shortener for GitHub.
+    `))})
+
+    await new LoadDynamicTabsCommand(tabset, subfolder).execute()
+    expect(tabset.folders.length).toBe(1)
+    expect(tabset.folders[0].name).toBe("extracted links")
+    expect(tabset.folders[0].folders.length).toBe(1) // git.io folder
+    expect(tabset.folders[0].folders[0].name).toBe("Git.io")
+  });
+
+  it('creates folder structure for markdown with two levels', async () => {
+    const tabset = await createTabset();
+    const res = await new CreateFolderCommand(uid(),"extracted links", [], tabset.id).execute()
+    const subfolder = tabset.folders[0]
+    subfolder.dynamicUrl = "https://some.md"
+
+    // @ts-ignore
+    fetch.mockResolvedValue({text: () => new Promise((resolve) => resolve(`
+# Git.io
+[Git.io](http://git.io) is a simple URL shortener for GitHub.
+
+## skysail.io
+[Skysail.io](https://skysail.io) is a simple URL
+    `))})
+
+    await new LoadDynamicTabsCommand(tabset, subfolder).execute()
+    expect(tabset.folders.length).toBe(1) // extracted links folder
+    expect(tabset.folders[0].folders.length).toBe(1) // git.io folder
+    expect(tabset.folders[0].folders[0].folders.length).toBe(1)
+    expect(tabset.folders[0].folders[0].folders[0].name).toBe("skysail.io")
+  });
+
+  it('creates folder structure for markdown with two levels and two headings', async () => {
+    const tabset = await createTabset();
+    const res = await new CreateFolderCommand(uid(),"extracted links", [], tabset.id).execute()
+    const subfolder = tabset.folders[0]
+    subfolder.dynamicUrl = "https://some.md"
+
+    // @ts-ignore
+    fetch.mockResolvedValue({text: () => new Promise((resolve) => resolve(`
+# Git.io
+[Git.io](http://git.io) is a simple URL shortener for GitHub.
+
+## skysail.io
+[Skysail.io](https://skysail.io) is a simple URL
+
+## skysail2.io
+[Skysail2.io](https://skysail2.io) is a simple URL
+    `))})
+
+    await new LoadDynamicTabsCommand(tabset, subfolder).execute()
+    expect(tabset.folders.length).toBe(1) // extracted links folder
+    expect(tabset.folders[0].folders.length).toBe(1) // git.io folder
+    expect(tabset.folders[0].folders[0].folders.length).toBe(2)
+    expect(tabset.folders[0].folders[0].folders[0].name).toBe("skysail.io")
+    expect(tabset.folders[0].folders[0].folders[1].name).toBe("skysail2.io")
+  });
+
+  it('creates folder structure for markdown with two levels, one level up', async () => {
+    const tabset = await createTabset();
+    const res = await new CreateFolderCommand(uid(),"extracted links", [], tabset.id).execute()
+    const subfolder = tabset.folders[0]
+    subfolder.dynamicUrl = "https://some.md"
+
+    // @ts-ignore
+    fetch.mockResolvedValue({text: () => new Promise((resolve) => resolve(`
+# Git.io
+[Git.io](http://git.io) is a simple URL shortener for GitHub.
+
+## skysail.io
+[Skysail.io](https://skysail.io) is a simple URL
+
+# tabsets.net
+[Tabsets.net](https://tabsets.net) is a simple URL
+
+    `))})
+
+    await new LoadDynamicTabsCommand(tabset, subfolder).execute()
+    expect(tabset.folders.length).toBe(1) // extracted links folder
+    expect(tabset.folders[0].folders.length).toBe(2)
+    expect(tabset.folders[0].folders[0].name).toBe("Git.io")
+    expect(tabset.folders[0].folders[1].name).toBe("tabsets.net")
+    expect(tabset.folders[0].folders[0].folders.length).toBe(1)
+    expect(tabset.folders[0].folders[0].folders[0].name).toBe("skysail.io")
+  });
+
+
+
+
+});

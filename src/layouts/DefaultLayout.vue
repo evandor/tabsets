@@ -62,11 +62,6 @@
           </q-menu>
         </div>
 
-        <!--        <q-tab v-if="rssTabsCount > 0"-->
-        <!--               name="rss" icon="o_rss_feed" @click="tabsClicked(DrawerTabs.RSS)">-->
-        <!--          <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">RSS Feeds</q-tooltip>-->
-        <!--        </q-tab>-->
-
         <span v-if="useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0">
           <q-btn
             flat

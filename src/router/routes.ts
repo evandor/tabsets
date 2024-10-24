@@ -80,6 +80,16 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTagsPage.vue')}],
   },
   {
+    path: '/sidepanel/rsslist',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelRssListViewer.vue')}],
+  },
+  {
+    path: '/sidepanel/rss/:encodedUrl',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelRssPage.vue')}],
+  },
+  {
     path: '/sidepanel/byDomainList',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelByDomainList.vue')}],

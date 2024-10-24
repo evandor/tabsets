@@ -20,6 +20,7 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 import BrowserApi from "src/app/BrowserApi";
+import {useContentStore} from "src/content/stores/contentStore";
 
 const {
   saveTabset,
@@ -231,6 +232,13 @@ class BrowserListeners {
 
     if (info.status === "complete") {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
+
+      if (chromeTab.id) {
+        const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
+        // console.log("contentReqeust", contentRequest)
+        useContentStore().currentTabContent = contentRequest['html' as keyof object] || ''
+      }
+
 
       this.handleUpdateInjectScripts(info, chromeTab)
 

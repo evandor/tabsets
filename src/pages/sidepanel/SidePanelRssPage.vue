@@ -32,15 +32,16 @@
           </div>
         </div>
 
-        <div class="row q-mb-lg" v-for="entry in rss.entries">
+        <div class="row q-mb-lg" v-for="entry in rss.items">
           <div class="col-5 q-pa-xs cursor-pointer">
             <q-img v-if="imageEnclosure(entry)"
                    @click="openInNewTab(entry.link)"
                    :src="imageEnclosure(entry)">
             </q-img>
+
           </div>
           <div class="col q-pa-xs">
-            <div class="text-subtitle2" style="line-height: normal"> {{ entry.title }}</div>
+            <div class="text-subtitle2" style="line-height: normal"> {{ getAsHtml(entry, "title") }}</div>
           </div>
           <div class="col-12 q-pa-xs">
             <div class="text-caption"> {{ entry.description }}</div>
@@ -62,9 +63,7 @@
 <script setup lang="ts">
 import {onMounted, ref, watchEffect} from 'vue'
 import {useRoute, useRouter} from "vue-router";
-import {date, useQuasar} from "quasar";
-import {useSettingsStore} from "src/stores/settingsStore"
-import {extract} from "@extractus/feed-extractor";
+import {date} from "quasar";
 import NavigationService from "src/services/NavigationService";
 import {formatDistance, parseISO} from "date-fns";
 import Analytics from "src/core/utils/google-analytics";
@@ -75,69 +74,44 @@ const router = useRouter();
 
 const encodedUrl = ref()
 const title = ref()
-const rss = ref({})
+const rss = ref<{ items: Element[] }>({items: []})
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelRssPage', document.location.href);
 })
 
-const opts = {
-  includeEntryContent: true,
-  includeOptionalElements: true,
-  useISODateFormat: true,
-  normalization: true,
-  getExtraFeedFields: (feedData: any) => {
-    //console.log("feedData", feedData)
-    return {
-      subtitle: feedData.subtitle || '',
-      image: feedData.image || undefined,
-      guid: feedData.guid || ''
-    }
-  },
-  getExtraEntryFields: (feedEntry: any) => {
-    //console.log("feedEntry", feedEntry)
-    const {
-      enclosure,
-      category
-    } = feedEntry
-    return {
-      enclosure: {
-        url: enclosure ? enclosure['@_url'] : undefined,
-        type: enclosure ? enclosure['@_type'] : 'undefined',
-        length: enclosure ? enclosure['@_length'] : 'undefined'
-      },
-      content: feedEntry['content:encoded'],
-      category
-    }
-  }
-//  useISODateFormat: useISODateFormat !== 'n',
-//  normalization: normalization !== 'n'
-}
-// watch(() => route.params, (currentValue, oldValue) => {
-//   console.log("url", currentValue, oldValue)
-// })
 
-watchEffect(() => {
-  encodedUrl.value = route.params.encodedUrl as string
-  console.log("url2", encodedUrl.value)
-  if (encodedUrl.value) {
-    try {
-      extract(atob(encodedUrl.value), opts)
-        .then(res => {
-          console.log("res", res)
-          rss.value = res
+watchEffect(async () => {
+    encodedUrl.value = route.params.encodedUrl as string
+    console.log("url3", atob(encodedUrl.value))
+
+    if (encodedUrl.value) {
+
+      fetch(atob(encodedUrl.value))
+        .then(response => response.text())
+        .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+        .then(data => {
+          console.log(data)
+
+          const items = data.querySelectorAll("item");
+          rss.value = {
+            items: Array.from(items)
+          }
         })
-    } catch (err) {
-      console.log("err", err)
     }
   }
-})
+)
+
+const getAsHtml = (e: Element, identifier: string) => {
+  return e.querySelector(identifier)?.innerHTML
+}
 
 const openInNewTab = (link: string) => NavigationService.openOrCreateTab([link])
 
-const imageEnclosure = (entry: any): string | undefined => {
-  if (entry.enclosure && entry.enclosure.type.indexOf('image') >= 0) {
-    return entry.enclosure.url
+const imageEnclosure = (entry: Element): string | undefined | null => {
+  const enclosure:Element | null = entry.querySelector("enclosure")
+  if (enclosure) {
+    return enclosure.getAttribute("url")
   }
   return undefined
 }

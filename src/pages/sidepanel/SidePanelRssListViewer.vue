@@ -7,7 +7,6 @@
       <div class="q-ma-none">
         <div class="row q-ma-none q-pa-none">
           <div class="col-12 q-ma-none q-pa-none q-pt-lg">
-
             <div
               class="col-12 q-pa-xs items-center justify-center"
               v-for="rssTab in rssTabs">

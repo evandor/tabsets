@@ -11,8 +11,8 @@ import {useSearchStore} from "src/search/stores/searchStore";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useContentService} from "src/content/services/ContentService";
-import IndexedDbContentPersistence from "src/content/persistence/IndexedDbRequestPersistence";
 import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
+import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 
 installQuasarPlugin();
 
@@ -104,7 +104,7 @@ describe('AddTabToTabsetCommand', () => {
    // await db.saveContent(theTab, "text", {}, "title", [])
 
     const createdTabset = (await new CreateTabsetCommand("new Tabset2", []).execute()).result.tabset
-    const subfolder = (await new CreateFolderCommand("subfolder", [], createdTabset.id).execute()).result
+    const subfolder = (await new CreateFolderCommand(uid(),"subfolder", [], createdTabset.id).execute()).result
     createdTabset.folderActive = subfolder
 
     const result = await new AddTabToTabsetCommand(theTab, createdTabset, subfolder).execute()
