@@ -35,3 +35,4 @@ jobs:
           zip-path: dist/bex/Packaged.tabsets.net.zip
           api-key: ${{ secrets.EDGE_API_KEY }}
           client-id: ${{ secrets.EDGE_CLIENT_ID }}
+          upload-only: true
