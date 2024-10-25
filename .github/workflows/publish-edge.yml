@@ -31,7 +31,7 @@ jobs:
       - uses: wdzeng/edge-addon@v2
         name: "Upload and release"
         with:
-          product-id: your-addon-product-id
-          zip-path: your-addon.zip
+          product-id: "d5d382d8-4033-4559-a15a-c12e8a9f64e0"
+          zip-path: Packaged.tabsets.net.zip
           api-key: ${{ secrets.EDGE_API_KEY }}
           client-id: ${{ secrets.EDGE_CLIENT_ID }}
