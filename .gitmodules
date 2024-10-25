@@ -58,7 +58,3 @@
 	path = src/requests
 	url = https://github.com/evandor/submodule-requests.git
 	branch = main
-[submodule "src/navigation"]
-	path = src/navigation
-	url = https://github.com/evandor/submodule-navigation.git
-	branch = main
