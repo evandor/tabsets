@@ -58,7 +58,6 @@ onMounted(() => {
 })
 
 const toggleShowOnlyFolders = () => {
-  console.log("****")
   showOnlyFolders.value = !showOnlyFolders.value
 }
 

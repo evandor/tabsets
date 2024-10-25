@@ -11,8 +11,8 @@ import {useSearchStore} from "src/search/stores/searchStore";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useContentService} from "src/content/services/ContentService";
-import IndexedDbContentPersistence from "src/content/persistence/IndexedDbRequestPersistence";
 import {DeleteTabCommand} from "src/tabsets/commands/DeleteTabCommand";
+import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 
 installQuasarPlugin();
 

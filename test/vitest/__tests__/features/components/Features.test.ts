@@ -30,7 +30,7 @@ describe('Features', () => {
     wrapper = mount(Features);
     const firstFeature = wrapper.find('div.q-list > div').html()
     expect(firstFeature).toContain("Bookmarks");
-    expect(firstFeature).toContain("text-green");
+    expect(firstFeature).toContain("text-warning");
 
     const secondFeature = wrapper.find('div.q-list > div:nth-child(2)').html()
     expect(secondFeature).toContain("Open Tabs");

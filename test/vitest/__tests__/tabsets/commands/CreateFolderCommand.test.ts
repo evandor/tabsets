@@ -6,6 +6,7 @@ import {useDB} from "src/services/usePersistenceService";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
+import {uid} from "quasar";
 
 installQuasarPlugin();
 
@@ -45,7 +46,7 @@ describe('CreateFolderCommand', () => {
     const tabset = await createTabset();
     const res = await new CreateFolderCommand(uid(),"subB", [], tabset.id).execute()
     const subBId = res.result
-    await new CreateFolderCommand(uid(),"subsubB", [], tabset.id, subBId).execute()
+    await new CreateFolderCommand(uid(),"subsubB", [], tabset.id, subBId.id).execute()
     expect(tabset.folderActive).toBe(undefined)
     expect(tabset.folders.length).toBe(1)
     expect(tabset.folders[0].name).toBe("subB")
@@ -58,9 +59,9 @@ describe('CreateFolderCommand', () => {
     const tabset = await createTabset();
     const res = await new CreateFolderCommand(uid(),"subC", [], tabset.id).execute()
     const subCId = res.result
-    tabset.folderActive = subCId
+    tabset.folderActive = subCId.id
     await new CreateFolderCommand(uid(),"subsubC", [], tabset.id).execute()
-    expect(tabset.folderActive).toBe(subCId)
+    expect(tabset.folderActive).toBe(subCId.id)
     expect(tabset.folders.length).toBe(1)
     expect(tabset.folders[0].name).toBe("subC")
     const subSubFolders = tabset.folders[0].folders

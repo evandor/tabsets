@@ -12,8 +12,8 @@ import {useSearchStore} from "src/search/stores/searchStore";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import IndexedDbContentPersistence from "src/content/persistence/IndexedDbRequestPersistence";
 import {useContentService} from "src/content/services/ContentService";
+import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 
 installQuasarPlugin();
 
@@ -27,7 +27,6 @@ describe('UpdateTabUrl', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    //await IndexedDbPersistenceService.init("db")
     await IndexedDbTabsetsPersistence.init()
     await IndexedDbContentPersistence.init()
     await useContentService().init(IndexedDbContentPersistence)

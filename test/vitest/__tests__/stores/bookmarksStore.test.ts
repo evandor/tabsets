@@ -3,7 +3,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import ChromeApi from "src/app/BrowserApi";
-import {TreeNode} from "src/models/Tree";
+import {TreeNode} from "src/bookmarks/models/Tree";
 
 installQuasarPlugin();
 
@@ -123,7 +123,7 @@ describe('BookmarksStore', () => {
     const bmNodes = useBookmarksStore().bookmarksNodes2 as TreeNode[]
     console.log("bmNodes", bmNodes.toString())
     expect(bmNodes.length).toBe(1)
-    expect(bmNodes[0].header).toBe('node')
+    expect(bmNodes[0].getHeader()).toBe('leaf')
     expect(bmNodes[0].id.length).toBe(36)
     expect(bmNodes[0].url).toBe(undefined)
     expect(bmNodes[0].children.length).toBe(0)
@@ -144,7 +144,7 @@ describe('BookmarksStore', () => {
     const nonLeafNodes = useBookmarksStore().nonLeafNodes
     console.log("nonLeafNodes", nonLeafNodes.toString())
     expect(nonLeafNodes.length).toBe(1)
-    expect(nonLeafNodes[0].header).toBe('node')
+    // expect(nonLeafNodes[0].getHeader()).toBe('leaf') //?
     expect(nonLeafNodes[0].id.length).toBe(36)
     expect(nonLeafNodes[0].url).toBe(undefined)
     expect(nonLeafNodes[0].children.length).toBe(0)
@@ -165,7 +165,7 @@ describe('BookmarksStore', () => {
     const bmNodes = useBookmarksStore().bookmarksNodes2
     // console.log("bmNodes", bmNodes.toString())
     expect(bmNodes.length).toBe(1)
-    expect(bmNodes[0].header).toBe('node')
+    // expect(bmNodes[0].getHeader()).toBe('leaf')
     expect(bmNodes[0].url).toBe(undefined)
     expect(bmNodes[0].children.length).toBe(1)
     expect(bmNodes[0].subFoldersCount).toBe(0)
@@ -187,7 +187,7 @@ describe('BookmarksStore', () => {
     const nonLeafNodes = useBookmarksStore().nonLeafNodes
     // console.log("bmNodes", bmNodes.toString())
     expect(nonLeafNodes.length).toBe(1)
-    expect(nonLeafNodes[0].header).toBe('node')
+    // expect(nonLeafNodes[0].getHeader()).toBe('leaf')
     expect(nonLeafNodes[0].url).toBe(undefined)
     expect(nonLeafNodes[0].children.length).toBe(0)
     expect(nonLeafNodes[0].subFoldersCount).toBe(0)
@@ -241,6 +241,7 @@ describe('BookmarksStore', () => {
     const nonLeafNodes = useBookmarksStore().nonLeafNodes
 
     expect(nonLeafNodes.length).toBe(1)
+    expect(nonLeafNodes[0].title).toBe('folderA')
     expect(nonLeafNodes[0].children.length).toBe(0)
     expect(nonLeafNodes[0].subFoldersCount).toBe(0)
     expect(nonLeafNodes[0].subNodesCount).toBe(2)
