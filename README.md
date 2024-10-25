@@ -9,4 +9,3 @@ https://evandor.github.io/tabsets/
 # User Documentation
 
 https://docs.tabsets.net
-
