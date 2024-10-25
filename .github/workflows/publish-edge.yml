@@ -28,12 +28,10 @@ jobs:
         run: |
           yarn install
           npm run "build bex (publish)"
-      - name: Upload & release
-        uses: mnao305/chrome-extension-upload@v4.0.1
+      - uses: wdzeng/edge-addon@v2
+        name: "Upload and release"
         with:
-          file-path: dist/bex/Packaged.tabsets.net.zip
-          extension-id: afkknkdbgondbbfjehipnjmojndnjhjg
-          client-id: ${{ secrets.CLIENT_ID }}
-          client-secret: ${{ secrets.CLIENT_SECRET }}
-          refresh-token: ${{ secrets.REFRESH_TOKEN }}
-          publish: false
+          product-id: your-addon-product-id
+          zip-path: your-addon.zip
+          api-key: ${{ secrets.EDGE_API_KEY }}
+          client-id: ${{ secrets.EDGE_CLIENT_ID }}
