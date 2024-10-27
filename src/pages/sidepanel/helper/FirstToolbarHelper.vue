@@ -56,6 +56,7 @@
 
             <template v-if="showSearchIcon()">
               <SidePanelToolbarButton icon="search"
+                                      class="q-mr-sm"
                                       id="toggleSearchBtn"
                                       size="11px"
                                       @click="toggleSearch"/>
@@ -72,14 +73,15 @@
               @click="selectTabsetForFirstMatchingTab(useTabsetsUiStore().matchingTabs[0] as TabAndTabsetId)"
               class="q-ma-none q-pa-none q-mr-none"/>
 
-            <q-btn outline
-                   label="New Tabset"
+            <q-btn outline dense
+                   icon="add"
+                   label="Collection"
                    color="primary"
                    size="sm"
                    :class="{ shake: annimateNewTabsetButton }"
                    data-testid="addTabsetBtn"
                    @click="openNewTabsetDialog()"
-                   class="q-ma-none q-ml-sm q-px-sm q-py-none"
+                   class="q-ma-none q-pl-xs q-pr-sm q-py-xs"
                    name="o_bookmark_add"/>
 
           </slot>

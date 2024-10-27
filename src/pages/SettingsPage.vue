@@ -36,159 +36,7 @@
 
   <div v-if="tab === 'appearance'">
 
-    <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded style="border:1px solid orange">
-        {{ t('settings_adjust_general_appearance')}}
-      </q-banner>
-
-      <div class="row items-baseline q-ma-md q-gutter-md">
-
-        <InfoLine :label="t('title')">
-          <q-input type="text" color="primary" filled v-model="installationTitle" label="">
-            <template v-slot:prepend>
-              <q-icon name="o_edit_note"/>
-            </template>
-          </q-input>
-        </InfoLine>
-
-        <InfoLine :label="t('dark_mode')">
-          <q-radio v-model="darkMode" val="auto" :label="t('Auto')"/>
-          <q-radio v-model="darkMode" val="true" :label="t('Enabled')"/>
-          <q-radio v-model="darkMode" val="false" :label="t('Disabled')"/>
-          &nbsp;&nbsp;&nbsp;{{t('changing_needs_restart')}}
-        </InfoLine>
-
-        <InfoLine :label="t('keyboard_shortcuts')">
-          <div class="text-blue-8 cursor-pointer" @click="NavigationService.openSingleTab('chrome://extensions/shortcuts')">{{t('click_here')}}</div>
-        </InfoLine>
-
-        <div class="col-3">
-          {{ t('language') }} ({{ t('experimental') }})
-        </div>
-        <div class="col-7">
-          <q-select
-            v-model="locale"
-            :options="localeOptions"
-            dense
-            borderless
-            emit-value
-            map-options
-            options-dense
-            style="min-width: 150px"
-          />
-        </div>
-        <div class="col"></div>
-
-        <InfoLine :label="t('tab_info_detail_level', {detailLevelPerTabset: (detailLevelPerTabset ? ' (Default)' : '')})">
-          <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
-          <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
-          <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details"/>
-        </InfoLine>
-
-        <InfoLine label="">
-          <q-checkbox v-model="detailLevelPerTabset" :label="t('individually_per_tabset')"/>
-        </InfoLine>
-
-        <InfoLine label="URLs">
-          <q-checkbox v-model="fullUrls" :label="t('show_full_url')"/>
-        </InfoLine>
-
-<!--        <InfoLine label="Ignore Browser Extensions as tabs">-->
-<!--          <q-toggle v-model="ignoreExtensionsEnabled"-->
-<!--                    @click="updateSettings('extensionsAsTabs', ignoreExtensionsEnabled)"/>-->
-<!--        </InfoLine>-->
-
-      </div>
-
-      <div class="row items-baseline q-ma-md q-gutter-md"
-           v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
-        <div class="col-3">
-          {{t('tab_switching_time')}}
-        </div>
-        <div class="col-9">
-          <q-select
-            :label="t('tab_switcher_settings')"
-            filled
-            v-model="autoSwitcherOption"
-            :options="autoSwitcherOptions"
-            map-options
-            emit-value
-            style="width: 250px"
-          />
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md q-gutter-md">
-        <div class="col-3">
-          {{ t('restore_info_msg')}}
-        </div>
-        <div class="col-3">
-          {{t('accidentally_closed_info_msgs')}}
-        </div>
-        <div class="col-1"></div>
-        <div class="col">
-          <q-btn :label="t('restore_hints')" @click.stop="restoreHints"/>
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md q-gutter-md"
-           v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
-        <div class="col-3">
-          {{ t('warning_thresholds')}}
-        </div>
-        <div class="col-3">
-          {{t('warnings_info')}}
-        </div>
-        <div class="col q-ma-xl">
-          <q-range
-            v-model="settingsStore.thresholds"
-            :step=10
-            marker-labels
-            :min=0
-            :max=100
-          />
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md q-gutter-md">
-        <div class="col-3">
-          {{t('thumbnail_quality')}}
-        </div>
-        <div class="col-3">
-          {{t('larger_thumbs_info')}}
-        </div>
-        <div class="col q-ma-xl">
-          <q-slider v-model="settingsStore.thumbnailQuality"
-                    marker-labels
-                    :min="0" :max="100" :inner-min="10" :inner-max="100" :step=10></q-slider>
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
-        <div class="col-3">
-          New Version Simulation
-        </div>
-        <div class="col-3">
-          Simulate that there is a new version available
-        </div>
-        <div class="col q-ma-xl">
-          <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.2.12')">Simulate</span>
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
-        <div class="col-3">
-          New Suggestion Simulation
-        </div>
-        <div class="col-3">
-          Simulate that there is a new suggestion to use a (new) feature (refresh sidebar for effects)
-        </div>
-        <div class="col q-ma-xl">
-          <span class="text-blue cursor-pointer" @click="simulateStaticSuggestion()">Simulate</span>
-        </div>
-      </div>
-
-    </div>
+   <AppearanceSettings />
 
   </div>
 
@@ -386,7 +234,6 @@ import {
   STRIP_CHARS_IN_USER_INPUT,
   TITLE_IDENT
 } from "boot/constants";
-import InfoLine from "pages/helper/InfoLine.vue";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -398,16 +245,16 @@ import OpenRightDrawerWidget from "src/ui/widgets/OpenRightDrawerWidget.vue";
 import {usePermissionsStore} from "stores/usePermissionsStore";
 import ImportExportSettings from "pages/helper/ImportExportSettings.vue";
 import BackupSettings from "src/tabsets/pages/settings/BackupSettings.vue";
+import AppearanceSettings from "pages/helper/AppearanceSettings.vue";
 
 const { t } = useI18n()
 
-const {sendMsg, inBexMode} = useUtils()
+const {sendMsg} = useUtils()
 
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
 
 const localStorage = useQuasar().localStorage
-const $q = useQuasar()
 const route = useRoute()
 
 useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
@@ -415,15 +262,6 @@ useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 const view = ref('grid')
 const indexSize = ref(0)
 const searchIndexAsJson = ref(null)
-
-
-const { locale } = useI18n({locale: navigator.language, useScope: "global"})
-
-const localeOptions = ref([
-  {value: 'en', label: 'English'},
-  {value: 'de', label: 'German'},
-  {value: 'bg', label: 'Bulgarian'}
-])
 
 const state = reactive({
   val: JSON.stringify(searchIndexAsJson),
@@ -435,37 +273,11 @@ const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
 const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
 const permissionsList = ref<string[]>([])
 
-const darkMode = ref<string>(localStorage.getItem('darkMode') || "auto")
-const detailLevel = ref<ListDetailLevel>(localStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
-
-const fullUrls = ref(localStorage.getItem('ui.fullUrls') || false)
-const detailLevelPerTabset = ref(localStorage.getItem('ui.detailsPerTabset') || false)
-
-const installationTitle = ref<string>(localStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
-
 const tab = ref<string>(route.query['tab'] ? route.query['tab'] as string : 'appearance')
-
-const autoSwitcherOption = ref<number>(localStorage.getItem('ui.tabSwitcher') as number || 5000)
-
-const autoSwitcherOptions = [
-  {label: '1 sec.', value: 1000},
-  {label: '2 sec.', value: 2000},
-  {label: '3 sec.', value: 3000},
-  {label: '5 sec.', value: 5000},
-  {label: '10 sec.', value: 10000},
-  {label: '30 sec.', value: 30000},
-  {label: '1 min.', value: 60000},
-  {label: '2 min.', value: 120000},
-  {label: '5 min.', value: 300000}
-]
-
-const {handleError} = useNotificationHandler()
 
 onMounted(() => {
   Analytics.firePageViewEvent('SettingsPage', document.location.href);
 })
-
-let suggestionsCounter = 0
 
 watchEffect(() => {
   const data = JSON.stringify(searchStore?.getIndex())
@@ -480,44 +292,6 @@ watchEffect(() => {
 
 watchEffect(() => permissionsList.value = usePermissionsStore().permissions?.permissions || [])
 
-
-watchEffect(() => {
-  //console.log("***setting dark mode to ", typeof darkMode.value, darkMode.value)
-  switch (darkMode.value) {
-    case "true":
-      $q.dark.set(true)
-      break
-    case "false":
-      $q.dark.set(false)
-      break;
-    default:
-      $q.dark.set("auto")
-  }
-  // $q.dark.set(darkMode.value === "true" ? true : (darkMode.value === 'false' ? false : 'auto'))
-  localStorage.set('darkMode', darkMode.value)
-})
-
-watchEffect(() => {
-  (installationTitle.value && installationTitle.value.trim().length > 0) ?
-    LocalStorage.set(TITLE_IDENT, installationTitle.value.replace(STRIP_CHARS_IN_USER_INPUT, '')) :
-    LocalStorage.remove(TITLE_IDENT)
-})
-
-watch(() => detailLevel.value, () => {
-  localStorage.set('ui.detailLevel', detailLevel.value)
-  sendMsg('detail-level-changed', {level: detailLevel.value})
-})
-
-watch(() => fullUrls.value, (a:any,b:any) => {
-  localStorage.set('ui.fullUrls', fullUrls.value)
-  sendMsg('fullUrls-changed', {value: fullUrls.value})
-})
-
-watch(() => detailLevelPerTabset.value, (v:any) => {
-  localStorage.set('ui.detailsPerTabset', detailLevelPerTabset.value)
-  sendMsg('detail-level-perTabset-changed', {level: detailLevelPerTabset.value})
-})
-
 watchEffect(() => {
   localStorage.set("layout", view.value)
 })
@@ -525,10 +299,6 @@ watchEffect(() => {
 watchEffect(() => {
   // @ts-ignore
   indexSize.value = searchStore?.getIndex()?.size()
-})
-
-watchEffect(() => {
-  LocalStorage.set("ui.tabSwitcher", autoSwitcherOption.value)
 })
 
 const downloadIndex = () => {
@@ -549,18 +319,6 @@ const unarchive = (tabset: Tabset) =>
       sendMsg('reload-tabset', {tabsetId: tabset.id})
     })
 
-const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
-
-const restoreHints = () => useUiStore().restoreHints()
-
-const simulateStaticSuggestion = () => {
-  const suggestions: [Suggestion] = [
-    // @ts-ignore
-    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE),
-    Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
-  ]
-  useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
-}
 
 const setTab = (t: string) => tab.value = t
 

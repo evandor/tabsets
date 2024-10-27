@@ -1,6 +1,6 @@
 <template>
-  <!-- SidePanelPage -->
-  <q-page style="padding-top: 50px">
+  <!-- SidePanelPage2 -->
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 50px">
 
     <div class="wrap" v-if="useUiStore().appLoading">
       <div class="loading">
@@ -61,47 +61,41 @@
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
-      <template v-if="suggestTabsetImport()">
 
-        <InfoMessageWidget
-          :probability="1"
-          ident="sidePanelPage_importTabset">
-          Whenever tabsets detects the <b>current tab to contain a new tabset</b>, it will suggest to import this
-          set.<br>
-          Importing will add the tabset to your existing ones.
-        </InfoMessageWidget>
+      <div v-if="useTabsetsStore().tabsets.size > 0"
+           class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
 
-        <div class="row q-ma-sm q-pa-sm">
-          <q-btn class="q-px-xl" dense label="Import Shared Tabset" color="warning" @click="importSharedTabset()">
-            <q-tooltip class="tooltip-small">The Page in your current tab is a public Tabset which you can import into
-              your own if you want.
-            </q-tooltip>
-          </q-btn>
+        <div class="col-9 q-ml-md q-mt-sm">
+          <div class="text-caption">Collection</div>
+          <div class="text-body1 text-bold cursor-pointer" @click="router.push('/sidepanel/collections')">
+            {{ currentTabset?.name }}
+          </div>
         </div>
-      </template>
-      <div class="q-mx-md q-mx-sm text-primary text-caption"></div>
+        <div class="col text-right vertical-middle q-mt-md">
 
-      <div class="q-pa-md q-gutter-sm" v-if="showSwitchedToLocalInfo()">
-        <q-banner inline-actions rounded class="text-primary" style="border: 1px solid grey">
-          <div class="row q-pa-xs">
-            <div class="2">
-              <q-icon name="o_lightbulb" color="warning" size="1.3em"/>
-            </div>
-            <div class="col text-right cursor-pointer" @click="ackSwitchToLocal()">x
-              <q-tooltip>close this info message</q-tooltip>
-            </div>
-          </div>
-          <div class="row q-pa-xs">
-            <div class="2"></div>
-            <div class="col text-caption">
-              Showing local tabsets
-              <slot></slot>
-            </div>
-          </div>
-        </q-banner>
+
+          <SpecialUrlAddToTabsetComponent
+            v-if="currentChromeTab && currentTabset"
+            @button-clicked="(args:object) => handleButtonClicked(currentTabset!, undefined, args)"
+            :currentChromeTab="currentChromeTab"
+            :tabset="currentTabset"
+          />
+
+          <q-icon name="more_vert" size="sm" class="cursor-pointer"/>
+          <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset"/>
+        </div>
+
+        <div class="col-12">
+          <hr style="height:1px;border:none;background-color: #efefef;">
+        </div>
+
+        <!-- list of tabs, assuming here we have at least one tabset-->
+        <SidePanelPageTabList v-if="currentTabset"
+                              :indent="calcFolders(currentTabset as Tabset)?.length > 0"
+                              :tabsCount="useTabsetService().tabsToShow(currentTabset as Tabset)?.length"
+                              :tabset="tabsetForTabList(currentTabset as Tabset)"/>
+
       </div>
-
-      <SidePanelTabsetsExpansionList :tabsets="tabsets as Tabset[]"/>
 
     </div>
 
@@ -137,7 +131,7 @@ import _ from "lodash"
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/core/services/Utils";
-import {LocalStorage} from "quasar";
+import {LocalStorage, uid, useQuasar} from "quasar";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
@@ -147,7 +141,6 @@ import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/app/AppService";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
@@ -155,18 +148,27 @@ import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import SidePanelTabsetsExpansionList from "src/tabsets/components/SidePanelTabsetsExpansionList.vue";
+import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
+import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
+import SidePanelPageTabList from "src/tabsets/layouts/SidePanelPageTabList.vue";
+import {Tab} from "src/tabsets/models/Tab";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
+import SpecialUrlAddToTabsetComponent from "src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
 const {inBexMode} = useUtils()
 
+const $q = useQuasar()
 const router = useRouter()
 const uiStore = useUiStore()
 
 const showSearchBox = ref(false)
-const user = ref<any>()
 const tabsets = ref<Tabset[]>([])
+const currentTabset = ref<Tabset | undefined>(undefined)
+const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
 
 function updateOnlineStatus(e: any) {
   const {type} = e
@@ -175,8 +177,8 @@ function updateOnlineStatus(e: any) {
 
 onMounted(() => {
 
-  if (LocalStorage.getItem('ui.sidepanel.newLayout')) {
-    router.push("/sidepanel2")
+  if (!LocalStorage.getItem('ui.sidepanel.newLayout')) {
+    router.push("/sidepanel")
   }
 
   window.addEventListener('keypress', checkKeystroke);
@@ -196,9 +198,7 @@ onUnmounted(() => {
 })
 
 watchEffect(() => {
-  if (useAuthStore().user) {
-    user.value = useAuthStore().user
-  }
+  currentTabset.value = useTabsetsStore().getCurrentTabset
 })
 
 watchEffect(() => {
@@ -245,6 +245,11 @@ watchEffect(() => {
   } else {
     tabsets.value = determineTabsets()
   }
+})
+
+watchEffect(() => {
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
 
@@ -382,163 +387,66 @@ const toolbarTitle = (tabsets: Tabset[]): string => {
   return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 
-const suggestTabsetImport = () => {
-  const currentTabUrl = useTabsStore2().currentChromeTab?.url
-  if (currentTabUrl?.startsWith("https://shared.tabsets.net/#/pwa/tabsets/")) {
-    const urlSplit = currentTabUrl.split("/")
-    const tabsetId = urlSplit[urlSplit.length - 1]
-    console.log("tabsetId", tabsetId, useTabsetsStore().getTabset(tabsetId))
-    return !useTabsetsStore().getTabset(tabsetId)
+
+const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
+
+
+const openNewTabsetDialog = () => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      tabsetId: useTabsetsStore().getCurrentTabset?.id,
+      spaceId: useSpacesStore().space?.id,
+      fromPanel: true
+    }
+  })
+}
+
+const calcFolders = (tabset: Tabset): Tabset[] => {
+  if (tabset.folderActive) {
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
+    if (af && af.folderParent) {
+      return [new Tabset(af.folderParent, "..", [])].concat(af.folders)
+    }
+  }
+  return tabset.folders
+}
+
+const tabsetForTabList = (tabset: Tabset) => {
+  if (tabset.folderActive) {
+    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
+    if (af) {
+      return af
+    }
+  }
+  return tabset
+}
+
+const addCurrentTab = async () => {
+  let queryOptions = {active: true, lastFocusedWindow: true};
+  try {
+    let [currentTab] = await chrome.tabs.query(queryOptions);
+    if (currentTab) {
+      await useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentTab)))
+    }
+  } catch (err: any) {
+    console.warn(err)
+  }
+}
+
+const alreadyAdded = (): boolean => {
+  const currentChromeTabUrl = useTabsStore2().currentChromeTab?.url
+  if (currentChromeTabUrl) {
+    const currentTabset = useTabsetsStore().getCurrentTabset
+    if (currentTabset) {
+      return _.find(currentTabset.tabs, (t: Tab) => t.url === currentChromeTabUrl) !== undefined
+    }
   }
   return false
 }
 
-const importSharedTabset = () => {
-  const currentTabUrl = useTabsStore2().currentChromeTab?.url
-  if (currentTabUrl) {
-    console.log("Importing", currentTabUrl)
-    const urlSplit = currentTabUrl.split("/")
-    const tabsetId = urlSplit[urlSplit.length - 1]
-  }
+const handleButtonClicked = async (tabset: Tabset, folder?: Tabset, args?: object) => {
+  console.log(`button clicked: tsId=${tabset.id}, folderId=${folder?.id}, args=${JSON.stringify(args)}`)
 }
-
-const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
-
-const showSwitchedToLocalInfo = () => useUiStore().showSwitchedToLocalInfo
-const ackSwitchToLocal = () => useUiStore().showSwitchedToLocalInfo = false
 
 </script>
-
-<style lang="scss">
-
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 0;
-}
-
-.q-item__section--avatar {
-  min-width: 46px !important;
-  padding-right: 12px !important;
-  margin-bottom: 14px;
-}
-
-.welcome-tooltip-container {
-  position: absolute;
-  top: 30px;
-  right: -50px;
-  width: 140px;
-  display: inline-block
-}
-
-.welcome-tooltip-container .tooltip {
-  z-index: 10000;
-  padding: 0 8px;
-  background: white;
-  color: #333;
-  position: absolute;
-  top: -17px;
-  right: 0;
-  border: 2px solid #FFBF46;
-  border-radius: 8px;
-  font-size: 16px;
-  box-shadow: 3px 3px 3px #ddd;
-  animation: welcome-tooltip-pulse 1s ease-in-out infinite alternate
-}
-
-.welcome-tooltip-container .tooltip p {
-  margin: 15px 0;
-  line-height: 1.5
-}
-
-.welcome-tooltip-container .tooltip * {
-  vertical-align: middle
-}
-
-.welcome-tooltip-container .tooltip::after {
-  content: " ";
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 10px 12.5px 0 12.5px;
-  border-color: #FFBF46 transparent transparent transparent;
-  position: absolute;
-  top: -10px;
-  right: 35px;
-  transform: rotate(180deg)
-}
-
-$width: 25px;
-$height: 25px;
-
-$bounce_height: 30px;
-
-body {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-}
-
-.wrap {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.wrap2 {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.text {
-  //color: #000066;
-  font-size: 24px;
-  display: inline-block;
-  margin-left: 5px;
-}
-
-.bounceball {
-  position: relative;
-  display: inline-block;
-  height: 37px;
-  width: $width;
-
-  &:before {
-    position: absolute;
-    content: '';
-    display: block;
-    top: 0;
-    width: $width;
-    height: $height;
-    border-radius: 50%;
-    background-color: #fbae17;
-    transform-origin: 50%;
-    animation: bounce 500ms alternate infinite ease;
-  }
-}
-
-@keyframes bounce {
-  0% {
-    top: $bounce_height;
-    height: 5px;
-    border-radius: 60px 60px 20px 20px;
-    transform: scaleX(2);
-  }
-  35% {
-    height: $height;
-    border-radius: 50%;
-    transform: scaleX(1);
-  }
-  100% {
-    top: 0;
-  }
-}
-
-</style>

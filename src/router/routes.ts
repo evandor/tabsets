@@ -1,4 +1,5 @@
 import {RouteRecordRaw} from 'vue-router';
+import {LocalStorage} from "quasar";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -28,6 +29,16 @@ const routes: RouteRecordRaw[] = [
     path: '/sidepanel',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/SidePanelPage.vue')}],
+  },
+  {
+    path: '/sidepanel2',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/SidePanelPage2.vue')}],
+  },
+  {
+    path: '/sidepanel/collections',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{path: '', component: () => import('pages/SidePanelCollectionsPage.vue')}],
   },
   {
     path: '/sidepanel/welcome',
