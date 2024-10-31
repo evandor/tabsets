@@ -8,7 +8,7 @@
           <div class="row justify-start items-baseline">
             <div class="col-12">
                 <span class="text-primary">
-                  <q-icon name="article" /> Reading Mode
+                  <q-icon name="article"/> Reading Mode
                 </span>
             </div>
           </div>
@@ -16,30 +16,23 @@
       </div>
       <div class="col-xs-12 col-md-5 text-right">
 
+<!--        <q-btn-->
+<!--          flat dense icon="block"-->
+<!--          color="primary"-->
+<!--          :label="$q.screen.gt.md ? 'Never open in Reading Mode' : 'Avoid Reading Mode'"-->
+<!--          class="q-mr-sm"-->
+<!--          @click="NavigationService.openOrCreateTab([tab?.tabReferences.filter(r => r.type === TabReferenceType.ORIGINAL_URL)[0].href || ''])">-->
+<!--          <q-tooltip>Open Original Page</q-tooltip>-->
+<!--        </q-btn>-->
+
         <q-btn
           flat dense icon="open_in_new"
           color="primary"
-          :label="$q.screen.gt.lg ? 'Open Original Page' : ''"
+          :label="$q.screen.gt.md ? 'Open Original Page' : 'Original'"
           class="q-mr-sm"
-          @click="NavigationService.openOrCreateTab([tab?.url || ''])">
+          @click="NavigationService.openOrCreateTab([tab?.tabReferences.filter(r => r.type === TabReferenceType.ORIGINAL_URL)[0].href || ''])">
           <q-tooltip>Open Original Page</q-tooltip>
         </q-btn>
-
-<!--        <q-btn-->
-<!--          flat dense icon="o_add"-->
-<!--          color="primary" :label="$q.screen.gt.lg ? 'Add Folder...' : ''"-->
-<!--          class="q-mr-md"-->
-<!--          @click="addUrlDialog">-->
-<!--          <q-tooltip>Create a new Bookmark Folder</q-tooltip>-->
-<!--        </q-btn>-->
-
-<!--        <q-btn-->
-<!--          flat dense icon="delete_outline"-->
-<!--          color="negative" :label="$q.screen.gt.lg ? 'Delete Folder...' : ''"-->
-<!--          class="q-mr-md"-->
-<!--          @click="deleteBookmarkFolder">-->
-<!--          <q-tooltip>Delete this Bookmark Folder</q-tooltip>-->
-<!--        </q-btn>-->
 
       </div>
     </div>
@@ -68,11 +61,12 @@
 import {useRoute} from "vue-router";
 import {onMounted, ref, watchEffect} from "vue";
 import {Tab} from "src/tabsets/models/Tab";
-import {Readability} from "@mozilla/readability";
 import {useUtils} from "src/core/services/Utils";
 import NavigationService from "src/services/NavigationService";
 import Analytics from "src/core/utils/google-analytics";
 import {useQuasar} from "quasar";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {TabReferenceType} from "src/content/models/TabReference";
 
 const {sanitizeAsText} = useUtils()
 
@@ -98,17 +92,20 @@ watchEffect(async () => {
   const res = useTabsetsStore().getTabAndTabsetId(tabId)
   if (res && res.tab) {
     tab.value = res.tab
-    const response = await fetch(tab.value.url || '')
-    const s = await response.text()
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(s, "text/html");
-    const article = new Readability(doc).parse() || {};
+    const article = res.tab.article
+    // const response = await fetch(tab.value.url || '')
+    // const s = await response.text()
+    // const parser = new DOMParser();
+    // const doc = parser.parseFromString(s, "text/html");
+    // const article = new Readability(doc).parse() || {};
 
-    title.value =  sanitizeAsText(article['title' as keyof object])
-    excerpt.value =  sanitizeAsText(article['excerpt' as keyof object])
-    content.value =  sanitizeAsText(article['content' as keyof object])
-    byline.value =  sanitizeAsText(article['byline' as keyof object])
-    siteName.value =  sanitizeAsText(article['siteName' as keyof object])
+    if (article) {
+      title.value = sanitizeAsText(article['title' as keyof object])
+      excerpt.value = sanitizeAsText(article['excerpt' as keyof object])
+      content.value = sanitizeAsText(article['content' as keyof object])
+      byline.value = sanitizeAsText(article['byline' as keyof object])
+      siteName.value = sanitizeAsText(article['siteName' as keyof object])
+    }
   }
 })
 

@@ -28,12 +28,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/sidepanel',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/SidePanelPage.vue')}],
+    children: [{path: '', component: () => import('pages/SidePanelPage2.vue')}],
   },
   {
-    path: '/sidepanel2',
+    path: '/sidepanelOld',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/SidePanelPage2.vue')}],
+    children: [{path: '', component: () => import('pages/SidePanelPage.vue')}],
   },
   {
     path: '/sidepanel/collections',
@@ -224,6 +224,11 @@ const routes: RouteRecordRaw[] = [
     path: '/mainpanel/mhtml/:tabId/:blobIndex',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue')}],
+  },
+  {
+    path: '/mainpanel/readingmode/:tabId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/pages/mainpanel/MainPanelReadingModePage.vue')}],
   },
   {
     path: '/settings',

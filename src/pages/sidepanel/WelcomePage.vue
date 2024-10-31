@@ -22,8 +22,8 @@
           <q-card class="my-card fit">
             <q-card-section>
               <span class="text-subtitle2">{{ t('create_your_first_ts') }}</span>
-              <br>
-              {{ t('provide_name_add_later')}}
+<!--              <br>-->
+<!--              {{ t('provide_name_add_later')}}-->
             </q-card-section>
             <q-card-section class="q-pb-none">
               <q-input v-model="tabsetName"
@@ -35,9 +35,10 @@
                        :error="!newTabsetNameIsValid()"
                        data-testid="newTabsetName"
                        @keydown.enter="addFirstTabset()"
+                       hint="e.g. Music, Holidays,..."
                        :label="t('tabset_name')"/>
             </q-card-section>
-            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none">
+            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none q-mt-md">
               <DialogButton
                 :label="t('add_tabset')"
                 @was-clicked="addFirstTabset"

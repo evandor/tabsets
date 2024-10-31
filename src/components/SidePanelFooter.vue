@@ -53,7 +53,7 @@
                icon="o_lightbulb"
                :label="suggestionsLabel()"
                :color="dependingOnStates()"
-               :size="getButtonSize()"
+               size="12px"
                @click="suggestionDialog()"
                class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer">
         </q-btn>
@@ -78,7 +78,7 @@
                  :class="{ shake: animateSettingsButton }"
                  flat
                  :size="getButtonSize()">
-            <q-tooltip :delay="1000" class="tooltip_small" anchor="top left" self="bottom left">{{
+            <q-tooltip :delay="4000" class="tooltip_small" anchor="top left" self="bottom left">{{
                 settingsTooltip()
               }}</q-tooltip>
           </q-btn>

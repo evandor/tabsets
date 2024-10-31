@@ -2,63 +2,38 @@
 
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
 
-    <!-- white main box -->
-    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
-      <div class="col" style="max-width:100%;">
+    <div class="row q-ma-none q-pa-none items-start">
+              <span class="text-body2 q-ml-md">
+                Select Collection
+              </span>
+      <div class="col-12">
+        <hr style="height:1px;border:none;background-color: #efefef;">
+      </div>
 
-        <template v-if="view === 'projects'">
-          <div class="row q-ma-none q-pa-none items-start">
-<!--            <div class="col-6">-->
-<!--              <span class="cursor-pointer text-subtitle1" v-if="projects.length > 0">-->
-<!--                <q-icon name="o_sync_alt" color="primary" class="q-mr-sm" size="sm"/>Select Collection-->
-<!--              </span>-->
-<!--            </div>-->
-<!--            <div class="col-6 text-right">-->
-<!--              <span @click="view = 'new_project'" class="cursor-pointer text-subtitle1">-->
-<!--                <q-icon name="o_add_circle" color="primary" class="q-mr-sm" size="sm"/>New Collection-->
-<!--              </span>-->
-<!--            </div>-->
-            <div class="col-12">
-              <hr style="height:1px;border:none;background-color: #efefef;">
-            </div>
+      <div class="col-12 q-my-lg">
+        <q-list>
+          <q-item clickable v-for="c in projects" @click="selectCollection(c as Tabset)">
+            <q-item-section>
+              <q-item-label>
+                <q-icon name="o_featured_play_list" class="q-mr-xs q-mb-xs"/>
+                {{ c.name }}
+              </q-item-label>
+              <q-item-label caption lines="2">{{ c.headerDescription }}</q-item-label>
+            </q-item-section>
 
-            <div class="col-12 q-my-lg">
-              <q-list>
-                <q-item clickable v-for="c in projects" @click="selectCollection(c as Tabset)">
-                  <q-item-section>
-                    <q-item-label>{{ c.name }}</q-item-label>
-                    <q-item-label caption lines="2">{{ c.headerDescription }}</q-item-label>
-                  </q-item-section>
-
-                  <!--                  <q-item-section side top>-->
-                  <!--                    <q-item-label caption>5 min ago</q-item-label>-->
-                  <!--                    <q-icon name="star" color="yellow" />-->
-                  <!--                  </q-item-section>-->
-                </q-item>
-              </q-list>
-            </div>
-          </div>
-
-        </template>
-
-        <!-- Formular for new/edit project -->
-        <template v-if="view === 'new_project'">
-          <div class="row q-ma-md q-pa-md">
-            <div class="col-12">
-              <ProjectForm @project-created="(e:any) => createProject(e)" @skip="view = 'projects'"/>
-            </div>
-          </div>
-        </template>
-
-
-        <!-- list of tabs, assuming here we have at least one tabset -->
-
+            <!--                  <q-item-section side top>-->
+            <!--                    <q-item-label caption>5 min ago</q-item-label>-->
+            <!--                    <q-icon name="star" color="yellow" />-->
+            <!--                  </q-item-section>-->
+          </q-item>
+        </q-list>
       </div>
     </div>
 
+
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Bibbly" :show-search-box="projects.length > 0"/>
+      <SidePanelCollectionsPageToolbar :show-search-box="false"/>
     </q-page-sticky>
   </q-page>
 
@@ -69,18 +44,18 @@
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
 import {useUtils} from "src/core/services/Utils";
 import {useUiStore} from "src/ui/stores/uiStore";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import Analytics from "src/core/utils/google-analytics";
 import {useI18n} from 'vue-i18n'
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import _ from "lodash"
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ExecutionFailureResult, ExecutionResult} from "src/core/domain/ExecutionResult";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
 import {useRouter} from "vue-router";
+import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
+import SidePanelCollectionPageToolbar from "pages/sidepanel/helper/SidePanelCollectionPageToolbar.vue";
+import SidePanelCollectionsPageToolbar from "pages/sidepanel/helper/SidePanelCollectionsPageToolbar.vue";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -95,8 +70,6 @@ const tabsets = ref<Tabset[]>([])
 
 const projects = ref<Tabset[]>([])
 const project = ref('')
-const currentProject = ref<Tabset | undefined>(undefined)
-const projectOptions = ref<object[]>([])
 
 function updateOnlineStatus(e: any) {
   const {type} = e
@@ -118,30 +91,7 @@ onUnmounted(() => {
 
 watchEffect(async () => {
   projects.value = [...useTabsetsStore().tabsets.values()]
-  // projectOptions.value = []
-  // _.forEach(projects.value as Tabset[], (p: Tabset) => {
-  //   projectOptions.value.push({label: p.name, value: p.id})
-  // })
-  // projectOptions.value = _.sortBy(projectOptions.value, "label")
-  // if (useTabsetsStore().currentTabsetName) {
-  //   project.value = useTabsetsStore().currentTabsetName!
-  //   //console.log("project.value", project.value)
-  //   currentProject.value = useTabsetsStore().getCurrentTabset
-  // }
 })
-
-const createProject = (e: object) =>
-  useCommandExecutor().executeFromUi(new CreateTabsetCommand(e['name' as keyof object], []))
-    .then((res: ExecutionResult<any>) => {
-      if (res instanceof ExecutionFailureResult) {
-        console.log("res", res)
-      } else {
-        view.value = 'projects'
-        currentProject.value = res.result
-        project.value = res.result.name
-      }
-    })
-
 
 const getTabsetOrder =
   [
@@ -168,7 +118,7 @@ watchEffect(() => {
 
 const selectCollection = (c: Tabset) => {
   console.log("found", c)
-  useCommandExecutor().execute(new SelectTabsetCommand(c.id, useSpacesStore().space?.id))
+  useCommandExecutor().execute(new SelectTabsetCommand(c.id))//, useSpacesStore().space?.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
       if (res.result) {
         //currentProject.value = res.result

@@ -14,8 +14,8 @@
         </q-input>
       </InfoLine>
 
-      <InfoLine label="New Sidepanel Layout">
-        <q-checkbox v-model="newLayout" label="use the experimental new Sidepanel Layout"/>
+      <InfoLine label="Old Sidepanel Layout">
+        <q-checkbox v-model="oldLayout" label="use the old Sidepanel Layout"/>
         {{t('changing_needs_restart')}}
       </InfoLine>
 
@@ -187,7 +187,7 @@ const installationTitle = ref<string>(LocalStorage.getItem(TITLE_IDENT) as strin
 const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
-const newLayout = ref(LocalStorage.getItem('ui.sidepanel.newLayout') || false)
+const oldLayout = ref(LocalStorage.getItem('ui.sidepanel.oldLayout') || false)
 
 let suggestionsCounter = 0
 
@@ -250,8 +250,8 @@ watch(() => fullUrls.value, (a:any,b:any) => {
   sendMsg('fullUrls-changed', {value: fullUrls.value})
 })
 
-watch(() => newLayout.value, (a:any,b:any) => {
-  LocalStorage.set('ui.sidepanel.newLayout', newLayout.value)
+watch(() => oldLayout.value, (a:any,b:any) => {
+  LocalStorage.set('ui.sidepanel.oldLayout', oldLayout.value)
   //sendMsg('fullUrls-changed', {value: fullUrls.value})
 })
 

@@ -7,7 +7,7 @@
          flat
          color="warning"
          :size="props.size">
-    <q-tooltip class="tooltip">{{ suggestionsLabel() }}</q-tooltip>
+    <q-tooltip class="tooltip-small">{{ suggestionsLabel() }}</q-tooltip>
   </q-btn>
 
   <q-btn v-if="showViewMenu()"

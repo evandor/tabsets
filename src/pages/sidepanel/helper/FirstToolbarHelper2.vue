@@ -23,7 +23,7 @@
         </div>
 
         <!-- no spaces here -->
-        <div v-else class="col-5 q-ma-none q-pa-none">
+        <div v-else class="col-7 q-ma-none q-pa-none" style="border:0 solid red">
 
           <!-- no spaces && searching -->
           <SearchWithTransitionHelper v-if="searching"
@@ -36,54 +36,64 @@
 
             <!-- no spaces && not searching -->
             <div class="col-12 text-subtitle1">
-              <slot name="title">{{ props.title }}</slot>
+              <div class="q-ml-md q-mt-sm">
+                <div class="text-caption">Collection</div>
+                <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
+                  {{ currentTabset?.name }}
+                  <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
+                </div>
+              </div>
             </div>
 
           </template>
         </div>
 
         <!-- spaces or not, here's the icons on the right side -->
-        <div class="col-7 text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm" v-if="!useUiStore().appLoading">
+        <div class="col-5 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none" v-if="!useUiStore().appLoading" style="border:0 solid green">
 
           <slot name="iconsRight">
-
+            <!-- to revisit -->
             <!--            <SidePanelToolbarButton-->
-            <!--              v-if="showToggleSessionIcon()"-->
-            <!--              :color="existingSession ? (useTabsetsStore().getCurrentTabset?.type === TabsetType.SESSION ? 'red':'grey-5') :'black'"-->
-            <!--              :icon="existingSession ? 'o_stop_circle':'o_play_circle'"-->
-            <!--              @click="toggleSessionState"-->
-            <!--              :tooltip="existingSession ? 'Stop Session' : 'Start new Session'"/>-->
+            <!--              v-if="useTabsetsUiStore().matchingTabs.length > 0 && useTabsetsUiStore().matchingTabs[0].tabsetId !== useTabsetsStore().currentTabsetId"-->
+            <!--              icon="link"-->
+            <!--              :tooltip="`open current tab (${useTabsetsUiStore().matchingTabs[0].tab.url}) in tabset(s)`"-->
+            <!--              color="green"-->
+            <!--              size="11px"-->
+            <!--              @click="selectTabsetForFirstMatchingTab(useTabsetsUiStore().matchingTabs[0] as TabAndTabsetId)"-->
+            <!--              class="q-ma-none q-pa-none q-mr-none"/>-->
 
-            <template v-if="showSearchIcon()">
-              <SidePanelToolbarButton icon="search"
-                                      class="q-mr-sm"
-                                      id="toggleSearchBtn"
-                                      size="11px"
-                                      @click="toggleSearch"/>
-            </template>
+            <div class="q-mt-sm q-ma-none q-qa-none" style="border:0 solid blue">
+              <template v-if="showSearchIcon()">
+                <SidePanelToolbarButton icon="search"
+                                          class="q-mr-sm"
+                                          id="toggleSearchBtn"
+                                          size="11px"
+                                          @click="toggleSearch"/>
+              </template>
 
-            <SidePanelToolbarTabNavigationHelper/>
+              <SidePanelToolbarTabNavigationHelper/>
 
-               <!-- to revisit -->
-<!--            <SidePanelToolbarButton-->
-<!--              v-if="useTabsetsUiStore().matchingTabs.length > 0 && useTabsetsUiStore().matchingTabs[0].tabsetId !== useTabsetsStore().currentTabsetId"-->
-<!--              icon="link"-->
-<!--              :tooltip="`open current tab (${useTabsetsUiStore().matchingTabs[0].tab.url}) in tabset(s)`"-->
-<!--              color="green"-->
-<!--              size="11px"-->
-<!--              @click="selectTabsetForFirstMatchingTab(useTabsetsUiStore().matchingTabs[0] as TabAndTabsetId)"-->
-<!--              class="q-ma-none q-pa-none q-mr-none"/>-->
+              <span>
+              <SpecialUrlAddToTabsetComponent
+                v-if="currentChromeTab && currentTabset"
+                @button-clicked="(args:ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)"
+                :currentChromeTab="currentChromeTab"
+                :tabset="currentTabset"/>
+              </span>
+              <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer"/>
+              <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset"/>
+            </div>
 
-            <q-btn outline dense
-                   icon="add"
-                   label="Collection"
-                   color="primary"
-                   size="sm"
-                   :class="{ shake: annimateNewTabsetButton }"
-                   data-testid="addTabsetBtn"
-                   @click="openNewTabsetDialog()"
-                   class="q-ma-none q-pl-xs q-pr-sm q-py-xs"
-                   name="o_bookmark_add"/>
+            <!--            <q-btn outline dense-->
+            <!--                   icon="add"-->
+            <!--                   label="Collection"-->
+            <!--                   color="primary"-->
+            <!--                   size="sm"-->
+            <!--                   :class="{ shake: annimateNewTabsetButton }"-->
+            <!--                   data-testid="addTabsetBtn"-->
+            <!--                   @click="openNewTabsetDialog()"-->
+            <!--                   class="q-ma-none q-mt-md q-pl-xs q-pr-sm q-py-xs"-->
+            <!--                   name="o_bookmark_add"/>-->
 
           </slot>
         </div>
@@ -108,9 +118,14 @@ import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
-import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
-import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 import FilterWithTransitionHelper from "src/core/widget/FilterWithTransitionHelper.vue";
+import SpecialUrlAddToTabsetComponent from "src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue";
+import {useWindowsStore} from "src/windows/stores/windowsStore";
+import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import {ActionHandlerButtonClickedHolder} from "src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder";
+import {useActionHandlers} from "src/tabsets/actionHandling/ActionHandlers";
+import {Tabset} from "src/tabsets/models/Tabset";
+import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 
 const {t} = useI18n({useScope: 'global'})
 
@@ -129,6 +144,8 @@ const searching = ref(false)
 const showFilter = ref(false)
 const windowLocation = ref('')
 const annimateNewTabsetButton = ref(false)
+const currentTabset = ref<Tabset | undefined>(undefined)
+const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -140,6 +157,15 @@ const toggleSearch = () => {
 }
 
 windowLocation.value = window.location.href
+
+watchEffect(() => {
+  currentTabset.value = useTabsetsStore().getCurrentTabset
+})
+
+watchEffect(() => {
+  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+})
 
 watchEffect(() => {
   annimateNewTabsetButton.value = useUiStore().animateNewTabsetButton
@@ -183,8 +209,10 @@ const openNewTabsetDialog = () => {
   })
 }
 
-const selectTabsetForFirstMatchingTab = (tabAndTabsetId: TabAndTabsetId) => {
-  useTabsetsStore().selectCurrentTabset(tabAndTabsetId.tabsetId)
+
+const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClickedHolder, folder?: Tabset) => {
+  console.log(`button clicked: tsId=${tabset.id}, folderId=${folder?.id}, args=...`)
+  await useActionHandlers(undefined).handleClick(tabset, currentChromeTab.value!, args, folder)
 }
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''

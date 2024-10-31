@@ -2248,6 +2248,11 @@
   dependencies:
     langium "3.0.0"
 
+"@mozilla/readability@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@mozilla/readability/-/readability-0.5.0.tgz#a6d5055bbadd0f329cc3e72089d4f176ed96c1d5"
+  integrity sha512-Z+CZ3QaosfFaTqvhQsIktyGrjFjSC0Fa4EMph4mqKnWhmyoGICsV/8QK+8HpXut6zV7zwfWwqDmEjtk1Qf6EgQ==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"

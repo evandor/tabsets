@@ -9,115 +9,64 @@
       </div>
     </div>
 
-    <transition
-      appear
-      enter-active-class="animated fadeIn slower delay-5s"
-      leave-active-class="animated fadeOut">
-      <div class="wrap2"
-           v-if="useTabsetsStore().tabsets.size === 0 && !useUiStore().appLoading">
-        <div class="row items-center text-grey-5">how to start?</div>
-        <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
-          <q-list>
-            <q-item clickable @click="useUiStore().startButtonAnimation('newTabset')">
-              <q-item-section avatar>
-                <q-btn outline label="..." color="primary" size="sm"/>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label>New Tabset</q-item-label>
-                <q-item-label caption>Click to create a new tabset</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable @click="useUiStore().startButtonAnimation('settings')">
-              <q-item-section avatar>
-                <SidePanelToolbarButton
-                  icon="o_settings"/>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label>Settings</q-item-label>
-                <q-item-label caption>Click here to activate more features</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable @click="useUiStore().startButtonAnimation('bookmarks')">
-              <q-item-section avatar>
-                <SidePanelToolbarButton
-                  icon="bookmark"
-                  color="primary"/>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label>Bookmarks Manager</q-item-label>
-                <q-item-label caption>Click to open the Bookmarks Manager</q-item-label>
-              </q-item-section>
-            </q-item>
-
-          </q-list>
-        </div>
-      </div>
-    </Transition>
-
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none">
 
-      <div v-if="useTabsetsStore().tabsets.size > 0"
-           class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
+      <template v-if="useTabsetsStore().tabsets.size > 0">
+        <!-- collections -->
+<!--        <div class="row q-ma-none q-pa-none q-pb-sm darkInDarkMode brightInBrightMode greyBorderBottom">-->
 
-        <div class="col-9 q-ml-md q-mt-sm">
-          <div class="text-caption">Collection</div>
-          <div class="text-body1 text-bold cursor-pointer" @click="router.push('/sidepanel/collections')">
-            {{ currentTabset?.name }}
+<!--          <div class="col-8 q-ml-md q-mt-sm">-->
+<!--            <div class="text-caption">Collection</div>-->
+<!--            <div class="text-body1 text-bold cursor-pointer" @click="router.push('/sidepanel/collections')">-->
+<!--              {{ currentTabset?.name }}-->
+<!--              <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="col text-right vertical-middle q-mt-md">-->
+
+<!--            <span>-->
+<!--              <SpecialUrlAddToTabsetComponent-->
+<!--                v-if="currentChromeTab && currentTabset"-->
+<!--                @button-clicked="(args:ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)"-->
+<!--                :currentChromeTab="currentChromeTab"-->
+<!--                :tabset="currentTabset"/>-->
+<!--            </span>-->
+<!--            <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer"/>-->
+<!--            <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset"/>-->
+<!--          </div>-->
+<!--        </div>-->
+
+        <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
+
+          <!-- optional: notes -->
+          <div class="col-12">
+            <SidePanelNotesView v-if="currentTabset" :tabset="currentTabset"/>
           </div>
+
+          <!-- folders -->
+          <div class="col-12">
+            <SidePanelFoldersView v-if="currentTabset" :tabset="currentTabset"/>
+          </div>
+
+          <!-- list of tabs, assuming here we have at least one tabset-->
+          <SidePanelPageTabList v-if="currentTabset"
+                                :tabsCount="useTabsetService().tabsToShow(currentTabset as Tabset)?.length"
+                                :tabset="tabsetForTabList(currentTabset as Tabset)"/>
+
         </div>
-        <div class="col text-right vertical-middle q-mt-md">
+      </template>
 
-
-          <SpecialUrlAddToTabsetComponent
-            v-if="currentChromeTab && currentTabset"
-            @button-clicked="(args:object) => handleButtonClicked(currentTabset!, undefined, args)"
-            :currentChromeTab="currentChromeTab"
-            :tabset="currentTabset"
-          />
-
-          <q-icon name="more_vert" size="sm" class="cursor-pointer"/>
-          <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset"/>
-        </div>
-
-        <div class="col-12">
-          <hr style="height:1px;border:none;background-color: #efefef;">
-        </div>
-
-        <!-- list of tabs, assuming here we have at least one tabset-->
-        <SidePanelPageTabList v-if="currentTabset"
-                              :indent="calcFolders(currentTabset as Tabset)?.length > 0"
-                              :tabsCount="useTabsetService().tabsToShow(currentTabset as Tabset)?.length"
-                              :tabset="tabsetForTabList(currentTabset as Tabset)"/>
-
-      </div>
+      <StartingHint v-if="showStartingHint()"/>
 
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
 
-      <FirstToolbarHelper
+      <FirstToolbarHelper2
         :showSearchBox="showSearchBox">
-
-        <template v-slot:title v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-          <div class="text-subtitle1" @click.stop="router.push('/sidepanel/spaces')">
-            <q-btn flat no-caps :label="toolbarTitle(tabsets as Tabset[])"/>
-            <q-tooltip :delay="1000" class="tooltip">Click to open List of all Spaces</q-tooltip>
-          </div>
-        </template>
-        <template v-slot:title v-else>
-          <div class="text-subtitle1">
-            {{ toolbarTitle(tabsets as Tabset[]) }}
-          </div>
-        </template>
-
-      </FirstToolbarHelper>
+      </FirstToolbarHelper2>
 
     </q-page-sticky>
   </q-page>
@@ -131,11 +80,10 @@ import _ from "lodash"
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/core/services/Utils";
-import {LocalStorage, uid, useQuasar} from "quasar";
+import {LocalStorage, useQuasar} from "quasar";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
@@ -143,19 +91,20 @@ import {useAuthStore} from "stores/authStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/app/AppService";
-import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 import SidePanelPageTabList from "src/tabsets/layouts/SidePanelPageTabList.vue";
-import {Tab} from "src/tabsets/models/Tab";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
 import SpecialUrlAddToTabsetComponent from "src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
+import StartingHint from "pages/widgets/StartingHint.vue";
+import {useActionHandlers} from "src/tabsets/actionHandling/ActionHandlers";
+import {ActionHandlerButtonClickedHolder} from "src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder";
+import SidePanelNotesView from "src/notes/views/sidepanel/SidePanelNotesView.vue";
+import SidePanelFoldersView from "src/tabsets/views/sidepanel/SidePanelFoldersView.vue";
+import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -169,6 +118,7 @@ const showSearchBox = ref(false)
 const tabsets = ref<Tabset[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
+const hoveredTabset = ref<string | undefined>(undefined)
 
 function updateOnlineStatus(e: any) {
   const {type} = e
@@ -177,8 +127,8 @@ function updateOnlineStatus(e: any) {
 
 onMounted(() => {
 
-  if (!LocalStorage.getItem('ui.sidepanel.newLayout')) {
-    router.push("/sidepanel")
+  if (LocalStorage.getItem('ui.sidepanel.oldLayout')) {
+    router.push("/sidepanelOld")
   }
 
   window.addEventListener('keypress', checkKeystroke);
@@ -390,28 +340,6 @@ const toolbarTitle = (tabsets: Tabset[]): string => {
 
 const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
 
-
-const openNewTabsetDialog = () => {
-  $q.dialog({
-    component: NewTabsetDialog,
-    componentProps: {
-      tabsetId: useTabsetsStore().getCurrentTabset?.id,
-      spaceId: useSpacesStore().space?.id,
-      fromPanel: true
-    }
-  })
-}
-
-const calcFolders = (tabset: Tabset): Tabset[] => {
-  if (tabset.folderActive) {
-    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
-    if (af && af.folderParent) {
-      return [new Tabset(af.folderParent, "..", [])].concat(af.folders)
-    }
-  }
-  return tabset.folders
-}
-
 const tabsetForTabList = (tabset: Tabset) => {
   if (tabset.folderActive) {
     const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
@@ -422,31 +350,14 @@ const tabsetForTabList = (tabset: Tabset) => {
   return tabset
 }
 
-const addCurrentTab = async () => {
-  let queryOptions = {active: true, lastFocusedWindow: true};
-  try {
-    let [currentTab] = await chrome.tabs.query(queryOptions);
-    if (currentTab) {
-      await useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(new Tab(uid(), currentTab)))
-    }
-  } catch (err: any) {
-    console.warn(err)
-  }
+const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClickedHolder, folder?: Tabset) => {
+  console.log(`button clicked: tsId=${tabset.id}, folderId=${folder?.id}, args=...`)
+  await useActionHandlers(undefined).handleClick(tabset, currentChromeTab.value!, args, folder)
 }
 
-const alreadyAdded = (): boolean => {
-  const currentChromeTabUrl = useTabsStore2().currentChromeTab?.url
-  if (currentChromeTabUrl) {
-    const currentTabset = useTabsetsStore().getCurrentTabset
-    if (currentTabset) {
-      return _.find(currentTabset.tabs, (t: Tab) => t.url === currentChromeTabUrl) !== undefined
-    }
-  }
-  return false
-}
+const showStartingHint = () => !useUiStore().appLoading && useTabsetsStore().allTabsCount === 0
 
-const handleButtonClicked = async (tabset: Tabset, folder?: Tabset, args?: object) => {
-  console.log(`button clicked: tsId=${tabset.id}, folderId=${folder?.id}, args=${JSON.stringify(args)}`)
-}
 
 </script>
+
+<style lang="scss" src="./css/sidePanelPage2.scss"/>

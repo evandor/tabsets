@@ -12,16 +12,15 @@
       <!--                       icon="o_description"-->
       <!--                       label="Tabset Description..."/>-->
 
-      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSET_SUBFOLDER)">
 
-        <q-separator inset/>
+      <q-separator inset/>
 
-        <ContextMenuItem v-close-popup
-                         @was-clicked="createSubfolder(tabset)"
-                         icon="o_folder"
-                         label="Create Subfolder"/>
+      <ContextMenuItem v-close-popup
+                       @was-clicked="createSubfolder(tabset)"
+                       color="warning"
+                       icon="o_folder"
+                       label="Create Subfolder"/>
 
-      </template>
 
       <q-separator inset v-if="useTabsetsStore().tabsets.size > 1"/>
 
@@ -36,7 +35,7 @@
           (!tabset.window || tabset.window === 'current'))">
         <ContextMenuItem
           icon="open_in_new"
-          label="Open all...">
+          label="Open all in...">
 
           <q-item-section side>
             <q-icon name="keyboard_arrow_right"/>
@@ -48,10 +47,10 @@
                 <q-item-section>switching tab</q-item-section>
               </q-item>
               <q-item dense clickable v-close-popup @click="restoreInNewWindow(tabset.id)">
-                <q-item-section>in new window</q-item-section>
+                <q-item-section>new window</q-item-section>
               </q-item>
               <q-item dense clickable v-close-popup @click="restoreInGroup(tabset.id)">
-                <q-item-section>in current window</q-item-section>
+                <q-item-section>this window</q-item-section>
               </q-item>
             </q-list>
           </q-menu>
@@ -68,10 +67,10 @@
                          label="Open in window..."/>
       </template>
 
-      <template v-if="tabset.tabs.length > 0 && inBexMode()">
+      <template v-if="tabset.tabs.length > 0 && inBexMode() &&  useFeaturesStore().hasFeature(FeatureIdent.GALLERY)">
         <ContextMenuItem v-close-popup
                          @was-clicked="openOverviewPage(tabset.id)"
-                         icon="open_in_new"
+                         icon="calendar_view_month"
                          label="Show Gallery"/>
       </template>
 
@@ -82,21 +81,21 @@
                        color="accent"
                        label="Focus on tabset"/>
 
-      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 4">
-        <ContextMenuItem v-close-popup
-                         @was-clicked="pin(tabset)"
-                         icon="o_push_pin"
-                         color="warning"
-                         label="Pin"/>
-      </template>
-      <template v-else-if="tabset.status === TabsetStatus.FAVORITE">
-        <ContextMenuItem v-close-popup
-                         @was-clicked="unpin(tabset)"
-                         icon="push_pin"
-                         color="warning"
-                         label="Unpin"/>
+      <!--      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 4">-->
+      <!--        <ContextMenuItem v-close-popup-->
+      <!--                         @was-clicked="pin(tabset)"-->
+      <!--                         icon="o_push_pin"-->
+      <!--                         color="warning"-->
+      <!--                         label="Pin"/>-->
+      <!--      </template>-->
+      <!--      <template v-else-if="tabset.status === TabsetStatus.FAVORITE">-->
+      <!--        <ContextMenuItem v-close-popup-->
+      <!--                         @was-clicked="unpin(tabset)"-->
+      <!--                         icon="push_pin"-->
+      <!--                         color="warning"-->
+      <!--                         label="Unpin"/>-->
 
-      </template>
+      <!--      </template>-->
 
       <template v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
         tabset.status === TabsetStatus.DEFAULT">
@@ -149,7 +148,7 @@ import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavo
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "src/core/components/helper/ContextMenuItem.vue";
-import {PropType, watchEffect} from "vue";
+import {PropType} from "vue";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tab} from "src/tabsets/models/Tab";
 import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";

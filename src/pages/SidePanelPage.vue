@@ -175,8 +175,8 @@ function updateOnlineStatus(e: any) {
 
 onMounted(() => {
 
-  if (LocalStorage.getItem('ui.sidepanel.newLayout')) {
-    router.push("/sidepanel2")
+  if (!LocalStorage.getItem('ui.sidepanel.oldLayout')) {
+    router.push("/sidepanel")
   }
 
   window.addEventListener('keypress', checkKeystroke);

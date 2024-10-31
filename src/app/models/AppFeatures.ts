@@ -14,7 +14,12 @@ export class AppFeatures {
       'Activate a Bookmark Manager in the Side Panel',
       'o_bookmark', 'bookmarks.png', ['all'], [], false, 'warning'),
 
-    new Feature(FeatureIdent.STATS, FeatureType.OPTIONAL,
+    new Feature(FeatureIdent.GALLERY, FeatureType.RECOMMENDED,
+      'Gallery View',
+      'View and organize your tabs in a Tabset Gallery',
+      'calendar_view_month', 'gallery.png', ['all'], [], false, 'primary'),
+
+    new Feature(FeatureIdent.STATS, FeatureType.RECOMMENDED,
       'Stats Widget',
       'Activate a little Widget to display some statistics (tabs count etc)',
       'show_chart', 'stats.png', ['bex']),
@@ -24,7 +29,7 @@ export class AppFeatures {
       'Activate a view to list all tabs by how often they have been accessed',
       'o_workspace_premium', 'top10.png', ['all']),
 
-    new Feature(FeatureIdent.WINDOWS_MANAGEMENT, FeatureType.OPTIONAL,
+    new Feature(FeatureIdent.WINDOWS_MANAGEMENT, FeatureType.EXPERIMENTAL,
       'Windows Management',
       'Access to your browsers windows and their tabs',
       'o_grid_view', '', ['all']),
@@ -113,7 +118,7 @@ export class AppFeatures {
       // .setActivateCommands([new GrantPermissionCommand('notifications')])
       // .setDeactivateCommands([ne0w RevokePermissionCommand('notifications')]),
 
-    new Feature(FeatureIdent.ANNOTATIONS, FeatureType.EXPERIMENTAL,
+    new Feature(FeatureIdent.ANNOTATIONS, FeatureType.DISABLED,
       'Annotate Websites',
       'Hightlight text on a website and create and comment on annotations.',
       'o_auto_awesome', '', ['bex']),
@@ -153,10 +158,10 @@ export class AppFeatures {
       'Switch the Tab\'s URL every x Seconds',
       'o_switch_left', '', ['bex']),
 
-    new Feature(FeatureIdent.TABSET_SUBFOLDER, FeatureType.OPTIONAL,
-      'Subfolder for Tabsets',
-      'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
-      'o_folder', '', ['all']),
+    // new Feature(FeatureIdent.TABSET_SUBFOLDER, FeatureType.OPTIONAL,
+    //   'Subfolder for Tabsets',
+    //   'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
+    //   'o_folder', '', ['all']),
 
     new Feature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL,
       'Website Clip',
@@ -169,6 +174,11 @@ export class AppFeatures {
       'Create a "dynamic" tabset which retrieves its tabs by interpreting its "source" URL',
       'dynamic_feed', '', ['bex']),
     // .setActivateCommands([new GrantPermissionCommand('notifications')]),
+
+    new Feature(FeatureIdent.READING_MODE, FeatureType.EXPERIMENTAL,
+      'Reading Mode',
+      'Analyse tab contents and use the distraction-free Reading Mode if applicable',
+      'library_books', '', ['bex']),
 
   ]
 
