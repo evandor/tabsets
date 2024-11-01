@@ -219,7 +219,7 @@ class BrowserListeners {
 
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
 
-    // set current chrome tab in tabsStore
+    // set current browser tab in tabsStore
     await setCurrentTab()
 
     const selfUrl = chrome.runtime.getURL("")

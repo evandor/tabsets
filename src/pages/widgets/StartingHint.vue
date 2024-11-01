@@ -3,7 +3,7 @@
     appear
     enter-active-class="animated fadeIn slower delay-5s"
     leave-active-class="animated fadeOut">
-    <div class="wrap2 q-ma-lg q-mt-xl">
+    <div class="q-ma-lg q-mt-xl">
       <div class="row items-center text-grey-5">how to start?</div>
       <div style="min-width:300px;border:1px solid #efefef;border-radius:5px">
         <q-list>

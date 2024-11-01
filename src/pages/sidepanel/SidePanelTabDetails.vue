@@ -51,7 +51,7 @@
       <div class="col-7 text-right">
         <q-chip v-for="chip in tabsetChips()"
                 class="cursor-pointer q-ml-xs" size="8px" clickable icon="tab" @click="openTabset(chip)">
-           chip.label
+          chip.label
         </q-chip>
       </div>
     </div>
@@ -85,14 +85,14 @@
       <div class="col-3 text-left">
 
 
-<!--        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"-->
-<!--               @click="showTabDetails"-->
-<!--               round size="11px"-->
-<!--               color="primary"-->
-<!--               flat-->
-<!--               icon="o_more_horiz">-->
-<!--          <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"-->
+        <!--               @click="showTabDetails"-->
+        <!--               round size="11px"-->
+        <!--               color="primary"-->
+        <!--               flat-->
+        <!--               icon="o_more_horiz">-->
+        <!--          <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>-->
+        <!--        </q-btn>-->
       </div>
       <div class="col-9 text-right">
 
@@ -112,16 +112,16 @@
       <q-card>
         <q-card-section>
           <q-select
-              filled
-              v-model="tags"
-              use-input
-              use-chips
-              multiple
-              hide-dropdown-icon
-              input-debounce="0"
-              new-value-mode="add-unique"
-              @update:model-value="val => updatedTags(val)"
-              style="width: 250px"
+            filled
+            v-model="tags"
+            use-input
+            use-chips
+            multiple
+            hide-dropdown-icon
+            input-debounce="0"
+            new-value-mode="add-unique"
+            @update:model-value="val => updatedTags(val)"
+            style="width: 250px"
           />
         </q-card-section>
       </q-card>
@@ -204,26 +204,80 @@
       </q-card>
     </q-expansion-item>
 
-<!--    <q-expansion-item label="Selections" v-if="tab?.selections?.length > 0"-->
-<!--                      group="somegroup">-->
-<!--      <q-card>-->
-<!--        <q-card-section>-->
-<!--          <div class="row q-mx-sm q-mt-none">-->
-<!--            <div class="col-5 text-caption text-bold">Selections</div>-->
-<!--            <div class="col-7 text-right text-caption">{{ tab?.selections?.length }}</div>-->
-<!--          </div>-->
-<!--          <div class="row q-mx-sm q-mt-none" v-for="selection in tab?.selections">-->
-<!--            <div class="col-12 text-caption">{{ selection.text }}</div>-->
-<!--          </div>-->
-<!--        </q-card-section>-->
-<!--      </q-card>-->
-<!--    </q-expansion-item>-->
+    <q-expansion-item label="Tab References Status" group="tabrefgroup" v-if="tab && tab.tabReferences">
+      <div class="q-ma-sm q-ml-lg" v-for="ref in tab.tabReferences">
+        <template v-if="ref.type === TabReferenceType.RSS">
+          <div class="text-caption text-bold">found RSS:</div>
+          <div class="text-caption ellipsis text-blue-8 cursor-pointer" @click="useNavigationService().browserTabFor(ref.href || '')">{{ ref.href }}</div>
+        </template>
+        <template v-else-if="ref.type === TabReferenceType.META_DATA">
+          <div class="text-caption text-bold">found Meta Data:</div>
+          <div class="text-caption ellipsis">
+            <div class="row" v-for="item in ref.data">
+              <div class="col-4 ellipsis">
+                {{item['name' as keyof object]}}:
+              </div>
+              <div class="col ellipsis">
+                {{item['content' as keyof object]}}
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="ref.type === TabReferenceType.OPEN_GRAPH">
+          <div class="text-caption text-bold">found Open Graph Data:</div>
+          <div class="text-caption ellipsis">
+            <div class="row" v-for="item in ref.data">
+              <div class="col-4 ellipsis">
+                {{item['property' as keyof object]}}:
+              </div>
+              <div class="col ellipsis">
+                {{item['content' as keyof object]}}
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="ref.type === TabReferenceType.LINKING_DATA">
+          <div class="text-caption text-bold">found Linking Data:</div>
+          <div class="text-caption">
+            <div v-for="item in ref.data">
+              {{item}}
+<!--              <div class="col-6 ellipsis">-->
+<!--                {{item['name' as keyof object]}}:-->
+<!--              </div>-->
+<!--              <div class="col-6 ellipsis">-->
+<!--                {{item['content' as keyof object]}}:-->
+<!--              </div>-->
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <div
+            class="text-caption">{{ ref.type }}:<br> {{ ref }}
+          </div>
+        </template>
+      </div>
+    </q-expansion-item>
+
+    <!--    <q-expansion-item label="Selections" v-if="tab?.selections?.length > 0"-->
+    <!--                      group="somegroup">-->
+    <!--      <q-card>-->
+    <!--        <q-card-section>-->
+    <!--          <div class="row q-mx-sm q-mt-none">-->
+    <!--            <div class="col-5 text-caption text-bold">Selections</div>-->
+    <!--            <div class="col-7 text-right text-caption">{{ tab?.selections?.length }}</div>-->
+    <!--          </div>-->
+    <!--          <div class="row q-mx-sm q-mt-none" v-for="selection in tab?.selections">-->
+    <!--            <div class="col-12 text-caption">{{ selection.text }}</div>-->
+    <!--          </div>-->
+    <!--        </q-card-section>-->
+    <!--      </q-card>-->
+    <!--    </q-expansion-item>-->
 
     <q-expansion-item group="somegroup" label="Search Index">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm">
-            <TabDetailsSearchIndex v-if="tab" :tab="tab" />
+            <TabDetailsSearchIndex v-if="tab" :tab="tab"/>
           </div>
         </q-card-section>
       </q-card>
@@ -257,8 +311,10 @@ import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {SavedBlob} from "src/snapshots/models/SavedBlob";
-import {BlobMetadata, BlobType} from "src/snapshots/models/BlobMetadata";
+import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
 import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
+import {TabReferenceType} from "src/content/models/TabReference";
+import {useNavigationService} from "src/core/services/NavigationService";
 
 const {inBexMode} = useUtils()
 
@@ -282,14 +338,14 @@ watchEffect(() => {
   console.log("tabid", tabId.value)
 
   const tabObject = useTabsetsStore().getTabAndTabsetId(tabId.value)
-        if (tabObject) {
-          tab.value = tabObject.tab
-          if (tab.value.tags.constructor === Array) {
-            tags.value = tab.value.tags
-          } else {
-            tags.value = []
-          }
-        }
+  if (tabObject) {
+    tab.value = tabObject.tab
+    if (tab.value.tags.constructor === Array) {
+      tags.value = tab.value.tags
+    } else {
+      tags.value = []
+    }
+  }
 
   // const selectedTab = tab.value
   // console.log("selectedTab", selectedTab)
@@ -302,33 +358,33 @@ watchEffect(() => {
 watchEffect(() => {
   if (tab.value) {
     useThumbnailsService().getThumbnailFor(tab.value.url)
-        .then(data => {
-          if (data) {
-            thumbnail.value = data.thumbnail
-          } else {
-            thumbnail.value = ''
-          }
-        })
+      .then(data => {
+        if (data) {
+          thumbnail.value = data.thumbnail
+        } else {
+          thumbnail.value = ''
+        }
+      })
     TabsetService.getContentFor(tab.value as Tab)
-        .then(data => {
-          if (data) {
-            content.value = data['content' as keyof object]
-            //metas.value = data['metas' as keyof object]
-            metaRows.value = []
-            _.forEach(Object.keys(data['metas' as keyof object]), k => {
-              //console.log("k", k, data.metas[k])
-              metaRows.value.push({
-                name: k,
-                value: data['metas' as keyof object][k]
-              })
+      .then(data => {
+        if (data) {
+          content.value = data['content' as keyof object]
+          //metas.value = data['metas' as keyof object]
+          metaRows.value = []
+          _.forEach(Object.keys(data['metas' as keyof object]), k => {
+            //console.log("k", k, data.metas[k])
+            metaRows.value.push({
+              name: k,
+              value: data['metas' as keyof object][k]
             })
-            metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
-          }
-        })
-     useSnapshotsService().getMetadataFor(tab.value.id)
-       .then((mds: BlobMetadata[]) => {
-         htmls.value = mds
-       })
+          })
+          metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
+        }
+      })
+    useSnapshotsService().getMetadataFor(tab.value.id)
+      .then((mds: BlobMetadata[]) => {
+        htmls.value = mds
+      })
 
     // useSnapshotsService().getPngsForTab(tab.value.id)
     //     .then((blobs: SavedBlob[]) => pngs.value = blobs)
@@ -384,14 +440,14 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 }
 
 const formatDate = (timestamp: number | undefined) =>
-    timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
+  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
 const showTabDetails = () =>
-    NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
+  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
 
 
 const saveTab = (tab: Tab | undefined) =>
-    useCommandExecutor().execute(new SaveTabCommand(useTabsetsStore().getCurrentTabset, tab))
+  useCommandExecutor().execute(new SaveTabCommand(useTabsetsStore().getCurrentTabset, tab))
 
 const savePng = (tab: Tab | undefined) => {
   if (tab) {
@@ -416,14 +472,14 @@ const updatedTags = (val: string[]) => {
     console.log("updating tag", val)
     tab.value.tags = val
     useTabsetService().saveCurrentTabset()
-        .catch((err) => console.error(err))
+      .catch((err) => console.error(err))
   }
 }
 
 const openTabset = (chip: any) => {
   console.log("chip", chip)
   useCommandExecutor()
-      .execute(new SelectTabsetCommand(chip['tabsetId']))
+    .execute(new SelectTabsetCommand(chip['tabsetId']))
 }
 
 </script>

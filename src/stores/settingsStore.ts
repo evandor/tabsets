@@ -12,7 +12,7 @@ export const useSettingsStore = defineStore('settings', () => {
     min: 0,
     max: 40
   })
-  const thumbnailQuality = ref( 25)
+  const thumbnailQuality = ref( 75)
 
   const isEnabled = computed(() => (ident: string) =>
     _.findIndex(activeToggles.value, (e: string) => e === ident) >= 0)

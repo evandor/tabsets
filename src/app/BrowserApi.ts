@@ -502,7 +502,7 @@ class BrowserApi {
   }
 
   addIndicatorIcon(tabId: number, tabUrl: string | undefined, color: string = 'orange', tooltip: string = 'managed by tabsets') {
-    //console.log("addIndicatorIcon", tabId, tabUrl)
+    console.log("addIndicatorIcon", tabId, tabUrl)
     if (tabUrl && chrome && chrome.scripting) {
       const tabsetIds = useTabsetService().tabsetsFor(tabUrl)
       if (tabsetIds.length > 0 && tabId) {
