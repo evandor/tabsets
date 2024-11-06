@@ -98,8 +98,7 @@
     "vue-i18n": "^10.0.3",
     "vue-json-pretty": "^2.4.0",
     "vue-router": "^4.4.3",
-    "vue-timeago3": "^2.3.2",
-    "vue-timeline-chart": "^2.5.0"
+    "vue-timeago3": "^2.3.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.4",

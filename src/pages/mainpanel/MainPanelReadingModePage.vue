@@ -66,7 +66,7 @@ import NavigationService from "src/services/NavigationService";
 import Analytics from "src/core/utils/google-analytics";
 import {useQuasar} from "quasar";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {TabReferenceType} from "src/content/models/TabReference";
+import {TabReference, TabReferenceType} from "src/content/models/TabReference";
 
 const {sanitizeAsText} = useUtils()
 
@@ -92,19 +92,22 @@ watchEffect(async () => {
   const res = useTabsetsStore().getTabAndTabsetId(tabId)
   if (res && res.tab) {
     tab.value = res.tab
-    const article = res.tab.article
-    // const response = await fetch(tab.value.url || '')
-    // const s = await response.text()
-    // const parser = new DOMParser();
-    // const doc = parser.parseFromString(s, "text/html");
-    // const article = new Readability(doc).parse() || {};
+    const tabRefs:TabReference[] = res.tab.tabReferences.filter(r => r.type === TabReferenceType.READING_MODE)
+    if (tabRefs.length > 0) {
+      const article = tabRefs[0].data[0]
+      // const response = await fetch(tab.value.url || '')
+      // const s = await response.text()
+      // const parser = new DOMParser();
+      // const doc = parser.parseFromString(s, "text/html");
+      // const article = new Readability(doc).parse() || {};
 
-    if (article) {
-      title.value = sanitizeAsText(article['title' as keyof object])
-      excerpt.value = sanitizeAsText(article['excerpt' as keyof object])
-      content.value = sanitizeAsText(article['content' as keyof object])
-      byline.value = sanitizeAsText(article['byline' as keyof object])
-      siteName.value = sanitizeAsText(article['siteName' as keyof object])
+      if (article) {
+        title.value = sanitizeAsText(article['title' as keyof object])
+        excerpt.value = sanitizeAsText(article['excerpt' as keyof object])
+        content.value = sanitizeAsText(article['content' as keyof object])
+        byline.value = sanitizeAsText(article['byline' as keyof object])
+        siteName.value = sanitizeAsText(article['siteName' as keyof object])
+      }
     }
   }
 })

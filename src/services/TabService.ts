@@ -2,18 +2,26 @@ import {Tab} from "src/tabsets/models/Tab";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useUtils} from "src/core/services/Utils";
+import {useContentStore} from "src/content/stores/contentStore";
 
 const {inBexMode} = useUtils()
 
 class TabService {
 
   isCurrentTab = (tab: Tab) => {
+    // console.log("tab:", tab)
     if (!inBexMode() || !tab.url) {
       return false
     }
     const windowId = useWindowsStore().currentChromeWindow?.id || 0
-    const currentChromeTab = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
-    //console.log("checking current tab", currentChromeTab.url, tab.url, currentChromeTab.url === tab.url)
+    const currentChromeTab:chrome.tabs.Tab | undefined = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+    // console.log("checking current tab", currentChromeTab, tab.url, currentChromeTab.url === tab.url)
+
+    // special urls
+    if (currentChromeTab?.url === "https://excalidraw.com/" && useContentStore().currentLocalStorage) {
+      return tab.id === useContentStore().currentLocalStorage['tabsetsTabId']
+    }
+
     if (currentChromeTab?.url === tab.url) {
       tab.chromeTabId = currentChromeTab.id
       return true

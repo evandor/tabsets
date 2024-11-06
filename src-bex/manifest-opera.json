@@ -35,6 +35,12 @@
   },
   "content_scripts": [
     {
+      "matches": ["https://excalidraw.com/*"],
+      "js": [
+        "tabsets-excalidraw-script.js"
+      ]
+    },
+    {
       "matches": [
         "*://*/*"
       ],

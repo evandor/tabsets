@@ -59,6 +59,9 @@
 
       <StartingHint v-if="showStartingHint()"/>
 
+<!--      {{ useContentStore().currentTabUrl}} {{ useContentStore().currentTabStorage}}-->
+<!--      <hr>-->
+<!--      {{ td() }}-->
     </div>
 
     <!-- place QPageSticky at end of page -->
@@ -95,9 +98,7 @@ import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 import SidePanelPageTabList from "src/tabsets/layouts/SidePanelPageTabList.vue";
-import SpecialUrlAddToTabsetComponent from "src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import StartingHint from "pages/widgets/StartingHint.vue";
 import {useActionHandlers} from "src/tabsets/actionHandling/ActionHandlers";
@@ -105,12 +106,12 @@ import {ActionHandlerButtonClickedHolder} from "src/tabsets/actionHandling/model
 import SidePanelNotesView from "src/notes/views/sidepanel/SidePanelNotesView.vue";
 import SidePanelFoldersView from "src/tabsets/views/sidepanel/SidePanelFoldersView.vue";
 import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
+import {useContentStore} from "../content/stores/contentStore";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
 const {inBexMode} = useUtils()
 
-const $q = useQuasar()
 const router = useRouter()
 const uiStore = useUiStore()
 
@@ -118,7 +119,6 @@ const showSearchBox = ref(false)
 const tabsets = ref<Tabset[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
-const hoveredTabset = ref<string | undefined>(undefined)
 
 function updateOnlineStatus(e: any) {
   const {type} = e
@@ -156,6 +156,19 @@ watchEffect(() => {
     console.log("filtering:::", useUiStore().tabsFilter)
   }
 })
+
+const td = () => {
+  const tabData = useContentStore().tabData
+  let res = ''
+  for (const k of tabData.keys()) {
+    const v = tabData.get(k)
+    res += "<br>" + k + ": " + v?.toString()
+  }
+  // if (tabData.keys()) {
+  //   return tabData.keys().map(k => k + ": " + tabData.get(k)?.toString())
+  // }
+  return res
+}
 
 const getTabsetOrder =
   [

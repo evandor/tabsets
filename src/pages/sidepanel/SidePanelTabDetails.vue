@@ -37,8 +37,10 @@
       <div class="col-12">
         <div class="text-overline ellipsis text-blue-10 cursor-pointer"
              @click.stop="NavigationService.openOrCreateTab([tab?.url || ''] )">
-          {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                      class="cursor-pointer"></q-icon>
+          {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary" class="cursor-pointer"></q-icon>
+        </div>
+        <div class="text-body2 ellipsis">
+          {{ tab?.id}}
         </div>
       </div>
 
@@ -51,7 +53,7 @@
       <div class="col-7 text-right">
         <q-chip v-for="chip in tabsetChips()"
                 class="cursor-pointer q-ml-xs" size="8px" clickable icon="tab" @click="openTabset(chip)">
-          chip.label
+          {{ chip.label }}
         </q-chip>
       </div>
     </div>
@@ -208,17 +210,19 @@
       <div class="q-ma-sm q-ml-lg" v-for="ref in tab.tabReferences">
         <template v-if="ref.type === TabReferenceType.RSS">
           <div class="text-caption text-bold">found RSS:</div>
-          <div class="text-caption ellipsis text-blue-8 cursor-pointer" @click="useNavigationService().browserTabFor(ref.href || '')">{{ ref.href }}</div>
+          <div class="text-caption ellipsis text-blue-8 cursor-pointer"
+               @click="useNavigationService().browserTabFor(ref.href || '')">{{ ref.href }}
+          </div>
         </template>
         <template v-else-if="ref.type === TabReferenceType.META_DATA">
           <div class="text-caption text-bold">found Meta Data:</div>
           <div class="text-caption ellipsis">
             <div class="row" v-for="item in ref.data">
               <div class="col-4 ellipsis">
-                {{item['name' as keyof object]}}:
+                {{ item['name' as keyof object] }}:
               </div>
               <div class="col ellipsis">
-                {{item['content' as keyof object]}}
+                {{ item['content' as keyof object] }}
               </div>
             </div>
           </div>
@@ -228,10 +232,20 @@
           <div class="text-caption ellipsis">
             <div class="row" v-for="item in ref.data">
               <div class="col-4 ellipsis">
-                {{item['property' as keyof object]}}:
+                {{ item['property' as keyof object] }}:
               </div>
               <div class="col ellipsis">
-                {{item['content' as keyof object]}}
+                {{ item['content' as keyof object] }}
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else-if="ref.type === TabReferenceType.READING_MODE">
+          <div class="text-caption text-bold">found Reading Mode Article:</div>
+          <div class="text-caption ellipsis">
+            <div class="row">
+              <div class="col-12 ellipsis">
+                {{ ref.data[0]['title' as keyof object] }}:
               </div>
             </div>
           </div>
@@ -239,15 +253,20 @@
         <template v-else-if="ref.type === TabReferenceType.LINKING_DATA">
           <div class="text-caption text-bold">found Linking Data:</div>
           <div class="text-caption">
-            <div v-for="item in ref.data">
-              {{item}}
-<!--              <div class="col-6 ellipsis">-->
-<!--                {{item['name' as keyof object]}}:-->
-<!--              </div>-->
-<!--              <div class="col-6 ellipsis">-->
-<!--                {{item['content' as keyof object]}}:-->
-<!--              </div>-->
+            <div class="cursor-pointer" @click="openInJsonCrackEditor(JSON.stringify(ref.data))">
+              {{ linkingHeading(ref.data) }}
             </div>
+          </div>
+        </template>
+        <template v-else-if="ref.type === TabReferenceType.PARENT_CHAIN">
+          <div class="text-caption text-bold">found Parents in Path:</div>
+          <div class="text-caption">
+            <div class="cursor-pointer" @click="openInJsonCrackEditor(JSON.stringify(ref.data))">
+              {{ ref.title }}
+            </div>
+            <ul>
+              <li v-for="p in ref.data" class="ellipsis" @click="useNavigationService().browserTabFor(p['parent' as keyof object])">{{p['parent' as keyof object]}}</li>
+            </ul>
           </div>
         </template>
         <template v-else>
@@ -304,7 +323,6 @@ import {ref, watchEffect} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {formatDistance} from "date-fns";
 import NavigationService from "src/services/NavigationService";
-import {SaveTabCommand} from "src/domain/tabs/SaveTab";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
@@ -315,11 +333,13 @@ import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
 import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
 import {TabReferenceType} from "src/content/models/TabReference";
 import {useNavigationService} from "src/core/services/NavigationService";
+import {useQuasar} from "quasar";
 
 const {inBexMode} = useUtils()
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
+const $q = useQuasar()
 const router = useRouter()
 const route = useRoute()
 
@@ -347,11 +367,6 @@ watchEffect(() => {
     }
   }
 
-  // const selectedTab = tab.value
-  // console.log("selectedTab", selectedTab)
-  // if (selectedTab) {
-  //   tags.value = selectedTab.tags
-  // }
 })
 
 
@@ -442,12 +457,8 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
-const showTabDetails = () =>
-  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
-
-
-const saveTab = (tab: Tab | undefined) =>
-  useCommandExecutor().execute(new SaveTabCommand(useTabsetsStore().getCurrentTabset, tab))
+// const showTabDetails = () =>
+//   NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
 
 const savePng = (tab: Tab | undefined) => {
   if (tab) {
@@ -482,4 +493,28 @@ const openTabset = (chip: any) => {
     .execute(new SelectTabsetCommand(chip['tabsetId']))
 }
 
+const openInJsonCrackEditor = (data: string) => {
+  $q.dialog({
+    title: 'Open in external Editor?',
+    message: 'The current JSON-LD Data will be copied to your clipboard to be added by you to the external editor',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    navigator.clipboard.writeText(data)
+      .then(() => {
+        useNavigationService().browserTabFor('https://jsoncrack.com/editor')
+      })
+  })
+}
+
+const linkingHeading = (data: object | undefined) => {
+  console.log("data", data)
+  if (!data) {
+    return "---"
+  }
+  return data['@type' as keyof object] || 'unknown'
+}
+const linkingParentChain = (data: object | undefined) => {
+  return (data && data['title' as keyof object]) || 'unknown'
+}
 </script>

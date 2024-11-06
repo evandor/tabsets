@@ -166,6 +166,32 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
   },
   {
+    path: '/mainpanel/html/:snapshotId', // both MHtml and HTML managed by same page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue')}],
+  },
+  {
+    path: '/mainpanel/editedHtml/:snapshotId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue')}],
+  },
+  {
+    path: '/mainpanel/mhtml/:snapshotId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue')}],
+  },
+  {
+    path: '/mainpanel/png/:snapshotId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue')}],
+  },
+  {
+    path: '/mainpanel/pdf/:snapshotId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPdfPage.vue')}],
+  },
+
+  {
     path: '/mainpanel/tabsets/overview/:tabsetId',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue')}],
@@ -215,11 +241,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('pages/mainpanel/MainPanelTabAssignmentPage.vue')}],
   },
-  // {
-  //   path: '/mainpanel/readingmode/:tabId',
-  //   component: () => import('layouts/PlainLayout.vue'),
-  //   children: [{path: '', component: () => import('pages/mainpanel/MainPanelReadingModePage.vue')}],
-  // },
   {
     path: '/mainpanel/mhtml/:tabId/:blobIndex',
     component: () => import('layouts/PlainLayout.vue'),

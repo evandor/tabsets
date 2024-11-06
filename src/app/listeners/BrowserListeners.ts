@@ -21,6 +21,9 @@ import {SidePanelViews} from "src/models/SidePanelViews";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 import BrowserApi from "src/app/BrowserApi";
 import {useContentStore} from "src/content/stores/contentStore";
+import {ExcalidrawStorage} from "src/tabsets/actionHandling/model/ExcalidrawStorage";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
 
 const {
   saveTabset,
@@ -34,13 +37,18 @@ const {sanitize, sendMsg, inBexMode} = useUtils()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
-
+  if (chrome.runtime.lastError) {
+    console.warn("got runtime error:" + chrome.runtime.lastError);
+  }
   //console.debug("setting current tab", tabs)
   if (tabs && tabs[0]) {
     useTabsStore2().setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
   } else {
     // Seems to be necessary when creating a new chrome group
     const tabs2 = await chrome.tabs.query({active: true})
+    if (chrome.runtime.lastError) {
+      console.warn("got runtime error:" + chrome.runtime.lastError);
+    }
     //console.log("setting current tab II", tabs2)
     if (tabs2 && tabs2[0]) {
       useTabsStore2().setCurrentChromeTab(tabs2[0] as unknown as chrome.tabs.Tab)
@@ -234,10 +242,35 @@ class BrowserListeners {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
 
       if (chromeTab.id) {
-        const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
-        // console.log("contentReqeust", contentRequest)
-        useContentStore().currentTabContent = contentRequest['html' as keyof object] || ''
+        try {
+          const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
+          useContentStore().setBrowserTabData(chromeTab, contentRequest)
+        } catch (err) {} // ignore
       }
+
+      // if (chromeTab && chromeTab.id && chromeTab.url && chromeTab.url === "https://excalidraw.com/") {
+      //   const res = await chrome.scripting.executeScript({
+      //     target: {tabId: chromeTab.id},
+      //     func: () => {
+      //       // console.log("setting item tabsets_name", val)
+      //       // localStorage.setItem("tabsets_name", val)
+      //       // localStorage.setItem("tabsets_tabId", tabId)
+      //       // localStorage.setItem("tabsets_ts", new Date().getTime())
+      //       return {
+      //         tabsetsName: localStorage.getItem("tabsets_name"),
+      //         tabsetsTabId: localStorage.getItem("tabsets_tabId"),
+      //         tabsetsTimestamp: localStorage.getItem("tabsets_ts"),
+      //       }
+      //     },
+      //     args: []
+      //   });
+      //   console.log("===>", res)
+      //   const firstFrameReturned = res.at(0)
+      //   if (firstFrameReturned && firstFrameReturned.result) {
+      //     console.log("firstFrameReturned.result", firstFrameReturned.result)
+      //     useContentStore().currentLocalStorage = firstFrameReturned.result
+      //   }
+      // }
 
 
       this.handleUpdateInjectScripts(info, chromeTab)
@@ -288,6 +321,7 @@ class BrowserListeners {
     console.debug("onRemoved tab event: ", number, info)
     //useWindowsStore().refreshCurrentWindows()
     useWindowsStore().refreshTabsetWindow(info.windowId)
+    useContentStore().removeBrowserTabData(number)
     //sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})
   }
 
@@ -302,24 +336,17 @@ class BrowserListeners {
 
     await setCurrentTab()
 
-    // debugger
-    // //const fromPageLocalStore = await chrome.scripting.executeScript({ target: { tabId: info.tabId }}, () => {localStorage['excalidraw']});
-    // const returned = await chrome.scripting.executeScript({
-    //   target: {tabId: info.tabId},
-    //   func: (items) => {
-    //     //Object.keys(items).forEach((key) => {
-    //     localStorage.setItem("tabsetkey", "tabsetvalue")
-    //     const res = localStorage.getItem("excalidraw")
-    //     console.log("got res", res)
-    //     return res
-    //     //})
-    //   },
-    //   args: ['excalidraw'] // pass any parameters to function
-    // })
-    // console.log("returned", returned)
-
-
-    //console.log("fromPage", fromPageLocalStore)
+    if (info.tabId) {
+      const found = useContentStore().tabActivated(info.tabId)
+      if (!found) {
+        try {
+          const contentRequest = await chrome.tabs.sendMessage(info.tabId, 'getExcerpt')
+          useContentStore().currentTabContent = contentRequest['html' as keyof object] || ''
+        } catch (err) {
+          // ignore
+        }
+      }
+    }
 
     chrome.tabs.get(info.tabId, tab => {
       if (chrome.runtime.lastError) {
@@ -331,7 +358,6 @@ class BrowserListeners {
 
         // matching tabs for url
         useTabsetsUiStore().setMatchingTabsFor(url)
-
       }
     })
   }
@@ -470,14 +496,6 @@ class BrowserListeners {
     sendResponse({addTabToCurrent: 'done'});
   }
 
-  private ignoreUrl(tab: Tab, info: chrome.tabs.TabChangeInfo) {
-    return (tab.url?.startsWith("chrome")) ||
-      (tab.url?.startsWith("about")) ||
-      info.url?.startsWith("chrome") ||
-      info.url?.startsWith("about") ||
-      info.url?.startsWith("https://skysail.eu.auth0.com/")
-  }
-
   private capture(request: any) {
     return new Promise((resolve, reject) => {
       // @ts-ignore
@@ -606,32 +624,6 @@ class BrowserListeners {
       })
   }
 
-  private checkOriginForEmailLink(url: string) {
-    try {
-      const theUrl = new URL(url)
-      const urlOrigin = theUrl.origin;
-      //console.log("theURL", theUrl)
-      const res = urlOrigin === EMAIL_LINK_REDIRECT_DOMAIN || urlOrigin === "http://localhost:9000"
-      if (res) {
-        //console.log("checking: origin ok")
-        const params = theUrl.searchParams
-        if (!params.has("apiKey") || !params.has("oobCode") || !params.has("mode")) {
-          //console.log("checking: missing key", params)
-          return false
-        }
-        if (!params.get("apiKey")?.startsWith("AIzaS") || params.get("mode") !== "signIn") {
-          //console.log("checking: wrong key", params.get("apiKey"))
-          //console.log("checking: wrong key", params.get("mode"))
-          return false
-        }
-        console.log("%cfound email authorization link @", "border:1px solid green", url)
-        return true
-      }
-      return false
-    } catch (err) {
-      console.log("could not check url for auth link", url)
-    }
-  }
 }
 
 export default new BrowserListeners();

@@ -6,7 +6,7 @@
     <div class="col-10 text-subtitle2">
       {{currentSelectionId ? 'Update Annotation' : 'Add Annotation'}}
     </div>
-    <div class="col text-right">
+    <div class="col text-right cursor-pointer">
       <q-icon name="close" @click="emits('closeView')" />
     </div>
 
@@ -45,6 +45,7 @@ import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
 
 const props = defineProps({
   sourceId: {type: String, required: true},
+  snapshotId: {type: String, required: false},
   selectionId: {type: String, required: false},
   selectionText:  {type: String, required: true},
   selectionTitle:  {type: String, default: undefined},
@@ -68,8 +69,7 @@ const createOrUpdateAnnotation = async () => {
   let as: Annotation[] = []
   if (!currentSelectionId.value) { // new annotation
     as = await useSnapshotsService().createAnnotation(
-      props.sourceId || '',
-      0,
+      props.snapshotId || '',
       props.selection,
       props.selectionText,
       props.selectionRect || {},

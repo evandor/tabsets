@@ -44,15 +44,15 @@ const searchIndex = ref<any>()
 
 watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()
-  console.log("fuseIndex", fuseIndex)
+  //console.log("fuseIndex", fuseIndex)
   if (fuseIndex) {
     const keyMaps = fuseIndex['_keysMap' as keyof object]
     const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-      console.log("tab", props.tab)
-      console.log("comparing", props.tab?.url, r.$[3]?.v, r)
+      // console.log("tab", props.tab)
+      // console.log("comparing", props.tab?.url, r.$[3]?.v, r)
       return props.tab?.url === r.$[3]?.v
     })
-    console.log("res", res)
+    //console.log("res", res)
     const keys: Map<number, object> = new Map()
     Object.keys(keyMaps).forEach((k: any) => {
       keys.set(keyMaps[k], {

@@ -2,6 +2,7 @@ import _ from "lodash"
 import {Feature} from "src/features/models/Feature";
 import {FeatureIdent, FeatureType} from "src/app/models/FeatureIdent";
 import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
+import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
 
 export class AppFeatures {
   features: Feature[] = [
@@ -94,12 +95,12 @@ export class AppFeatures {
       'A quick access view for your latest tabs',
       'schedule', '', ['all']),
 
-    new Feature(FeatureIdent.RESEARCH_SESSIONS, FeatureType.OPTIONAL,
+    new Feature(FeatureIdent.RESEARCH_SESSIONS, FeatureType.EXPERIMENTAL,
       'Research Sessions',
       'Add Research Capabilities to tabsets - save snapshots of pages and annotate them',
-      'o_science', '', ['all']),
-      // .setActivateCommands([new GrantPermissionCommand('pageCapture')])
-      // .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
+      'o_science', '', ['all'])
+      .setActivateCommands([new GrantPermissionCommand('pageCapture')])
+      .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
 
     new Feature(FeatureIdent.NOTES, FeatureType.OPTIONAL,
       'Notes Feature',

@@ -4,6 +4,7 @@
 export class BackendApi {
 
   createPdf(html: string) {
+    return Promise.reject("no op")
   }
 
   createPng(html: string) {
