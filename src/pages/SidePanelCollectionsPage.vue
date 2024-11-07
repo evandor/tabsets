@@ -12,7 +12,8 @@
 
       <div class="col-12 q-my-lg">
         <q-list>
-          <q-item clickable v-for="c in projects" @click="selectCollection(c as Tabset)">
+          <q-item clickable v-for="c in tabsets"
+                  @click="selectCollection(c as Tabset)">
             <q-item-section>
               <q-item-label>
                 <q-icon name="o_featured_play_list" class="q-mr-xs q-mb-xs"/>
@@ -28,6 +29,25 @@
           </q-item>
         </q-list>
       </div>
+
+      <div>
+        <Draggable v-if="treeData"
+                   class="mtl-tree q-pl-md" v-model="treeData" treeLine :tree-line-offset="0">
+          <template #default="{ node, stat }">
+            <OpenIcon
+              v-if="stat.children.length"
+              :open="stat.open"
+              class="mtl-mr"
+              @click.native="stat.open = !stat.open"
+            />
+            <span class="mtl-ml cursor-pointer" @click="handleTreeClick(node, level)">
+              <q-icon v-if="node.level == 0" name="o_tab" color="warning" class="q-mx-sm" />
+              <q-icon v-else name="o_folder" color="warning" class="q-mx-sm" />
+              {{ node.text }}</span>
+          </template>
+        </Draggable>
+      </div>
+
     </div>
 
 
@@ -42,7 +62,6 @@
 <script lang="ts" setup>
 
 import {onMounted, onUnmounted, ref, watchEffect} from "vue";
-import {useUtils} from "src/core/services/Utils";
 import {useUiStore} from "src/ui/stores/uiStore";
 import Analytics from "src/core/utils/google-analytics";
 import {useI18n} from 'vue-i18n'
@@ -51,25 +70,21 @@ import _ from "lodash"
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {ExecutionFailureResult, ExecutionResult} from "src/core/domain/ExecutionResult";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useRouter} from "vue-router";
-import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
-import SidePanelCollectionPageToolbar from "pages/sidepanel/helper/SidePanelCollectionPageToolbar.vue";
 import SidePanelCollectionsPageToolbar from "pages/sidepanel/helper/SidePanelCollectionsPageToolbar.vue";
+import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {FeatureIdent} from "src/app/models/FeatureIdent";
+import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {Draggable, OpenIcon} from "@he-tree/vue";
+import '@he-tree/vue/style/default.css'
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
-const {inBexMode} = useUtils()
-
 const router = useRouter()
 
-const uiStore = useUiStore()
-
-const view = ref('projects')
 const tabsets = ref<Tabset[]>([])
-
-const projects = ref<Tabset[]>([])
-const project = ref('')
+const treeData = ref<object[]>()
 
 function updateOnlineStatus(e: any) {
   const {type} = e
@@ -89,8 +104,26 @@ onUnmounted(() => {
   // window.removeEventListener('keypress', checkKeystroke);
 })
 
+function treeNodeFromNote(n: Tabset, level = 0): object {
+  console.log("treeNodeFromNote", treeNodeFromNote)
+  return {
+    text: n.name,
+    id: n.id,
+    level,
+    url: chrome.runtime.getURL(`/www/index.html#/mainpanel/notes/${n.id}`),
+    children: _.map(n.folders, (f: Tabset) => {
+      return treeNodeFromNote(f, level + 1)
+    })
+  }
+}
+
 watchEffect(async () => {
-  projects.value = [...useTabsetsStore().tabsets.values()]
+  if (tabsets.value && tabsets.value.length > 0) {
+    console.log("tabsets.value", tabsets.value)
+    treeData.value = _.map(tabsets.value, (f: Tabset) => {
+      return treeNodeFromNote(f)
+    })
+  }
 })
 
 const getTabsetOrder =
@@ -103,17 +136,25 @@ const getTabsetOrder =
     }
   ]
 
-function determineTabsets() {
-  return _.sortBy(
-    _.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
-      (ts: Tabset) => ts.status !== TabsetStatus.DELETED
-        && ts.status !== TabsetStatus.HIDDEN &&
-        ts.status !== TabsetStatus.ARCHIVED),
-    getTabsetOrder, ["asc"]);
-}
-
-watchEffect(() => {
-  tabsets.value = determineTabsets()
+watchEffect(async () => {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
+    const currentSpace = useSpacesStore().space
+    console.log("currentspace", currentSpace)
+    tabsets.value = _.sortBy(
+      _.filter([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
+        if (currentSpace) {
+          if (ts.spaces.indexOf(currentSpace.id) < 0) {
+            return false
+          }
+        }
+        return ts.status !== TabsetStatus.DELETED &&
+          ts.status !== TabsetStatus.HIDDEN &&
+          ts.status !== TabsetStatus.ARCHIVED
+      }),
+      getTabsetOrder, ["asc"])
+  } else {
+    tabsets.value = [...useTabsetsStore().tabsets.values()]
+  }
 })
 
 const selectCollection = (c: Tabset) => {
@@ -126,6 +167,14 @@ const selectCollection = (c: Tabset) => {
       }
     })
 }
+
+const handleTreeClick = (node: any, level:number) => {
+  console.log("clicked", node, level)
+  if (level == 0) {
+    selectCollection(node as Tabset)
+  }
+}
+
 </script>
 
 <style lang="scss">

@@ -74,12 +74,12 @@
                          label="Show Gallery"/>
       </template>
 
-      <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 6"
-                       v-close-popup
-                       @was-clicked="focus(tabset)"
-                       icon="filter_center_focus"
-                       color="accent"
-                       label="Focus on tabset"/>
+<!--      <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 6"-->
+<!--                       v-close-popup-->
+<!--                       @was-clicked="focus(tabset)"-->
+<!--                       icon="filter_center_focus"-->
+<!--                       color="accent"-->
+<!--                       label="Focus on tabset"/>-->
 
       <!--      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 4">-->
       <!--        <ContextMenuItem v-close-popup-->

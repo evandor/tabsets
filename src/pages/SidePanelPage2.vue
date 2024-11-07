@@ -59,9 +59,6 @@
 
       <StartingHint v-if="showStartingHint()"/>
 
-<!--      {{ useContentStore().currentTabUrl}} {{ useContentStore().currentTabStorage}}-->
-<!--      <hr>-->
-<!--      {{ td() }}-->
     </div>
 
     <!-- place QPageSticky at end of page -->
@@ -92,7 +89,6 @@ import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {TITLE_IDENT} from "boot/constants";
 import AppService from "src/app/AppService";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -101,8 +97,6 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import SidePanelPageTabList from "src/tabsets/layouts/SidePanelPageTabList.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import StartingHint from "pages/widgets/StartingHint.vue";
-import {useActionHandlers} from "src/tabsets/actionHandling/ActionHandlers";
-import {ActionHandlerButtonClickedHolder} from "src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder";
 import SidePanelNotesView from "src/notes/views/sidepanel/SidePanelNotesView.vue";
 import SidePanelFoldersView from "src/tabsets/views/sidepanel/SidePanelFoldersView.vue";
 import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
@@ -339,20 +333,6 @@ function checkKeystroke(e: KeyboardEvent) {
   }
 }
 
-const toolbarTitle = (tabsets: Tabset[]): string => {
-  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-    const spaceName = useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
-    return tabsets.length > 6 ?
-      spaceName + ' (' + tabsets.length.toString() + ')' :
-      spaceName
-  }
-  const title: string = LocalStorage.getItem(TITLE_IDENT) || ('My Tabsets' + stageIdentifier())
-  return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
-}
-
-
-const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
-
 const tabsetForTabList = (tabset: Tabset) => {
   if (tabset.folderActive) {
     const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
@@ -361,11 +341,6 @@ const tabsetForTabList = (tabset: Tabset) => {
     }
   }
   return tabset
-}
-
-const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClickedHolder, folder?: Tabset) => {
-  console.log(`button clicked: tsId=${tabset.id}, folderId=${folder?.id}, args=...`)
-  await useActionHandlers(undefined).handleClick(tabset, currentChromeTab.value!, args, folder)
 }
 
 const showStartingHint = () => !useUiStore().appLoading && useTabsetsStore().allTabsCount === 0

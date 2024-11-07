@@ -4,26 +4,27 @@
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
 
-        <!-- we have spaces -->
+        <!-- we have spaces
         <div v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)" class="col-5 q-ma-none q-pa-none">
-
-          <!-- spaces and no back button -->
 
           <SearchWithTransitionHelper v-if="searching"/>
 
           <FilterWithTransitionHelper v-else-if="showFilter"/>
 
           <template v-else>
-            <div class="column q-ma-none q-pa-none">
-              <div class="col q-ma-none q-pa-none cursor-pointer text-subtitle1">
-                <slot name="title">{{ props.title }}</slot>
+            <div class="col-12 text-subtitle1">
+              <div class="q-ml-md q-mt-sm">
+                <div class="text-caption">{{ spaceTitle() }}</div>
+                <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
+                  {{ currentTabset?.name }}
+                  <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
+                </div>
               </div>
             </div>
           </template>
-        </div>
+        </div>-->
 
-        <!-- no spaces here -->
-        <div v-else class="col-7 q-ma-none q-pa-none" style="border:0 solid red">
+        <div class="col-7 q-ma-none q-pa-none" style="border:0 solid red">
 
           <!-- no spaces && searching -->
           <SearchWithTransitionHelper v-if="searching"
@@ -37,7 +38,12 @@
             <!-- no spaces && not searching -->
             <div class="col-12 text-subtitle1">
               <div class="q-ml-md q-mt-sm">
-                <div class="text-caption">Collection</div>
+                <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
+                  <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{ title() }}</div>
+                </template>
+                <template v-else>
+                  <div class="text-caption">{{ title() }}</div>
+                </template>
                 <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
                   {{ currentTabset?.name }}
                   <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
@@ -48,7 +54,6 @@
           </template>
         </div>
 
-        <!-- spaces or not, here's the icons on the right side -->
         <div class="col-5 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none" v-if="!useUiStore().appLoading" style="border:0 solid green">
 
           <slot name="iconsRight">
@@ -84,16 +89,6 @@
               <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset"/>
             </div>
 
-            <!--            <q-btn outline dense-->
-            <!--                   icon="add"-->
-            <!--                   label="Collection"-->
-            <!--                   color="primary"-->
-            <!--                   size="sm"-->
-            <!--                   :class="{ shake: annimateNewTabsetButton }"-->
-            <!--                   data-testid="addTabsetBtn"-->
-            <!--                   @click="openNewTabsetDialog()"-->
-            <!--                   class="q-ma-none q-mt-md q-pl-xs q-pr-sm q-py-xs"-->
-            <!--                   name="o_bookmark_add"/>-->
 
           </slot>
         </div>
@@ -109,7 +104,6 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {useUiStore} from "src/ui/stores/uiStore";
-import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
@@ -193,22 +187,21 @@ if ($q.platform.is.chrome && $q.platform.is.bex) {
 
 const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 
-const showToggleSessionIcon = () =>
-  useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
-  useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) &&
-  !searching.value
+const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
 
-const openNewTabsetDialog = () => {
-  $q.dialog({
-    component: NewTabsetDialog,
-    componentProps: {
-      tabsetId: useTabsetsStore().getCurrentTabset?.id,
-      spaceId: useSpacesStore().space?.id,
-      fromPanel: true
-    }
-  })
+const title = (): string => {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
+    const spaceName = useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
+    // return tabsets.length > 6 ?
+    //   spaceName + ' (' + tabsets.length.toString() + ')' :
+    //   spaceName
+    return spaceName
+  } else {
+    return "Collection"
+  }
+  // const title: string = LocalStorage.getItem(TITLE_IDENT) || ('My Tabsets' + stageIdentifier())
+  // return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
-
 
 const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClickedHolder, folder?: Tabset) => {
   console.log(`button clicked: tsId=${tabset.id}, folderId=${folder?.id}, args=...`)

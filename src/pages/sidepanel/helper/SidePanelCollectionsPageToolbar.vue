@@ -8,7 +8,12 @@
 
           <div class="col-12 text-subtitle1">
             <div class="q-ml-md q-mt-sm">
-              <div class="text-caption">Collection</div>
+              <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
+                <div class="text-caption cursor-pointer">{{ title() }}</div>
+              </template>
+              <template v-else>
+                <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{ title() }}</div>
+              </template>
               <div class="text-body1 text-bold cursor-pointer" @click="router.push('/sidepanel/collections')">
                 {{ currentTabset?.name }}
                 <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
@@ -125,12 +130,13 @@ if ($q.platform.is.chrome && $q.platform.is.bex) {
   })
 }
 
-const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
-
-const showToggleSessionIcon = () =>
-  useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
-  useFeaturesStore().hasFeature(FeatureIdent.SESSIONS) &&
-  !searching.value
+const title = (): string => {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
+    return useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
+  } else {
+    return "Collection"
+  }
+}
 
 const openNewTabsetDialog = () => {
   $q.dialog({

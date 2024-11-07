@@ -181,6 +181,11 @@ export class AppFeatures {
       'Analyse tab contents and use the distraction-free Reading Mode if applicable',
       'library_books', '', ['bex']),
 
+    new Feature(FeatureIdent.HTML_SNIPPETS, FeatureType.EXPERIMENTAL,
+      'HTML Snippets',
+      'Drag and drop Text and Images to the sidebar to create Website Snippets',
+      'text_snippet', '', ['bex']),
+
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {

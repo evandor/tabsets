@@ -71,7 +71,15 @@
         &nbsp;
       </div>
       <div v-else class="col text-right">
-
+        <span>
+        <input
+          class="q-ma-none q-pa-none"
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.HTML_SNIPPETS) && useContentStore().currentTabUrl"
+          v-model="ignored"
+          style="border:1px dotted grey;border-radius:3px;max-width:30px;max-height:20px"
+          @drop="drop($event)"/>
+          <q-tooltip class="tooltip_small">Drag and drop text or images from your current tab</q-tooltip>
+        </span>
         <span>
           <q-btn icon="o_settings" v-if="showSettingsButton()"
                  class="q-my-xs q-px-xs q-mr-none"
@@ -131,16 +139,16 @@
             <q-tooltip :delay="2000" anchor="center left" self="center right"
                        class="tooltip-small">Tabsets as full-page app</q-tooltip>
           </q-icon>
-<!--          <q-menu :offset="[0, 7]" fit>-->
-<!--            <q-list dense style="min-width: 200px;min-height:50px">-->
-<!--              <q-item clickable v-close-popup>-->
-<!--                <q-item-section @click="openExtensionTab()">Tabsets as full-page app</q-item-section>-->
-<!--              </q-item>-->
-<!--              <q-item clickable v-close-popup>-->
-<!--                <q-item-section @click="openPwaUrl()">Tabsets Online Access</q-item-section>-->
-<!--              </q-item>-->
-<!--            </q-list>-->
-<!--          </q-menu>-->
+          <!--          <q-menu :offset="[0, 7]" fit>-->
+          <!--            <q-list dense style="min-width: 200px;min-height:50px">-->
+          <!--              <q-item clickable v-close-popup>-->
+          <!--                <q-item-section @click="openExtensionTab()">Tabsets as full-page app</q-item-section>-->
+          <!--              </q-item>-->
+          <!--              <q-item clickable v-close-popup>-->
+          <!--                <q-item-section @click="openPwaUrl()">Tabsets Online Access</q-item-section>-->
+          <!--              </q-item>-->
+          <!--            </q-list>-->
+          <!--          </q-menu>-->
         </span>
         <q-btn v-else-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)"
                icon="o_open_in_new"
@@ -168,7 +176,7 @@ import {useUtils} from "src/core/services/Utils";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash";
-import {SuggestionState} from "src/suggestions/models/Suggestion";
+import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
 import {Tabset} from "src/tabsets/models/Tabset";
 import {ToastType} from "src/core/models/Toast";
@@ -186,6 +194,11 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/models/SidePanelViews";
 import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
+import {Tab, TabSnippet} from "src/tabsets/models/Tab";
+import BrowserApi from "src/app/BrowserApi";
+import {useContentStore} from "src/content/stores/contentStore";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -206,6 +219,7 @@ const doShowSuggestionButton = ref(false)
 const transitionGraceTime = ref(false)
 const showWindowTable = ref(false)
 const showStatsTable = ref(false)
+const ignored = ref('')
 const showLogin = ref(false)
 const randomKey = ref<string>(uid())
 const progressValue = ref<number>(0.0)
@@ -242,7 +256,7 @@ watchEffect(() => {
   showSuggestionButton.value =
     doShowSuggestionButton.value ||
     (useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
-      _.findIndex(suggestions, (s:Suggestion) => {
+      _.findIndex(suggestions, (s: Suggestion) => {
         return s.state === SuggestionState.NEW ||
           (s.state === SuggestionState.NOTIFICATION && !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
       }) >= 0)
@@ -250,7 +264,7 @@ watchEffect(() => {
   showSuggestionIcon.value =
     !doShowSuggestionButton.value &&
     useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
-    _.findIndex(suggestions, (s:Suggestion) => {
+    _.findIndex(suggestions, (s: Suggestion) => {
       return s.state === SuggestionState.DECISION_DELAYED
     }) >= 0
 })
@@ -481,6 +495,31 @@ const additionalActionWasClicked = (event: any) => {
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
 const openPwaUrl = () => NavigationService.openOrCreateTab([process.env.TABSETS_PWA_URL || 'https://www.skysail.io'])
 const showSettingsButton = () => route?.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated
+
+const drop = (evt: any) => {
+  evt.preventDefault()
+  var text = evt.dataTransfer.getData('text')
+  var html = evt.dataTransfer.getData('text/html')
+  const currentTabUrl = useContentStore().currentTabUrl
+  console.log("===>", evt, text, html, currentTabUrl)
+  if (currentTabUrl) {
+    const existing: Tab | undefined = useTabsetsStore().tabForUrlInSelectedTabset(currentTabUrl!)
+    if (existing) {
+      existing.snippets.push(new TabSnippet(text, html))
+      existing.title = "Snippet ("+existing.snippets.length+")"
+      const currentTabset = useTabsetsStore().getCurrentTabset
+      if (currentTabset) {
+        useTabsetsStore().saveTabset(currentTabset)
+      }
+    } else {
+      const tab = new Tab(uid(), BrowserApi.createChromeTabObject("Snippet", currentTabUrl!))
+      tab.snippets.push(new TabSnippet(text, html))
+      tab.description = text
+      useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(tab))
+    }
+  }
+}
+
 </script>
 
 <style>
