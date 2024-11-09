@@ -33,7 +33,7 @@ describe('SidePanelPage', () => {
     // @ts-ignore - needed as 'chrome' is undefined in vitest
     global.chrome = undefined
     // global.browser = browser
-    db = useDB(useQuasar()).localDb
+    //db = useDB(useQuasar()).localDb
   })
 
   beforeEach(async () => {
@@ -42,7 +42,7 @@ describe('SidePanelPage', () => {
     db = useDB(undefined).tabsetsIndexedDb
     await useTabsetsStore().initialize(db)
     // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))
-    await useTabsetService().init(db)
+    await useTabsetService().init()
 
     const chromeMock = {
       commands: {

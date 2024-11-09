@@ -14,10 +14,10 @@
         </q-input>
       </InfoLine>
 
-      <InfoLine label="Old Sidepanel Layout">
-        <q-checkbox v-model="oldLayout" label="use the old Sidepanel Layout"/>
-        {{t('changing_needs_restart')}}
-      </InfoLine>
+<!--      <InfoLine label="Old Sidepanel Layout">-->
+<!--        <q-checkbox v-model="oldLayout" label="use the old Sidepanel Layout"/>-->
+<!--        {{t('changing_needs_restart')}}-->
+<!--      </InfoLine>-->
 
       <InfoLine :label="t('dark_mode')">
         <q-radio v-model="darkMode" val="auto" :label="t('Auto')"/>
