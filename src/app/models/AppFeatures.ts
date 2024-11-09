@@ -58,7 +58,7 @@ export class AppFeatures {
       'The default view of your tabset is a list - but there can be other views as well like grids or even a canvas.',
       'o_explore', '', ['all']),
 
-    new Feature(FeatureIdent.RSS, FeatureType.EXPERIMENTAL,
+    new Feature(FeatureIdent.RSS, FeatureType.DISABLED,
       'RSS View',
       'The "RSS View" list all your RSS Pages. It is recommended to enable the "analyse Tabs" feature as well to automatically find linked rss feeds from your tabsets.',
       'o_rss_feed', 'rss.png', ['bex', 'spa']),

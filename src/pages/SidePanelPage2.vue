@@ -13,29 +13,6 @@
     <div class="q-ma-none q-pa-none">
 
       <template v-if="useTabsetsStore().tabsets.size > 0">
-        <!-- collections -->
-<!--        <div class="row q-ma-none q-pa-none q-pb-sm darkInDarkMode brightInBrightMode greyBorderBottom">-->
-
-<!--          <div class="col-8 q-ml-md q-mt-sm">-->
-<!--            <div class="text-caption">Collection</div>-->
-<!--            <div class="text-body1 text-bold cursor-pointer" @click="router.push('/sidepanel/collections')">-->
-<!--              {{ currentTabset?.name }}-->
-<!--              <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="col text-right vertical-middle q-mt-md">-->
-
-<!--            <span>-->
-<!--              <SpecialUrlAddToTabsetComponent-->
-<!--                v-if="currentChromeTab && currentTabset"-->
-<!--                @button-clicked="(args:ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)"-->
-<!--                :currentChromeTab="currentChromeTab"-->
-<!--                :tabset="currentTabset"/>-->
-<!--            </span>-->
-<!--            <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer"/>-->
-<!--            <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset"/>-->
-<!--          </div>-->
-<!--        </div>-->
 
         <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
 
@@ -309,9 +286,6 @@ if (inBexMode()) {
       useTabsetService().reloadTabset(tabsetId)
     } else if (message.name === 'reload-application') {
       AppService.restart("restarted=true")
-      // } else if (message.name === 'restore-tabset') {
-      //   debugger
-      //   useCommandExecutor().execute(new RestoreTabsetCommand(message.data.tabsetId, message.data.label, true))
     } else {
       console.log("got unmatched message", message)
     }

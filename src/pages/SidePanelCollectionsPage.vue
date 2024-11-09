@@ -3,47 +3,25 @@
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
 
     <div class="row q-ma-none q-pa-none items-start">
-              <span class="text-body2 q-ml-md">
-                Select Collection
-              </span>
-      <div class="col-12">
-        <hr style="height:1px;border:none;background-color: #efefef;">
-      </div>
-
-      <div class="col-12 q-my-lg">
-        <q-list>
-          <q-item clickable v-for="c in tabsets"
-                  @click="selectCollection(c as Tabset)">
-            <q-item-section>
-              <q-item-label>
-                <q-icon name="o_featured_play_list" class="q-mr-xs q-mb-xs"/>
-                {{ c.name }}
-              </q-item-label>
-              <q-item-label caption lines="2">{{ c.headerDescription }}</q-item-label>
-            </q-item-section>
-
-            <!--                  <q-item-section side top>-->
-            <!--                    <q-item-label caption>5 min ago</q-item-label>-->
-            <!--                    <q-icon name="star" color="yellow" />-->
-            <!--                  </q-item-section>-->
-          </q-item>
-        </q-list>
-      </div>
-
       <div>
         <Draggable v-if="treeData"
-                   class="mtl-tree q-pl-md" v-model="treeData" treeLine :tree-line-offset="0">
+                   class="q-pl-md" v-model="treeData"
+                   @change="ondrop2($event)"
+                   :treeLine="false" :tree-line-offset="0" :defaultOpen="true"
+                   :indent="25">
           <template #default="{ node, stat }">
+            <!-- v-if="stat.children.length"-->
             <OpenIcon
-              v-if="stat.children.length"
               :open="stat.open"
-              class="mtl-mr"
               @click.native="stat.open = !stat.open"
             />
-            <span class="mtl-ml cursor-pointer" @click="handleTreeClick(node, level)">
-              <q-icon v-if="node.level == 0" name="o_tab" color="warning" class="q-mx-sm" />
-              <q-icon v-else name="o_folder" color="warning" class="q-mx-sm" />
-              {{ node.text }}</span>
+            <!--            <q-icon v-else name="remove" color="white"/>-->
+            <!--            <span v-else class="q-ma-none q-ml-md" style="background-color:yellow"></span>-->
+            <span class="mtl-ml cursor-pointer" @click="handleTreeClick(node)">
+              <q-icon v-if="node.level == 0" name="o_tab" color="primary" class="q-mx-sm"/>
+              <q-icon v-else name="o_folder" color="warning" class="q-mx-sm"/>
+              {{ node.text }}
+            </span>
           </template>
         </Draggable>
       </div>
@@ -76,15 +54,19 @@ import SidePanelCollectionsPageToolbar from "pages/sidepanel/helper/SidePanelCol
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {Draggable, OpenIcon} from "@he-tree/vue";
+import {dragContext, Draggable, OpenIcon} from "@he-tree/vue";
 import '@he-tree/vue/style/default.css'
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import {DeleteTabsetFolderCommand} from "src/tabsets/commands/DeleteTabsetFolderCommand";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
+
+type NodeTreeObject = { text: string, id: string, tsId: string, level: number, url: string, children: NodeTreeObject[] }
 
 const router = useRouter()
 
 const tabsets = ref<Tabset[]>([])
-const treeData = ref<object[]>()
+const treeData = ref<NodeTreeObject[]>()
 
 function updateOnlineStatus(e: any) {
   const {type} = e
@@ -104,25 +86,111 @@ onUnmounted(() => {
   // window.removeEventListener('keypress', checkKeystroke);
 })
 
-function treeNodeFromNote(n: Tabset, level = 0): object {
-  console.log("treeNodeFromNote", treeNodeFromNote)
+const ondrop2 = (evt: any) => {
+  // console.log("===> evt", evt)
+  // console.log("===> dragNode2", dragContext.dragNode)
+  // console.log("===> startInfo2", dragContext.startInfo)
+  // console.log("===> startTree2", dragContext.startTree)
+  // console.log("===> targetInfo2", dragContext.targetInfo)
+  // console.log("===> targetTree2", dragContext.targetTree)
+  console.log("")
+  const dragged = dragContext?.dragNode?.data
+  const draggedTo = dragContext.targetInfo?.parent?.data
+  console.log("dragged: ", dragged)
+  // console.log("over2: ", dragContext?.dragNode?.dragNode)
+  console.log("over", draggedTo)
+  // console.log("===>", dragContext.targetInfo)
+  if (dragged && draggedTo) {
+    console.log(`moving ${dragged.text} (${dragged.id}, root=${dragged.id === dragged.tsId}) to ${draggedTo.text} (${draggedTo.id}) root=${draggedTo.id === draggedTo.tsId}`)
+
+    if (dragged.id === dragged.tsId && draggedTo.id === draggedTo.tsId) { // two roots
+      console.log("dragging root to root")
+      const beingDraggedTs: Tabset | undefined = useTabsetsStore().getTabset(dragged.id)
+      const beingDraggedToTs: Tabset | undefined = useTabsetsStore().getTabset(draggedTo.id)
+      if (beingDraggedTs && beingDraggedToTs) {
+        beingDraggedTs.folderActive = undefined
+        beingDraggedTs.folderParent = beingDraggedToTs.id
+        beingDraggedToTs.folders.push(beingDraggedTs)
+        useTabsetsStore().saveTabset(beingDraggedToTs)
+        useTabsetsStore().deleteTabset(beingDraggedTs.id)
+      }
+    } else if (dragged.id !== dragged.tsId && draggedTo.id === draggedTo.tsId) { // dragging non-root to root
+      console.log("dragging non-root to root, no-op")
+    } else if (dragged.id !== dragged.tsId && draggedTo.id !== draggedTo.tsId) { // dragging non-root to non-root
+      console.log("dragging non-root to non-root")
+      const draggedTabset: Tabset | undefined = useTabsetsStore().getTabset(dragged.tsId)
+      const draggedToTabset: Tabset | undefined = useTabsetsStore().getTabset(draggedTo.tsId)
+      if (draggedTabset && draggedToTabset) {
+        const beingDraggedFolder: Tabset | undefined = useTabsetsStore().getActiveFolder(draggedTabset, dragged.id)
+        const beingDraggedToFolder: Tabset | undefined = useTabsetsStore().getActiveFolder(draggedToTabset, draggedTo.id)
+        if (beingDraggedFolder && beingDraggedToFolder) {
+          console.log(`moving ${beingDraggedFolder.name} (${beingDraggedFolder.id}) to ${beingDraggedToFolder.name} (${beingDraggedToFolder.id})`)
+
+          beingDraggedFolder.folderActive = undefined
+          beingDraggedFolder.folderParent = beingDraggedToFolder.id
+          beingDraggedToFolder.folders.push(beingDraggedFolder)
+          useTabsetsStore().saveTabset(draggedToTabset)
+          useCommandExecutor().execute(new DeleteTabsetFolderCommand(draggedTabset, beingDraggedFolder))
+        }
+      }
+    } else if (dragged.id === dragged.tsId && draggedTo.id !== draggedTo.tsId) {
+      const draggedTs: Tabset | undefined = useTabsetsStore().getTabset(dragged.id)
+      const draggedToTabset: Tabset | undefined = useTabsetsStore().getTabset(draggedTo.tsId)
+      if (draggedTs && draggedToTabset) {
+        const draggedToFolder: Tabset | undefined = useTabsetsStore().getActiveFolder(draggedToTabset, draggedTo.id)
+        if (draggedToFolder) {
+          draggedTs.folderActive = undefined
+          draggedTs.folderParent = draggedToFolder.id
+          draggedToFolder.folders.push(draggedTs)
+          useTabsetsStore().saveTabset(draggedToTabset)
+          useTabsetsStore().deleteTabset(draggedTs.id)
+        }
+      }
+    } else {
+      console.log("not handled yet")
+    }
+
+  } else if (dragged) {
+    if (dragged.id !== dragged.tsId) { // dragging non-root to root
+      console.log("dragging non-root to root II", dragged.id, dragged.tsId)
+      const tabset: Tabset | undefined = useTabsetsStore().getTabset(dragged.tsId)
+      console.log("got tabset", tabset)
+      if (tabset) {
+        const beingDraggedTs: Tabset | undefined = useTabsetsStore().getActiveFolder(tabset, dragged.id)
+        console.log("beingDraggedTs", beingDraggedTs)
+        if (beingDraggedTs) {
+          beingDraggedTs.folderActive = undefined
+          beingDraggedTs.folderParent = undefined
+          useTabsetService().saveTabset(beingDraggedTs)
+          useCommandExecutor().execute(new DeleteTabsetFolderCommand(tabset, beingDraggedTs))
+        }
+      }
+    }
+  } else {
+    console.log("not handled yet II")
+  }
+}
+
+function treeNodeFromNote(n: Tabset, rootId: string = n.id, level = 0): NodeTreeObject {
   return {
     text: n.name,
     id: n.id,
+    tsId: rootId,
     level,
     url: chrome.runtime.getURL(`/www/index.html#/mainpanel/notes/${n.id}`),
     children: _.map(n.folders, (f: Tabset) => {
-      return treeNodeFromNote(f, level + 1)
+      return treeNodeFromNote(f, rootId, level + 1)
     })
   }
 }
 
 watchEffect(async () => {
   if (tabsets.value && tabsets.value.length > 0) {
-    console.log("tabsets.value", tabsets.value)
-    treeData.value = _.map(tabsets.value, (f: Tabset) => {
-      return treeNodeFromNote(f)
-    })
+    treeData.value = tabsets.value
+      .map((f: Tabset) => {
+        return treeNodeFromNote(f)
+      })
+      .sort((a, b) => a.text.localeCompare(b.text))
   }
 })
 
@@ -157,22 +225,14 @@ watchEffect(async () => {
   }
 })
 
-const selectCollection = (c: Tabset) => {
-  console.log("found", c)
-  useCommandExecutor().execute(new SelectTabsetCommand(c.id))//, useSpacesStore().space?.id))
+const handleTreeClick = (node: NodeTreeObject) => {
+  console.log("clicked", node)
+  useCommandExecutor().execute(new SelectTabsetCommand(node.tsId, node.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
       if (res.result) {
-        //currentProject.value = res.result
         router.push("/sidepanel")
       }
     })
-}
-
-const handleTreeClick = (node: any, level:number) => {
-  console.log("clicked", node, level)
-  if (level == 0) {
-    selectCollection(node as Tabset)
-  }
 }
 
 </script>

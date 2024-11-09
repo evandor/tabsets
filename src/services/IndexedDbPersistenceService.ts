@@ -26,7 +26,6 @@ class IndexedDbPersistenceService implements PersistenceService {
   }
 
   // async loadTabsets(): Promise<any> {
-  //   debugger
   //   console.debug(" ...loading tabsets indexeddb")
   //   return await this.db.getAll('tabsets')
   //     .then((res: any) => res.forEach((r: Tabset) => {

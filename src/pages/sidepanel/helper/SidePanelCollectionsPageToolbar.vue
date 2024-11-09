@@ -9,14 +9,13 @@
           <div class="col-12 text-subtitle1">
             <div class="q-ml-md q-mt-sm">
               <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-                <div class="text-caption cursor-pointer">{{ title() }}</div>
-              </template>
-              <template v-else>
                 <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{ title() }}</div>
               </template>
-              <div class="text-body1 text-bold cursor-pointer" @click="router.push('/sidepanel/collections')">
-                {{ currentTabset?.name }}
-                <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
+              <template v-else>
+                <div class="text-caption">{{ title() }}</div>
+              </template>
+              <div class="text-body1 text-bold cursor-pointer">
+                Select a Collection
               </div>
             </div>
           </div>

@@ -347,9 +347,6 @@ if (inBexMode()) {
       useTabsetService().reloadTabset(tabsetId)
     } else if (message.name === 'reload-application') {
       AppService.restart("restarted=true")
-      // } else if (message.name === 'restore-tabset') {
-      //   debugger
-      //   useCommandExecutor().execute(new RestoreTabsetCommand(message.data.tabsetId, message.data.label, true))
     } else {
       console.log("got unmatched message", message)
     }

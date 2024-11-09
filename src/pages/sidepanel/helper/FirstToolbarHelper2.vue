@@ -11,17 +11,6 @@
 
           <FilterWithTransitionHelper v-else-if="showFilter"/>
 
-          <template v-else>
-            <div class="col-12 text-subtitle1">
-              <div class="q-ml-md q-mt-sm">
-                <div class="text-caption">{{ spaceTitle() }}</div>
-                <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
-                  {{ currentTabset?.name }}
-                  <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
-                </div>
-              </div>
-            </div>
-          </template>
         </div>-->
 
         <div class="col-7 q-ma-none q-pa-none" style="border:0 solid red">
@@ -42,7 +31,7 @@
                   <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{ title() }}</div>
                 </template>
                 <template v-else>
-                  <div class="text-caption">{{ title() }}</div>
+                  <div class="text-caption" @click="router.push('/sidepanel/collections')">{{ title() }}</div>
                 </template>
                 <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
                   {{ currentTabset?.name }}
