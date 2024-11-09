@@ -207,7 +207,7 @@ const getTabsetOrder =
 watchEffect(async () => {
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     const currentSpace = useSpacesStore().space
-    console.log("currentspace", currentSpace)
+    // console.log("currentspace", currentSpace)
     tabsets.value = _.sortBy(
       _.filter([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => {
         if (currentSpace) {
@@ -226,7 +226,7 @@ watchEffect(async () => {
 })
 
 const handleTreeClick = (node: NodeTreeObject) => {
-  console.log("clicked", node)
+  // console.log("clicked", node)
   useCommandExecutor().execute(new SelectTabsetCommand(node.tsId, node.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
       if (res.result) {
