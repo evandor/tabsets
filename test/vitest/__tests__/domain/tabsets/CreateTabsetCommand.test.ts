@@ -7,6 +7,8 @@ import {useDB} from "src/services/usePersistenceService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
+import IndexedDbSuggestionsPersistence from "src/suggestions/persistence/IndexedDbSuggestionsPersistence";
+import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 
 installQuasarPlugin();
 
@@ -15,12 +17,14 @@ vi.mock('vue-router')
 describe('CreateTabsetCommand', () => {
 
   let db = null as unknown as TabsetsPersistence
+  let suggestionsDB = IndexedDbSuggestionsPersistence
 
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init("db")
     db = useDB().tabsetsIndexedDb
     await useTabsetsStore().initialize(db)
+    await useSuggestionsStore().init()
   })
 
   afterEach(async() => {
