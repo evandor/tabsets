@@ -12,10 +12,6 @@
           <div class="col-12 text-h6 q-mb-md">
             {{ t('welcome_to_tabsets') }} {{ stageIdentifier() }}
           </div>
-<!--          <div class="col-12 text-caption text-primary q-mx-sm q-my-sm">-->
-<!--            {{ t('one_line_about_tabsets1') }}<br>-->
-<!--            {{ t('one_line_about_tabsets2') }}-->
-<!--          </div>-->
         </div>
 
         <div class="q-pa-sm q-mb-none row items-start q-gutter-md" @click.stop="selected()">

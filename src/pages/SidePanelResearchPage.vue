@@ -15,7 +15,7 @@
               </span>
           </div>
           <div class="col-6 text-right">
-            &nbsp;
+             &nbsp;
           </div>
           <div class="col-12">
             <hr style="height:1px;border:none;background-color: #efefef;">
@@ -228,7 +228,7 @@
 
 <script lang="ts" setup>
 
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
@@ -377,9 +377,8 @@ watchEffect(() => {
 watchEffect(() => {
   if (source.value && source.value.url) {
     useContentService().getContent(source.value.id)
-      .then((data: ContentItem) => {
+      .then((data: ContentItem | undefined) => {
         content.value = data
-        return
       })
   }
 })

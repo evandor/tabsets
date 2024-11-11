@@ -12,10 +12,13 @@ export class UpdateTabColorCommand implements Command<any> {
   }
 
   async execute(): Promise<ExecutionResult<string>> {
+    if (!this.newColor) {
+      return Promise.reject("no color given")
+    }
     return TabsetService.setColor(this.tab, this.newColor)
       .then(ignored => Promise.resolve(
         new ExecutionResult(
-          this.newColor,
+          this.newColor!,
           "Tab's color was changed",
           ))
       )

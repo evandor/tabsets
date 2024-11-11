@@ -186,7 +186,18 @@ function treeNodeFromNote(n: Tabset, rootId: string = n.id, level = 0): NodeTree
 
 watchEffect(async () => {
   if (tabsets.value && tabsets.value.length > 0) {
+    const useSpaces = useFeaturesStore().hasFeature(FeatureIdent.SPACES)
+    const space = useSpacesStore().space
     treeData.value = tabsets.value
+      .filter((ts: Tabset) => ts.status !== TabsetStatus.ARCHIVED)
+      .filter((ts: Tabset) => {
+        if (useSpaces && space) {
+          return ts.spaces.indexOf(space.id) >= 0
+        } else if (useSpaces && !space) {
+          return ts.spaces.length === 0
+        }
+        return true
+      })
       .map((f: Tabset) => {
         return treeNodeFromNote(f)
       })

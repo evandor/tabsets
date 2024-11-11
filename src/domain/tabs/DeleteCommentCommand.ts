@@ -4,6 +4,7 @@ import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {TabsetSharing} from "src/tabsets/models/Tabset";
 import _ from "lodash"
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {TabComment} from "src/tabsets/models/Tab";
 
 export class DeleteCommentCommand implements Command<any> {
 
@@ -17,7 +18,7 @@ export class DeleteCommentCommand implements Command<any> {
       console.log("retrieved tabData", tabData)
       const tab = tabData.tab
 
-      tab.comments = _.filter(tab.comments, c => c.id !== this.commentId)
+      tab.comments = _.filter(tab.comments, (c:TabComment) => c.id !== this.commentId)
 
       const tabset = useTabsetsStore().getTabset(tabData.tabsetId)
       if (tabset && tabset.sharedId) {

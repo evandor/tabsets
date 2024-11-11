@@ -3,12 +3,6 @@ import {ref} from "vue";
 import {LocalStorage, uid, useQuasar} from "quasar";
 import {APP_INSTALLATION_ID} from "boot/constants";
 
-export enum SyncType {
-  NONE = "NONE",
-  COUCHDB = "COUCHDB",
-  FIRESTORE = "FIRESTORE"
-}
-
 export const useAppStore = defineStore('app', () => {
 
   const installationId = ref<string | undefined>(LocalStorage.getItem(APP_INSTALLATION_ID) as string || undefined)

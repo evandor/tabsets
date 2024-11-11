@@ -77,7 +77,9 @@ const resetActivationCounter = () => {
     if (tabAndTabsetId.tab) {
       tabAndTabsetId.tab.activatedCount = 0
       const tabset = useTabsetsStore().getTabset(tabAndTabsetId.tabsetId)
-      useTabsetsStore().saveTabset(tabset)
+      if (tabset) {
+        useTabsetsStore().saveTabset(tabset)
+      }
     }
   }
 }

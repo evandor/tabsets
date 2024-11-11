@@ -19,7 +19,7 @@ export class SearchIndexQuery implements Query<Hits> {
     const theHits: Hit[] = []
     let count = 0
     let moreHits = false
-    _.forEach(results, h => {
+    _.forEach(results, (h:any) => {
       const theHit = new Hit(
         uid(),
         //ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl),

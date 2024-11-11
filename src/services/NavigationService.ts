@@ -112,7 +112,7 @@ class NavigationService {
 
                   const tabsForUrl = useTabsetsStore().tabsForUrl(url)
                   console.log("tabsForUrl", tabsForUrl)
-                  const lastActive = _.min(_.map(tabsForUrl, tfu => tfu.tab.lastActive))
+                  const lastActive = _.min(_.map(tabsForUrl, (tfu:TabAndTabsetId) => tfu.tab.lastActive))
                   const {handleSuccess} = useNotificationHandler()
                   if (r.active) {
                     console.log(`lastActive ${lastActive}, now: ${new Date().getTime()}, diff: ${new Date().getTime() - (lastActive || new Date().getTime())}`)

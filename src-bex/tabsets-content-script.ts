@@ -13,10 +13,6 @@ export default bexContent((bridge: any) => {
   }
 
   console.log("tabsets: initializing content script for tab analysis...")
-  // chrome.storage.local.get(["excalidraw"], (res) => {
-  //   console.log("res", res)
-  // })
-  // chrome.storage.local.set({"test": "test"})
   // @ts-ignore
   window.contentScriptAnalysisAlredyCalled  = true
 

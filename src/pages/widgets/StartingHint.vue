@@ -70,7 +70,6 @@
 
 <script lang="ts" setup>
 
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useUiStore} from "src/ui/stores/uiStore";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useFeaturesStore} from "src/features/stores/featuresStore";

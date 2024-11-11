@@ -9,7 +9,6 @@ const {inBexMode} = useUtils()
 class TabService {
 
   isCurrentTab = (tab: Tab) => {
-    // console.log("tab:", tab)
     if (!inBexMode() || !tab.url) {
       return false
     }

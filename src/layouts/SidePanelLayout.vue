@@ -17,7 +17,7 @@
 
 import {ref, watchEffect} from "vue";
 import SidePanelFooter from "components/SidePanelFooter.vue";
-import {useMeta, useQuasar} from "quasar";
+import {useMeta} from "quasar";
 
 const location = ref('')
 

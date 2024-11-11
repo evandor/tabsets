@@ -109,7 +109,6 @@ class BrowserApi {
       return
     }
     if (chrome && chrome.contextMenus) {
-      //console.log("chrome.contextMenus", chrome.contextMenus)
       chrome.contextMenus.removeAll(
         () => {
           console.debug(" ...creating contextmenu for tabset_extension")
@@ -192,12 +191,12 @@ class BrowserApi {
 
               if (allTabsets.length > 15) {
                 const result = _(allTabsets)
-                  .groupBy(o => (o.name && o.name.length > 0) ? o.name[0].toUpperCase() : ' ')
-                  .map((tabsets, firstLetter) => ({firstLetter, tabsets}))
-                  .sortBy(r => r.firstLetter)
+                  .groupBy((o:any) => (o.name && o.name.length > 0) ? o.name[0].toUpperCase() : ' ')
+                  .map((tabsets:any, firstLetter:any) => ({firstLetter, tabsets}))
+                  .sortBy((r:any) => r.firstLetter)
                   .value();
 
-                _.forEach(result, (r) => {
+                _.forEach(result, (r:any) => {
                   chrome.contextMenus.create({
                     id: 'save_as_tab_folder|' + r.firstLetter,
                     parentId: 'tabset_extension',
@@ -291,6 +290,7 @@ class BrowserApi {
 
   restore(tabset: Tabset, windowName: string | undefined = undefined, inNewWindow: boolean = true) {
     console.log("restoring tabset ", tabset.id, windowName, inNewWindow)
+
     const urlAndGroupArray: object[] = _.map(tabset.tabs, (t: Tab) => {
       return {url: t.url || '', group: t.groupName || undefined} //|| {url: '', group: undefined}
     })
@@ -301,18 +301,25 @@ class BrowserApi {
         focused: true,
         left: 50,
         top: 50,
-        url: _.map(urlAndGroupArray, a => a['url' as keyof object])
+        url: _.map(urlAndGroupArray, (a:any) => a['url' as keyof object])
       })
     } else if (windowName) { // open in named window
       useTabsetsStore().selectCurrentTabset(tabset.id)
       NavigationService.openOrCreateTab(
-        _.map(urlAndGroupArray, a => a['url' as keyof object]),
+        _.map(urlAndGroupArray, (a:any) => a['url' as keyof object]),
         undefined,
-        _.map(urlAndGroupArray, a => a['group' as keyof object]))
+        _.map(urlAndGroupArray, (a:any) => a['group' as keyof object]))
+      // TODO deactivate listeners - needed?
+      // useTabsStore().deactivateListeners()
+      // this.getCurrentTab()
+      //     ...
+      //     Promise.all(promisedTabs)
+      //       .then(() => useTabsStore().activateListeners())
+      //   })
     } else {
       console.log("opening urls", urlAndGroupArray)
-      NavigationService.openOrCreateTab(_.map(urlAndGroupArray, a => a['url' as keyof object]),
-        undefined, _.map(urlAndGroupArray, a => a['group' as keyof object]))
+      NavigationService.openOrCreateTab(_.map(urlAndGroupArray, (a:any) => a['url' as keyof object]),
+        undefined, _.map(urlAndGroupArray, (a:any) => a['group' as keyof object]))
     }
   }
 
@@ -322,10 +329,10 @@ class BrowserApi {
     }
 
     return new Promise((resolve, reject) => {
-      let queryOptions = {active: true};
+      let queryOptions = {active: true, lastFocusedWindow: true};
       try {
         chrome.tabs.query(queryOptions, function (tabs) {
-          console.log("got tabs", tabs)
+          //console.log("got tab", tabs[0])
           resolve(tabs[0]);
         })
       } catch (e) {

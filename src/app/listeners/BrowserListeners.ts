@@ -169,7 +169,9 @@ class BrowserListeners {
       //   }
       // });
 
-      chrome.commands.onCommand.addListener(this.onCommandListener);
+      if (chrome.commands) {
+        chrome.commands.onCommand.addListener(this.onCommandListener);
+      }
 
       // TODO removed listeners as well?
       if (useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
@@ -203,7 +205,9 @@ class BrowserListeners {
     chrome.tabs.onDetached.removeListener(this.onDetachedListener)
     chrome.tabs.onHighlighted.removeListener(this.onHighlightedListener)
     chrome.runtime.onMessage.removeListener(this.onMessageListener)
-    chrome.commands.onCommand.removeListener(this.onCommandListener);
+    if (chrome.commands) {
+      chrome.commands.onCommand.removeListener(this.onCommandListener)
+    }
   }
 
   clearWorking() {
@@ -217,6 +221,11 @@ class BrowserListeners {
 
   eventTriggered() {
     this.inProgress = true
+  }
+
+  createThumbnails(b: boolean) {
+    console.log("thumbnails active set to ", b)
+    this.thumbnailsActive = b
   }
 
   onCreated(tab: chrome.tabs.Tab) {
@@ -247,31 +256,6 @@ class BrowserListeners {
           useContentStore().setBrowserTabData(chromeTab, contentRequest)
         } catch (err) {} // ignore
       }
-
-      // if (chromeTab && chromeTab.id && chromeTab.url && chromeTab.url === "https://excalidraw.com/") {
-      //   const res = await chrome.scripting.executeScript({
-      //     target: {tabId: chromeTab.id},
-      //     func: () => {
-      //       // console.log("setting item tabsets_name", val)
-      //       // localStorage.setItem("tabsets_name", val)
-      //       // localStorage.setItem("tabsets_tabId", tabId)
-      //       // localStorage.setItem("tabsets_ts", new Date().getTime())
-      //       return {
-      //         tabsetsName: localStorage.getItem("tabsets_name"),
-      //         tabsetsTabId: localStorage.getItem("tabsets_tabId"),
-      //         tabsetsTimestamp: localStorage.getItem("tabsets_ts"),
-      //       }
-      //     },
-      //     args: []
-      //   });
-      //   console.log("===>", res)
-      //   const firstFrameReturned = res.at(0)
-      //   if (firstFrameReturned && firstFrameReturned.result) {
-      //     console.log("firstFrameReturned.result", firstFrameReturned.result)
-      //     useContentStore().currentLocalStorage = firstFrameReturned.result
-      //   }
-      // }
-
 
       this.handleUpdateInjectScripts(info, chromeTab)
 
@@ -565,7 +549,7 @@ class BrowserListeners {
     const currentTS = useTabsetsStore().getCurrentTabset
     if (sender.tab && currentTS) {
       const url = sender.tab.url || ''
-      const t = _.find(currentTS.tabs, t => t.url === url)
+      const t = _.find(currentTS.tabs, (t:Tab) => t.url === url)
       if (!t) {
         sendResponse({error: 'could not find tab for url ' + url})
         return

@@ -1,9 +1,5 @@
-import Command from "src/core/domain/Command";
-import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import Query from "src/core/domain/Query";
 import {QueryResult} from "src/core/domain/QueryResult";
-
-const {handleSuccess, handleError} = useNotificationHandler()
 
 export function useQueryExecutor() {
 
