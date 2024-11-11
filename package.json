@@ -53,7 +53,7 @@
     "@editorjs/editorjs": "^2.30.5",
     "@editorjs/header": "^2.8.7",
     "@he-tree/vue": "^2.8.7",
-    "@intlify/unplugin-vue-i18n": "^4.0.0",
+    "@intlify/unplugin-vue-i18n": "^5.3.1",
     "@mozilla/readability": "^0.5.0",
     "@quasar/extras": "^1.16.12",
     "@sentry/browser": "^8.32.0",
