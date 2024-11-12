@@ -61,10 +61,9 @@
         <q-checkbox v-model="fullUrls" :label="t('show_full_url')"/>
       </InfoLine>
 
-      <!--        <InfoLine label="Ignore Browser Extensions as tabs">-->
-      <!--          <q-toggle v-model="ignoreExtensionsEnabled"-->
-      <!--                    @click="updateSettings('extensionsAsTabs', ignoreExtensionsEnabled)"/>-->
-      <!--        </InfoLine>-->
+      <InfoLine label="Hide Indicator Icon" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+        <q-checkbox v-model="hideIndicatorIcon" label="Hide Icon on websites (upper right) when tracked by tabsets"/>
+      </InfoLine>
 
     </div>
 
@@ -132,17 +131,17 @@
       </div>
     </div>
 
-    <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
-      <div class="col-3">
-        New Version Simulation
-      </div>
-      <div class="col-3">
-        Simulate that there is a new version available
-      </div>
-      <div class="col q-ma-xl">
-        <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.2.12')">Simulate</span>
-      </div>
-    </div>
+<!--    <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">-->
+<!--      <div class="col-3">-->
+<!--        New Version Simulation-->
+<!--      </div>-->
+<!--      <div class="col-3">-->
+<!--        Simulate that there is a new version available-->
+<!--      </div>-->
+<!--      <div class="col q-ma-xl">-->
+<!--        <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.2.12')">Simulate</span>-->
+<!--      </div>-->
+<!--    </div>-->
 
     <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
       <div class="col-3">
@@ -187,6 +186,7 @@ const installationTitle = ref<string>(LocalStorage.getItem(TITLE_IDENT) as strin
 const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
+const hideIndicatorIcon = ref(LocalStorage.getItem('ui.hideIndicatorIcon') || false)
 const oldLayout = ref(LocalStorage.getItem('ui.sidepanel.oldLayout') || false)
 
 let suggestionsCounter = 0
@@ -198,7 +198,6 @@ const localeOptions = ref([
   {value: 'de', label: 'German'},
   {value: 'bg', label: 'Bulgarian'}
 ])
-
 
 const autoSwitcherOption = ref<number>(LocalStorage.getItem('ui.tabSwitcher') as number || 5000)
 
@@ -247,12 +246,17 @@ watch(() => detailLevel.value, () => {
 
 watch(() => fullUrls.value, (a:any,b:any) => {
   LocalStorage.set('ui.fullUrls', fullUrls.value)
-  sendMsg('fullUrls-changed', {value: fullUrls.value})
+  //sendMsg('fullUrls-changed', {value: fullUrls.value})
+  sendMsg('settings-changed', {identifier: "ui.fullUrls", value: fullUrls.value})
+})
+
+watch(() => hideIndicatorIcon.value, (a:any,b:any) => {
+  LocalStorage.set('ui.hideIndicatorIcon', hideIndicatorIcon.value)
+  sendMsg('settings-changed', {identifier: "ui.hideIndicatorIcon", value: hideIndicatorIcon.value})
 })
 
 watch(() => oldLayout.value, (a:any,b:any) => {
   LocalStorage.set('ui.sidepanel.oldLayout', oldLayout.value)
-  //sendMsg('fullUrls-changed', {value: fullUrls.value})
 })
 
 
@@ -262,7 +266,7 @@ watchEffect(() => {
 
 const restoreHints = () => useUiStore().restoreHints()
 
-const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
+// const simulateNewVersion = (version: string) => NavigationService.updateAvailable({version: version})
 
 const simulateStaticSuggestion = () => {
   const suggestions: [Suggestion] = [

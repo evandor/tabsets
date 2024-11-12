@@ -71,7 +71,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'feature-activated' ||
     request.name === 'feature-deactivated' ||
     request.name === 'tabsets-imported' ||
-    request.name === 'fullUrls-changed' ||
+    request.name === 'settings-changed' ||
     request.name === 'reload-suggestions' ||
     request.name === 'reload-tabset' ||
     request.name === 'reload-spaces' ||
@@ -297,7 +297,9 @@ class BrowserListeners {
       return
     }
 
-    BrowserApi.addIndicatorIcon(tab.id, tab.url)
+    if (!useUiStore().hideIndicatorIcon) {
+      BrowserApi.addIndicatorIcon(tab.id, tab.url)
+    }
   }
 
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {

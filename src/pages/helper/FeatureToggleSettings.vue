@@ -80,10 +80,10 @@ import {
 const settingsStore = useSettingsStore()
 const {handleError} = useNotificationHandler()
 
-const devEnabled = ref<boolean>(settingsStore.isEnabled('dev'))
+const devEnabled = ref<boolean>(useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) || false)
 
 watchEffect(() => {
-  devEnabled.value = settingsStore.isEnabled('dev')
+  devEnabled.value = useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)
 })
 
 const updateSettings = (ident: string, val: boolean) => {

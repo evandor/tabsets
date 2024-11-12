@@ -96,13 +96,17 @@
                 <q-item-section>Open Settings</q-item-section>
               </q-item>
               <q-separator/>
+              <q-item clickable v-close-popup @click="openURL('https://docs.tabsets.net')">
+                Documentation
+              </q-item>
+              <q-separator/>
               <q-item clickable v-close-popup
                       @click="openURL('https://docs.google.com/forms/d/e/1FAIpQLSdUtiKIyhqmNoNkXXzZOEhnzTCXRKT-Ju83SyyEovnfx1Mapw/viewform?usp=pp_url')">
                 Feedback
               </q-item>
-              <q-separator/>
-              <q-item clickable v-close-popup @click="openURL('https://docs.tabsets.net')">
-                Documentation
+              <q-item clickable v-close-popup
+                      @click="openURL('https://github.com/evandor/tabsets/issues')">
+                Issues
               </q-item>
             </q-list>
           </q-menu>

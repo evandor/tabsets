@@ -219,15 +219,12 @@ import TabsetService from "src/tabsets/services/TabsetService";
 import _ from "lodash";
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
-import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import NavigationService from "src/services/NavigationService";
-import {DrawerTabs, ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
+import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {useUtils} from "src/core/services/Utils";
 import Analytics from "src/core/utils/google-analytics";
-import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {useRoute} from "vue-router";
 import {
