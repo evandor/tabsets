@@ -372,7 +372,7 @@ const settingsTooltip = () => {
 const rightButtonClass = () => "q-my-xs q-px-xs q-mr-none"
 
 const dependingOnStates = () =>
-  _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
+  _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), (s:Suggestion) => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
 
 const suggestionDialog = () => {
   doShowSuggestionButton.value = false

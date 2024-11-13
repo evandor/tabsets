@@ -4,4 +4,6 @@ import {bexDom} from 'quasar/wrappers'
 
 export default bexDom((bridge) => {
 
+  //console.log("====>", bridge)
+
 })

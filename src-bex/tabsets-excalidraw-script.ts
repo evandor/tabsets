@@ -12,14 +12,14 @@ export default bexContent((bridge: any) => {
     return
   }
 
-  console.log("tabsets: initializing content script for excalidraw...")
+  console.debug("tabsets: initializing content script for excalidraw...")
 
   // @ts-ignore
   window.contentScriptAnalysisAlredyCalled = true
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request === 'getExcerpt') {
-      console.log("tabsets: got request 'getExcerpt'")
+      console.debug("tabsets: got request 'getExcerpt'")
       const responseMessage = {
         html: "",
         metas: {},
@@ -29,7 +29,7 @@ export default bexContent((bridge: any) => {
           tabsetsTimestamp: LocalStorage.getItem('tabsets_ts')
         }
       }
-      console.log("responseMessage", responseMessage)
+      console.debug("responseMessage", responseMessage)
       sendResponse(responseMessage);
     }
     return true

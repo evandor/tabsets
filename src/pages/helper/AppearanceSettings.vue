@@ -65,6 +65,10 @@
         <q-checkbox v-model="hideIndicatorIcon" label="Hide Icon on websites (upper right) when tracked by tabsets"/>
       </InfoLine>
 
+      <InfoLine label="Switch off content script logging" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+        <q-checkbox v-model="contentScriptLoggingOff" label="No tabset related logging in content scripts"/>
+      </InfoLine>
+
     </div>
 
     <div class="row items-baseline q-ma-md q-gutter-md"
@@ -187,6 +191,7 @@ const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || 
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const hideIndicatorIcon = ref(LocalStorage.getItem('ui.hideIndicatorIcon') || false)
+const contentScriptLoggingOff = ref(LocalStorage.getItem('ui.contentScriptLoggingOff') || false)
 const oldLayout = ref(LocalStorage.getItem('ui.sidepanel.oldLayout') || false)
 
 let suggestionsCounter = 0
@@ -253,6 +258,11 @@ watch(() => fullUrls.value, (a:any,b:any) => {
 watch(() => hideIndicatorIcon.value, (a:any,b:any) => {
   LocalStorage.set('ui.hideIndicatorIcon', hideIndicatorIcon.value)
   sendMsg('settings-changed', {identifier: "ui.hideIndicatorIcon", value: hideIndicatorIcon.value})
+})
+
+watch(() => contentScriptLoggingOff.value, (a:any,b:any) => {
+  LocalStorage.set('ui.contentScriptLoggingOff', contentScriptLoggingOff.value)
+  sendMsg('settings-changed', {identifier: "ui.contentScriptLoggingOff", value: contentScriptLoggingOff.value})
 })
 
 watch(() => oldLayout.value, (a:any,b:any) => {

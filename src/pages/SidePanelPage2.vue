@@ -272,9 +272,6 @@ if (inBexMode()) {
     } else if (message.name === "detail-level-perTabset-changed") {
       console.log("setting list detail perTabset level to ", message.data.level)
       useUiStore().showDetailsPerTabset = message.data.level
-    // } else if (message.name === "fullUrls-changed") {
-    //   console.log("setting fullUrls to ", message.data.value)
-    //   useUiStore().setShowFullUrls(message.data.value)
     } else if (message.name === "settings-changed") {
       console.log(`setting ${message.data.identifier} to ${message.data.value}`)
       switch (message.data.identifier) {
@@ -283,6 +280,9 @@ if (inBexMode()) {
           break;
         case "ui.fullUrls":
           useUiStore().setShowFullUrls(message.data.value)
+          break;
+        case "ui.contentScriptLoggingOff":
+          useUiStore().setContentScriptLoggingOff(message.data.value)
           break;
         default: console.log(`unknown message identifier ${message.data.identifier}`)
       }
