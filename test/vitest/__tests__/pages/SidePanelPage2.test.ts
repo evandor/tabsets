@@ -3,7 +3,7 @@ import {mount, VueWrapper} from '@vue/test-utils';
 import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import ChromeApi from "src/app/BrowserApi";
-import SidePanelPage from "pages/SidePanelPage.vue";
+import SidePanelPage2 from "pages/SidePanelPage2.vue";
 import {useDB} from "src/services/usePersistenceService";
 import {useQuasar} from "quasar";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
@@ -15,7 +15,7 @@ import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 installQuasarPlugin();
 
-describe('SidePanelPage', () => {
+describe('SidePanelPage2', () => {
 
 
   vi.mock("vue-i18n", () => ({
@@ -68,21 +68,21 @@ describe('SidePanelPage', () => {
 
     vi.stubGlobal('chrome', chromeMock);
 
-    wrapper = mount(SidePanelPage);
+    wrapper = mount(SidePanelPage2);
 
   })
 
   it('should be mounted', async () => {
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     console.log("hier", wrapper.html())
-    expect(wrapper.text()).toContain("My Tabsets");
+    expect(wrapper.text()).toContain("how to start?");
     expect(wrapper.text()).not.toContain("search");
   });
 
   it('should show existing tabset', async () => {
     await new CreateTabsetCommand("existing Tabset", []).execute()
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
-    const wrapper = mount(SidePanelPage);
+    const wrapper = mount(SidePanelPage2);
     //console.log("hier", wrapper.html())
     //console.log("hier2", wrapper.text())
     expect(wrapper.html()).toContain("existing Tabset");
