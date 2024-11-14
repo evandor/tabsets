@@ -40,7 +40,7 @@
           {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary" class="cursor-pointer"></q-icon>
         </div>
         <div class="text-body2 ellipsis">
-          {{ tab?.id}}
+          {{ tab?.id }}
         </div>
       </div>
 
@@ -87,14 +87,14 @@
       <div class="col-3 text-left">
 
 
-        <!--        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"-->
-        <!--               @click="showTabDetails"-->
-        <!--               round size="11px"-->
-        <!--               color="primary"-->
-        <!--               flat-->
-        <!--               icon="o_more_horiz">-->
-        <!--          <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>-->
-        <!--        </q-btn>-->
+                <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"
+                       @click="showTabDetails"
+                       round size="11px"
+                       color="primary"
+                       flat
+                       icon="o_more_horiz">
+                  <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>
+                </q-btn>
       </div>
       <div class="col-9 text-right">
 
@@ -227,6 +227,22 @@
             </div>
           </div>
         </template>
+        <template v-else-if="ref.type === TabReferenceType.OPEN_SEARCH">
+          <div class="text-caption text-bold">found Open Search Description:</div>
+<!--          <div class="text-caption">-->
+<!--            {{ ref.data }}-->
+<!--          </div>-->
+          <div>
+            <div class="row" v-for="item in ref.data">
+              <div class="col-10 ellipsis">
+                <q-input dense v-model="opensearchterm" type="text"/>
+              </div>
+              <div class="col">
+                <q-btn dense icon="search"  size="sm" @click="openSearch()"/>
+              </div>
+            </div>
+          </div>
+        </template>
         <template v-else-if="ref.type === TabReferenceType.OPEN_GRAPH">
           <div class="text-caption text-bold">found Open Graph Data:</div>
           <div class="text-caption ellipsis">
@@ -265,7 +281,10 @@
               {{ ref.title }}
             </div>
             <ul>
-              <li v-for="p in ref.data" class="ellipsis" @click="useNavigationService().browserTabFor(p['parent' as keyof object])">{{p['parent' as keyof object]}}</li>
+              <li v-for="p in ref.data" class="ellipsis"
+                  @click="useNavigationService().browserTabFor(p['parent' as keyof object])">
+                {{ p['parent' as keyof object] }}
+              </li>
             </ul>
           </div>
         </template>
@@ -350,6 +369,7 @@ const tab = ref<Tab | undefined>(undefined)
 const pngs = ref<SavedBlob[]>([])
 const htmls = ref<BlobMetadata[]>([])
 const tabId = ref<string | undefined>(undefined)
+const opensearchterm = ref<string | undefined>(undefined)
 
 const tags = ref<string[]>([])
 
@@ -457,8 +477,8 @@ function getHost(urlAsString: string, shorten: Boolean = true): string {
 const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
 
-// const showTabDetails = () =>
-//   NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
+const showTabDetails = () =>
+  NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
 
 const savePng = (tab: Tab | undefined) => {
   if (tab) {
@@ -514,7 +534,8 @@ const linkingHeading = (data: object | undefined) => {
   }
   return data['@type' as keyof object] || 'unknown'
 }
-const linkingParentChain = (data: object | undefined) => {
-  return (data && data['title' as keyof object]) || 'unknown'
+
+const openSearch = () => {
+  useNavigationService().browserTabFor("https://github.com/search?q={searchTerms}&amp;ref=opensearch".replace("{searchTerms}", opensearchterm.value || ''))
 }
 </script>

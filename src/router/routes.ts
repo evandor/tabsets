@@ -211,11 +211,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PlainLayout.vue'),
     children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue')}],
   },
-  // {
-  //   path: '/mainpanel/tab/:id',// TODO combine with Tag page
-  //   component: () => import('layouts/PlainLayout.vue'),
-  //   children: [{path: '', component: () => import('pages/TabPage.vue')}],
-  // },
+  {
+    path: '/mainpanel/tab/:id',// TODO combine with Tag page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/TabPage.vue')}],
+  },
   {
     path: '/mainpanel/suggestions/:suggestionId',
     component: () => import('layouts/PlainLayout.vue'),
