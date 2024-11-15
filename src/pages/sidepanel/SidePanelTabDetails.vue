@@ -413,7 +413,7 @@ watchEffect(() => {
               value: data['metas' as keyof object][k]
             })
           })
-          metaRows.value = _.sortBy(metaRows.value, s => s['name' as keyof object])
+          metaRows.value = _.sortBy(metaRows.value, (s: any) => s['name' as keyof object])
         }
       })
     useSnapshotsService().getMetadataFor(tab.value.id)
@@ -438,7 +438,7 @@ const tabsetChips = (): object[] => {
   const badges: object[] = []
   const url = tab.value?.url
   if (url) {
-    _.forEach(useTabsetService().tabsetsFor(url), ts => badges.push({
+    _.forEach(useTabsetService().tabsetsFor(url), (ts: string) => badges.push({
       label: TabsetService.nameForTabsetId(ts),
       tabsetId: ts,
       encodedUrl: btoa(url || '')

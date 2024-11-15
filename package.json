@@ -1,6 +1,6 @@
 {
   "name": "tabsets.net",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Use tabsets.net to safely keep track of all your tabs and links in the Side Panel, stored locally on your browser",
   "productName": "Tabsets.net",
   "author": "evandor <evandor@gmail.com>",
@@ -60,6 +60,7 @@
     "@sentry/cli": "^2.36.3",
     "@sentry/vite-plugin": "^2.22.4",
     "@types/lodash": "^4.17.7",
+    "@types/mdast": "^4.0.4",
     "@types/pngjs": "^6.0.5",
     "@types/sanitize-html": "^2.13.0",
     "axios": "^1.7.7",
