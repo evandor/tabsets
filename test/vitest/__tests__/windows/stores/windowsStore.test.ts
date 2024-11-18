@@ -146,7 +146,7 @@ describe('WindowsStore', () => {
 
     const window = await windowsDb.getWindow(100)
     if (window) {
-      await useWindowsStore().upsertWindow(window.browserWindow!, "","theTitle")
+      await useWindowsStore().upsertWindow(window.browserWindow!, 100, "theTitle",0)
       const updatedWindow = await windowsDb.getWindow(100)
       expect(updatedWindow?.title).toBe("theTitle")
     } else {
@@ -161,7 +161,7 @@ describe('WindowsStore', () => {
 
     const window = await windowsDb.getWindow(300)
     if (window) {
-      await useWindowsStore().upsertWindow(window.browserWindow!, "","theTitle")
+      await useWindowsStore().upsertWindow(window.browserWindow!, 0,"theTitle")
       await onRemovedListener(300)
       const window300FromDb = await windowsDb.getWindow(300)
       expect(window300FromDb?.id).toBe(300)
