@@ -54,7 +54,6 @@
 import {ref, watch, watchEffect} from "vue";
 import {uid, useQuasar} from "quasar";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import NavigationService from "src/services/NavigationService";
 import _ from "lodash"
@@ -164,12 +163,10 @@ watch(() => selected.value, (currentValue, oldValue) => {
   if (currentValue !== oldValue) {
     const found = nodesToUrl.value.get(currentValue)
     console.log("found", found)
-    NavigationService.openOrCreateTab([found])
+    if (found) {
+      NavigationService.openOrCreateTab([found])
+    }
   }
-})
-
-watchEffect(() => {
-  localStorage.set("bookmarks.expanded", useNotificationsStore().bookmarksExpanded)
 })
 
 watchEffect(() => {

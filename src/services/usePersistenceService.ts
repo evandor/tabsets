@@ -30,15 +30,15 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
   const thumbnailsDb: ThumbnailsPersistence = IndexedDbThumbnailsPersistence
 
-  let localDb = undefined as unknown as PersistenceService
+  //let localDb = undefined as unknown as PersistenceService
   let featuresDb: FeaturesPersistence = undefined as unknown as FeaturesPersistence
   if (quasar) {
-    localDb = new LocalStoragePersistenceService(quasar)
+    //localDb = new LocalStoragePersistenceService(quasar)
     featuresDb = new LocalStorageFeaturesPersistence(quasar)
   }
 
   return {
-    db, localDb, spacesDb,
+    db, spacesDb,
     tabsetsIndexedDb,
     featuresDb,
     snapshotsDb,

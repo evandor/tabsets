@@ -74,7 +74,7 @@
         <span>
         <input
           class="q-ma-none q-pa-none"
-          v-if="useFeaturesStore().hasFeature(FeatureIdent.HTML_SNIPPETS) && useContentStore().currentTabUrl"
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.HTML_SNIPPETS) && useContentStore().getCurrentTabUrl"
           v-model="ignored"
           style="border:1px dotted grey;border-radius:3px;max-width:30px;max-height:20px"
           @drop="drop($event)"/>
@@ -504,7 +504,7 @@ const drop = (evt: any) => {
   evt.preventDefault()
   var text = evt.dataTransfer.getData('text')
   var html = evt.dataTransfer.getData('text/html')
-  const currentTabUrl = useContentStore().currentTabUrl
+  const currentTabUrl = useContentStore().getCurrentTabUrl
   console.log("===>", evt, text, html, currentTabUrl)
   if (currentTabUrl) {
     const existing: Tab | undefined = useTabsetsStore().tabForUrlInSelectedTabset(currentTabUrl!)

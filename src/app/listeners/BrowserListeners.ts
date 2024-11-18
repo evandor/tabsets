@@ -24,7 +24,6 @@ import {useContentService} from "src/content/services/ContentService";
 import {ContentItem} from "src/content/models/ContentItem";
 
 const {
-  saveTabset,
   saveText,
   saveMetaLinksFor,
   saveLinksFor,
@@ -251,14 +250,19 @@ class BrowserListeners {
       if (chromeTab.id && chromeTab.url) {
         try {
           const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
-          useContentStore().currentTabContent = contentRequest['html' as keyof object] || ''
 
-          // updating content in contentstore
+          // updating (transient) content in contentstore
+          useContentStore().setCurrentTabContent(contentRequest['html' as keyof object])
+          useContentStore().setCurrentTabUrl(chromeTab.url)
+
+          // update (persistent) content in content db if exists
           const existing: ContentItem | undefined = await useContentService().getContentFor(chromeTab.url)
-          const dummyTab = new Tab(existing ? existing.id : uid(), BrowserApi.createChromeTabObject(chromeTab.title || '', chromeTab.url))
-          const tokens = ContentUtils.html2tokens(contentRequest['html' as keyof object] || '')
-          useContentService().saveContent(dummyTab, [...tokens].join(" "), contentRequest['metas' as keyof object], chromeTab.title || '', [])
-            .catch((err: any) => console.log("err", err))
+          if (existing) {
+            const dummyTab = new Tab(existing.id, BrowserApi.createChromeTabObject(chromeTab.title || '', chromeTab.url))
+            const tokens = ContentUtils.html2tokens(contentRequest['html' as keyof object] || '')
+            useContentService().saveContent(dummyTab, [...tokens].join(" "), contentRequest['metas' as keyof object], chromeTab.title || '', [])
+              .catch((err: any) => console.log("err", err))
+          }
         } catch (err) {
           //console.log("got error", err)
         } // ignore
@@ -334,6 +338,8 @@ class BrowserListeners {
       }
       const url = tab.url
       if (url) {
+        useContentStore().setCurrentTabUrl(tab.url)
+
         useTabsetService().urlWasActivated(url)
 
         // matching tabs for url

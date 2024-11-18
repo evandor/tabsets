@@ -2,7 +2,6 @@ import ChromeListeners from "src/app/listeners/BrowserListeners";
 import ChromeBookmarkListeners from "src/services/ChromeBookmarkListeners";
 import BookmarksService from "src/bookmarks/services/BookmarksService";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import {useNotificationsStore} from "stores/notificationsStore";
 import {useDB} from "src/services/usePersistenceService";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import tabsetService from "src/tabsets/services/TabsetService";
@@ -94,17 +93,12 @@ class AppService {
     console.log("")
 
     // init services
-    await useNotificationsStore().initialize(useDB(undefined).db)
-    console.log("")
-
     await useSuggestionsStore().init()
     console.debug('')
 
     tabsetService.setLocalStorage(localStorage)
 
     await this.initCoreSerivces(quasar, this.router)
-
-    useNotificationsStore().bookmarksExpanded = quasar.localStorage.getItem("bookmarks.expanded") || []
 
   }
 

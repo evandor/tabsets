@@ -9,7 +9,10 @@
           <div class="col-12 text-subtitle1">
             <div class="q-ml-md q-mt-sm">
               <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-                <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{ title() }}</div>
+                <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{
+                    title()
+                  }}
+                </div>
               </template>
               <template v-else>
                 <div class="text-caption">{{ title() }}</div>
@@ -22,22 +25,20 @@
 
         </div>
 
-        <div class="col-7 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none">
+        <div class="col-7 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none q-pt-sm">
 
           <slot name="iconsRight">
             <SidePanelToolbarTabNavigationHelper/>
-            <div class="q-mt-md q-ma-none q-qa-none">
-              <q-btn outline dense
-                     icon="add"
-                     label="Collection"
-                     color="primary"
-                     size="sm"
-                     :class="{ shake: annimateNewTabsetButton }"
-                     data-testid="addTabsetBtn"
-                     @click="openNewTabsetDialog()"
-                     class="q-ma-none q-pl-xs q-pr-sm q-py-xs"
-                     name="o_bookmark_add"/>
-            </div>
+            <q-btn outline dense
+                   icon="add"
+                   label="Collection"
+                   color="primary"
+                   size="sm"
+                   :class="{ shake: annimateNewTabsetButton }"
+                   data-testid="addTabsetBtn"
+                   @click="openNewTabsetDialog()"
+                   class="q-ma-none q-pl-xs q-pr-sm q-py-xs"
+                   name="o_bookmark_add"/>
           </slot>
         </div>
       </div>
@@ -147,7 +148,6 @@ const openNewTabsetDialog = () => {
     }
   })
 }
-
 
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
