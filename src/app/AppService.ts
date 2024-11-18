@@ -33,7 +33,6 @@ import {SpaceInfo} from "src/core/models/SpaceInfo";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import IndexedDbRequestPersistence from "src/requests/persistence/IndexedDbRequestPersistence";
 import {useRequestsService} from "src/requests/services/RequestsService";
-import {useNavigationService} from "src/navigation/services/NavigationService";
 
 class AppService {
 

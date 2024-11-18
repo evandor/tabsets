@@ -5,7 +5,6 @@ import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
 import ContentUtils from "src/core/utils/ContentUtils";
-import {EMAIL_LINK_REDIRECT_DOMAIN} from "boot/constants";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {Tab} from "src/tabsets/models/Tab";
@@ -21,9 +20,8 @@ import {SidePanelViews} from "src/models/SidePanelViews";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 import BrowserApi from "src/app/BrowserApi";
 import {useContentStore} from "src/content/stores/contentStore";
-import {ExcalidrawStorage} from "src/tabsets/actionHandling/model/ExcalidrawStorage";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand";
+import {useContentService} from "src/content/services/ContentService";
+import {ContentItem} from "src/content/models/ContentItem";
 
 const {
   saveTabset,
@@ -250,11 +248,20 @@ class BrowserListeners {
     if (info.status === "complete") {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
 
-      if (chromeTab.id) {
+      if (chromeTab.id && chromeTab.url) {
         try {
           const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
-          useContentStore().setBrowserTabData(chromeTab, contentRequest)
-        } catch (err) {} // ignore
+          useContentStore().currentTabContent = contentRequest['html' as keyof object] || ''
+
+          // updating content in contentstore
+          const existing: ContentItem | undefined = await useContentService().getContentFor(chromeTab.url)
+          const dummyTab = new Tab(existing ? existing.id : uid(), BrowserApi.createChromeTabObject(chromeTab.title || '', chromeTab.url))
+          const tokens = ContentUtils.html2tokens(contentRequest['html' as keyof object] || '')
+          useContentService().saveContent(dummyTab, [...tokens].join(" "), contentRequest['metas' as keyof object], chromeTab.title || '', [])
+            .catch((err: any) => console.log("err", err))
+        } catch (err) {
+          //console.log("got error", err)
+        } // ignore
       }
 
       this.handleUpdateInjectScripts(info, chromeTab)
@@ -307,7 +314,7 @@ class BrowserListeners {
     console.debug("onRemoved tab event: ", number, info)
     //useWindowsStore().refreshCurrentWindows()
     useWindowsStore().refreshTabsetWindow(info.windowId)
-    useContentStore().removeBrowserTabData(number)
+    //useContentStore().removeBrowserTabData(number)
     //sendMsg('window-updated', {initiated: "ChromeListeners#onRemoved"})
   }
 
@@ -319,20 +326,7 @@ class BrowserListeners {
   async onActivated(info: chrome.tabs.TabActiveInfo) {
     this.eventTriggered()
     console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
-
     await setCurrentTab()
-
-    if (info.tabId) {
-      const found = useContentStore().tabActivated(info.tabId)
-      if (!found) {
-        try {
-          const contentRequest = await chrome.tabs.sendMessage(info.tabId, 'getExcerpt')
-          useContentStore().currentTabContent = contentRequest['html' as keyof object] || ''
-        } catch (err) {
-          // ignore
-        }
-      }
-    }
 
     chrome.tabs.get(info.tabId, tab => {
       if (chrome.runtime.lastError) {
@@ -551,7 +545,7 @@ class BrowserListeners {
     const currentTS = useTabsetsStore().getCurrentTabset
     if (sender.tab && currentTS) {
       const url = sender.tab.url || ''
-      const t = _.find(currentTS.tabs, (t:Tab) => t.url === url)
+      const t = _.find(currentTS.tabs, (t: Tab) => t.url === url)
       if (!t) {
         sendResponse({error: 'could not find tab for url ' + url})
         return

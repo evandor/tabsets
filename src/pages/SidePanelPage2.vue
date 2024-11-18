@@ -128,19 +128,6 @@ watchEffect(() => {
   }
 })
 
-const td = () => {
-  const tabData = useContentStore().tabData
-  let res = ''
-  for (const k of tabData.keys()) {
-    const v = tabData.get(k)
-    res += "<br>" + k + ": " + v?.toString()
-  }
-  // if (tabData.keys()) {
-  //   return tabData.keys().map(k => k + ": " + tabData.get(k)?.toString())
-  // }
-  return res
-}
-
 const getTabsetOrder =
   [
     function (o: Tabset) {
