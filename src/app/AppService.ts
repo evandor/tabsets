@@ -40,7 +40,7 @@ class AppService {
 
   async init(quasar: any, router: Router, forceRestart = false) {
 
-    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, router set=${router !== undefined}`,"font-weight:bold")
+    console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, router set=${router !== undefined}`, "font-weight:bold")
 
     if (this.initialized && !forceRestart) {
       console.debug("stopping AppService initialization; already initialized and not forcing restart")
@@ -85,7 +85,7 @@ class AppService {
     await useRequestsService().init(IndexedDbRequestPersistence)
     console.debug('')
 
-    await useSearchStore().init().catch((err:any) => console.error(err))
+    await useSearchStore().init().catch((err: any) => console.error(err))
     console.debug('')
 
     // init db
@@ -148,7 +148,7 @@ class AppService {
      * no persistence for service!
      */
 
-    watch(useSpacesStore().spaces, (newSpaces:Map<string,any>) => {
+    watch(useSpacesStore().spaces, (newSpaces: Map<string, any>) => {
       const spacesInfo = _.map([...newSpaces.values()], (ts: any) => new SpaceInfo(ts.id, ts.name))
       useEntityRegistryStore().spacesRegistry = spacesInfo
     })
@@ -156,7 +156,7 @@ class AppService {
     console.debug('')
 
     const tabsetsStore = useTabsetsStore()
-    watch(tabsetsStore.tabsets, (newTabsets:Map<string,any>) => {
+    watch(tabsetsStore.tabsets, (newTabsets: Map<string, any>) => {
       const tsInfo = _.map([...newTabsets.values()], (ts: any) => new TabsetInfo(ts.id, ts.name, ts.window, ts.tabs.length))
       useEntityRegistryStore().tabsetRegistry = tsInfo
     })
@@ -172,7 +172,6 @@ class AppService {
     await useContentService().populateSearch(existingUrls)
     await useTabsetService().populateSearch()
     console.debug('')
-
 
     ChromeApi.init(router)
 

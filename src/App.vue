@@ -9,7 +9,6 @@ import AppService from "src/app/AppService";
 import {EventEmitter} from "events";
 import {useRoute, useRouter} from "vue-router";
 import {useLogger} from "src/services/Logger";
-import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useSettingsStore} from "stores/settingsStore";
 import {useAppStore} from "stores/appStore";
 import {usePermissionsStore} from "stores/usePermissionsStore";

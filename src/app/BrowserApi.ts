@@ -108,6 +108,8 @@ class BrowserApi {
     if (process.env.MODE !== 'bex') {
       return
     }
+
+    console.log(" building context menu", caller)
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(
         () => {

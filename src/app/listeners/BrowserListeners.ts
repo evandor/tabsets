@@ -30,7 +30,7 @@ const {
   addToTabsetId
 } = useTabsetService()
 
-const {sanitize, sendMsg, inBexMode} = useUtils()
+const {sanitize, inBexMode} = useUtils()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
