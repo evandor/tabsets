@@ -1,4 +1,4 @@
-import {SidePanelViews} from "src/models/SidePanelViews";
+import {SidePanelViews} from "src/app/models/SidePanelViews";
 
 export class SidePanel {
 

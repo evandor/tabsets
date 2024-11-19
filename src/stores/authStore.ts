@@ -14,15 +14,7 @@ export enum AccessItem {
  */
 export const useAuthStore = defineStore('auth', () => {
 
-  // let storage = null as unknown as PersistenceService
-  //
-  // const authenticated = ref(false)
   const user = ref<any>(null)
-  // const authRequest = ref<string>(null as unknown as string)
-  // const account = ref<Account | undefined>(undefined)
-  //
-  // const products = ref<string[]>([])
-
 
   // --- init ---
   async function initialize(ps: PersistenceService) {

@@ -107,7 +107,7 @@ import {useQuasar} from "quasar";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {SidePanelViews} from "src/models/SidePanelViews";
+import {SidePanelViews} from "src/app/models/SidePanelViews";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 import FilterWithTransitionHelper from "src/core/widget/FilterWithTransitionHelper.vue";

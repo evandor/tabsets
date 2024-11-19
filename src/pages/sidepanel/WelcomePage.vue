@@ -73,7 +73,7 @@ import DialogButton from "src/core/dialog/buttons/DialogButton.vue";
 import {LocalStorage, openURL} from "quasar";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {SidePanelViews} from "src/models/SidePanelViews";
+import {SidePanelViews} from "src/app/models/SidePanelViews";
 
 const {t} = useI18n()
 const router = useRouter()

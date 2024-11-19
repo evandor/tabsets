@@ -70,36 +70,6 @@ class JsUtils {
         }
     }
 
-    // async getOrCreateClientId() {
-    //     if (!chrome) {
-    //         return Promise.resolve("")
-    //     }
-    //     const result = await browser.storage.local.get('clientId');
-    //     let clientId = result.clientId;
-    //     if (!clientId) {
-    //         clientId = self.crypto.randomUUID();
-    //         await browser.storage.local.set({clientId});
-    //     }
-    //     return clientId;
-    // }
-
-    // gaEvent(name: string, params: object) {
-    //     const GA_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
-    //     const MEASUREMENT_ID = "G-XBYXVZ86J1";
-    //     const API_SECRET = "1N_ivSMnT2GHqZMcoXJDTw";
-    //     this.getOrCreateClientId()
-    //         .then(clientId => {
-    //             fetch(`${GA_ENDPOINT}?measurement_id=${MEASUREMENT_ID}&api_secret=${API_SECRET}`,
-    //                 {
-    //                     method: 'POST',
-    //                     body: JSON.stringify({
-    //                         client_id: clientId,
-    //                         events: [{name: name, params: params,}],
-    //                     }),
-    //                 }
-    //             );
-    //         })
-    // }
 
 }
 

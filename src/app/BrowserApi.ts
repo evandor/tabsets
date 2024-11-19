@@ -21,11 +21,11 @@ function runHousekeeping() {
 
   console.log("housekeeping now...")
 
-  persistenceService.cleanUpRequests()
+  //persistenceService.cleanUpRequests()
 
-  persistenceService.cleanUpMetaLinks()
+  //persistenceService.cleanUpMetaLinks()
 
-  persistenceService.cleanUpLinks()
+  //persistenceService.cleanUpLinks()
 
   // TODO
   //TabService.checkScheduled()

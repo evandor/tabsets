@@ -13,10 +13,12 @@ Each module might be dependend on the "core" submodule
 
 ```mermaid
 classDiagram
-%%  Core <-- Features
+  UI <-- Features
 
   Features <-- Bookmarks
   UI <-- Bookmarks
+
+  UI <-- Core
 
   Features <-- Windows
 %%  Tabsets <-- Windows
@@ -46,6 +48,13 @@ classDiagram
   Tabsets <-- Opentabs
   Features <-- Opentabs
 
+  Tabsets <-- Notes
+  Snapshots <-- Notes
+
+  Tabsets <-- Requests
+
+  UI <-- Search
+  Tabsets <-- Search
 
 ```
 

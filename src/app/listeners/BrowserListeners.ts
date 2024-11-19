@@ -16,7 +16,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {SidePanelViews} from "src/models/SidePanelViews";
+import {SidePanelViews} from "src/app/models/SidePanelViews";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 import BrowserApi from "src/app/BrowserApi";
 import {useContentStore} from "src/content/stores/contentStore";
@@ -258,9 +258,8 @@ class BrowserListeners {
           // update (persistent) content in content db if exists
           const existing: ContentItem | undefined = await useContentService().getContentFor(chromeTab.url)
           if (existing) {
-            const dummyTab = new Tab(existing.id, BrowserApi.createChromeTabObject(chromeTab.title || '', chromeTab.url))
             const tokens = ContentUtils.html2tokens(contentRequest['html' as keyof object] || '')
-            useContentService().saveContent(dummyTab, [...tokens].join(" "), contentRequest['metas' as keyof object], chromeTab.title || '', [])
+            useContentService().saveContent(existing.id, chromeTab.url, [...tokens].join(" "), contentRequest['metas' as keyof object], chromeTab.title || '', [])
               .catch((err: any) => console.log("err", err))
           }
         } catch (err) {

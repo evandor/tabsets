@@ -49,7 +49,7 @@ import Analytics from "src/core/utils/google-analytics";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
-import {SidePanelViews} from "src/models/SidePanelViews";
+import {SidePanelViews} from "src/app/models/SidePanelViews";
 
 const showOnlyFolders = ref(true)
 
