@@ -176,7 +176,7 @@ import {useRoute, useRouter} from "vue-router";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import NavigationService from "src/services/NavigationService";
 import {openURL, uid, useQuasar} from "quasar";
-import {useUtils} from "src/core/services/Utils";
+import {useUtils} from "src/core/services/Utils"
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash";
@@ -476,7 +476,7 @@ const calcWindowHolderRows = (): WindowHolder[] => {
 
 const windowIsManaged = (windowName: string) => {
   //console.log("managed?", tabsetsMangedWindows.value, windowName)
-  return _.find(tabsetsMangedWindows.value, tmw => tmw['label' as keyof object] === windowName) !== undefined
+  return _.find(tabsetsMangedWindows.value, (tmw:any) => tmw['label' as keyof object] === windowName) !== undefined
 }
 
 const saveAsTabset = (windowId: number, name: string) => {
