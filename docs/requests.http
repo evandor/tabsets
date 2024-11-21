@@ -1,6 +1,9 @@
 ### GET
 HEAD https://www.chefkoch.de/rezepte/1338991238751459/Knusprige-Bratkartoffeln-nach-Muttis-Rezept.html
 
+### GET
+GET https://rss.reddit.com/r/rss/comments/14c4p42/feed_reader_that_supports_reddit_comments/
+
 
 ### GET2
 HEAD https://www.dkb.de/banking

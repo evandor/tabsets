@@ -1,6 +1,5 @@
 import _ from "lodash";
 import {uid} from "quasar";
-import {MetaLink} from "src/models/MetaLink";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
@@ -25,7 +24,6 @@ import {ContentItem} from "src/content/models/ContentItem";
 
 const {
   saveText,
-  saveMetaLinksFor,
   saveLinksFor,
   addToTabsetId
 } = useTabsetService()
@@ -238,19 +236,19 @@ class BrowserListeners {
 
     const selfUrl = chrome.runtime.getURL("")
     if (chromeTab.url?.startsWith(selfUrl)) {
-      console.debug(`onUpdated:   tab ${number}: >>> .url starts with '${selfUrl}' <<<`)
+      console.debug(`onUpdated:   tab ${number}: >>> .url starts with '${selfUrl}'`)
       return
     }
 
     this.eventTriggered()
 
     if (info.status === "complete") {
-      console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)} <<<`)
+      console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)}`)
 
       if (chromeTab.id && chromeTab.url) {
         try {
           const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
-
+          console.log("got", contentRequest['html' as keyof object])
           // updating (transient) content in contentstore
           useContentStore().setCurrentTabContent(contentRequest['html' as keyof object])
           useContentStore().setCurrentTabUrl(chromeTab.url)
@@ -328,7 +326,7 @@ class BrowserListeners {
 
   async onActivated(info: chrome.tabs.TabActiveInfo) {
     this.eventTriggered()
-    console.debug(`onActivated: tab ${info.tabId} activated: >>> ${JSON.stringify(info)}`)
+    console.debug(`onActivated: tab ${info.tabId}: >>> ${JSON.stringify(info)}`)
     await setCurrentTab()
 
     chrome.tabs.get(info.tabId, tab => {
@@ -458,17 +456,17 @@ class BrowserListeners {
   private handleHtml2Links(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     if (sender.tab) {
       console.debug("handleHtml2Links")
-      saveMetaLinksFor(sender.tab, request.links)
-      saveLinksFor(sender.tab, request.anchors)
-
-      if (useFeaturesStore().hasFeature(FeatureIdent.RSS)) {
-        request.links.forEach((metaLink: MetaLink) => {
-          if ("application/rss+xml" === metaLink.type) {
-            console.log("hier!!!", metaLink)
-            useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "An RSS Link was found in one of your tabs", metaLink.href, SuggestionType.RSS))
-          }
-        })
-      }
+      // saveMetaLinksFor(sender.tab, request.links)
+      // saveLinksFor(sender.tab, request.anchors)
+      //
+      // if (useFeaturesStore().hasFeature(FeatureIdent.RSS)) {
+      //   request.links.forEach((metaLink: MetaLink) => {
+      //     if ("application/rss+xml" === metaLink.type) {
+      //       console.log("hier!!!", metaLink)
+      //       useSuggestionsStore().addSuggestion(new Suggestion(uid(), metaLink.title || 'Found RSS Feed', "An RSS Link was found in one of your tabs", metaLink.href, SuggestionType.RSS))
+      //     }
+      //   })
+      // }
     }
     sendResponse({html2links: 'done'});
   }

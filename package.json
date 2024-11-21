@@ -56,6 +56,7 @@
     "@intlify/unplugin-vue-i18n": "^4.0.0",
     "@mozilla/readability": "^0.5.0",
     "@quasar/extras": "^1.16.12",
+    "@rowanmanning/feed-parser": "^1.1.0",
     "@sentry/browser": "^8.32.0",
     "@sentry/cli": "^2.36.3",
     "@sentry/vite-plugin": "^2.22.4",
