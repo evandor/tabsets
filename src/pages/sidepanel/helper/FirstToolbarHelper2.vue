@@ -110,6 +110,7 @@ import {ActionHandlerButtonClickedHolder} from "src/tabsets/actionHandling/model
 import {useActionHandlers} from "src/tabsets/actionHandling/ActionHandlers";
 import {Tabset} from "src/tabsets/models/Tabset";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
 
 const {t} = useI18n({useScope: 'global'})
 
@@ -193,9 +194,16 @@ const title = (): string => {
   // return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 
+function getActiveFolder(tabset: Tabset) {
+  return tabset.folderActive
+    ? useTabsetService().findFolder([tabset], tabset.folderActive)
+    : undefined
+}
+
 const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClickedHolder, folder?: Tabset) => {
-  console.log(`button clicked: tsId=${tabset.id}, folderId=${folder?.id}, args=...`)
-  await useActionHandlers(undefined).handleClick(tabset, currentChromeTab.value!, args, folder)
+  const useFolder: Tabset | undefined = folder ? folder : getActiveFolder(tabset)
+  console.log(`button clicked: tsId=${tabset.id}, folderId=${useFolder?.id}, args=...`)
+  await useActionHandlers(undefined).handleClick(tabset, currentChromeTab.value!, args, useFolder)
 }
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
