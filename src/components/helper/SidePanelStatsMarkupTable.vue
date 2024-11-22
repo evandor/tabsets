@@ -69,13 +69,10 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {onMounted, ref, watch, watchEffect} from "vue";
 import {date, useQuasar} from "quasar";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {useSettingsStore} from "stores/settingsStore";
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import NavigationService from "src/services/NavigationService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {FeatureIdent} from "src/app/models/FeatureIdent";
 
 const localstorage = useQuasar().localStorage
 

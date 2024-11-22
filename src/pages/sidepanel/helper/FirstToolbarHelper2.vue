@@ -34,9 +34,17 @@
                   <div class="text-caption" @click="router.push('/sidepanel/collections')">{{ title() }}</div>
                 </template>
                 <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
-                  {{ currentTabset?.name }}
-                  <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
-                  <q-tooltip class="tooltip-small" :delay="5000" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">{{currentTabset?.id}}</q-tooltip>
+                  <template v-if="currentTabset">
+                    {{ currentTabset?.name }}
+                    <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
+                    <q-tooltip class="tooltip-small" :delay="5000" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">{{currentTabset?.id}}</q-tooltip>
+                  </template>
+                  <template v-else>
+                    <q-spinner
+                      color="primary"
+                      size="1em"
+                    />
+                  </template>
                 </div>
               </div>
             </div>

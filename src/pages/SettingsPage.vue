@@ -36,7 +36,7 @@
 
   <div v-if="tab === 'appearance'">
 
-   <AppearanceSettings />
+    <AppearanceSettings />
 
   </div>
 
@@ -225,12 +225,7 @@ import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import {useUtils} from "src/core/services/Utils";
 import Analytics from "src/core/utils/google-analytics";
-import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {useRoute} from "vue-router";
-import {
-  STRIP_CHARS_IN_USER_INPUT,
-  TITLE_IDENT
-} from "boot/constants";
 import FeatureToggleSettings from "pages/helper/FeatureToggleSettings.vue";
 import {useI18n} from "vue-i18n";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -264,7 +259,6 @@ const state = reactive({
   val: JSON.stringify(searchIndexAsJson),
   data: searchIndexAsJson
 })
-
 
 const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
 const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
@@ -312,7 +306,7 @@ const archivedTabsets = () => {
 
 const unarchive = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
-    .then((res) => {
+    .then((res:any) => {
       sendMsg('reload-tabset', {tabsetId: tabset.id})
     })
 

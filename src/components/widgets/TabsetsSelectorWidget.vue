@@ -47,26 +47,21 @@
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
-import {useRouter} from "vue-router";
-import {useQuasar} from "quasar";
 import _ from "lodash";
-import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/app/models/SidePanelViews";
+import {useQuasar} from "quasar";
 
-const spacesStore = useSpacesStore()
-const router = useRouter()
 const $q = useQuasar()
+const spacesStore = useSpacesStore()
 
 const tabsetsOptions = ref<object[]>([])
 
@@ -78,9 +73,9 @@ watchEffect(() => {
   let tabsets = [...useTabsetsStore().tabsets.values()]
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
-      tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
+      tabsets = _.filter(tabsets, (ts:Tabset) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
     } else {
-      tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0)
+      tabsets = _.filter(tabsets, (ts:Tabset) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0)
     }
   }
   tabsetsOptions.value = _.map(_.sortBy(_.filter(tabsets, (ts: Tabset) =>
@@ -88,13 +83,13 @@ watchEffect(() => {
       ts.status !== TabsetStatus.ARCHIVED &&
       ts.status !== TabsetStatus.DELETED),
     [
-      function (o) {
+      function (o:any) {
         return o.status === TabsetStatus.FAVORITE ? 0 : 1
       },
-      function (o) {
+      function (o:any) {
         return o.name.toLowerCase()
       }
-    ]), (key) => {
+    ]), (key:any) => {
     return {id: key.id, label: key.name, type: key.type, count: key.tabs.length}
   })
 })
@@ -132,24 +127,5 @@ const openEditTabsetDialog = () => {
   })
 }
 
-const switchTabset = (ts: any) => {
-  console.log("settings tabset to ", ts)
-  useCommandExecutor()
-    .execute(new SelectTabsetCommand(ts.id))
-    .then((res: ExecutionResult<Tabset | undefined>) => {
-      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
-      if (!props.fromPanel) {
-        router.push("/tabsets/" + ts.id)
-      }
-    })
-}
-
-const tabsetsWithTypes = (types: TabsetType[]) => {
-  let tabsets = [...useTabsetsStore().tabsets.values()]
-  return _.sortBy(
-    _.filter(tabsets, (ts: Tabset) =>
-      types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),
-    ['name'])
-}
 
 </script>

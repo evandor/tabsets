@@ -65,7 +65,6 @@ import _ from "lodash"
 import {useQuasar} from "quasar";
 import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import TabsetService from "src/tabsets/services/TabsetService";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
@@ -88,9 +87,9 @@ const tabsets = ():Tabset[] => {
   let tabsets = [...useTabsetsStore().tabsets.values()]
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
-      tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
+      tabsets = _.filter(tabsets, (ts:Tabset) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0)
     } else {
-      tabsets = _.filter(tabsets, ts => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0)
+      tabsets = _.filter(tabsets, (ts:Tabset) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0)
     }
   }
   return _.sortBy(_.filter(tabsets, (ts: Tabset) =>
@@ -98,10 +97,10 @@ const tabsets = ():Tabset[] => {
       ts.status !== TabsetStatus.ARCHIVED &&
       ts.status !== TabsetStatus.DELETED),
     [
-      function (o) {
+      function (o:any) {
         return o.status === TabsetStatus.FAVORITE ? 0 : 1
       },
-      function (o) {
+      function (o:any) {
         return o.name.toLowerCase()
       }
     ])
@@ -113,20 +112,6 @@ const tabsetsWithTypes = (types: TabsetType[]) => {
     _.filter(tabsets, (ts: Tabset) =>
       types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),
     ['name'])
-}
-
-const onDrop = (evt: DragEvent, tabsetId: string) => {
-  console.log("onDrop", evt, tabsetId)
-  if (evt.dataTransfer && tabsetId) {
-    const tabId = evt.dataTransfer.getData('text/plain')
-    TabsetService.moveToTabset(tabId, tabsetId)
-  } else {
-    console.log("got error dropping tab", tabsetId)
-  }
-}
-
-const tabsetLabel = (tabset: Tabset) => {
-  return tabset.tabs?.length > 1 ? tabset.name + ' (' + tabset.tabs?.length + ' tabs)' : tabset.name + ' (' + tabset.tabs?.length + ' tab)'
 }
 
 const addTabset = () => $q.dialog({

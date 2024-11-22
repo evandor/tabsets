@@ -47,7 +47,7 @@
           </q-img>
         </div>
         <div class="col-10 text-body1 ellipsis">
-          {{ getHost(selectedTab?.url, true) }}
+          {{ getHost(selectedTab!.url || '', true) }}
         </div>
         <div class="col-12 text-body2 ellipsis">
           {{ selectedTab?.title }}

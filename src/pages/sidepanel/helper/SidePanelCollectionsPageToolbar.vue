@@ -9,10 +9,7 @@
           <div class="col-12 text-subtitle1">
             <div class="q-ml-md q-mt-sm">
               <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-                <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{
-                    title()
-                  }}
-                </div>
+                <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{ title() }}</div>
               </template>
               <template v-else>
                 <div class="text-caption">{{ title() }}</div>
@@ -62,8 +59,6 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {SidePanelViews} from "src/app/models/SidePanelViews";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
-import {ActionHandlerButtonClickedHolder} from "src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder";
-import {useActionHandlers} from "src/tabsets/actionHandling/ActionHandlers";
 import {Tabset} from "src/tabsets/models/Tabset";
 
 const {t} = useI18n({useScope: 'global'})
@@ -148,7 +143,6 @@ const openNewTabsetDialog = () => {
     }
   })
 }
-
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
 

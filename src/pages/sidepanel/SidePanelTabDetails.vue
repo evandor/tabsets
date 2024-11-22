@@ -53,7 +53,7 @@
       <div class="col-7 text-right">
         <q-chip v-for="chip in tabsetChips()"
                 class="cursor-pointer q-ml-xs" size="8px" clickable icon="tab" @click="openTabset(chip)">
-          {{ chip.label }}
+          {{ chip['label' as keyof object] }}
         </q-chip>
       </div>
     </div>
@@ -110,7 +110,6 @@
   <q-list>
 
     <q-expansion-item label="Tags" :default-opened="true">
-
       <q-card>
         <q-card-section>
           <q-select
@@ -159,7 +158,7 @@
               </div>
             </div>
             <div class="row q-mx-sm" v-for="metaRow in metaRows">
-              <div class="col-5 text-caption text-bold">{{ metaRow.name }}</div>
+              <div class="col-5 text-caption text-bold">{{ metaRow['name' as keyof object] }}</div>
               <div class="col-7 text-right text-caption ellipsis">
                 {{ metaRow }}
                 <q-tooltip>{{ metaRow }}</q-tooltip>
@@ -229,16 +228,16 @@
         </template>
         <template v-else-if="ref.type === TabReferenceType.OPEN_SEARCH">
           <div class="text-caption text-bold">found Open Search Description:</div>
-<!--          <div class="text-caption">-->
-<!--            {{ ref.data }}-->
-<!--          </div>-->
+          <!--          <div class="text-caption">-->
+          <!--            {{ ref.data }}-->
+          <!--          </div>-->
           <div>
-            <div class="row" v-for="item in ref.data">
+            <div class="row" v-if="ref.data">
               <div class="col-10 ellipsis">
                 <q-input dense v-model="opensearchterm" type="text"/>
               </div>
               <div class="col">
-                <q-btn dense icon="search"  size="sm" @click="openSearch()"/>
+                <q-btn dense icon="search" size="sm" @click="openSearch()"/>
               </div>
             </div>
           </div>
@@ -344,15 +343,15 @@ import {formatDistance} from "date-fns";
 import NavigationService from "src/services/NavigationService";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
-import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {SavedBlob} from "src/snapshots/models/SavedBlob";
 import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
 import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
-import {TabReferenceType} from "src/content/models/TabReference";
 import {useNavigationService} from "src/core/services/NavigationService";
 import {useQuasar} from "quasar";
+import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
+import {TabReferenceType} from "src/content/models/TabReference";
 
 const {inBexMode} = useUtils()
 
@@ -395,7 +394,7 @@ watchEffect(() => {
     useThumbnailsService().getThumbnailFor(tab.value.url)
       .then(data => {
         if (data) {
-          thumbnail.value = data.thumbnail
+          thumbnail.value = data['thumbnail' as keyof object]
         } else {
           thumbnail.value = ''
         }
@@ -406,7 +405,7 @@ watchEffect(() => {
           content.value = data['content' as keyof object]
           //metas.value = data['metas' as keyof object]
           metaRows.value = []
-          _.forEach(Object.keys(data['metas' as keyof object]), k => {
+          _.forEach(Object.keys(data['metas' as keyof object]), (k:any) => {
             //console.log("k", k, data.metas[k])
             metaRows.value.push({
               name: k,

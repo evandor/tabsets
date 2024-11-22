@@ -67,14 +67,8 @@ import {DeactivateFeatureCommand} from "src/features/commands/DeactivateFeatureC
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {
-  BrowserClient,
-  defaultStackParser,
-  feedbackIntegration,
-  getDefaultIntegrations,
-  makeFetchTransport,
   captureMessage,
-  captureFeedback,
-  Scope
+  captureFeedback
 } from "@sentry/browser";
 
 const settingsStore = useSettingsStore()
