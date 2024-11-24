@@ -24,7 +24,6 @@
             <q-card-section class="q-pb-none">
               <q-input v-model="tabsetName"
                        class="input-box"
-                       dense
                        autofocus
                        ref="tabsetNameRef"
                        :error-message="t('no_special_chars_and_length')"

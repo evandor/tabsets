@@ -57,7 +57,7 @@ import _ from "lodash"
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {useRouter} from "vue-router";
 import {useUtils} from "src/core/services/Utils";
-import {LocalStorage, useQuasar} from "quasar";
+import {LocalStorage} from "quasar";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
@@ -77,7 +77,6 @@ import StartingHint from "pages/widgets/StartingHint.vue";
 import SidePanelNotesView from "src/notes/views/sidepanel/SidePanelNotesView.vue";
 import SidePanelFoldersView from "src/tabsets/views/sidepanel/SidePanelFoldersView.vue";
 import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
-import {useContentStore} from "../content/stores/contentStore";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -271,7 +270,8 @@ if (inBexMode()) {
         case "ui.contentScriptLoggingOff":
           useUiStore().setContentScriptLoggingOff(message.data.value)
           break;
-        default: console.log(`unknown message identifier ${message.data.identifier}`)
+        default:
+          console.log(`unknown message identifier ${message.data.identifier}`)
       }
     } else if (message.name === "reload-suggestions") {
       console.log("reload-suggestions message received")
