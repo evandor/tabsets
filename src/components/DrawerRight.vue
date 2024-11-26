@@ -16,6 +16,7 @@
         <q-icon
           v-if="!route.path.startsWith('/sidepanel/')"
           class="cursor-pointer" size="2em"
+          id="closeRightDrawerIcon"
           name="chevron_right" @click="closeRightDrawer()">
           <q-tooltip class="tooltip">Hide this view</q-tooltip>
         </q-icon>

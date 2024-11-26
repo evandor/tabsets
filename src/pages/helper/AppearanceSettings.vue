@@ -159,6 +159,18 @@
       </div>
     </div>
 
+    <div class="row items-baseline q-ma-md q-gutter-md">
+      <div class="col-3">
+        Sidebar not opened?
+      </div>
+      <div class="col-3">
+        CLick here to open the Side Panel
+      </div>
+      <div class="col q-ma-xl">
+        <span class="text-blue cursor-pointer" id="openSidePanelSpan" @click="openSidePanel()">Open Side Panel</span>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -287,5 +299,19 @@ const simulateStaticSuggestion = () => {
   useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
 }
 
+const openSidePanel = async () => {
+  // @ts-ignore
+  if (chrome.sidePanel) {
+    const ts:chrome.tabs.Tab[] = await chrome.tabs.query({active: true, currentWindow: true})
+    // @ts-ignore
+    await chrome.sidePanel.open({windowId: ts[0].windowId});
+    // @ts-ignore
+    await chrome.sidePanel.setOptions({
+      path: 'www/index.html',
+      enabled: true
+    });
+
+  }
+}
 
 </script>

@@ -23,6 +23,7 @@
             </q-card-section>
             <q-card-section class="q-pb-none">
               <q-input v-model="tabsetName"
+                       id="addTabsetSubmitBtn"
                        class="input-box"
                        autofocus
                        ref="tabsetNameRef"
@@ -30,7 +31,7 @@
                        :error="!newTabsetNameIsValid()"
                        data-testid="newTabsetName"
                        @keydown.enter="addFirstTabset()"
-                       hint="e.g. Music, Holidays,..."
+                       hint="e.g. Music, Holidays, News..."
                        :label="t('tabset_name')"/>
             </q-card-section>
             <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none q-mt-md">

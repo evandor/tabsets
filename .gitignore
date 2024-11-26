@@ -87,3 +87,4 @@ docs/.vitepress/cache
 # Sentry Config File
 .sentryclirc
 /.edge.env
+/blob-report/
