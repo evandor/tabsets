@@ -23,7 +23,7 @@ jobs:
     - name: Install Playwright Browsers
       run: yarn playwright install --with-deps
     - name: Run Playwright tests
-      run: DEBUG=pw:api,pw:browser yarn playwright test
+      run: DEBUG=pw:api,pw:browser xvfb-run yarn playwright test
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
