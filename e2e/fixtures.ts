@@ -22,8 +22,8 @@ export const test = base.extend<{
     await context.close();
   },
   extensionId: async ({ context }, use) => {
-    console.log("context", context)
-    console.log("use", use)
+    // console.log("context", context)
+    // console.log("use", use)
     /*
     // for manifest v2:
     let [background] = context.backgroundPages()

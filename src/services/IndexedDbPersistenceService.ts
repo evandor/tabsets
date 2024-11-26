@@ -20,45 +20,20 @@ class IndexedDbPersistenceService implements PersistenceService {
     useUiStore().dbReady = true
   }
 
-  // saveRequest(url: string, requestInfo: RequestInfo): Promise<void> {
-  //   return Promise.reject("not implemented")
-  // }
-  //
-  // saveMetaLinks(url: string, metaLinks: MetaLink[]): Promise<void | IDBValidKey> {
-  //   return Promise.reject("not implemented")
-  // }
-  //
-  // saveLinks(url: string, links: any): Promise<void | IDBValidKey> {
-  //   return Promise.reject("not implemented")
-  //
-  // }
-
-  // getRequest(url: string): Promise<string> {
-  //   return Promise.reject("not implemented")
-  // }
-  //
-  // getMetaLinks(url: string): Promise<object> {
-  //   return Promise.reject("not implemented")
-  // }
-  //
-  // getLinks(url: string): Promise<object> {
-  //   return Promise.reject("not implemented")
-  // }
-
   async cleanUpRequests(): Promise<void> {
-    return Promise.reject("not implemented")
+    return Promise.reject("not implemented C")
   }
 
   async cleanUpMetaLinks(): Promise<void> {
-    return Promise.reject("not implemented")
+    return Promise.reject("not implemented D")
   }
 
   async cleanUpLinks(): Promise<void> {
-    return Promise.reject("not implemented")
+    return Promise.reject("not implemented E")
   }
 
   async cleanUpExpired(tableName: string): Promise<void> {
-    return Promise.reject("not implemented")
+    return Promise.reject("not implemented F")
   }
 
   /** messages **/

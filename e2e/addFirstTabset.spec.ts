@@ -1,5 +1,5 @@
-import {test} from './fixtures';
-import {Frame, Page} from "@playwright/test";
+import {test, expect} from './fixtures';
+import {Page} from "@playwright/test";
 
 function urlFor(extensionId: string, path: string) {
   return `chrome-extension://${extensionId}/www/index.html#${path}`
@@ -36,22 +36,37 @@ test('first tabset', async ({page, extensionId, context}) => {
   const newTabsetName = sidePanelPage.locator('[data-testid=newTabsetName]')
   await newTabsetName.fill("tabsetName")
 
- // await sidePanelPage.getByText("ADD TABSET").click()
+  // await sidePanelPage.getByText("ADD TABSET").click()
 
   const addTabsetSubmitBtn = sidePanelPage.locator('[data-testid=addTabsetSubmitBtn]')
   await addTabsetSubmitBtn.click()
 
+  const tabsetId = await page.evaluate(() => localStorage.getItem('test.tabsetId'))
+  console.log("tabsetId", tabsetId)
+
   // await page.goto(urlFor(extensionId, '/sidepanel'));
   // await page.waitForURL('**\/sidepanel')
   //
-  // const newTab = await context.newPage();
-  // await newTab.goto("https://www.skysail.io");
-  //
-  // const saveInTabsetBtn = page.locator('[data-testid=saveInTabsetBtn]')
-  //
+  const newTab = await context.newPage();
+  await newTab.goto("https://www.skysail.io");
+
+  const saveInTabsetBtn = sidePanelPage.locator('[data-testid=saveInTabsetBtn]')
   // // await page.screenshot({ path: 'saveInTabsetBtn.png', fullPage: true });
-  //
-  // await saveInTabsetBtn.click()
+  await saveInTabsetBtn.click()
+  const tabId = await page.evaluate(() => localStorage.getItem('test.tabId'))
+  console.log("tabId", tabId)
+
+  const skysailTabDetails = await context.newPage();
+  await skysailTabDetails.goto(urlFor(extensionId, `/mainpanel/tab/${tabId}`));
+
+  await skysailTabDetails.locator('#contentTab').click()
+  // await skysailTabDetails.locator('#debugTab').click()
+
+  expect(skysailTabDetails.locator('[data-testid=content]')).toContainText('this website uses cookies ensure best experience')
+
+
+  // await skysailTabDetails.locator('#debugTabA').click()
+
   // await page.waitForURL('**\/sidepanel')
   //
   // const addTabsetBtn = page.locator('[data-testid=addTabsetBtn]')

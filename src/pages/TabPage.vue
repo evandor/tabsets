@@ -15,14 +15,14 @@
     <q-tabs align="left"
             v-model="tab"
             no-caps>
-      <q-tab name="tabdata" label="Tab Details"/>
+      <q-tab name="tabdata" label="Tab Details" id="tabdataTab"/>
       <q-tab name="meta" :label="metaDataLabel()"/>
       <q-tab name="request" :label="requestDataLabel()"/>
       <q-tab name="metalinks" :label="metaLinksDataLabel()"/>
       <q-tab name="links" :label="linksDataLabel()"/>
       <q-tab name="history" label="History"/>
-      <q-tab name="content" label="Content"/>
-      <q-tab name="debug" label="Debug"/>
+      <q-tab name="content" label="Content" id="contentTab"/>
+      <q-tab name="debug" label="Debug" id="debugTab"/>
     </q-tabs>
   </div>
 
@@ -47,7 +47,7 @@
           </q-img>
         </div>
         <div class="col-10 text-body1 ellipsis">
-          {{ getHost(selectedTab!.url || '', true) }}
+          {{ getHost(selectedTab?.url || '', true) }}
         </div>
         <div class="col-12 text-body2 ellipsis">
           {{ selectedTab?.title }}
@@ -56,7 +56,7 @@
         <div class="col-12">
           <div class="text-overline ellipsis">
             {{ selectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                @click.stop="NavigationService.openOrCreateTab([tab.url] )"></q-icon>
+                                                @click.stop="NavigationService.openOrCreateTab([tab?.url || ''] )"></q-icon>
           </div>
         </div>
       </div>
@@ -299,7 +299,7 @@
           <q-td :props="props">
             <div class="cursor-pointer text-blue-10">
               <span v-if="props.row.href.length > 0 && props.row.href.startsWith('/')"
-                    @click="openLink(selectedTab.url + '/' + props.row.href.substring(1))">
+                    @click="openLink(selectedTab?.url + '/' + props.row.href.substring(1))">
                 {{ props.row.href }}
               </span>
               <span v-else @click="openLink(props.row.href)">{{ props.row.href }}</span>
@@ -360,7 +360,7 @@
       <div class="col-5">
         Content
       </div>
-      <div class="col-7">
+      <div class="col-7" data-testid="content">
         {{ content }}
       </div>
     </div>
@@ -439,10 +439,10 @@ watchEffect(() => {
     tags.value = tabInfo.tab['tags' as keyof object]
     selectedTab.value = tabInfo.tab
     try {
-      const url = new URL(selectedTab.value.url || '')
+      const url = new URL(selectedTab.value?.url || '')
       domain.value = url.protocol + url.host
     } catch (err) {
-      domain.value = selectedTab.value.url
+      domain.value = selectedTab.value?.url
     }
   } else {
     console.log("not found yet...")
@@ -500,12 +500,12 @@ const linkRows = ref<object[]>([])
 watchEffect(async () => {
 
   if (selectedTab.value) {
-    TabsetService.getThumbnailFor(selectedTab.value)
-      .then(data => {
-        if (data) {
-          thumbnail.value = data.thumbnail
-        }
-      })
+    // TabsetService.getThumbnailFor(selectedTab.value)
+    //   .then(data => {
+    //     if (data) {
+    //       thumbnail.value = data.thumbnail
+    //     }
+    //   })
     TabsetService.getContentFor(selectedTab.value)
       .then(data => {
         if (data) {
@@ -523,34 +523,34 @@ watchEffect(async () => {
           }
         }
       })
-    TabsetService.getRequestFor(selectedTab.value)
-      .then(data => {
-        if (data) {
-          //console.log("got data", data)
-          request.value = data.requestInfo
+    // TabsetService.getRequestFor(selectedTab.value)
+    //   .then(data => {
+    //     if (data) {
+    //       //console.log("got data", data)
+    //       request.value = data.requestInfo
+    //
+    //       _.forEach(data.requestInfo['headers'], h => {
+    //         requestRows.value.push({
+    //           name: h.name,
+    //           value: h.value
+    //         })
+    //       })
+    //     }
+    //   })
 
-          _.forEach(data.requestInfo['headers'], h => {
-            requestRows.value.push({
-              name: h.name,
-              value: h.value
-            })
-          })
-        }
-      })
-
-    TabsetService.getMetaLinksFor(selectedTab.value)
-      .then(data => {
-        if (data) {
-          metaLinkRows.value = data.metaLinks
-        }
-      })
-
-    TabsetService.getLinksFor(selectedTab.value)
-      .then(data => {
-        if (data) {
-          linkRows.value = data.links
-        }
-      })
+    // TabsetService.getMetaLinksFor(selectedTab.value)
+    //   .then(data => {
+    //     if (data) {
+    //       metaLinkRows.value = data.metaLinks
+    //     }
+    //   })
+    //
+    // TabsetService.getLinksFor(selectedTab.value)
+    //   .then(data => {
+    //     if (data) {
+    //       linkRows.value = data.links
+    //     }
+    //   })
 
   } else {
     //router.push("/tabset")
@@ -577,7 +577,7 @@ watchEffect(() => {
     keys.value = fuseIndex['keys' as keyof object] || {}
     keysMap.value = fuseIndex['_keysMap' as keyof object]
     const res = _.filter(fuseIndex['records' as keyof object], (r: any) => {
-      return selectedTab?.url === r.$[2]?.v
+      return r.$[2]?.v === selectedTab.value?.url
     })
     if (res && res.length > 0) {
       index.value = res[0]

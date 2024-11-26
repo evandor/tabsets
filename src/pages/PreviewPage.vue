@@ -98,6 +98,6 @@ watchEffect(async () => {
 
 })
 
-const openInNewTab = () => console.log("not implemented")
+const openInNewTab = () => console.log("not implemented B")
 
 </script>

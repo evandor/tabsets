@@ -125,7 +125,7 @@ watchEffect(async () => {
 
 })
 
-const openInNewTab = () => console.log("not implemented")
+const openInNewTab = () => console.log("not implemented A")
 
 const iFrameStyle = () => {
   const v = "overflow:hidden;height:" + (window.innerHeight - 80) + "px;width:100%;border:0px"
