@@ -4,7 +4,7 @@
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
-          Tab Info for '{{ selectedTab?.url }}' (experimental)
+          Tab Info for '{{ selectedTab?.url }}' (for testing purposes)
         </div>
       </q-toolbar-title>
     </div>
@@ -16,12 +16,11 @@
             v-model="tab"
             no-caps>
       <q-tab name="tabdata" label="Tab Details" id="tabdataTab"/>
-      <q-tab name="meta" :label="metaDataLabel()"/>
+      <q-tab name="content" label="Content" id="contentTab"/>
+      <!--      <q-tab name="meta" :label="metaDataLabel()"/>-->
       <q-tab name="request" :label="requestDataLabel()"/>
       <q-tab name="metalinks" :label="metaLinksDataLabel()"/>
       <q-tab name="links" :label="linksDataLabel()"/>
-      <q-tab name="history" label="History"/>
-      <q-tab name="content" label="Content" id="contentTab"/>
       <q-tab name="debug" label="Debug" id="debugTab"/>
     </q-tabs>
   </div>
@@ -183,58 +182,6 @@
     </div>
   </div>
 
-  <div v-else-if="tab === 'meta'">
-
-    <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded>This meta data was derived from the pages provided meta tags.
-        This data is collected if the 'analyse tabs' feature is active.
-        If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
-      </q-banner>
-
-      <q-table
-        title="Meta data from the website source"
-        :rows="metaRows"
-        :columns="metaColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filter"
-        dense>
-
-        <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filter" placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search"/>
-            </template>
-          </q-input>
-        </template>
-
-        <template v-slot:body-cell-name="props">
-          <q-td :props="props">
-            <div>
-              <q-badge v-if="showNameLink(props.value)"
-                       color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>
-              <q-badge v-else
-                       color="grey" @click="openNameLink(props.value)" :label="props.value"/>
-            </div>
-          </q-td>
-        </template>
-
-        <template v-slot:body-cell-value="props">
-          <q-td :props="props">
-            <div>
-              {{ props.value }}
-              <q-icon v-if="showValueLink(props.key)"
-                      name="o_open_in_new" @click="openValueLink(props.key, props.value)"/>
-            </div>
-          </q-td>
-        </template>
-
-      </q-table>
-
-    </div>
-
-  </div>
-
   <div v-else-if="tab === 'request'">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded>This is a data derived from the request to the tabs content. This
@@ -347,21 +294,35 @@
     </div>
   </div>
 
-  <div v-else-if="tab === 'history'">
-    <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded>To be done</q-banner>
-    </div>
-  </div>
-
   <div v-else-if="tab === 'content'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded>This is a text extract derived from the tabs content</q-banner>
+      <q-banner rounded>This is a text extract derived from the tabs content (ContentDB)</q-banner>
 
-      <div class="col-5">
+      <div class="col-5 text-h6">
+        Title
+      </div>
+      <div class="col-7" data-testid="content-title">
+        {{ content?.title }}
+      </div>
+      <div class="col-5 text-h6">
+        URL
+      </div>
+      <div class="col-7" data-testid="content-url">
+        {{ content?.url }}
+      </div>
+      <div class="col-5 text-h6">
+        Meta
+      </div>
+      <div class="col-7 text-body2" data-testid="content-meta">
+<pre>
+           {{ JSON.stringify(content?.metas || '{}', null, 2) }}
+        </pre>
+      </div>
+      <div class="col-5 text-h6">
         Content
       </div>
-      <div class="col-7" data-testid="content">
-        {{ content }}
+      <div class="col-7" data-testid="content-content">
+        {{ content?.content }}
       </div>
     </div>
   </div>
@@ -379,15 +340,14 @@
 </template>
 
 <script setup lang="ts">
-import {useRoute, useRouter} from "vue-router";
+import {useRoute} from "vue-router";
 import {onMounted, reactive, ref, watchEffect} from "vue";
 import TabsetService from "src/tabsets/services/TabsetService";
 import NavigationService from "src/services/NavigationService"
-import {date} from "quasar";
+import {date, openURL} from "quasar";
 import {useSearchStore} from "src/search/stores/searchStore";
 import _ from "lodash"
 import {useUtils} from "src/core/services/Utils";
-import {openURL} from "quasar";
 import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import Analytics from "src/core/utils/google-analytics";
@@ -395,6 +355,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
+import {ContentItem} from "src/content/models/ContentItem";
 
 const searchStore = useSearchStore()
 const route = useRoute()
@@ -404,9 +365,8 @@ const {formatDate} = useUtils()
 const selectedTab = ref<Tab | undefined>(undefined)
 const domain = ref<string | undefined>(undefined)
 const thumbnail = ref('')
-const content = ref('')
+const content = ref<ContentItem | undefined>(undefined)
 const request = ref({})
-const metas = ref({})
 const tab = ref('tabdata')
 const keys = ref({})
 const keysMap = ref({})
@@ -506,23 +466,10 @@ watchEffect(async () => {
     //       thumbnail.value = data.thumbnail
     //     }
     //   })
-    TabsetService.getContentFor(selectedTab.value)
-      .then(data => {
-        if (data) {
-          content.value = data.content
-          metas.value = data.metas
-          metaRows.value = []
-          if (data.metas) {
-            _.forEach(Object.keys(data.metas), k => {
-              //console.log("k", k, data.metas[k])
-              metaRows.value.push({
-                name: k,
-                value: data.metas[k]
-              })
-            })
-          }
-        }
-      })
+    const data: ContentItem | undefined = await TabsetService.getContentFor(selectedTab.value)
+    if (data) {
+      content.value = data
+    }
     // TabsetService.getRequestFor(selectedTab.value)
     //   .then(data => {
     //     if (data) {

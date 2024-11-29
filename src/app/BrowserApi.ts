@@ -14,29 +14,22 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {GithubBackupCommand} from "src/tabsets/commands/github/GithubBackupCommand";
 import {useRequestsService} from "src/requests/services/RequestsService";
+import {useContentStore} from "src/content/stores/contentStore";
+import {useRequestsStore} from "src/requests/stores/requestsStore";
 
 
 function runHousekeeping() {
-  //housekeeping()
-
-  console.log("housekeeping now...")
-
-  //persistenceService.cleanUpRequests()
-
-  //persistenceService.cleanUpMetaLinks()
-
-  //persistenceService.cleanUpLinks()
-
-  // TODO
-  //TabService.checkScheduled()
+  //console.log("housekeeping now...")
 }
-
-const persistenceService = IndexedDbPersistenceService
 
 class BrowserApi {
 
   onHeadersReceivedListener = function (details: chrome.webRequest.WebResponseHeadersDetails) {
     if (details.url) {
+      // store transient information
+      useRequestsStore().setCurrentTabRequest(details)
+
+      // save to db for existing tabs
       useRequestsService().logWebRequest(details)
     }
   }

@@ -248,7 +248,7 @@ class BrowserListeners {
       if (chromeTab.id && chromeTab.url) {
         try {
           const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
-          // updating (transient) content in contentstore
+          // updating (transient) content in contentStore
           useContentStore().setCurrentTabContent(contentRequest['html' as keyof object])
           useContentStore().setCurrentTabUrl(chromeTab.url)
 

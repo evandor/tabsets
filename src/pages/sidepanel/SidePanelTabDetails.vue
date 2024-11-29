@@ -87,14 +87,14 @@
       <div class="col-3 text-left">
 
 
-                <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"
-                       @click="showTabDetails"
-                       round size="11px"
-                       color="primary"
-                       flat
-                       icon="o_more_horiz">
-                  <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>
-                </q-btn>
+        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"
+               @click="showTabDetails"
+               round size="11px"
+               color="primary"
+               flat
+               icon="o_more_horiz">
+          <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>
+        </q-btn>
       </div>
       <div class="col-9 text-right">
 
@@ -200,6 +200,16 @@
           <div class="row q-mx-sm q-mt-none">
             <div class="col-5 text-caption text-bold">Error</div>
             <div class="col-7 text-right text-caption">{{ tab?.httpError }}</div>
+          </div>
+          <div class="row q-mx-sm q-mt-none">
+            <div class="col-12 text-caption text-bold">Request Headers</div>
+          </div>
+          <div class="row q-mx-sm" v-for="headerRow in request?.headers">
+            <div class="col-5 text-caption text-bold">{{ headerRow['name' as keyof object] }}</div>
+            <div class="col-7 text-right text-caption ellipsis">
+              {{ headerRow['value' as keyof object]  }}
+              <q-tooltip>{{ headerRow }}</q-tooltip>
+            </div>
           </div>
         </q-card-section>
       </q-card>
@@ -345,13 +355,14 @@ import {FeatureIdent} from "src/app/models/FeatureIdent";
 import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
-import {SavedBlob} from "src/snapshots/models/SavedBlob";
 import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
 import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
 import {useNavigationService} from "src/core/services/NavigationService";
 import {useQuasar} from "quasar";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {TabReferenceType} from "src/content/models/TabReference";
+import {useRequestsService} from "src/requests/services/RequestsService";
+import {RequestInfo} from "src/requests/models/RequestInfo";
 
 const {inBexMode} = useUtils()
 
@@ -365,8 +376,8 @@ const thumbnail = ref('')
 const content = ref('')
 const metaRows = ref<object[]>([])
 const tab = ref<Tab | undefined>(undefined)
-const pngs = ref<SavedBlob[]>([])
 const htmls = ref<BlobMetadata[]>([])
+const request = ref<RequestInfo |undefined>(undefined)
 const tabId = ref<string | undefined>(undefined)
 const opensearchterm = ref<string | undefined>(undefined)
 
@@ -384,6 +395,12 @@ watchEffect(() => {
     } else {
       tags.value = []
     }
+  }
+  if (tab.value) {
+    useRequestsService().getWebRequestFor(tab.value.id)
+      .then((res: RequestInfo) => {
+        request.value = res
+      })
   }
 
 })
@@ -405,7 +422,7 @@ watchEffect(() => {
           content.value = data['content' as keyof object]
           //metas.value = data['metas' as keyof object]
           metaRows.value = []
-          _.forEach(Object.keys(data['metas' as keyof object]), (k:any) => {
+          _.forEach(Object.keys(data['metas' as keyof object]), (k: any) => {
             //console.log("k", k, data.metas[k])
             metaRows.value.push({
               name: k,
