@@ -82,7 +82,7 @@ class BrowserApi {
   }
 
   startWebRequestListener() {
-    console.log("adding WebRequestListener")
+    console.log(" ...adding WebRequestListener")
     chrome.webRequest.onHeadersReceived.addListener(
       this.onHeadersReceivedListener,
       {urls: ['*://*/*'], types: ['main_frame']},
