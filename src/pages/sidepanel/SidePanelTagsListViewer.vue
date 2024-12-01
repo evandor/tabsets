@@ -112,7 +112,7 @@ watchEffect(() => {
   })
   t = new Map([...t.entries()].sort((a, b) => b[1] - a[1]))
   tags.value = t
-  console.log("tags", t)
+  // console.log("tags", t)
 
   const sliced: [string, number][] = Array.from(t).slice(0, 100)
   const limitedMap = new Map<string, number>()
@@ -129,8 +129,8 @@ watchEffect(() => {
     for (let [key, value] of wordCloud.value) {
       words.push({key, value})
     }
-    console.log("heier", words.map((d) => d.key))
-    console.log("heier", words.map((d) => 10 + d.value * 2))
+    // console.log("heier", words.map((d) => d.key))
+    // console.log("heier", words.map((d) => 10 + d.value * 2))
     // const ctx = document.getElementById("myCanvas")
     // console.log("ctx", ctx)
     const chart = new Chart(myCanvas.value, {
