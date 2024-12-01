@@ -282,10 +282,6 @@ watchEffect(() => {
 })
 
 const open = (tab: Tab) => {
-  if (process.env.MODE === 'electron') {
-    router.push("/browser/" + tab.id)
-    return Promise.resolve()
-  }
   NavigationService.openOrCreateTab([props.tab?.url || ''])
 }
 

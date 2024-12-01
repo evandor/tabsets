@@ -5,7 +5,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     // @ts-ignore
-    redirect: (process.env.MODE === 'pwa' || process.env.MODE === 'electron') ?
+    redirect: (process.env.MODE === 'pwa') ?
       '/tabsets' : // use case: sharing tabset, opening link, import in PWA for anonymous user
       //'/sidepanel' : // use case: ???
       '/sidepanel'
