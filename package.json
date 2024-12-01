@@ -102,7 +102,6 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.4",
-    "@capacitor/cli": "^6.1.2",
     "@editorjs/checklist": "^1.6.0",
     "@editorjs/image": "^2.10.1",
     "@editorjs/link": "^2.6.2",
@@ -125,7 +124,6 @@
     "canvas": "^2.11.2",
     "editorjs-alert": "^1.1.4",
     "editorjs-text-color-plugin": "^2.0.4",
-    "electron-packager": "^17.1.2",
     "fake-indexeddb": "^6.0.0",
     "mermaid": "^11.4.1",
     "typescript": "^5.7.2",
