@@ -219,7 +219,7 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper :title="'Project ' + useTabsetsStore().currentTabsetName || 'Bibbly'"/>
+      <FirstToolbarHelper2 :title="'Project ' + useTabsetsStore().currentTabsetName || 'Bibbly'"/>
     </q-page-sticky>
 
   </q-page>
@@ -228,7 +228,7 @@
 
 <script lang="ts" setup>
 
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
+import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";

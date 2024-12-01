@@ -100,10 +100,12 @@
                 Documentation
               </q-item>
               <q-separator/>
-              <q-item clickable v-close-popup @click="openURL('https://docs.google.com/forms/d/e/1FAIpQLSdUtiKIyhqmNoNkXXzZOEhnzTCXRKT-Ju83SyyEovnfx1Mapw/viewform?usp=pp_url')">
+              <q-item clickable v-close-popup
+                      @click="openURL('https://docs.google.com/forms/d/e/1FAIpQLSdUtiKIyhqmNoNkXXzZOEhnzTCXRKT-Ju83SyyEovnfx1Mapw/viewform?usp=pp_url')">
                 Feedback
               </q-item>
-              <q-item clickable v-close-popup @click="openURL('https://github.com/evandor/tabsets/issues')">
+              <q-item clickable v-close-popup
+                      @click="openURL('https://github.com/evandor/tabsets/issues')">
                 Issues
               </q-item>
               <q-item clickable v-close-popup @click="reload()" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">

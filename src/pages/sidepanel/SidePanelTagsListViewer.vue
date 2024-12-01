@@ -46,13 +46,13 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
 
-      <FirstToolbarHelper title="Tags List">
+      <FirstToolbarHelper2 title="Tags List">
         <template v-slot:iconsRight>
 
           <SidePanelToolbarTabNavigationHelper/>
           <CloseSidePanelViewButton/>
         </template>
-      </FirstToolbarHelper>
+      </FirstToolbarHelper2>
 
     </q-page-sticky>
 
@@ -63,7 +63,7 @@
 <script lang="ts" setup>
 
 import {useUiStore} from "src/ui/stores/uiStore";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";

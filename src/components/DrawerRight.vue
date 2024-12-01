@@ -38,7 +38,6 @@
                 dense
                 maxlength="9"
                 v-model="scope.value"
-                :model-value="scope.value"
                 @update:model-value="val => setFilter2( val)"
                 hint="Filter open Tabs"
                 @keyup.enter="scope.set">
@@ -81,7 +80,7 @@
 <!--  <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
   <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>-->
 
-  <TagsListViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>
+<!--  <TagsListViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>-->
   <TagListViewer v-else-if="tab ===  DrawerTabs.TAG_VIEWER"/>
 
 <!--  <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
@@ -104,7 +103,6 @@ import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import Features from "src/features/components/Features.vue";
 import OpenTabsView from "src/opentabs/views/OpenTabsView.vue";
-import TagsListViewer from "src/tabsets/widgets/TagsListViewer.vue";
 import TagListViewer from "components/views/TagListViewer.vue";
 
 const route = useRoute()

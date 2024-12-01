@@ -31,14 +31,14 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="Shared Tabsets">
+      <FirstToolbarHelper2 title="Shared Tabsets">
 
         <template v-slot:iconsRight>
           <SidePanelToolbarTabNavigationHelper/>
           <CloseSidePanelViewButton/>
         </template>
 
-      </FirstToolbarHelper>
+      </FirstToolbarHelper2>
     </q-page-sticky>
 
   </q-page>
@@ -49,7 +49,7 @@
 
 import {onMounted, ref, watchEffect} from "vue";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import Analytics from "src/core/utils/google-analytics";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";

@@ -41,14 +41,14 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
 
-      <FirstToolbarHelper title="'Top 10' Tabs">
+      <FirstToolbarHelper2 title="'Top 10' Tabs">
 
         <template v-slot:iconsRight>
           <SidePanelToolbarTabNavigationHelper/>
           <CloseSidePanelViewButton/>
         </template>
 
-      </FirstToolbarHelper>
+      </FirstToolbarHelper2>
 
     </q-page-sticky>
 
@@ -62,7 +62,7 @@ import _ from "lodash"
 import {Tabset} from "src/tabsets/models/Tabset";
 import {Tab} from "src/tabsets/models/Tab";
 import PanelTabListElementWidget from "src/tabsets/widgets/PanelTabListElementWidget.vue";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 import {onMounted, ref, watchEffect} from "vue";
 import Analytics from "src/core/utils/google-analytics";

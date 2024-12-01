@@ -31,7 +31,7 @@
                   <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{ title() }}</div>
                 </template>
                 <template v-else>
-                  <div class="text-caption" @click="router.push('/sidepanel/collections')">{{ title() }}</div>
+                  <div class="text-caption cursor-pointer" @click="router.push('/sidepanel/collections')">{{ title() }}</div>
                 </template>
                 <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
                   <template v-if="currentTabset">

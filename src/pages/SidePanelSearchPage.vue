@@ -29,7 +29,7 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
 
-      <FirstToolbarHelper
+      <FirstToolbarHelper2
           :show-search-box="true"
           :search-term="searchStore.term"
           :search-hits="tabsetHits.length"
@@ -37,7 +37,7 @@
         <template v-slot:iconsRight>
           <CloseSidePanelViewButton />
         </template>
-      </FirstToolbarHelper>
+      </FirstToolbarHelper2>
 
     </q-page-sticky>
 
@@ -54,7 +54,7 @@ import {uid, useQuasar} from "quasar";
 import SearchHit from "src/components/layouts/SearchHit.vue"
 import {Hit} from "src/search/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import Analytics from "src/core/utils/google-analytics";
 import {Tabset} from "src/tabsets/models/Tabset";
 import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";

@@ -38,7 +38,7 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper title="RSS Feeds" :show-back-button="true"/>
+      <FirstToolbarHelper2 title="RSS Feeds" :show-back-button="true"/>
     </q-page-sticky>
 
   </q-page>
@@ -54,7 +54,7 @@ import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {useUtils} from "src/core/services/Utils";
 import {Tab} from "src/tabsets/models/Tab";
 import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import Analytics from "src/core/utils/google-analytics";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 

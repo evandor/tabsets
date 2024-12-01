@@ -67,7 +67,7 @@ const newSearch = (term: string) => {
     _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
       _.forEach(tabset.tabs, (tab: Tab) => {
         if (tab.tags?.indexOf(term) >= 0) {
-          console.log("found tab", term, tab.tags)
+          //console.log("found tab", term, tab.tags)
           results.push(tab)
         }
       })
