@@ -121,7 +121,6 @@
     "@vue/test-utils": "^2.4.6",
     "@wdio/cli": "^9.4.1",
     "autoprefixer": "^10.4.20",
-    "canvas": "^2.11.2",
     "editorjs-alert": "^1.1.4",
     "editorjs-text-color-plugin": "^2.0.4",
     "fake-indexeddb": "^6.0.0",

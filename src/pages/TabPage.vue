@@ -55,7 +55,7 @@
         <div class="col-12">
           <div class="text-overline ellipsis">
             {{ selectedTab?.url }}&nbsp;<q-icon name="launch" color="secondary"
-                                                @click.stop="NavigationService.openOrCreateTab([tab?.url || ''] )"></q-icon>
+                                                @click.stop="NavigationService.openOrCreateTab([selectedTab?.url || ''] )"></q-icon>
           </div>
         </div>
       </div>

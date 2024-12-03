@@ -197,8 +197,6 @@ import _ from "lodash";
 import {useSpacesStore} from "src/spaces/stores/spacesStore"
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
-import NotificationDialog from "components/dialogues/NotificationDialog.vue"
-import {Notification} from "src/core/models/Notification";
 import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
@@ -238,7 +236,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  spacesOptions.value = _.map([...spacesStore.spaces.keys()], key => {
+  spacesOptions.value = _.map([...spacesStore.spaces.keys()], (key:any) => {
     const label = spacesStore.spaces.get(key)?.label || 'undef'
     return {id: key, label: label}
   })
@@ -289,7 +287,7 @@ const suggestionDialog = (s: Suggestion) => $q.dialog({
 })
 
 const dependingOnStates = () =>
-  _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
+  _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), (s:any) => s.state === SuggestionState.NEW) ? 'warning' : 'white'
 
 const toggleSettings = () => settingsClicked.value = !settingsClicked.value
 

@@ -7,7 +7,7 @@
 import {setCssVar, useQuasar} from "quasar";
 import AppService from "src/app/AppService";
 import {EventEmitter} from "events";
-import {useRoute, useRouter} from "vue-router";
+import {useRouter} from "vue-router";
 import {useLogger} from "src/services/Logger";
 import {useSettingsStore} from "stores/settingsStore";
 import {useAppStore} from "stores/appStore";
