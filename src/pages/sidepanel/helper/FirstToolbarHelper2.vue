@@ -4,15 +4,6 @@
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
 
-        <!-- we have spaces
-        <div v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)" class="col-5 q-ma-none q-pa-none">
-
-          <SearchWithTransitionHelper v-if="searching"/>
-
-          <FilterWithTransitionHelper v-else-if="showFilter"/>
-
-        </div>-->
-
         <div class="col-7 q-ma-none q-pa-none" style="border:0 solid red">
 
           <!-- no spaces && searching -->
@@ -35,7 +26,7 @@
                 </template>
                 <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
                   <template v-if="currentTabset">
-                    {{ currentTabset?.name }}
+                    {{ currentTabset.name }}
                     <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
                     <q-tooltip class="tooltip-small" :delay="5000" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">{{currentTabset?.id}}</q-tooltip>
                   </template>

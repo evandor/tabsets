@@ -182,7 +182,7 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import InfoLine from "pages/helper/InfoLine.vue";
 import {useI18n} from "vue-i18n";
-import {onMounted, reactive, ref, watch, watchEffect} from "vue";
+import {ref, watch, watchEffect} from "vue";
 import {LocalStorage, useQuasar} from "quasar";
 import {STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT} from "boot/constants";
 import {useUtils} from "src/core/services/Utils";

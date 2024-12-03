@@ -63,7 +63,7 @@
 <script lang="ts" setup>
 
 import {useUiStore} from "src/ui/stores/uiStore";
-import {onMounted, ref, UnwrapRef, watchEffect} from "vue";
+import {onMounted, ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";

@@ -11,7 +11,7 @@ import {useRoute, useRouter} from "vue-router";
 import {useLogger} from "src/services/Logger";
 import {useSettingsStore} from "stores/settingsStore";
 import {useAppStore} from "stores/appStore";
-import {usePermissionsStore} from "stores/usePermissionsStore";
+import {usePermissionsStore} from "src/core/stores/usePermissionsStore";
 
 const $q = useQuasar()
 const router = useRouter()

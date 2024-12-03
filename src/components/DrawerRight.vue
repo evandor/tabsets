@@ -38,7 +38,7 @@
                 dense
                 maxlength="9"
                 v-model="scope.value"
-                @update:model-value="val => setFilter2( val)"
+                @update:model-value="val => setFilter2( val ? val.toString() : '')"
                 hint="Filter open Tabs"
                 @keyup.enter="scope.set">
                 <template v-slot:after>
@@ -58,32 +58,32 @@
 
   <div class="row greyBorderTop"></div>
 
-<!--  <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>-->
+  <!--  <UnassignedAndOpenTabs v-if="tab === DrawerTabs.UNASSIGNED_TABS"/>-->
   <OpenTabsView v-if="tab === DrawerTabs.OPEN_TABS"/>
 
   <BookmarksTree v-else-if="tab === DrawerTabs.BOOKMARKS"
-    :nodes="showOnlyFolders ? useBookmarksStore().nonLeafNodes : useBookmarksStore().bookmarksNodes2"
-    :show-only-folders="showOnlyFolders"
-    @toggle-show-only-folders="toggleShowOnlyFolders()"
-    :in-side-panel="true"/>
+                 :nodes="showOnlyFolders ? useBookmarksStore().nonLeafNodes : useBookmarksStore().bookmarksNodes2"
+                 :show-only-folders="showOnlyFolders"
+                 @toggle-show-only-folders="toggleShowOnlyFolders()"
+                 :in-side-panel="true"/>
 
   <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
   <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->
   <ByDomainList v-else-if="tab ===  DrawerTabs.GROUP_BY_HOST_TABS"/>
-<!--  <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
-<!--  <SavedPdfs v-else-if="tab ===  DrawerTabs.SAVED_TABS_AS_PDF"/>-->
-<!--  <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>-->
-<!--  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>-->
-<!--  <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>-->
+  <!--  <SavedTabs v-else-if="tab ===  DrawerTabs.SAVED_TABS"/>-->
+  <!--  <SavedPdfs v-else-if="tab ===  DrawerTabs.SAVED_TABS_AS_PDF"/>-->
+  <!--  <TabsetAsSidebar v-else-if="tab ===  DrawerTabs.SIDEBAR"/>-->
+  <!--  <NewTabUrls v-else-if="tab ===  DrawerTabs.NEW_TAB_URLS"/>-->
+  <!--  <RssTabs v-else-if="tab ===  DrawerTabs.RSS"/>-->
   <!--      <ScheduledTabs v-else-if="tab ===  DrawerTabs.SCHEDULED"/>-->
   <Features v-else-if="tab ===  DrawerTabs.FEATURES"/>
-<!--  <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
-  <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>-->
+  <!--  <TabDetails v-else-if="tab ===  DrawerTabs.TAB_DETAILS"/>
+    <TabsetDetails v-else-if="tab ===  DrawerTabs.TABSET_DETAILS"/>-->
 
-<!--  <TagsListViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>-->
+  <!--  <TagsListViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>-->
   <TagListViewer v-else-if="tab ===  DrawerTabs.TAG_VIEWER"/>
 
-<!--  <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
+  <!--  <TabsetHelp v-else-if="tab ===  DrawerTabs.HELP"/>-->
 
   <!-- only in sidepanel in chrome extension-->
   <!--  <TagsViewer v-else-if="tab ===  DrawerTabs.TAGS_VIEWER"/>-->
@@ -93,8 +93,8 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, watch, watchEffect} from "vue";
-import {useRoute, useRouter} from "vue-router";
+import {ref, watchEffect} from "vue";
+import {useRoute} from "vue-router";
 import {useSettingsStore} from "src/stores/settingsStore";
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import BookmarksTree from "src/bookmarks/components/BookmarksTree.vue";

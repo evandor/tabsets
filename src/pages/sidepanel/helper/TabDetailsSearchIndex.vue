@@ -24,7 +24,6 @@ import {onMounted, ref, watchEffect} from "vue";
 import {useSearchStore} from "src/search/stores/searchStore";
 import _ from "lodash";
 import {Tab} from "src/tabsets/models/Tab";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 const props = defineProps({
   tab: {type: Object as PropType<Tab>, required: true}
@@ -33,14 +32,6 @@ const props = defineProps({
 const tab = ref<Tab | undefined>(undefined)
 const searchIndex = ref<any>()
 
-// onMounted(() => {
-//   console.log("===>tabId", props.tabId)
-//   const tabObject = useTabsetsStore().getTabAndTabsetId(props.tabId)
-//   if (tabObject) {
-//     console.log("===>tab", tabObject)
-//     tab.value = tabObject.tab
-//   }
-// })
 
 watchEffect(() => {
   const fuseIndex = useSearchStore().getIndex()

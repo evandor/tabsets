@@ -33,7 +33,6 @@ export class DeleteCommentCommand implements Command<any> {
     } else {
       return Promise.reject("There was a problem deleting your comment")
     }
-    return Promise.reject("Could not find Tab")
   }
 
 }

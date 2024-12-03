@@ -111,7 +111,7 @@ const {selectTabset} = useTabsetService()
 
 const tabsetBadges = (hit: Hit): object[] => {
   const badges: object[] = []
-  _.forEach(hit.tabsets, ts => badges.push({
+  _.forEach(hit.tabsets, (ts:string) => badges.push({
     label: TabsetService.nameForTabsetId(ts),
     tabsetId: ts,
     encodedUrl: btoa(hit.url || '')

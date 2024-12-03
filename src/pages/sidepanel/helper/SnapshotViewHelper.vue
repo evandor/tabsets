@@ -23,8 +23,7 @@
 <script lang="ts" setup>
 import {date} from "quasar";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
-import {BlobMetadata, BlobType} from "src/snapshots/models/BlobMetadata";
-import {PropType} from "vue";
+import {BlobType} from "src/snapshots/models/BlobMetadata";
 
 const props = defineProps({
   extension: {type: String, default: 'mhtml'},

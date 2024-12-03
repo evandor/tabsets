@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 
-import {uid, useQuasar} from "quasar";
+import {uid} from "quasar";
 import {onMounted, ref, watchEffect} from "vue";
 import {Hit} from "src/search/models/Hit";
 import Analytics from "src/core/utils/google-analytics";
@@ -47,7 +47,7 @@ const newSearch = (term: string) => {
       })
     })
 
-    _.forEach(results, h => {
+    _.forEach(results, (h:any) => {
       //console.log("h", h.item.bookmarkId)
       let tabsets: string[] = []
       if (h.url) {

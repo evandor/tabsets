@@ -10,7 +10,7 @@ import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Extractor, Extractors, ExtractorType} from "src/core/config/Extractors";
 import {useUtils} from "src/core/services/Utils";
-import {Suggestion, SuggestionState, SuggestionType} from "src/suggestions/models/Suggestion";
+import {SuggestionState} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -24,7 +24,6 @@ import {ContentItem} from "src/content/models/ContentItem";
 
 const {
   saveText,
-  saveLinksFor,
   addToTabsetId
 } = useTabsetService()
 

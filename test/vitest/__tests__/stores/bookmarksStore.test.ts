@@ -29,7 +29,7 @@ async function setupMocks(bms: chrome.bookmarks.BookmarkTreeNode[]) {
 
   vi.mock('src/stores/permissionsStore', () => ({
     usePermissionsStore: () => ({
-      hasPermission: vi.fn((ident: string) => true),
+      //hasPermission: vi.fn((ident: string) => true),
       hasFeature: vi.fn((ident: string) => true),
     }),
   }))

@@ -399,10 +399,10 @@ watchEffect(() => {
     tags.value = tabInfo.tab['tags' as keyof object]
     selectedTab.value = tabInfo.tab
     try {
-      const url = new URL(selectedTab.value?.url || '')
+      const url = new URL(selectedTab.value.url || '')
       domain.value = url.protocol + url.host
     } catch (err) {
-      domain.value = selectedTab.value?.url
+      domain.value = selectedTab.value.url
     }
   } else {
     console.log("not found yet...")

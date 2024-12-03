@@ -198,7 +198,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore"
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import {DrawerTabs, useUiStore} from "src/ui/stores/uiStore";
 import NotificationDialog from "components/dialogues/NotificationDialog.vue"
-import {Notification, NotificationStatus} from "src/models/Notification";
+import {Notification} from "src/core/models/Notification";
 import {useUtils} from "src/core/services/Utils";
 import DrawerRight from "components/DrawerRight.vue";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";

@@ -12,6 +12,7 @@ import _ from "lodash"
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {RefreshTabCommand} from "src/tabsets/commands/RefreshTabCommand";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId.ts";
 
 /**
  * refactoring remark: uses many other modules, needs to be one-per-application
@@ -279,7 +280,6 @@ class NavigationService {
   }
 
   private createWindow(useWindowIdent: string, window: chrome.windows.Window, index: number = 0, withUrls: string[], groups: string[]) {
-    console.log("todo!")
     //useWindowsStore().assignWindow(useWindowIdent, window.id || 0)
     // useWindowsStore().upsertWindow(window, useWindowIdent, index)
     // const ctx = this

@@ -81,7 +81,6 @@ import {Bookmark} from "src/bookmarks/models/Bookmark";
 import {useRouter} from "vue-router";
 import {date} from "quasar";
 import NavigationService from "src/services/NavigationService";
-import BookmarksService from "src/bookmarks/services/BookmarksService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 
 const {formatDate} = useUtils()
@@ -124,7 +123,9 @@ const selectBookmark = (bm: Bookmark) =>
     router.push("/mainpanel/bookmarks/" + bm.chromeBookmark.id) :
     router.push("/bookmarks/" + bm.chromeBookmark.id)
 
-const deleteBookmark = (bm: Bookmark) => BookmarksService.deleteBookmark(bm)
+const deleteBookmark = (bm: Bookmark) => {
+  //BookmarksService.deleteBookmark(bm)
+}
 
 const existsInTabset = (url: string) => useTabsetService().tabsetsFor(url)?.length > 0
 

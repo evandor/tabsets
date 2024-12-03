@@ -234,7 +234,7 @@ import VueJsonPretty from "vue-json-pretty";
 import 'vue-json-pretty/lib/styles.css';
 import {useGroupsStore} from "../tabsets/stores/groupsStore";
 import OpenRightDrawerWidget from "src/ui/widgets/OpenRightDrawerWidget.vue";
-import {usePermissionsStore} from "stores/usePermissionsStore";
+import {usePermissionsStore} from "src/core/stores/usePermissionsStore";
 import ImportExportSettings from "pages/helper/ImportExportSettings.vue";
 import BackupSettings from "src/tabsets/pages/settings/BackupSettings.vue";
 import AppearanceSettings from "pages/helper/AppearanceSettings.vue";

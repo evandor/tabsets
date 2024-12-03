@@ -66,7 +66,6 @@ import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
 import {useAuthStore} from "stores/authStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import AppService from "src/app/AppService";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
@@ -77,6 +76,7 @@ import StartingHint from "pages/widgets/StartingHint.vue";
 import SidePanelNotesView from "src/notes/views/sidepanel/SidePanelNotesView.vue";
 import SidePanelFoldersView from "src/tabsets/views/sidepanel/SidePanelFoldersView.vue";
 import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
+import AppService from "src/app/AppService.ts";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 

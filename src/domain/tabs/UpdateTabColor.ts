@@ -2,7 +2,6 @@ import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import TabsetService from "src/tabsets/services/TabsetService";
 import {Tab} from "src/tabsets/models/Tab";
-import {useSearchStore} from "src/search/stores/searchStore";
 
 export class UpdateTabColorCommand implements Command<any> {
 

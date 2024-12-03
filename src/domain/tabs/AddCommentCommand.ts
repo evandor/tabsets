@@ -1,8 +1,8 @@
 import Command from "src/core/domain/Command";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import {Tab, TabComment} from "src/tabsets/models/Tab";
+import {TabComment} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {Tabset, TabsetSharing} from "src/tabsets/models/Tabset";
+import {TabsetSharing} from "src/tabsets/models/Tabset";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
@@ -37,7 +37,6 @@ export class AddCommentCommand implements Command<any> {
     } else {
       return Promise.reject("There was a problem adding your comment - could not find data for tabId " + this.tabId)
     }
-    return Promise.reject("Could not find Tab")
   }
 
 }

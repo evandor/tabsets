@@ -63,7 +63,7 @@ import SearchHit from "src/components/layouts/SearchHit.vue"
 import {Hit} from "src/search/models/Hit";
 import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
+import {GrantPermissionCommand} from "src/core/domain/commands/GrantPermissionCommand";
 import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
 
 const route = useRoute()

@@ -1,8 +1,8 @@
 import _ from "lodash"
 import {Feature} from "src/features/models/Feature";
 import {FeatureIdent, FeatureType} from "src/app/models/FeatureIdent";
-import {GrantPermissionCommand} from "src/domain/commands/GrantPermissionCommand";
-import {RevokePermissionCommand} from "src/domain/commands/RevokePermissionCommand";
+import {GrantPermissionCommand} from "src/core/domain/commands/GrantPermissionCommand";
+import {RevokePermissionCommand} from "src/core/domain/commands/RevokePermissionCommand";
 
 export class AppFeatures {
   features: Feature[] = [
@@ -116,8 +116,8 @@ export class AppFeatures {
       'Browser Notifications',
       'Allow Tabsets to send Notifications via your Browser. Recommended.',
       'o_notifications', '', ['all']),
-      // .setActivateCommands([new GrantPermissionCommand('notifications')])
-      // .setDeactivateCommands([ne0w RevokePermissionCommand('notifications')]),
+    // .setActivateCommands([new GrantPermissionCommand('notifications')])
+    // .setDeactivateCommands([ne0w RevokePermissionCommand('notifications')]),
 
     new Feature(FeatureIdent.ANNOTATIONS, FeatureType.DISABLED,
       'Annotate Websites',
@@ -152,7 +152,7 @@ export class AppFeatures {
       'Chrome Tab Groups',
       'Utilize Chrome Tab Groups',
       'o_view_list', '', ['chrome_bex']),
-      // .setActivateCommands([new GrantPermissionCommand('tabGroups')]),
+    // .setActivateCommands([new GrantPermissionCommand('tabGroups')]),
 
     new Feature(FeatureIdent.AUTO_TAB_SWITCHER, FeatureType.EXPERIMENTAL,
       'Auto Tab Switcher',
@@ -167,8 +167,8 @@ export class AppFeatures {
     new Feature(FeatureIdent.WEBSITE_CLIP, FeatureType.EXPERIMENTAL,
       'Website Clip',
       'Create an image clip from a website and store it',
-      'filter_center_focus', '', ['bex']),
-    // .setActivateCommands([new GrantPermissionCommand('notifications')]),
+      'filter_center_focus', '', ['bex'])
+      .setActivateCommands([new GrantPermissionCommand('notifications')]),
 
     new Feature(FeatureIdent.DYNAMIC_TABSET, FeatureType.EXPERIMENTAL,
       'Dynamic Tabset',
