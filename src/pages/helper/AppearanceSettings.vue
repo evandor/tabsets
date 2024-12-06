@@ -6,17 +6,12 @@
 
     <div class="row items-baseline q-ma-md q-gutter-md">
 
-      <InfoLine :label="t('title')">
-        <q-input type="text" color="primary" filled v-model="installationTitle" label="">
-          <template v-slot:prepend>
-            <q-icon name="o_edit_note"/>
-          </template>
-        </q-input>
-      </InfoLine>
-
-<!--      <InfoLine label="Old Sidepanel Layout">-->
-<!--        <q-checkbox v-model="oldLayout" label="use the old Sidepanel Layout"/>-->
-<!--        {{t('changing_needs_restart')}}-->
+<!--      <InfoLine :label="t('title')">-->
+<!--        <q-input type="text" color="primary" filled v-model="installationTitle" label="">-->
+<!--          <template v-slot:prepend>-->
+<!--            <q-icon name="o_edit_note"/>-->
+<!--          </template>-->
+<!--        </q-input>-->
 <!--      </InfoLine>-->
 
       <InfoLine :label="t('dark_mode')">
@@ -59,6 +54,10 @@
 
       <InfoLine label="URLs">
         <q-checkbox v-model="fullUrls" :label="t('show_full_url')"/>
+      </InfoLine>
+
+      <InfoLine label="Show Recent Tabsets list">
+        <q-checkbox v-model="showRecentTabsetsList" label="The last couple of tabsets you opened will be displayed for quick access"/>
       </InfoLine>
 
       <InfoLine label="Hide Indicator Icon" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
@@ -189,6 +188,9 @@ import {useUtils} from "src/core/services/Utils";
 import {useSettingsStore} from "stores/settingsStore";
 import {StaticSuggestionIdent, Suggestion} from "src/suggestions/models/Suggestion";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
+import {ActivateFeatureCommand} from "src/features/commands/ActivateFeatureCommand";
+import {useCommandExecutor} from "src/core/services/CommandExecutor";
+import {DeactivateFeatureCommand} from "src/features/commands/DeactivateFeatureCommand";
 
 const { t } = useI18n()
 const {sendMsg} = useUtils()
@@ -203,6 +205,7 @@ const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || 
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const hideIndicatorIcon = ref(LocalStorage.getItem('ui.hideIndicatorIcon') || false)
+const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))
 const contentScriptLoggingOff = ref(LocalStorage.getItem('ui.contentScriptLoggingOff') || false)
 const oldLayout = ref(LocalStorage.getItem('ui.sidepanel.oldLayout') || false)
 
@@ -270,6 +273,12 @@ watch(() => fullUrls.value, (a:any,b:any) => {
 watch(() => hideIndicatorIcon.value, (a:any,b:any) => {
   LocalStorage.set('ui.hideIndicatorIcon', hideIndicatorIcon.value)
   sendMsg('settings-changed', {identifier: "ui.hideIndicatorIcon", value: hideIndicatorIcon.value})
+})
+
+watch(() => showRecentTabsetsList.value, (now:boolean,before:boolean) => {
+  now
+    ? useCommandExecutor().execute(new ActivateFeatureCommand(FeatureIdent.TABSET_LIST.toString()))
+    : useCommandExecutor().execute(new DeactivateFeatureCommand(FeatureIdent.TABSET_LIST.toString()))
 })
 
 watch(() => contentScriptLoggingOff.value, (a:any,b:any) => {
