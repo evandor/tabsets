@@ -158,7 +158,7 @@ import {NotificationType} from "src/core/services/ErrorHandler";
 import NewSubfolderDialog from "src/tabsets/dialogues/NewSubfolderDialog.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {DeleteTabsetCommand} from "src/tabsets/commands/DeleteTabset";
+import {DeleteTabsetCommand} from "src/tabsets/commands/DeleteTabsetCommand";
 import {CreateNotebookCommand} from "src/notes/commands/CreateNotebookCommand"
 
 const {inBexMode} = useUtils()

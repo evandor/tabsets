@@ -8,10 +8,10 @@
       <div class="bg-grey-3 q-pa-xs" style="border:0 solid grey;border-radius:3px">
 
         <q-img
-            class="rounded-borders"
-            width="16px"
-            height="16px"
-            :src="getFaviconUrl(hit.id, hit.url, hit.favIconUrl)">
+          class="rounded-borders"
+          width="16px"
+          height="16px"
+          :src="getFaviconUrl(hit.id, hit.url, hit.favIconUrl)">
         </q-img>
 
       </div>
@@ -92,10 +92,11 @@ import {ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
 import ShortUrl from "src/core/utils/ShortUrl.vue";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabsetCommand";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
+import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 
 const props = defineProps({
   hit: {type: Hit, required: true},
@@ -111,7 +112,7 @@ const {selectTabset} = useTabsetService()
 
 const tabsetBadges = (hit: Hit): object[] => {
   const badges: object[] = []
-  _.forEach(hit.tabsets, (ts:string) => badges.push({
+  _.forEach(hit.tabsets, (ts: string) => badges.push({
     label: TabsetService.nameForTabsetId(ts),
     tabsetId: ts,
     encodedUrl: btoa(hit.url || '')
@@ -144,14 +145,14 @@ const openTabset = (tabsetId: string, encodedUrl: string | undefined = undefined
 const openBookmark = (badge: any) => {
   console.log("badge", badge)
   BookmarksService.expandTreeForBookmarkId(badge.bookmarkId)
-      .then(parentId => {
-        if (props.inSidePanel) {
-          const url = chrome.runtime.getURL("www/index.html#/mainpanel/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
-          NavigationService.openOrCreateTab([url])
-        } else {
-          router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
-        }
-      })
+    .then(parentId => {
+      if (props.inSidePanel) {
+        const url = chrome.runtime.getURL("www/index.html#/mainpanel/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
+        NavigationService.openOrCreateTab([url])
+      } else {
+        router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
+      }
+    })
 }
 
 const getFaviconUrl = (hitId: string, url: string, favIconUrl: string | undefined) => {
@@ -190,13 +191,14 @@ const open = (hit: Hit) => {
     const tabsetId = hit.tabsets[0]
     if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
       const tabset = useTabsetsStore().getTabset(tabsetId)
-      const spaceId =  (tabset && tabset.spaces.length > 0) ? tabset.spaces[0] : undefined
+      const spaceId = (tabset && tabset.spaces.length > 0) ? tabset.spaces[0] : undefined
       console.log("selecting tabset/space", tabsetId, spaceId)
-      useCommandExecutor().execute(new SelectTabsetCommand(tabsetId, spaceId))
       useSpacesStore().setSpace(spaceId)
+      useCommandExecutor().execute(new SelectTabsetCommand(tabsetId))
     } else {
       useCommandExecutor().execute(new SelectTabsetCommand(tabsetId))
     }
+    //useTabsetsUiStore().addTabsetToLastUsedList(tabsetId)
     openTabset(tabsetId)
   } else {
     NavigationService.openOrCreateTab([hit.url || ''])

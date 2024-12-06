@@ -46,7 +46,7 @@ import {useI18n} from 'vue-i18n'
 import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import _ from "lodash"
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabsetCommand";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {useRouter} from "vue-router";
@@ -58,6 +58,7 @@ import {dragContext, Draggable, OpenIcon} from "@he-tree/vue";
 import '@he-tree/vue/style/default.css'
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {DeleteTabsetFolderCommand} from "src/tabsets/commands/DeleteTabsetFolderCommand";
+import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -237,9 +238,9 @@ watchEffect(async () => {
 })
 
 const handleTreeClick = (node: NodeTreeObject) => {
-  // console.log("clicked", node)
   useCommandExecutor().execute(new SelectTabsetCommand(node.tsId, node.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
+      //useTabsetsUiStore().addTabsetToLastUsedList(node.tsId)
       if (res.result) {
         router.push("/sidepanel")
       }

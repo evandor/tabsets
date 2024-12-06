@@ -20,7 +20,7 @@ Important local packages
   vuex - Not installed
   vite - 2.9.18 -- Native-ESM powered web dev build tool
   eslint - Not installed
-  electron - 32.2.6 -- Build cross platform desktop apps with JavaScript, HTML, and CSS
+  electron - Not installed
   electron-packager - Not installed
   @electron/packager - Not installed
   electron-builder - Not installed
@@ -34,6 +34,6 @@ Quasar App Extensions
   @quasar/quasar-app-extension-testing-unit-vitest - 1.1.0 -- A Quasar App Extension for running tests with Vitest
 
 Networking
-  Host - Carstens-MacBook-Pro.fritz.box
-  en0 - 192.168.178.101
+  Host - Carstens-MacBook-Pro.local
+  en0 - 192.168.194.22
 

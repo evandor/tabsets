@@ -102,7 +102,7 @@ import {ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useQuasar} from "quasar";
 import _ from "lodash";
-import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabsetCommand";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
@@ -114,6 +114,7 @@ import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
+import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 
 const props = defineProps({
   fromPanel: {type: Boolean, default: true},
@@ -209,32 +210,13 @@ const openEditTabsetDialog = () => {
   })
 }
 
-const switchTabset = (ts: any) => {
-  console.log("settings tabset to ", ts)
-  useCommandExecutor()
-    .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
-    .then((res: ExecutionResult<Tabset | undefined>) => {
-      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
-      if (!props.fromPanel) {
-        router.push("/tabsets/" + ts.id)
-      }
-    })
-}
-
-const tabsetsWithTypes = (types: TabsetType[]) => {
-  let tabsets = [...useTabsetsStore().tabsets.values()]
-  return _.sortBy(
-    _.filter(tabsets, (ts: Tabset) =>
-      types.findIndex(t => ts.type === t && TabsetStatus.DELETED !== ts.status) >= 0),
-    ['name'])
-}
-
 const switchToTabset = (ts: Tabset) => {
   console.log("settings tabset to ", ts)
   useCommandExecutor()
-    .execute(new SelectTabsetCommand(ts.id, useSpacesStore().space?.id))
+    .execute(new SelectTabsetCommand(ts.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
       //useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
+      //useTabsetsUiStore().addTabsetToLastUsedList(ts.id)
       if (!props.useAsTabsetsSwitcher) {
         router.push("/sidepanel/tabsets/" + ts.id)
       }

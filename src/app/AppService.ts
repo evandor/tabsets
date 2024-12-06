@@ -32,6 +32,7 @@ import {SpaceInfo} from "src/core/models/SpaceInfo";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import IndexedDbRequestPersistence from "src/requests/persistence/IndexedDbRequestPersistence";
 import {useRequestsService} from "src/requests/services/RequestsService";
+import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 
 class AppService {
 
@@ -136,6 +137,10 @@ class AppService {
      */
     const featuresStorage = useDB(quasar).featuresDb
     await useFeaturesStore().initialize(featuresStorage)
+    console.debug("")
+
+    const localStorageTabsetsDb = useDB().localStorageTabsetsDb
+    await useTabsetsUiStore().initialize(localStorageTabsetsDb)
     console.debug("")
 
     await useNotesStore().initialize(useDB().notesDb)

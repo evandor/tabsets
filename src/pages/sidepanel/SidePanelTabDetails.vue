@@ -342,7 +342,7 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabset";
+import {SelectTabsetCommand} from "src/tabsets/commands/SelectTabsetCommand";
 import TabsetService from "src/tabsets/services/TabsetService";
 import {Tab} from "src/tabsets/models/Tab";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
@@ -363,6 +363,7 @@ import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {TabReferenceType} from "src/content/models/TabReference";
 import {useRequestsService} from "src/requests/services/RequestsService";
 import {RequestInfo} from "src/requests/models/RequestInfo";
+import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 
 const {inBexMode} = useUtils()
 

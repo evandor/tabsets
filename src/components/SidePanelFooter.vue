@@ -1,8 +1,37 @@
 <template>
 
   <q-footer
-    class="q-pa-xs q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey"
+    class="q-pa-none q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey;"
     :style="offsetBottom()">
+
+    <template v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST)">
+      <div class="row q-py-xs">
+        <div class="col-11">
+
+          <span v-if="lastTabsets.length < 2" style="font-size: smaller;color:grey"
+                class="q-mx-xs">current tabsets: </span>
+          <q-badge class="q-ma-none q-ma-xs" v-for="t in lastTabsets"
+                   :class="t.id === useTabsetsStore().currentTabsetId ? '':'cursor-pointer'"
+                   :color="t.id === useTabsetsStore().currentTabsetId ? 'grey':'warning'"
+                   outline
+                   @click="useTabsetService().selectTabset(t.id)">
+            {{ t.name }}
+            <q-icon :name="t.status === TabsetStatus.FAVORITE ? 'o_star' : 'sym_o_star'"
+                    @click.stop="toggleFavorite(t)"/>
+          </q-badge>
+        </div>
+        <div class="col">
+          <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer"/>
+          <q-menu :offset="[12, 8]">
+            <q-list dense style="min-width: 180px">
+              <ContextMenuItem v-close-popup
+                               icon="o_folder"
+                               label="Create Subfolder"/>
+            </q-list>
+          </q-menu>
+        </div>
+      </div>
+    </template>
 
     <div class="row fit q-mb-sm" v-if="showWindowTable">
       <!-- https://michaelnthiessen.com/force-re-render -->
@@ -92,25 +121,42 @@
           </q-btn>
           <q-menu :offset="[-10, 0]">
             <q-list dense>
-              <q-item clickable v-close-popup @click="openOptionsPage()">
-                <q-item-section>Open Settings</q-item-section>
-              </q-item>
+              <ContextMenuItem
+                v-close-popup
+                @was-clicked="openOptionsPage()"
+                icon="o_settings"
+                label="Open Settings"/>
+
               <q-separator/>
-              <q-item clickable v-close-popup @click="openURL('https://docs.tabsets.net')">
-                Documentation
-              </q-item>
+
+              <ContextMenuItem
+                v-close-popup
+                @was-clicked="openURL('https://docs.tabsets.net')"
+                icon="o_open_in_new"
+                label="Documentation"/>
+
+              <ContextMenuItem
+                v-close-popup
+                @was-clicked="openURL('https://docs.google.com/forms/d/e/1FAIpQLSdUtiKIyhqmNoNkXXzZOEhnzTCXRKT-Ju83SyyEovnfx1Mapw/viewform?usp=pp_url')"
+                icon="o_open_in_new"
+                label="Feedback"/>
+
+              <ContextMenuItem
+                v-close-popup
+                @was-clicked="openURL('https://github.com/evandor/tabsets/issues')"
+                icon="o_open_in_new"
+                label="Issues"/>
+
               <q-separator/>
-              <q-item clickable v-close-popup
-                      @click="openURL('https://docs.google.com/forms/d/e/1FAIpQLSdUtiKIyhqmNoNkXXzZOEhnzTCXRKT-Ju83SyyEovnfx1Mapw/viewform?usp=pp_url')">
-                Feedback
-              </q-item>
-              <q-item clickable v-close-popup
-                      @click="openURL('https://github.com/evandor/tabsets/issues')">
-                Issues
-              </q-item>
-              <q-item clickable v-close-popup @click="reload()" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
-                Restart
-              </q-item>
+
+              <ContextMenuItem
+                v-close-popup
+                @was-clicked="reload()"
+                color="negative"
+                icon="o_replay"
+                label="Restart Tabsets"/>
+
+
             </q-list>
           </q-menu>
         </span>
@@ -185,7 +231,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
-import {Tabset} from "src/tabsets/models/Tabset";
+import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
 import {ToastType} from "src/core/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
@@ -206,6 +252,11 @@ import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
 import {Tab, TabSnippet} from "src/tabsets/models/Tab";
 import BrowserApi from "src/app/BrowserApi";
 import {useContentStore} from "src/content/stores/contentStore";
+import ContextMenuItem from "src/core/components/helper/ContextMenuItem.vue";
+import {useTabsetsUiStore} from "../tabsets/stores/tabsetsUiStore";
+import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
+import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 
 const {handleSuccess, handleError} = useNotificationHandler()
 
@@ -215,7 +266,6 @@ const $q = useQuasar()
 const route = useRoute()
 
 const router = useRouter()
-const authStore = useAuthStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<TabAndTabsetId[]>([])
@@ -235,9 +285,30 @@ const animateSettingsButton = ref<boolean>(false)
 const windowHolderRows = ref<WindowHolder[]>([])
 const windowsToOpenOptions = ref<object[]>([])
 const tabsetsMangedWindows = ref<object[]>([])
+const lastTabsets = ref<Pick<Tabset, "id" | "name" | "status">[]>([])
 
 onMounted(() => {
   windowHolderRows.value = calcWindowHolderRows()
+})
+
+watch(() => useSpacesStore().space, (now: any, before: any) => {
+  console.log(`space switched from ${before?.id} to ${now?.id}`)
+  useTabsetsUiStore().load()
+})
+
+watchEffect(() => {
+  if (useTabsetsUiStore().lastUpdate) {
+    const lastTsIds = useTabsetsUiStore().lastUsedTabsets
+    console.log("got useTabsetsUiStore().lastUpdate", useTabsetsUiStore().lastUpdate, lastTsIds)
+    lastTabsets.value = lastTsIds.map((tsId: string) => {
+      const ts = useTabsetsStore().getTabset(tsId)
+      return {
+        id: ts?.id || "",
+        name: ts?.name || "???",
+        status: ts?.status || TabsetStatus.DEFAULT
+      }
+    })
+  }
 })
 
 watchEffect(() => {
@@ -298,6 +369,15 @@ watchEffect(() => {
     //console.log("we are here", progressValue.value)
   }
 })
+
+const toggleFavorite = (t: Pick<Tabset, "id" | "name" | "status">) => {
+  if (t.status !== TabsetStatus.FAVORITE) {
+    useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(t.id))
+  } else {
+    useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(t.id))
+  }
+  useTabsetsUiStore().load()
+}
 
 const getAdditionalActions = (windowName: string) => {
   const additionalActions: WindowAction[] = []
@@ -375,7 +455,7 @@ const settingsTooltip = () => {
 const rightButtonClass = () => "q-my-xs q-px-xs q-mr-none"
 
 const dependingOnStates = () =>
-  _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), (s:Suggestion) => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
+  _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), (s: Suggestion) => s.state === SuggestionState.NEW) ? 'warning' : 'primary'
 
 const suggestionDialog = () => {
   doShowSuggestionButton.value = false
@@ -479,7 +559,7 @@ const calcWindowHolderRows = (): WindowHolder[] => {
 
 const windowIsManaged = (windowName: string) => {
   //console.log("managed?", tabsetsMangedWindows.value, windowName)
-  return _.find(tabsetsMangedWindows.value, (tmw:any) => tmw['label' as keyof object] === windowName) !== undefined
+  return _.find(tabsetsMangedWindows.value, (tmw: any) => tmw['label' as keyof object] === windowName) !== undefined
 }
 
 const saveAsTabset = (windowId: number, name: string) => {
@@ -513,7 +593,7 @@ const drop = (evt: any) => {
     const existing: Tab | undefined = useTabsetsStore().tabForUrlInSelectedTabset(currentTabUrl!)
     if (existing) {
       existing.snippets.push(new TabSnippet(text, html))
-      existing.title = "Snippet ("+existing.snippets.length+")"
+      existing.title = "Snippet (" + existing.snippets.length + ")"
       const currentTabset = useTabsetsStore().getCurrentTabset
       if (currentTabset) {
         useTabsetsStore().saveTabset(currentTabset)

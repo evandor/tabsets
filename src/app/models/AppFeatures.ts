@@ -186,6 +186,11 @@ export class AppFeatures {
       'Drag and drop Text and Images to the sidebar to create Website Snippets',
       'text_snippet', '', ['bex']),
 
+    new Feature(FeatureIdent.TABSET_LIST, FeatureType.OPTIONAL,
+      'List of recent Tabsets',
+      'Switch beetween recent and favorite tabsets quickly',
+      'list', '', ['bex']),
+
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {
