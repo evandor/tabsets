@@ -79,7 +79,7 @@
     "mathjs": "^14.0.0",
     "mdast-util-from-markdown": "^2.0.1",
     "mhtml2html": "^3.0.0",
-    "pinia": "^2.2.8",
+    "pinia": "^2.3.0",
     "pngjs": "^7.0.0",
     "quasar": "^2.16.11",
     "regenerator-runtime": "^0.14.1",
