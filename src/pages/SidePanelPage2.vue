@@ -2,6 +2,8 @@
   <!-- SidePanelPage2 -->
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 50px">
 
+    <offline-info/>
+
     <div class="wrap" v-if="useUiStore().appLoading">
       <div class="loading">
         <div class="bounceball q-mr-lg"></div>
@@ -76,7 +78,8 @@ import StartingHint from "pages/widgets/StartingHint.vue";
 import SidePanelNotesView from "src/notes/views/sidepanel/SidePanelNotesView.vue";
 import SidePanelFoldersView from "src/tabsets/views/sidepanel/SidePanelFoldersView.vue";
 import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
-import AppService from "src/app/AppService.ts";
+import AppService from "src/app/AppService";
+import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 

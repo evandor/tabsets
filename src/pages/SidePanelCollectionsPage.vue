@@ -58,7 +58,6 @@ import {dragContext, Draggable, OpenIcon} from "@he-tree/vue";
 import '@he-tree/vue/style/default.css'
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {DeleteTabsetFolderCommand} from "src/tabsets/commands/DeleteTabsetFolderCommand";
-import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 
 const {t} = useI18n({locale: navigator.language, useScope: "global"})
 
@@ -233,12 +232,17 @@ watchEffect(async () => {
       }),
       getTabsetOrder, ["asc"])
   } else {
+    //console.log("loading from ", [...useTabsetsStore().tabsets.values()])
     tabsets.value = [...useTabsetsStore().tabsets.values()]
   }
 })
 
 const handleTreeClick = (node: NodeTreeObject) => {
   useCommandExecutor().execute(new SelectTabsetCommand(node.tsId, node.id))
+    .then((res: ExecutionResult<Tabset | undefined>) => {
+      useTabsetService().handleHeadRequests(useTabsetsStore().getTabset(node.tsId)!, node.id)
+      return res
+    })
     .then((res: ExecutionResult<Tabset | undefined>) => {
       //useTabsetsUiStore().addTabsetToLastUsedList(node.tsId)
       if (res.result) {

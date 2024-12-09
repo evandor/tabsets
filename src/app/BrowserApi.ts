@@ -344,8 +344,7 @@ class BrowserApi {
 
   async childrenFor(bookmarkFolderId: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
     console.log("bookmarkFolderId", bookmarkFolderId)
-    // @ts-ignore
-    return chrome.bookmarks.getChildren(bookmarkFolderId)
+    return chrome.bookmarks.getChildren(""+bookmarkFolderId)
   }
 
   createChromeTabObject(title: string, url: string, favIconUrl: string = "https://tabsets.web.app/icons/favicon-128x128.png") {

@@ -38,7 +38,7 @@ export class CreateTabsetFromBookmarksCommand implements Command<object> {
     try {
       const result = await useTabsetService()
         .saveOrReplaceFromBookmarks(this.tabsetName, this.bmsToUse, this.merge)
-      let doneMsg = 'Tabset ' + this.tabsetName + ' created successfully from bookmarks folder'
+      let doneMsg = 'imported from bookmarks'
       if (result['replaced' as keyof object] && result['merged' as keyof object]) {
         doneMsg = 'Existing Tabset ' + this.tabsetName + ' was updated'
       } else if (result['replaced' as keyof object]) {

@@ -66,6 +66,11 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelTabDetails.vue')}],
   },
   {
+    path: '/sidepanel/bookmarks/import',
+    component: () => import('layouts/SidePanelNoFooterLayout.vue'),
+    children: [{path: '', component: () => import('pages/sidepanel/SidePanelImportBookmarksPage.vue')}],
+  },
+  {
     path: '/sidepanel/bookmarks',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelBookmarksPage.vue')}],
@@ -100,11 +105,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{path: '', component: () => import('pages/sidepanel/SidePanelByDomainList.vue')}],
   },
-  {
-    path: '/sidepanel/sharedTsList',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{path: '', component: () => import('pages/sidepanel/SidePanelSharedTsList.vue')}],
-  },
+  // {
+  //   path: '/sidepanel/sharedTsList',
+  //   component: () => import('layouts/SidePanelLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/sidepanel/SidePanelSharedTsList.vue')}],
+  // },
   {
     path: '/sidepanel/latestList',
     component: () => import('layouts/SidePanelLayout.vue'),

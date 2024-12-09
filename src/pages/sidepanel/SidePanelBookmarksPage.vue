@@ -50,6 +50,10 @@ import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.v
 import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import {SidePanelViews} from "src/app/models/SidePanelViews";
+import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import {useRoute} from "vue-router";
+
+const route = useRoute()
 
 const showOnlyFolders = ref(true)
 
