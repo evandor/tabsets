@@ -46,12 +46,14 @@ describe('UpdateTabUrl', () => {
     const tab = new Tab("tabId", skysailChromeTab)
     await new AddTabToTabsetCommand(tab, tabset).execute()
 
+
     const result = await new UpdateTabCommand(
         tab, "https://skysail.io", "newName", "").execute()
     expect(result.message).toBe("Tab updated")
     expect(result.result).toBe("https://skysail.io")
 
-    const tabsetFromDB = useTabsetsStore().getTabset(createTabsetResult.result.tabset.id)
+   // await useTabsetService().saveTabset(tabset)
+    const tabsetFromDB = useTabsetsStore().getTabset(tabset.id)
     expect(tabsetFromDB?.tabs[0].url).toBe("https://skysail.io")
   });
 
