@@ -273,6 +273,9 @@ if (inBexMode()) {
         case "ui.contentScriptLoggingOff":
           useUiStore().setContentScriptLoggingOff(message.data.value)
           break;
+        case "ui.fontsize":
+          useUiStore().setFontsize(message.data.value)
+          break;
         default:
           console.log(`unknown message identifier ${message.data.identifier}`)
       }

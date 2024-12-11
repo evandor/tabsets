@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 
-import {setCssVar, useQuasar} from "quasar";
+import {getCssVar, setCssVar, useQuasar} from "quasar";
 import AppService from "src/app/AppService";
 import {EventEmitter} from "events";
 import {useRouter} from "vue-router";
@@ -12,6 +12,7 @@ import {useLogger} from "src/services/Logger";
 import {useSettingsStore} from "stores/settingsStore";
 import {useAppStore} from "stores/appStore";
 import {usePermissionsStore} from "src/core/stores/usePermissionsStore";
+import {FontSize, useUiStore} from "src/ui/stores/uiStore";
 
 const $q = useQuasar()
 const router = useRouter()
@@ -56,7 +57,15 @@ if (useDarkMode === "true") {
   setCssVar('info', '#31CCEC');
   setCssVar('separator', '#AA0099');
   // setCssVar('warning', 'green');
+
+  // $body-font-size   : var(--q-theme-font-size, 20px);
+  // $body-line-height : var(--q-theme-line-height, 1.2);
+  // $typography-font-family: var(--q-theme-font-family, "'Roboto', '-apple-system', 'Helvetica Neue', Helvetica, Arial, sans-serif");
+  // $button-font-size: var(--q-theme-btn-font-size, 16px);
 }
+
+const fontsize = useUiStore().fontsize
+useUiStore().setFontsize(fontsize)
 
 AppService.init($q, router, false)
 

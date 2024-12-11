@@ -42,6 +42,12 @@
       </div>
       <div class="col"></div>
 
+      <InfoLine label="Font Size">
+        <q-radio v-model="fontsize" :val="FontSize.DEFAULT" label="Default Size"/>
+        <q-radio v-model="fontsize" :val="FontSize.LARGE" label="Large"/>
+        <q-radio v-model="fontsize" :val="FontSize.LARGER" label="Larger"/>
+      </InfoLine>
+
       <InfoLine :label="t('tab_info_detail_level', {detailLevelPerTabset: (detailLevelPerTabset ? ' (Default)' : '')})">
         <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details"/>
         <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details"/>
@@ -176,7 +182,7 @@
 <script lang="ts" setup>
 
 import NavigationService from "src/services/NavigationService";
-import {ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
+import {FontSize, ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import InfoLine from "pages/helper/InfoLine.vue";
@@ -203,6 +209,7 @@ const darkMode = ref<string>(LocalStorage.getItem('darkMode') || "auto")
 const installationTitle = ref<string>(LocalStorage.getItem(TITLE_IDENT) as string || 'My Tabsets')
 const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
+const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const hideIndicatorIcon = ref(LocalStorage.getItem('ui.hideIndicatorIcon') || false)
 const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))
@@ -262,6 +269,12 @@ watch(() => detailLevelPerTabset.value, (v:any) => {
 watch(() => detailLevel.value, () => {
   LocalStorage.set('ui.detailLevel', detailLevel.value)
   sendMsg('detail-level-changed', {level: detailLevel.value})
+})
+
+watch(() => fontsize.value, () => {
+  LocalStorage.set('ui.fontsize', fontsize.value)
+  //sendMsg('detail-level-changed', {level: detailLevel.value})
+  sendMsg('settings-changed', {identifier: "ui.fontsize", value: fontsize.value})
 })
 
 watch(() => fullUrls.value, (a:any,b:any) => {
