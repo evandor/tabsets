@@ -125,7 +125,7 @@
     "fake-indexeddb": "^6.0.0",
     "mermaid": "^11.4.1",
     "typescript": "^5.7.2",
-    "vite": "^2.9.18",
+    "vite": "^6.0.3",
     "vitepress": "^1.5.0",
     "vitepress-plugin-mermaid": "^2.0.16",
     "vitest": "^1.6.0"
