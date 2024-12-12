@@ -41,7 +41,7 @@
                 :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
             </q-card-actions>
             <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none q-mt-none">
-              <div class="text-right q-ma-none q-pa-none text-secondary cursor-pointer"
+              <div class="text-right q-ma-none q-pa-none text-accent cursor-pointer"
                    style="font-size: smaller" @click="importFromBookmarks()">or import from...
               </div>
             </q-card-actions>

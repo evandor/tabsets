@@ -97,7 +97,7 @@
         <div>You can stop using the git-based sync version of tabsets if you wish.</div>
         <div>Please follow these steps:</div>
         <ul>
-          <li><span class="cursor-pointer text-blue-8"
+          <li><span class="cursor-pointer text-accent"
                     @click.stop="emits('wasClicked',{tab: 'importExport'})">Export</span> your tabsets
             first
           </li>
@@ -178,7 +178,7 @@
             <div class="row">
               <div>If you want to keep your current (local) tabsets, please follow these steps:</div>
               <ul>
-                <li><span class="cursor-pointer text-blue-8"
+                <li><span class="cursor-pointer text-accent"
                           @click.stop="emits('wasClicked',{tab: 'importExport'})">Export</span> your tabsets
                   first (if you want to keep them)
                 </li>

@@ -35,7 +35,7 @@
       </div>
 
       <div class="col-12">
-        <div class="text-overline ellipsis text-blue-10 cursor-pointer"
+        <div class="text-overline ellipsis text-accent cursor-pointer"
              @click.stop="NavigationService.openOrCreateTab([tab?.url || ''] )">
           {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary" class="cursor-pointer"></q-icon>
         </div>
@@ -219,7 +219,7 @@
       <div class="q-ma-sm q-ml-lg" v-for="ref in tab.tabReferences">
         <template v-if="ref.type === TabReferenceType.RSS">
           <div class="text-caption text-bold">found RSS:</div>
-          <div class="text-caption ellipsis text-blue-8 cursor-pointer"
+          <div class="text-caption ellipsis text-accent cursor-pointer"
                @click="useNavigationService().browserTabFor(ref.href || '')">{{ ref.href }}
           </div>
         </template>

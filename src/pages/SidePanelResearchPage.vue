@@ -144,7 +144,7 @@
                 />
 
                 <div class="row q-ma-sm q-ml-lg" v-for="a in md.annotations">
-                  <div class="col-9 ellipsis text-caption text-blue-10 cursor-pointer"
+                  <div class="col-9 ellipsis text-caption text-accent cursor-pointer"
                        @click="toggleEditAnnotation(a,index)">
                     {{ a.title }}
                     <q-tooltip v-if="a.comment" class="tooltip-small">{{ a.comment }}</q-tooltip>

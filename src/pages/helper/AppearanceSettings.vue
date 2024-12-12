@@ -22,7 +22,7 @@
       </InfoLine>
 
       <InfoLine :label="t('keyboard_shortcuts')">
-        <div class="text-blue-8 cursor-pointer" @click="NavigationService.openSingleTab('chrome://extensions/shortcuts')">{{t('click_here')}}</div>
+        <div class="text-accent cursor-pointer" @click="NavigationService.openSingleTab('chrome://extensions/shortcuts')">{{t('click_here')}}</div>
       </InfoLine>
 
       <div class="col-3">

@@ -50,7 +50,7 @@ if (useDarkMode === "true") {
 if (useDarkMode === "true") {
   setCssVar('primary', '#D9E8F5');
   setCssVar('secondary', '#26A69A');
-  setCssVar('accent', '#9C27B0');
+  setCssVar('accent', '#aab9df');
   setCssVar('dark', '#1d1d1d');
   setCssVar('positive', '#21BA45');
   setCssVar('negative', '#C10015');

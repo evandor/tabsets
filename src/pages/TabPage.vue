@@ -244,7 +244,7 @@
 
         <template v-slot:body-cell-href="props">
           <q-td :props="props">
-            <div class="cursor-pointer text-blue-10">
+            <div class="cursor-pointer text-accent">
               <span v-if="props.row.href.length > 0 && props.row.href.startsWith('/')"
                     @click="openLink(selectedTab?.url + '/' + props.row.href.substring(1))">
                 {{ props.row.href }}
@@ -280,7 +280,7 @@
 
         <template v-slot:body-cell-link="props">
           <q-td :props="props">
-            <div class="cursor-pointer text-blue-10">
+            <div class="cursor-pointer text-accent">
               <span v-if="props.row.link.length > 0 && props.row.link.startsWith('/')"
                     @click="openLink(domain + '/' + props.row.link.substring(1))">
                 {{ props.row.link }}

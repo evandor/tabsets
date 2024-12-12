@@ -6,11 +6,11 @@
       <div class="q-ma-none">
         <div class="row q-ma-none q-pa-none">
 
-          <div class="col-12 q-mx-sm q-my-none q-pa-none q-pt-md cursor-pointer text-blue-10" style="font-size: smaller"
+          <div class="col-12 q-mx-sm q-my-none q-pa-none q-pt-md cursor-pointer text-accent" style="font-size: smaller"
                @click="router.push('/sidepanel/welcome')">
             ... or create a new collection manually
           </div>
-          <div class="col-12 q-mx-sm q-my-none q-pa-none cursor-pointer text-blue-10" style="font-size: smaller"
+          <div class="col-12 q-mx-sm q-my-none q-pa-none cursor-pointer text-accent" style="font-size: smaller"
                @click="gotoSettingsPage()">
             ... or import from existing backup
           </div>

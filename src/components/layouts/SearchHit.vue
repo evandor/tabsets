@@ -45,7 +45,7 @@
       <!-- url -->
       <q-item-label v-if="hit.url"
                     style="width:100%"
-                    caption class="ellipsis-2-lines text-blue-10">
+                    caption class="ellipsis-2-lines text-accent">
         <div class="row q-ma-none">
           <div class="col-10 q-pr-lg cursor-pointer"
                @click.stop="open(hit)">

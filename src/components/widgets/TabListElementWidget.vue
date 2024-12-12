@@ -61,7 +61,7 @@
     <!-- url -->
     <q-item-label
       v-if="props.tab.url"
-      caption class="ellipsis-2-lines text-blue-10"
+      caption class="ellipsis-2-lines text-accent"
       @mouseover="showButtonsProp = true"
       @mouseleave="showButtonsProp = false">
       <div class="q-pr-lg cursor-pointer" style="display: inline-block;"
