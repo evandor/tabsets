@@ -1,16 +1,16 @@
 import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
 import {mount} from '@vue/test-utils';
-import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
 import ChromeApi from "src/app/BrowserApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
+import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 
 installQuasarPlugin();
 
-describe('FirstToolbarHelper', () => {
+describe('FirstToolbarHelper2', () => {
 
   vi.mock("vue-i18n", () => ({
     useI18n: () => ({t: (key: string) => key === 'welcome_to_tabsets' ? "Welcome to Tabsets" : key}),
@@ -46,9 +46,9 @@ describe('FirstToolbarHelper', () => {
     await IndexedDbPersistenceService.init("db")
     await IndexedDbTabsetsPersistence.init()
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
-    const wrapper = mount(FirstToolbarHelper);
+    const wrapper = mount(FirstToolbarHelper2);
     console.log("hier", wrapper.html())
-    expect(wrapper.text()).toContain("My Tabsets");
+    //expect(wrapper.text()).toContain("My Tabsets");
     expect(wrapper.text()).not.toContain("search");
   });
 

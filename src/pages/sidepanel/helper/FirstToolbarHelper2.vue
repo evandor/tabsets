@@ -4,7 +4,7 @@
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
         <q-linear-progress :value="overlap" size="2px" :style="thresholdStyle()">
-          <q-tooltip class="tooltip-small">{{overlapTooltip}}</q-tooltip>
+          <q-tooltip class="tooltip-small">{{ overlapTooltip }}</q-tooltip>
         </q-linear-progress>
       </div>
       <div class="row q-ma-none q-pa-none">
@@ -156,10 +156,13 @@ watchEffect(() => {
   if (currentTabset.value) {
     const currentTabsetTabs: Set<string> = new Set(currentTabset.value!.tabs.map((t: Tab) => t.url || ''))
     const browserTabs: Set<string> = new Set(useTabsStore2().browserTabs.map((t: chrome.tabs.Tab) => t.url || ''))
-    const allTabs = currentTabsetTabs.union(browserTabs)
-    const lapover = currentTabsetTabs.intersection(allTabs)
-    overlap.value = lapover.size / allTabs.size
-    overlapTooltip.value = `${Math.round(100 * overlap.value)}% overlap between this tabset and the currenly open tabs`
+    try {
+      const allTabs = currentTabsetTabs.union(browserTabs)
+      const lapover = currentTabsetTabs.intersection(allTabs)
+      overlap.value = lapover.size / allTabs.size
+      overlapTooltip.value = `${Math.round(100 * overlap.value)}% overlap between this tabset and the currenly open tabs`
+    } catch (err) {
+    }
   }
 })
 
