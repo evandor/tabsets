@@ -4,8 +4,23 @@
     class="q-pa-none q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey;"
     :style="offsetBottom()">
 
+    <template v-if="checkToasts()" class="q-ma-xs q-pa-xs">
+      <Transition name="fade" appear>
+        <q-banner
+          inline-actions dense rounded
+          style="font-size: smaller;text-align: center"
+          :class="toastBannerClass()">
+          {{ useUiStore().toasts[0]?.msg }}
+          <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">
+            <q-btn flat :label="useUiStore().toasts[0].actions[0].label"
+                   @click="useUiStore().callUndoActionFromCurrentToast()"/>
+          </template>
+        </q-banner>
+      </Transition>
+    </template>
+
     <template v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST)">
-      <SidePanelTabsetListMarkup />
+      <SidePanelTabsetListMarkup/>
     </template>
 
     <div class="row fit q-mb-sm" v-if="showWindowTable">
@@ -38,21 +53,21 @@
     <div class="row fit q-ma-none q-pa-none">
       <div class="col-6">
 
-        <Transition name="fade" appear>
-          <q-banner
-            v-if="checkToasts()"
-            inline-actions dense rounded
-            style="font-size: smaller;text-align: center"
-            :class="toastBannerClass()">
-            {{ useUiStore().toasts[0]?.msg }}
-            <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">
-              <q-btn flat :label="useUiStore().toasts[0].actions[0].label"
-                     @click="useUiStore().callUndoActionFromCurrentToast()"/>
-            </template>
-          </q-banner>
-        </Transition>
+        <!--        <Transition name="fade" appear>-->
+        <!--          <q-banner-->
+        <!--            v-if="checkToasts()"-->
+        <!--            inline-actions dense rounded-->
+        <!--            style="font-size: smaller;text-align: center"-->
+        <!--            :class="toastBannerClass()">-->
+        <!--            {{ useUiStore().toasts[0]?.msg }}-->
+        <!--            <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">-->
+        <!--              <q-btn flat :label="useUiStore().toasts[0].actions[0].label"-->
+        <!--                     @click="useUiStore().callUndoActionFromCurrentToast()"/>-->
+        <!--            </template>-->
+        <!--          </q-banner>-->
+        <!--        </Transition>-->
 
-        <q-btn v-if="!checkToasts() && !transitionGraceTime && showSuggestionButton"
+        <q-btn v-if="!transitionGraceTime && showSuggestionButton"
                outline
                icon="o_lightbulb"
                :label="suggestionsLabel()"
@@ -62,8 +77,7 @@
                class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer">
         </q-btn>
 
-        <template v-if="!checkToasts() && !transitionGraceTime && !showSuggestionButton">
-
+        <template v-if="!transitionGraceTime && !showSuggestionButton">
           <SidePanelFooterLeftButtons
             @was-clicked="doShowSuggestionButton = true"
             :size="getButtonSize()"
@@ -121,6 +135,20 @@
                 @was-clicked="openURL('https://github.com/evandor/tabsets/issues')"
                 icon="o_open_in_new"
                 label="Issues"/>
+
+              <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)">
+
+                <q-separator/>
+
+                <ContextMenuItem
+                  :disable="useTabsetsStore().getCurrentTabset?.type!==TabsetType.DEFAULT"
+                  v-close-popup
+                  @was-clicked="startSession()"
+                  color="warning"
+                  icon="sym_o_new_window"
+                  label="Start new Session..."/>
+
+              </template>
 
               <q-separator/>
 
@@ -206,7 +234,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import _ from "lodash";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
-import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {ToastType} from "src/core/models/Toast";
 import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
 import {useAuthStore} from "stores/authStore";
@@ -229,12 +257,13 @@ import BrowserApi from "src/app/BrowserApi";
 import {useContentStore} from "src/content/stores/contentStore";
 import ContextMenuItem from "src/core/components/helper/ContextMenuItem.vue";
 import {useTabsetsUiStore} from "../tabsets/stores/tabsetsUiStore";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
-import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import SidePanelTabsetListMarkup from "components/helper/SidePanelTabsetListMarkup.vue";
+import StartSessionDialog from "src/tabsets/dialogues/StartSessionDialog.vue";
+import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {SaveOrReplaceResult} from "src/tabsets/models/SaveOrReplaceResult";
 
-const {handleSuccess, handleError} = useNotificationHandler()
+const {handleError} = useNotificationHandler()
 
 const {inBexMode} = useUtils()
 
@@ -531,7 +560,6 @@ const additionalActionWasClicked = (event: any) => {
 }
 
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-bottom:20px;' : ''
-const openPwaUrl = () => NavigationService.openOrCreateTab([process.env.TABSETS_PWA_URL || 'https://www.skysail.io'])
 const showSettingsButton = () => route?.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated
 
 const drop = (evt: any) => {
@@ -559,6 +587,29 @@ const drop = (evt: any) => {
 }
 
 const reload = () => window.location.reload()
+
+const startSession = () => {
+  $q.dialog({
+    component: StartSessionDialog
+  }).onOk((callback: object) => {
+    console.log("callback", callback)
+    const tabsToUse = useTabsStore2().browserTabs
+    useCommandExecutor()
+      .execute(new CreateTabsetCommand(callback['oldSessionName' as keyof object], tabsToUse))
+      .then((res: ExecutionResult<SaveOrReplaceResult>) => {
+        console.log("res", res.result.tabset)
+        const ts = res.result.tabset
+        ts.type = TabsetType.SESSION
+        useTabsetsStore().saveTabset(ts)
+        BrowserApi.closeAllTabs(false)
+      })
+      .then(() => {
+        useCommandExecutor()
+          .executeFromUi(new CreateTabsetCommand(callback['sessionName' as keyof object], []))
+      })
+  })
+
+}
 
 </script>
 

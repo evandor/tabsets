@@ -2,7 +2,6 @@ import {Tabset} from "src/tabsets/models/Tabset";
 import {CLEANUP_PERIOD_IN_MINUTES, GITHUB_AUTO_BACKUP, MONITORING_PERIOD_IN_MINUTES} from "boot/constants";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {Tab} from "src/tabsets/models/Tab";
 import {LocalStorage, uid} from "quasar";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
@@ -14,7 +13,6 @@ import {useFeaturesStore} from "src/features/stores/featuresStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {GithubBackupCommand} from "src/tabsets/commands/github/GithubBackupCommand";
 import {useRequestsService} from "src/requests/services/RequestsService";
-import {useContentStore} from "src/content/stores/contentStore";
 import {useRequestsStore} from "src/requests/stores/requestsStore";
 
 
@@ -186,12 +184,12 @@ class BrowserApi {
 
               if (allTabsets.length > 15) {
                 const result = _(allTabsets)
-                  .groupBy((o:any) => (o.name && o.name.length > 0) ? o.name[0].toUpperCase() : ' ')
-                  .map((tabsets:any, firstLetter:any) => ({firstLetter, tabsets}))
-                  .sortBy((r:any) => r.firstLetter)
+                  .groupBy((o: any) => (o.name && o.name.length > 0) ? o.name[0].toUpperCase() : ' ')
+                  .map((tabsets: any, firstLetter: any) => ({firstLetter, tabsets}))
+                  .sortBy((r: any) => r.firstLetter)
                   .value();
 
-                _.forEach(result, (r:any) => {
+                _.forEach(result, (r: any) => {
                   chrome.contextMenus.create({
                     id: 'save_as_tab_folder|' + r.firstLetter,
                     parentId: 'tabset_extension',
@@ -296,14 +294,14 @@ class BrowserApi {
         focused: true,
         left: 50,
         top: 50,
-        url: _.map(urlAndGroupArray, (a:any) => a['url' as keyof object])
+        url: _.map(urlAndGroupArray, (a: any) => a['url' as keyof object])
       })
     } else if (windowName) { // open in named window
       useTabsetsStore().selectCurrentTabset(tabset.id)
       NavigationService.openOrCreateTab(
-        _.map(urlAndGroupArray, (a:any) => a['url' as keyof object]),
+        _.map(urlAndGroupArray, (a: any) => a['url' as keyof object]),
         undefined,
-        _.map(urlAndGroupArray, (a:any) => a['group' as keyof object]))
+        _.map(urlAndGroupArray, (a: any) => a['group' as keyof object]))
       // TODO deactivate listeners - needed?
       // useTabsStore().deactivateListeners()
       // this.getCurrentTab()
@@ -313,8 +311,8 @@ class BrowserApi {
       //   })
     } else {
       console.log("opening urls", urlAndGroupArray)
-      NavigationService.openOrCreateTab(_.map(urlAndGroupArray, (a:any) => a['url' as keyof object]),
-        undefined, _.map(urlAndGroupArray, (a:any) => a['group' as keyof object]))
+      NavigationService.openOrCreateTab(_.map(urlAndGroupArray, (a: any) => a['url' as keyof object]),
+        undefined, _.map(urlAndGroupArray, (a: any) => a['group' as keyof object]))
     }
   }
 
@@ -344,7 +342,7 @@ class BrowserApi {
 
   async childrenFor(bookmarkFolderId: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> {
     console.log("bookmarkFolderId", bookmarkFolderId)
-    return chrome.bookmarks.getChildren(""+bookmarkFolderId)
+    return chrome.bookmarks.getChildren("" + bookmarkFolderId)
   }
 
   createChromeTabObject(title: string, url: string, favIconUrl: string = "https://tabsets.web.app/icons/favicon-128x128.png") {
@@ -522,6 +520,14 @@ class BrowserApi {
       }
     }
 
+  }
+
+  async closeAllTabs(includingPinnedOnes: boolean = true) {
+    const tabIds = (await chrome.tabs.query({}))
+      .filter((t: chrome.tabs.Tab) => includingPinnedOnes ? true : !t.pinned)
+      .map((t: chrome.tabs.Tab) => t.id || 0)
+    await chrome.tabs.create({})
+    await chrome.tabs.remove(tabIds)
   }
 }
 

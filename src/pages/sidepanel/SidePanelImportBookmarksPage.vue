@@ -66,7 +66,16 @@ import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import {useRouter} from "vue-router";
 import NavigationService from "src/services/NavigationService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import {useQuasar} from "quasar";
+import {Tabset} from "src/tabsets/models/Tabset";
+import ChromeApi from "src/app/BrowserApi";
+import _ from "lodash";
+import {useUtils} from "src/core/services/Utils";
+import {useUiStore} from "src/ui/stores/uiStore";
 
+const {sendMsg} = useUtils()
+
+const $q = useQuasar()
 const router = useRouter()
 
 const importedTabsetId = ref<string | undefined>(undefined)
@@ -77,9 +86,44 @@ onMounted(() => {
 
 const gotoSettingsPage = () => NavigationService.openOrCreateTab([chrome.runtime.getURL('/www/index.html#/mainpanel/settings?tab=importExport')])
 
-const imported = (a:{tabsetId: string}) => {
-  console.log("Imported", a)
-  importedTabsetId.value = a.tabsetId
+
+// TODO get rid of tabset-references here; use AppEventDispatcher
+async function createTabsetFrom(name: string, bookmarkId: string): Promise<Tabset> {
+  console.log("creating recursively", name, bookmarkId)
+  const subTree: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId)
+  const folders = _.filter(subTree, (e: chrome.bookmarks.BookmarkTreeNode) => e.url === undefined)
+  const nodes = _.filter(subTree, (e: chrome.bookmarks.BookmarkTreeNode) => e.url !== undefined)
+  const subfolders: Tabset[] = []
+  for (const f of folders) {
+    console.log("found folder", f)
+    const subTabset = await createTabsetFrom(f.title, f.id)
+    subfolders.push(subTabset)
+  }
+  const result = await useTabsetService().saveOrReplaceFromBookmarks(name, nodes, true, true)
+  console.log("result", result)
+  const ts: Tabset = result['tabset' as keyof object]
+  ts.folders = subfolders
+  ts.bookmarkId = bookmarkId
+  useUiStore().importedBookmarks.push(bookmarkId)
+  subfolders.forEach(f => f.folderParent = ts.id)
+  return ts
+}
+
+const imported = async (a:{ bmId: number, recursive: boolean, tsName: string }) => {
+
+  console.log("importing bookmarks from", a)// bookmarkId.value, recursive.value)
+  useUiStore().importedBookmarks = []
+  $q.loadingBar?.start()
+
+  const tabset = await createTabsetFrom(a.tsName, "" + a.bmId)
+  await useTabsetService().saveTabset(tabset)
+  $q.loadingBar?.stop()
+
+  sendMsg('reload-tabset', {tabsetId: tabset.id})
+  sendMsg('sidepanel-switch-view', {view: 'main'})
+
+  console.log("imported to tabset", tabset.id)
+  importedTabsetId.value = tabset.id
 }
 
 const openImportedTabset = () => {

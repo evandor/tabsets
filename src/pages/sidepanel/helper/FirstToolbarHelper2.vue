@@ -1,7 +1,12 @@
 <template>
   <!-- FirstToolbarHelper2 -->
-  <q-toolbar class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom" :style="offsetTop()">
+  <q-toolbar class="q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
+      <div class="row q-ma-none q-pa-none">
+        <q-linear-progress :value="overlap" size="2px" :style="thresholdStyle()">
+          <q-tooltip class="tooltip-small">{{overlapTooltip}}</q-tooltip>
+        </q-linear-progress>
+      </div>
       <div class="row q-ma-none q-pa-none">
 
         <div class="col-7 q-ma-none q-pa-none" style="border:0 solid red">
@@ -19,16 +24,25 @@
             <div class="col-12 text-subtitle1">
               <div class="q-ml-md q-mt-sm">
                 <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-                  <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{ title() }}</div>
+                  <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{
+                      title()
+                    }}
+                  </div>
                 </template>
                 <template v-else>
-                  <div class="text-caption cursor-pointer" @click="router.push('/sidepanel/collections')">{{ title() }}</div>
+                  <div class="text-caption cursor-pointer" @click="router.push('/sidepanel/collections')">{{
+                      title()
+                    }}
+                  </div>
                 </template>
-                <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
+                <div class="text-body1 text-bold cursor-pointer ellipsis"
+                     @click="router.push('/sidepanel/collections')">
                   <template v-if="currentTabset">
                     {{ currentTabset.name }}
                     <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
-                    <q-tooltip class="tooltip-small" :delay="5000" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">{{currentTabset?.id}}</q-tooltip>
+                    <q-tooltip class="tooltip-small" :delay="5000"
+                               v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">{{ currentTabset?.id }}
+                    </q-tooltip>
                   </template>
                   <template v-else>
                     <q-spinner
@@ -43,26 +57,18 @@
           </template>
         </div>
 
-        <div class="col-5 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none" v-if="!useUiStore().appLoading" style="border:0 solid green">
+        <div class="col-5 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none" v-if="!useUiStore().appLoading"
+             style="border:0 solid green">
 
           <slot name="iconsRight">
-            <!-- to revisit -->
-            <!--            <SidePanelToolbarButton-->
-            <!--              v-if="useTabsetsUiStore().matchingTabs.length > 0 && useTabsetsUiStore().matchingTabs[0].tabsetId !== useTabsetsStore().currentTabsetId"-->
-            <!--              icon="link"-->
-            <!--              :tooltip="`open current tab (${useTabsetsUiStore().matchingTabs[0].tab.url}) in tabset(s)`"-->
-            <!--              color="green"-->
-            <!--              size="11px"-->
-            <!--              @click="selectTabsetForFirstMatchingTab(useTabsetsUiStore().matchingTabs[0] as TabAndTabsetId)"-->
-            <!--              class="q-ma-none q-pa-none q-mr-none"/>-->
 
             <div class="q-mt-sm q-ma-none q-qa-none" style="border:0 solid blue">
               <template v-if="showSearchIcon()">
                 <SidePanelToolbarButton icon="search"
-                                          class="q-mr-sm"
-                                          id="toggleSearchBtn"
-                                          size="11px"
-                                          @click="toggleSearch"/>
+                                        class="q-mr-sm"
+                                        id="toggleSearchBtn"
+                                        size="11px"
+                                        @click="toggleSearch"/>
               </template>
 
               <SidePanelToolbarTabNavigationHelper/>
@@ -107,9 +113,10 @@ import {useWindowsStore} from "src/windows/stores/windowsStore";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {ActionHandlerButtonClickedHolder} from "src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder";
 import {useActionHandlers} from "src/tabsets/actionHandling/ActionHandlers";
-import {Tabset} from "src/tabsets/models/Tabset";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
+import {Tab} from "src/tabsets/models/Tab";
 
 const {t} = useI18n({useScope: 'global'})
 
@@ -130,6 +137,8 @@ const windowLocation = ref('')
 const annimateNewTabsetButton = ref(false)
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
+const overlap = ref(0.5)
+const overlapTooltip = ref('')
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -144,7 +153,18 @@ windowLocation.value = window.location.href
 
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
+  if (currentTabset.value) {
+    const currentTabsetTabs: Set<string> = new Set(currentTabset.value!.tabs.map((t: Tab) => t.url || ''))
+    const browserTabs: Set<string> = new Set(useTabsStore2().browserTabs.map((t: chrome.tabs.Tab) => t.url || ''))
+    const allTabs = currentTabsetTabs.union(browserTabs)
+    const lapover = currentTabsetTabs.intersection(allTabs)
+    overlap.value = lapover.size / allTabs.size
+    overlapTooltip.value = `${Math.round(100 * overlap.value)}% overlap between this tabset and the currenly open tabs`
+  }
 })
+
+const thresholdStyle = () =>
+  "color: hsl(" + (Math.round(120 * overlap.value)) + " 80% 50%)"
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
@@ -177,20 +197,18 @@ if ($q.platform.is.chrome && $q.platform.is.bex) {
 
 const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 
-const stageIdentifier = () => process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : ''
-
 const title = (): string => {
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-    const spaceName = useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
-    // return tabsets.length > 6 ?
-    //   spaceName + ' (' + tabsets.length.toString() + ')' :
-    //   spaceName
-    return spaceName
+    return useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
   } else {
+    const currentTs = useTabsetsStore().getCurrentTabset
+    if (currentTs) {
+      return currentTs.type !== TabsetType.SESSION
+        ? "Collection"
+        : `Session (${currentTs.tabs.length} tab${currentTs.tabs.length > 1 ? 's' : ''})`
+    }
     return "Collection"
   }
-  // const title: string = LocalStorage.getItem(TITLE_IDENT) || ('My Tabsets' + stageIdentifier())
-  // return tabsets.length > 6 ? title + ' (' + tabsets.length.toString() + ')' : title
 }
 
 function getActiveFolder(tabset: Tabset) {

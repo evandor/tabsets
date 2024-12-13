@@ -5,22 +5,28 @@
       <ContextMenuItem v-close-popup
                        @was-clicked="openEditTabsetDialog(tabset)"
                        icon="o_note"
-                       label="Edit Tabset"/>
+                       :label="tabset.type === TabsetType.SESSION ? 'Edit Session' : 'Edit Tabset'"/>
 
-      <!--      <ContextMenuItem v-close-popup-->
-      <!--                       @was-clicked="emits('editHeaderDescription')"-->
-      <!--                       icon="o_description"-->
-      <!--                       label="Tabset Description..."/>-->
+      <template v-if="tabset.type === TabsetType.SESSION">
+        <q-separator inset/>
+
+        <ContextMenuItem v-close-popup
+                         @was-clicked="convertToCollection(tabset)"
+                         color="warning"
+                         icon="o_folder"
+                         label="Convert to Collection"/>
+      </template>
 
 
-      <q-separator inset/>
+      <template v-if="tabset.type === TabsetType.DEFAULT">
+        <q-separator inset/>
 
-      <ContextMenuItem v-close-popup
-                       @was-clicked="createSubfolder(tabset)"
-                       color="warning"
-                       icon="o_folder"
-                       label="Create Subfolder"/>
-
+        <ContextMenuItem v-close-popup
+                         @was-clicked="createSubfolder(tabset)"
+                         color="warning"
+                         icon="o_folder"
+                         label="Create Subfolder"/>
+      </template>
 
       <q-separator inset v-if="useTabsetsStore().tabsets.size > 1"/>
 
@@ -31,8 +37,7 @@
                        label="Create Note"/>
 
 
-      <template v-if="tabset.tabs.length > 0 && inBexMode() && (
-          (!tabset.window || tabset.window === 'current'))">
+      <template v-if="tabset.tabs.length > 0 && inBexMode() && ((!tabset.window || tabset.window === 'current'))">
         <ContextMenuItem
           icon="open_in_new"
           label="Open all in...">
@@ -74,29 +79,6 @@
                          label="Show Gallery"/>
       </template>
 
-<!--      <ContextMenuItem v-if="useTabsetsStore().tabsets.size > 6"-->
-<!--                       v-close-popup-->
-<!--                       @was-clicked="focus(tabset)"-->
-<!--                       icon="filter_center_focus"-->
-<!--                       color="accent"-->
-<!--                       label="Focus on tabset"/>-->
-
-      <!--      <template v-if="tabset.status === TabsetStatus.DEFAULT && useTabsetsStore().tabsets.size > 4">-->
-      <!--        <ContextMenuItem v-close-popup-->
-      <!--                         @was-clicked="pin(tabset)"-->
-      <!--                         icon="o_push_pin"-->
-      <!--                         color="warning"-->
-      <!--                         label="Pin"/>-->
-      <!--      </template>-->
-      <!--      <template v-else-if="tabset.status === TabsetStatus.FAVORITE">-->
-      <!--        <ContextMenuItem v-close-popup-->
-      <!--                         @was-clicked="unpin(tabset)"-->
-      <!--                         icon="push_pin"-->
-      <!--                         color="warning"-->
-      <!--                         label="Unpin"/>-->
-
-      <!--      </template>-->
-
       <template v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) &&
         tabset.status === TabsetStatus.DEFAULT">
         <ContextMenuItem
@@ -109,21 +91,12 @@
 
       <q-separator inset/>
 
-      <!--      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">-->
-      <!--        <ContextMenuItem v-close-popup-->
-      <!--                         @was-clicked="useSearchStore().reindexTabset(tabset.id)"-->
-      <!--                         icon="o_note"-->
-      <!--                         label="Re-Index Search (dev)"/>-->
-
-      <!--        <q-separator inset/>-->
-      <!--      </template>-->
-
       <ContextMenuItem v-close-popup
                        @was-clicked="deleteTabsetDialog(tabset as Tabset)"
                        icon="o_delete"
                        color="negative"
                        :disable="tabset.sharedId !== undefined"
-                       label="Delete Tabset">
+                       :label="tabset.type === TabsetType.SESSION ? 'Delete Session' : 'Delete Tabset'">
         <q-tooltip class="tooltip-small" v-if="tabset.sharedId !== undefined">
           Stop sharing first if you want to delete this tabset
         </q-tooltip>
@@ -137,20 +110,16 @@
 <script lang="ts" setup>
 
 import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
+import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
 import NavigationService from "src/services/NavigationService";
 import EditTabsetDialog from "src/tabsets/dialogues/EditTabsetDialog.vue";
 import {LocalStorage, useQuasar} from "quasar";
 import {useUtils} from "src/core/services/Utils";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
-import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
-import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
 import DeleteTabsetDialog from "src/tabsets/dialogues/DeleteTabsetDialog.vue";
 import ContextMenuItem from "src/core/components/helper/ContextMenuItem.vue";
 import {PropType} from "vue";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {Tab} from "src/tabsets/models/Tab";
 import {MarkTabsetAsArchivedCommand} from "src/tabsets/commands/MarkTabsetAsArchived";
 import {useRouter} from "vue-router";
 import {useUiStore} from "src/ui/stores/uiStore";
@@ -243,36 +212,12 @@ const openOverviewPage = (tabsetId: string) =>
 const focus = (tabset: Tabset) =>
   router.push("/sidepanel/tabsets/" + tabset.id)
 
-const pin = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsFavoriteCommand(tabset.id))
-
-const unpin = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(tabset.id))
-
 const showCreateNoteItem = () =>
   useFeaturesStore().hasFeature(FeatureIdent.NOTES)
 
 
-const getPublicTabsetLink = (ts: Tabset) => {
-  let image = "https://tabsets.web.app/favicon.ico"
-  if (ts && ts.sharedId) {
-    ts.tabs.reverse().forEach((t: Tab) => {
-      if (t.image) {
-        image = t.image
-      }
-    })
-    return publictabsetsPath + ts.sharedId + "?n=" + btoa(ts.name) + "&i=" + btoa(image)
-  }
-  return image
-}
-
 const archiveTabset = (tabset: Tabset) =>
   useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabset.id), NotificationType.NOTIFY)
-
-const changeWindow = (tabset: Tabset, window: string) => {
-  tabset.window = window
-  useTabsetService().saveTabset(tabset)
-}
 
 const deleteTabsetDialog = (tabset: Tabset): void => {
   if (tabset.tabs.length === 0) {
@@ -287,6 +232,11 @@ const deleteTabsetDialog = (tabset: Tabset): void => {
       tabsCount: tabset.tabs.length
     }
   })
+}
+
+const convertToCollection = (tabset: Tabset) => {
+  tabset.type = TabsetType.DEFAULT
+  useTabsetsStore().saveTabset(tabset)
 }
 
 </script>

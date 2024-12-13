@@ -44,7 +44,7 @@ import ReindexDialog from "components/dialogues/ReindexDialog.vue";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {Tab} from "src/tabsets/models/Tab";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper.vue";
+import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import Analytics from "src/core/utils/google-analytics";
 import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";

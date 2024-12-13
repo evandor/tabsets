@@ -109,6 +109,16 @@
 
   <q-list>
 
+    <q-expansion-item label="Quick Access Shortcut" :default-opened="true">
+      <q-card>
+        <q-card-section>
+          <q-input
+            filled dense
+            v-model="quickaccess"/>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
     <q-expansion-item label="Tags" :default-opened="true">
       <q-card>
         <q-card-section>
@@ -207,7 +217,7 @@
           <div class="row q-mx-sm" v-for="headerRow in request?.headers">
             <div class="col-5 text-caption text-bold">{{ headerRow['name' as keyof object] }}</div>
             <div class="col-7 text-right text-caption ellipsis">
-              {{ headerRow['value' as keyof object]  }}
+              {{ headerRow['value' as keyof object] }}
               <q-tooltip>{{ headerRow }}</q-tooltip>
             </div>
           </div>
@@ -353,17 +363,15 @@ import {formatDistance} from "date-fns";
 import NavigationService from "src/services/NavigationService";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import TabDetailsSearchIndex from "pages/sidepanel/helper/TabDetailsSearchIndex.vue";
-import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useNotificationHandler} from "src/core/services/ErrorHandler";
 import {BlobMetadata} from "src/snapshots/models/BlobMetadata";
-import {SaveHtmlCommand} from "src/snapshots/commands/SaveHtmlCommand";
 import {useNavigationService} from "src/core/services/NavigationService";
 import {useQuasar} from "quasar";
 import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {TabReferenceType} from "src/content/models/TabReference";
 import {useRequestsService} from "src/requests/services/RequestsService";
 import {RequestInfo} from "src/requests/models/RequestInfo";
-import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
+import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
 
 const {inBexMode} = useUtils()
 
@@ -375,10 +383,11 @@ const route = useRoute()
 
 const thumbnail = ref('')
 const content = ref('')
+const quickaccess = ref('')
 const metaRows = ref<object[]>([])
 const tab = ref<Tab | undefined>(undefined)
 const htmls = ref<BlobMetadata[]>([])
-const request = ref<RequestInfo |undefined>(undefined)
+const request = ref<RequestInfo | undefined>(undefined)
 const tabId = ref<string | undefined>(undefined)
 const opensearchterm = ref<string | undefined>(undefined)
 
@@ -396,6 +405,7 @@ watchEffect(() => {
     } else {
       tags.value = []
     }
+    quickaccess.value = tab.value.quickaccess
   }
   if (tab.value) {
     useRequestsService().getWebRequestFor(tab.value.id)
@@ -406,6 +416,15 @@ watchEffect(() => {
 
 })
 
+watchEffect(() => {
+  if (quickaccess.value && tab.value) {
+    quickaccess.value = quickaccess.value
+      .replace(" ", "")
+      .replace(STRIP_CHARS_IN_USER_INPUT, '')
+    tab.value.quickaccess = quickaccess.value
+    useTabsetService().saveCurrentTabset().catch((err) => console.error(err))
+  }
+})
 
 watchEffect(() => {
   if (tab.value) {
@@ -496,23 +515,6 @@ const formatDate = (timestamp: number | undefined) =>
 
 const showTabDetails = () =>
   NavigationService.openOrCreateTab([chrome.runtime.getURL("/www/index.html#/mainpanel/tab/" + tab.value?.id)])
-
-const savePng = (tab: Tab | undefined) => {
-  if (tab) {
-    //useCommandExecutor().execute(new SavePngCommand(tab, "saved by user"))
-  }
-}
-
-const saveHtml = (tab: Tab | undefined) => {
-  if (tab) {
-    const tabCandidates = _.filter(useTabsStore2().browserTabs, (t: chrome.tabs.Tab) => t?.url === tab.url)
-    if (tabCandidates.length > 0) {
-      useCommandExecutor().execute(new SaveHtmlCommand(tab.id, tab.url || ''))
-    } else {
-      handleError(`no matching tab found for ${tab.url}`)
-    }
-  }
-}
 
 const updatedTags = (val: string[]) => {
   console.log("val", val)

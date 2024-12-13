@@ -1,5 +1,4 @@
 import {RouteRecordRaw} from 'vue-router';
-import {LocalStorage} from "quasar";
 
 const routes: RouteRecordRaw[] = [
   {
