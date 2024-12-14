@@ -1,7 +1,7 @@
 [submodule "src/bookmarks"]
 	path = src/bookmarks
 	url = https://github.com/evandor/submodule-bookmarks.git
-	branch = chrome-extension
+	branch = main
 [submodule "src/windows"]
 	path = src/windows
 	url = https://github.com/evandor/submodule-windows.git
