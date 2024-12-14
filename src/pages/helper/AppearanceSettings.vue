@@ -6,14 +6,6 @@
 
     <div class="row items-baseline q-ma-md q-gutter-md">
 
-<!--      <InfoLine :label="t('title')">-->
-<!--        <q-input type="text" color="primary" filled v-model="installationTitle" label="">-->
-<!--          <template v-slot:prepend>-->
-<!--            <q-icon name="o_edit_note"/>-->
-<!--          </template>-->
-<!--        </q-input>-->
-<!--      </InfoLine>-->
-
       <InfoLine :label="t('dark_mode')">
         <q-radio v-model="darkMode" val="auto" :label="t('Auto')"/>
         <q-radio v-model="darkMode" val="true" :label="t('Enabled')"/>
@@ -72,6 +64,10 @@
 
       <InfoLine label="Switch off content script logging" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <q-checkbox v-model="contentScriptLoggingOff" label="No tabset related logging in content scripts"/>
+      </InfoLine>
+
+      <InfoLine label="Overlap Indicator">
+        <q-checkbox v-model="overlapIndicator" label="Display how similar the current tabset and your current tabs are"/>
       </InfoLine>
 
     </div>
@@ -211,6 +207,7 @@ const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || 
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
 const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
+const overlapIndicator = ref(LocalStorage.getItem('ui.overlapIndicator') || false)
 const hideIndicatorIcon = ref(LocalStorage.getItem('ui.hideIndicatorIcon') || false)
 const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))
 const contentScriptLoggingOff = ref(LocalStorage.getItem('ui.contentScriptLoggingOff') || false)
@@ -279,8 +276,12 @@ watch(() => fontsize.value, () => {
 
 watch(() => fullUrls.value, (a:any,b:any) => {
   LocalStorage.set('ui.fullUrls', fullUrls.value)
-  //sendMsg('fullUrls-changed', {value: fullUrls.value})
   sendMsg('settings-changed', {identifier: "ui.fullUrls", value: fullUrls.value})
+})
+
+watch(() => overlapIndicator.value, (a:any,b:any) => {
+  LocalStorage.set('ui.overlapIndicator', overlapIndicator.value)
+  sendMsg('settings-changed', {identifier: "ui.overlapIndicator", value: overlapIndicator.value})
 })
 
 watch(() => hideIndicatorIcon.value, (a:any,b:any) => {

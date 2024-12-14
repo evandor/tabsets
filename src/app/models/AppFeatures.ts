@@ -116,8 +116,8 @@ export class AppFeatures {
       'Browser Notifications',
       'Allow Tabsets to send Notifications via your Browser. Recommended.',
       'o_notifications', '', ['all']),
-    // .setActivateCommands([new GrantPermissionCommand('notifications')])
-    // .setDeactivateCommands([ne0w RevokePermissionCommand('notifications')]),
+      // .setActivateCommands([new GrantPermissionCommand('notifications')])
+      // .setDeactivateCommands([ne0w RevokePermissionCommand('notifications')]),
 
     new Feature(FeatureIdent.ANNOTATIONS, FeatureType.DISABLED,
       'Annotate Websites',

@@ -2,7 +2,7 @@
   <!-- FirstToolbarHelper2 -->
   <q-toolbar class="q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
-      <div class="row q-ma-none q-pa-none">
+      <div class="row q-ma-none q-pa-none" v-if="useUiStore().overlapIndicator">
         <q-linear-progress :value="overlap" size="2px" :style="thresholdStyle()">
           <q-tooltip class="tooltip-small">{{ overlapTooltip }}</q-tooltip>
         </q-linear-progress>

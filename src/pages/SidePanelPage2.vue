@@ -270,6 +270,9 @@ if (inBexMode()) {
         case "ui.fullUrls":
           useUiStore().setShowFullUrls(message.data.value)
           break;
+        case "ui.overlapIndicator":
+          useUiStore().setOverlapIndicator(message.data.value)
+          break;
         case "ui.contentScriptLoggingOff":
           useUiStore().setContentScriptLoggingOff(message.data.value)
           break;
