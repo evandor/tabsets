@@ -1,7 +1,6 @@
 import {expect, Locator, Page} from "@playwright/test";
-import {TabsetPage} from "app/e2e/TabsetPage";
 
-export class TabsetTestPage extends TabsetPage {
+export class TabsetTestPage { //extends TabsetPage {
 
   readonly page: Page;
   private extensionId: string;
@@ -14,7 +13,7 @@ export class TabsetTestPage extends TabsetPage {
   // private newTabsetAutoAdd: Locator;
 
   constructor(page: Page, extensionId: string) {
-    super();
+   // super();
     this.page = page;
     this.extensionId = extensionId;
     expect(page).toHaveURL(/.*\/tabsets\//);

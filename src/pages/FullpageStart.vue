@@ -36,7 +36,7 @@ timer = setTimeout(() => {
   chrome.tabs.getCurrent((t?: chrome.tabs.Tab ) => {
     //console.log("got tab", t)
     const options = {
-      tabId: t.id,
+      tabId: t?.id || "",
       enabled: false
     }
     console.log("setting options", options)

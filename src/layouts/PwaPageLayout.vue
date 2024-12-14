@@ -15,18 +15,18 @@
 
 
         <div>
-          <q-icon v-if="!useUiStore().networkOnline || useUiStore().mqttOffline" name="cloud_off">
-            <q-tooltip class="tooltip-small">{{useUiStore().sharingMqttUrl}}: {{ useUiStore().mqttOffline }}</q-tooltip>
-          </q-icon>
+<!--          <q-icon v-if="!useUiStore().networkOnline || useUiStore().mqttOffline" name="cloud_off">-->
+<!--            <q-tooltip class="tooltip-small">{{useUiStore().sharingMqttUrl}}: {{ useUiStore().mqttOffline }}</q-tooltip>-->
+<!--          </q-icon>-->
 
         </div>
 
-        <div class="cursor-pointer" @click="router.push('/')" v-if="notificationsStore.updateToVersion !== ''">
-          <q-btn
-            class="text-primary bg-warning"
-            @click="installNewVersion(notificationsStore.updateToVersion)"
-            :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>
-        </div>
+<!--        <div class="cursor-pointer" @click="router.push('/')" v-if="notificationsStore.updateToVersion !== ''">-->
+<!--          <q-btn-->
+<!--            class="text-primary bg-warning"-->
+<!--            @click="installNewVersion(notificationsStore.updateToVersion)"-->
+<!--            :label="'New Version ' + notificationsStore.updateToVersion + ' available. Click here to update'"/>-->
+<!--        </div>-->
       </q-toolbar>
     </q-header>
 
@@ -53,37 +53,20 @@
 import {ref, watchEffect} from 'vue';
 import {useMeta, useQuasar} from "quasar";
 import {useRouter} from "vue-router";
-import {useNotificationsStore} from "src/stores/notificationsStore";
 import Navigation from "src/components/Navigation.vue"
-import {useSearchStore} from "src/search/stores/searchStore";
 import _ from "lodash";
 import {useSpacesStore} from "src/spaces/stores/spacesStore"
-import OpenTabsThresholdWidget from 'src/components/widgets/OpenTabsThresholdWidget.vue'
-import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
-import SearchWidget from 'src/components/widgets/SearchWidget.vue'
 import {DrawerTabs, UserLevel, useUiStore} from "src/ui/stores/uiStore";
-import NotificationDialog from "components/dialogues/NotificationDialog.vue"
-import {usePermissionsStore} from "src/stores/permissionsStore";
-import {Notification, NotificationStatus} from "src/models/Notification";
 import {useUtils} from "src/core/services/Utils";
-import DrawerRight from "components/DrawerRight.vue";
-import ExportDialog from "components/dialogues/ExportDialog.vue";
-import ImportDialog from "components/dialogues/ImportDialog.vue";
 import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
-import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {useSettingsStore} from "src/stores/settingsStore"
-import ToolbarButton from "components/widgets/ToolbarButton.vue";
 
 const $q = useQuasar()
 const router = useRouter()
 
 const leftDrawerOpen = ref($q.screen.gt.lg)
 
-const notificationsStore = useNotificationsStore()
-const permissionsStore = usePermissionsStore()
-const settingsStore = useSettingsStore()
+// const notificationsStore = useNotificationsStore()
 const spacesStore = useSpacesStore()
 
 const spacesOptions = ref<object[]>([])
@@ -98,8 +81,6 @@ $q.loadingBar.setDefaults({
   position: 'top'
 })
 
-const settingsClicked = ref(false)
-
 watchEffect(() => {
   suggestions.value = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
 })
@@ -113,9 +94,6 @@ watchEffect(() => {
     .concat({id: '', label: 'create new space'})
 })
 
-//@ts-ignore
-const appVersion = import.meta.env.PACKAGE_VERSION
-
 useMeta(() => {
   return {
     // @ts-ignore
@@ -123,51 +101,14 @@ useMeta(() => {
   }
 })
 
-
-const title = () => {
-  return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ?
-    'Tabsets Web' : 'Tabsets'
-}
-
-const goHome = () => router.push("/")
-
-const toggleLeftDrawer = () => {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-  useUiStore().toggleLeftDrawer()
-}
-
 const installNewVersion = (version: string) => {
-  notificationsStore.updateAvailable(false)
+  // notificationsStore.updateAvailable(false)
   chrome.tabs.create({
     active: true,
     url: "https://tabsets.web.app/#/updatedTo/" + version
   })
   chrome.runtime.reload()
 }
-
-const unreadNotifications = () => _.filter(notificationsStore.notifications, (n: Notification) => n.status === NotificationStatus.UNREAD)
-
-const showNotificationDialog = (nId: string) => $q.dialog({
-  component: NotificationDialog, componentProps: {
-    notificationId: nId
-  }
-})
-
-const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab, data)
-
-const showExportDialog = () => $q.dialog({component: ExportDialog})
-const showImportDialog = () => $q.dialog({component: ImportDialog})
-
-const suggestionDialog = (s: Suggestion) => $q.dialog({
-  component: SuggestionDialog, componentProps: {
-    suggestion: s
-  }
-})
-
-const dependingOnStates = () =>
-  _.find(useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]), s => s.state === SuggestionState.NEW) ? 'warning' : 'white'
-
-const toggleSettings = () => settingsClicked.value = !settingsClicked.value
 
 
 </script>

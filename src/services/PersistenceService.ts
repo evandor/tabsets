@@ -1,5 +1,3 @@
-import {MetaLink} from "src/models/MetaLink";
-
 // Deprecated
 interface PersistenceService {
 

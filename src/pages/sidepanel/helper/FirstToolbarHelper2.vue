@@ -14,7 +14,7 @@
           <!-- no spaces && searching -->
           <SearchWithTransitionHelper v-if="searching"
                                       :search-term="props.searchTerm"
-                                      :search-hits="props.searchHits"/>
+                                      :search-hits="props.searchHits!"/>
 
           <FilterWithTransitionHelper v-else-if="showFilter"/>
           <!-- no spaces && not searching -->

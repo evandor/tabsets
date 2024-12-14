@@ -101,10 +101,10 @@ const loadThumbnail = (tab: Tab) => {
       .then(data => {
         //console.log("loading tn for ", tab.url)
         const key = btoa(tab.url || '')
-        if (data && data.thumbnail) {
-          //console.log("found key", key, data)
-          thumbnails.value.set(key, data.thumbnail)
-        }
+        // if (data && data.thumbnail) {
+        //   //console.log("found key", key, data)
+        //   thumbnails.value.set(key, data.thumbnail)
+        // }
       })
       .catch(err => console.log("err", err))
 }
@@ -115,9 +115,9 @@ function cardStyle(tab: Tab) {
   if (isOpen(tab)) {
     borderColor = "border-color:#8f8f8f"
   }
-  if (tab?.selected) {
-    borderColor = "border-color:#000066"
-  }
+  // if (tab?.selected) {
+  //   borderColor = "border-color:#000066"
+  // }
 
   let background = ''
   // if (tab?.isDuplicate) {
@@ -138,13 +138,13 @@ const setInfo = (tab: Tab) => {
   if (parts.length > 1) {
     emits('sendCaption', parts[0] + "[... params omitted....]")
   } else if (parts.length === 1) {
-    emits('sendCaption', parts[0].toString());
+    emits('sendCaption', parts[0]!.toString());
   }
 }
 
 const setCustomTitle = (tab: Tab, newValue: string) => {
   console.log(" -> ", newValue)
-  TabsetService.setCustomTitle(tab, newValue)
+  TabsetService.setCustomTitle(tab, newValue,'')
 }
 
 
@@ -157,8 +157,8 @@ const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 const dynamicNameOrTitleModel = (tab: Tab) => tab.name ? tab.name : tab.title
 
 function deleteTab(tab: Tab) {
-  useCommandExecutor()
-      .executeFromUi(new DeleteTabCommand(tab))
+  // useCommandExecutor()
+  //     .executeFromUi(new DeleteTabCommand(tab))
 }
 
 </script>

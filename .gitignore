@@ -5,6 +5,7 @@ node_modules
 # Quasar core related directories
 .quasar
 /dist
+/quasar.config.*.temporary.compiled*
 
 # Cordova related directories and files
 /src-cordova/node_modules
@@ -13,12 +14,8 @@ node_modules
 /src-cordova/www
 
 # Capacitor related directories and files
-/src-capacitor2/www
-/src-capacitor2/node_modules
-
-# BEX related directories and files
-/src-bex/www
-/src-bex/js/core
+/src-capacitor/www
+/src-capacitor/node_modules
 
 # Log files
 npm-debug.log*
@@ -36,50 +33,15 @@ yarn-error.log*
 docs/.vitepress/dist
 docs/.vitepress/cache
 
-/config/.env.local
+# local .env files
+.env.local*
 /.env
-/releases/0.1.0/Packaged.tabsets.zip
-/releases/0.1.0/Packaged.tabsets/
-/releases/0.1.1/
-/releases/0.1.2/
-/releases/0.2.0/
-/releases/0.2.1/
-/releases/0.2.2/
-/releases/0.2.3/
-/test-results/
-/playwright-report/
-/playwright/.cache/
-/releases/0.2.4 (first public)/
-/releases/0.2.5/
-/e2e/screenshots/
-/releases/0.2.6/
-/releases/0.2.7/
-/releases/0.2.8/
-/releases/0.2.9/
-/releases/0.2.10/
-/releases/0.2.11/
-/releases/0.2.12/
-/releases/0.3.0/
-/releases/0.3.1/
-/releases/0.3.2/
-/releases/0.4.0/
-/public/cat.png
-/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/model.safetensors
-/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/pytorch_model.bin
-/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/rust_model.ot
-/public/models/Xenova/distilbert-base-uncased-finetuned-sst-2-english/tf_model.h5
-/public/vids/
-/coverage/
-/docs/vids/
-/Tabsets - Manage Tabs and Bookmarks with Ease/
-/.dev.env
+
+# Sentry Config File
+.env.sentry-build-plugin
+/.env.prd
 /.prd.env
 /.env.tmp
-/.tabsets-backend-prd.env
-/.env.tmp
-/.opera.env
-/docs/submodules/build/
-/src-bex/manifest.tmp
 
 # Sentry Config File
 .env.sentry-build-plugin
@@ -88,3 +50,4 @@ docs/.vitepress/cache
 .sentryclirc
 /.edge.env
 /blob-report/
+/test-results/

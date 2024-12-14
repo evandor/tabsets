@@ -4,7 +4,7 @@
     <q-img v-if="props.tab.image && props.tab.image.startsWith('blob://')"
            style="border:3px dotted white;border-radius:3px"
            :src="imgFromBlob" width="70px"/>
-    <a v-else-if="props.tab.image" :href="props.tab.url" target="_blank">
+    <a v-else-if="props.tab.image" :href="props.tab.url!" target="_blank">
       <q-img style="border:1px dotted white;border-radius:3px" :src="props.tab.image" width="140px"/>
     </a>
     <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
@@ -15,7 +15,7 @@
 
   <!-- name, title, description, url && note -->
   <q-item-section :style="itemStyle(props.tab as Tab)" class="q-pa-sm q-ma-none"
-                  :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.title)">
+                  :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.tab.title || '')">
 
     <!-- name or title -->
     <q-item-label>
@@ -269,7 +269,7 @@ watchEffect(() => {
   if (props.tab) {
     // @ts-ignore
     thumbnailFor(props.tab)
-      .then((tn: object) => {
+      .then((tn: any) => {
         //console.log("tn", tn)
         if (tn && tn['thumbnail' as keyof object]) {
           thumbnail.value = tn['thumbnail' as keyof object]

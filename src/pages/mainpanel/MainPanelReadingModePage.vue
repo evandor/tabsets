@@ -29,8 +29,8 @@
           flat dense icon="open_in_new"
           color="primary"
           :label="$q.screen.gt.md ? 'Open Original Page' : 'Original'"
-          class="q-mr-sm"
-          @click="NavigationService.openOrCreateTab([tab?.tabReferences.filter(r => r.type === TabReferenceType.ORIGINAL_URL)[0].href || ''])">
+          class="q-mr-sm">
+<!--          @click="NavigationService.openOrCreateTab([tab?.tabReferences.filter(r => r.type === TabReferenceType.ORIGINAL_URL)[0].href || ''])">-->
           <q-tooltip>Open Original Page</q-tooltip>
         </q-btn>
 
@@ -94,7 +94,7 @@ watchEffect(async () => {
     tab.value = res.tab
     const tabRefs:TabReference[] = res.tab.tabReferences.filter(r => r.type === TabReferenceType.READING_MODE)
     if (tabRefs.length > 0) {
-      const article = tabRefs[0].data[0]
+      const article = tabRefs[0]!.data[0]
       // const response = await fetch(tab.value.url || '')
       // const s = await response.text()
       // const parser = new DOMParser();

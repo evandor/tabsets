@@ -20,7 +20,7 @@
 
 <script lang="ts" setup>
 
-import {onMounted, ref, watchEffect} from "vue";
+import {onMounted, PropType, ref, watchEffect} from "vue";
 import {useSearchStore} from "src/search/stores/searchStore";
 import _ from "lodash";
 import {Tab} from "src/tabsets/models/Tab";

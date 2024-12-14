@@ -84,16 +84,16 @@ watchEffect(async () => {
   console.log("found", found)
   if (found && found.url) {
     title.value = found.title || 'unknown'
-    const request = await TabsetService.getRequestForUrl(found.url)
-    if (request && request.requestInfo && _.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
-      src.value = 'data:text/html,<p>cannot open this page in iFrame ;(</p>'
-    } else {
-      if (found.url) {
-        src.value = `${process.env.BACKEND_URL}/preview/${btoa(found.url)}`
-      } else {
-        src.value = 'data:text/html,<p>loading....</p>'
-      }
-    }
+    // const request = await TabsetService.getRequestForUrl(found.url)
+    // if (request && request.requestInfo && _.find(Object.values(request.requestInfo.headers), (v: any) => v.name === 'x-frame-options')) {
+    //   src.value = 'data:text/html,<p>cannot open this page in iFrame ;(</p>'
+    // } else {
+    //   if (found.url) {
+    //     src.value = `${process.env.BACKEND_URL}/preview/${btoa(found.url)}`
+    //   } else {
+    //     src.value = 'data:text/html,<p>loading....</p>'
+    //   }
+    // }
   }
 
 })

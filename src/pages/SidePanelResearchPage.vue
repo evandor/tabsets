@@ -167,16 +167,16 @@
                     <SourcePageAnnotation
                       v-if="currentSelectionText && currentSelectionId === a.id"
                       :key="randomKey"
-                      :metadata="metadatas[currentSelectionIndex]"
-                      :source-id="sourceId"
-                      :snapshotId="currentSnapshotId"
-                      :selectionId="currentSelectionId"
-                      :selectionText="currentSelectionText"
-                      :selection="currentSelection"
-                      :selectionViewPort="currentSelectionViewPort"
-                      :selectionRect="currentSelectionRect"
+                      :metadata="metadatas[currentSelectionIndex]!"
+                      :source-id="sourceId!"
+                      :snapshotId="currentSnapshotId!"
+                      :selectionId="currentSelectionId!"
+                      :selectionText="currentSelectionText!"
+                      :selection="currentSelection!"
+                      :selectionViewPort="currentSelectionViewPort!"
+                      :selectionRect="currentSelectionRect!"
                       :selectionTitle="currentSelectionTitle || ''"
-                      :selectionRemark="currentSelectionRemark"
+                      :selectionRemark="currentSelectionRemark!"
                       @set-annotations="(as: Annotation[]) => setAnnotations(as)"
                       @close-view="currentSelectionText = undefined"
                     />
@@ -187,15 +187,15 @@
                 <div class="q-ma-sm">
                   <SourcePageAnnotation v-if="currentSelectionText && !currentSelectionId"
                                         :key="randomKey"
-                                        :metadata="metadatas[currentSelectionIndex]"
+                                        :metadata="metadatas[currentSelectionIndex]!"
                                         :source-id="sourceId"
-                                        :snapshotId="currentSnapshotId"
-                                        :selectionText="currentSelectionText"
-                                        :selectionTitle="currentSelectionTitle"
-                                        :selection="currentSelection"
-                                        :selectionViewPort="currentSelectionViewPort"
-                                        :selectionRect="currentSelectionRect"
-                                        :selectionRemark="currentSelectionRemark"
+                                        :snapshotId="currentSnapshotId!"
+                                        :selectionText="currentSelectionText!"
+                                        :selectionTitle="currentSelectionTitle!"
+                                        :selection="currentSelection!"
+                                        :selectionViewPort="currentSelectionViewPort!"
+                                        :selectionRect="currentSelectionRect!"
+                                        :selectionRemark="currentSelectionRemark!"
                                         @set-annotations="(as: Annotation[]) => setAnnotations(as)"
                                         @close-view="currentSelectionText = undefined"
                   />
@@ -300,7 +300,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     let titleSuggestion = undefined
     switch (split.length) {
       case 1:
-        titleSuggestion = getTitleSuggestion(split[0])
+        titleSuggestion = getTitleSuggestion(split[0]!)
         break
       case 2:
         titleSuggestion = getTitleSuggestion(split[0] + " " + split[1])

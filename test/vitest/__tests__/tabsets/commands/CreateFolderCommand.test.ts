@@ -39,7 +39,7 @@ describe('CreateFolderCommand', () => {
     const tabset = await createTabset();
     await new CreateFolderCommand(uid(),"subA", [], tabset.id).execute()
     expect(tabset.folders.length).toBe(1)
-    expect(tabset.folders[0].name).toBe("subA")
+    expect(tabset.folders[0]!.name).toBe("subA")
   });
 
   it('add subsub folder using parentFolderId', async () => {
@@ -49,10 +49,10 @@ describe('CreateFolderCommand', () => {
     await new CreateFolderCommand(uid(),"subsubB", [], tabset.id, subBId.id).execute()
     expect(tabset.folderActive).toBe(undefined)
     expect(tabset.folders.length).toBe(1)
-    expect(tabset.folders[0].name).toBe("subB")
-    const subSubFolders = tabset.folders[0].folders
+    expect(tabset.folders[0]!.name).toBe("subB")
+    const subSubFolders = tabset.folders[0]!.folders
     expect(subSubFolders.length).toBe(1)
-    expect(subSubFolders[0].name).toBe("subsubB")
+    expect(subSubFolders[0]!.name).toBe("subsubB")
   });
 
   it('add subsub folder using active folder of tabset', async () => {
@@ -63,10 +63,10 @@ describe('CreateFolderCommand', () => {
     await new CreateFolderCommand(uid(),"subsubC", [], tabset.id).execute()
     expect(tabset.folderActive).toBe(subCId.id)
     expect(tabset.folders.length).toBe(1)
-    expect(tabset.folders[0].name).toBe("subC")
-    const subSubFolders = tabset.folders[0].folders
+    expect(tabset.folders[0]!.name).toBe("subC")
+    const subSubFolders = tabset.folders[0]!.folders
     expect(subSubFolders.length).toBe(1)
-    expect(subSubFolders[0].name).toBe("subsubC")
+    expect(subSubFolders[0]!.name).toBe("subsubC")
   });
 
 

@@ -90,7 +90,7 @@ const itemStyle = () => {
 
 const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
 
-const thumbnailFor = async (tab: Tab): Promise<object> => {
+const thumbnailFor = async (tab: Tab): Promise<string> => {
   return await useThumbnailsService().getThumbnailFor(tab.url)
 }
 
@@ -98,7 +98,7 @@ watchEffect(() => {
   if (props.tab) {
     // @ts-ignore
     thumbnailFor(props.tab)
-      .then((tn: object) => {
+      .then((tn: any) => {
         //console.log("tn", tn)
         if (tn && tn['thumbnail' as keyof object]) {
           thumbnail.value = tn['thumbnail' as keyof object]

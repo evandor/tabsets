@@ -123,12 +123,12 @@ describe('BookmarksStore', () => {
     const bmNodes = useBookmarksStore().bookmarksNodes2 as TreeNode[]
     console.log("bmNodes", bmNodes.toString())
     expect(bmNodes.length).toBe(1)
-    expect(bmNodes[0].getHeader()).toBe('leaf')
-    expect(bmNodes[0].id.length).toBe(36)
-    expect(bmNodes[0].url).toBe(undefined)
-    expect(bmNodes[0].children.length).toBe(0)
-    expect(bmNodes[0].subFoldersCount).toBe(0)
-    expect(bmNodes[0].subNodesCount).toBe(0)
+    expect(bmNodes[0]!.getHeader()).toBe('leaf')
+    expect(bmNodes[0]!.id.length).toBe(36)
+    expect(bmNodes[0]!.url).toBe(undefined)
+    expect(bmNodes[0]!.children.length).toBe(0)
+    expect(bmNodes[0]!.subFoldersCount).toBe(0)
+    expect(bmNodes[0]!.subNodesCount).toBe(0)
 
   })
 
@@ -145,11 +145,11 @@ describe('BookmarksStore', () => {
     console.log("nonLeafNodes", nonLeafNodes.toString())
     expect(nonLeafNodes.length).toBe(1)
     // expect(nonLeafNodes[0].getHeader()).toBe('leaf') //?
-    expect(nonLeafNodes[0].id.length).toBe(36)
-    expect(nonLeafNodes[0].url).toBe(undefined)
-    expect(nonLeafNodes[0].children.length).toBe(0)
-    expect(nonLeafNodes[0].subFoldersCount).toBe(0)
-    expect(nonLeafNodes[0].subNodesCount).toBe(0)
+    expect(nonLeafNodes[0]!.id.length).toBe(36)
+    expect(nonLeafNodes[0]!.url).toBe(undefined)
+    expect(nonLeafNodes[0]!.children.length).toBe(0)
+    expect(nonLeafNodes[0]!.subFoldersCount).toBe(0)
+    expect(nonLeafNodes[0]!.subNodesCount).toBe(0)
   })
 
   it('initializing bookmarksNodes2 correctly for bookmarks with first level bookmark', async () => {
@@ -166,10 +166,10 @@ describe('BookmarksStore', () => {
     // console.log("bmNodes", bmNodes.toString())
     expect(bmNodes.length).toBe(1)
     // expect(bmNodes[0].getHeader()).toBe('leaf')
-    expect(bmNodes[0].url).toBe(undefined)
-    expect(bmNodes[0].children.length).toBe(1)
-    expect(bmNodes[0].subFoldersCount).toBe(0)
-    expect(bmNodes[0].subNodesCount).toBe(1)
+    expect(bmNodes[0]!.url).toBe(undefined)
+    expect(bmNodes[0]!.children.length).toBe(1)
+    expect(bmNodes[0]!.subFoldersCount).toBe(0)
+    expect(bmNodes[0]!.subNodesCount).toBe(1)
     expect(useBookmarksStore().bookmarksCount).toBe(1)
     expect(useBookmarksStore().foldersCount).toBe(1)
   })
@@ -188,10 +188,10 @@ describe('BookmarksStore', () => {
     // console.log("bmNodes", bmNodes.toString())
     expect(nonLeafNodes.length).toBe(1)
     // expect(nonLeafNodes[0].getHeader()).toBe('leaf')
-    expect(nonLeafNodes[0].url).toBe(undefined)
-    expect(nonLeafNodes[0].children.length).toBe(0)
-    expect(nonLeafNodes[0].subFoldersCount).toBe(0)
-    expect(nonLeafNodes[0].subNodesCount).toBe(1)
+    expect(nonLeafNodes[0]!.url).toBe(undefined)
+    expect(nonLeafNodes[0]!.children.length).toBe(0)
+    expect(nonLeafNodes[0]!.subFoldersCount).toBe(0)
+    expect(nonLeafNodes[0]!.subNodesCount).toBe(1)
   })
 
   it('initializing bookmarksNodes2 correctly for bookmarks with two first level bookmarks', async () => {
@@ -209,22 +209,22 @@ describe('BookmarksStore', () => {
 
     console.log("bmNodes", bmNodes)
     expect(bmNodes.length).toBe(1)
-    expect(bmNodes[0].children.length).toBe(2)
-    expect(bmNodes[0].subFoldersCount).toBe(0)
-    expect(bmNodes[0].subNodesCount).toBe(2)
+    expect(bmNodes[0]!.children.length).toBe(2)
+    expect(bmNodes[0]!.subFoldersCount).toBe(0)
+    expect(bmNodes[0]!.subNodesCount).toBe(2)
     expect(useBookmarksStore().bookmarksCount).toBe(2)
     expect(useBookmarksStore().foldersCount).toBe(1)
 
-    expect(bmNodes[0].children[0].title).toBe("bm1")
-    expect(bmNodes[0].children[0].url).toBe("url1")
-    expect(bmNodes[0].children[0].subNodesCount).toBe(0)
-    expect(bmNodes[0].children[0].subFoldersCount).toBe(0)
-    expect(bmNodes[0].children[0].children.length).toBe(0)
-    expect(bmNodes[0].children[1].title).toBe("bm2")
-    expect(bmNodes[0].children[1].url).toBe("url2")
-    expect(bmNodes[0].children[1].subNodesCount).toBe(0)
-    expect(bmNodes[0].children[1].subFoldersCount).toBe(0)
-    expect(bmNodes[0].children[1].children.length).toBe(0)
+    expect(bmNodes[0]!.children[0]!.title).toBe("bm1")
+    expect(bmNodes[0]!.children[0]!.url).toBe("url1")
+    expect(bmNodes[0]!.children[0]!.subNodesCount).toBe(0)
+    expect(bmNodes[0]!.children[0]!.subFoldersCount).toBe(0)
+    expect(bmNodes[0]!.children[0]!.children.length).toBe(0)
+    expect(bmNodes[0]!.children[1]!.title).toBe("bm2")
+    expect(bmNodes[0]!.children[1]!.url).toBe("url2")
+    expect(bmNodes[0]!.children[1]!.subNodesCount).toBe(0)
+    expect(bmNodes[0]!.children[1]!.subFoldersCount).toBe(0)
+    expect(bmNodes[0]!.children[1]!.children.length).toBe(0)
   })
 
   it('initializing nonLeafNodes correctly for bookmarks with two first level bookmarks', async () => {
@@ -241,10 +241,10 @@ describe('BookmarksStore', () => {
     const nonLeafNodes = useBookmarksStore().nonLeafNodes
 
     expect(nonLeafNodes.length).toBe(1)
-    expect(nonLeafNodes[0].title).toBe('folderA')
-    expect(nonLeafNodes[0].children.length).toBe(0)
-    expect(nonLeafNodes[0].subFoldersCount).toBe(0)
-    expect(nonLeafNodes[0].subNodesCount).toBe(2)
+    expect(nonLeafNodes[0]!.title).toBe('folderA')
+    expect(nonLeafNodes[0]!.children.length).toBe(0)
+    expect(nonLeafNodes[0]!.subFoldersCount).toBe(0)
+    expect(nonLeafNodes[0]!.subNodesCount).toBe(2)
 
   })
 
@@ -268,17 +268,17 @@ describe('BookmarksStore', () => {
     expect(nonLeafNodes.length).toBe(2)
 
     // Lesezeichenleiste
-    expect(nonLeafNodes[0].children.length).toBe(0)
-    expect(nonLeafNodes[0].subFoldersCount).toBe(0)
-    expect(nonLeafNodes[0].subNodesCount).toBe(0)
+    expect(nonLeafNodes[0]!.children.length).toBe(0)
+    expect(nonLeafNodes[0]!.subFoldersCount).toBe(0)
+    expect(nonLeafNodes[0]!.subNodesCount).toBe(0)
 
     // Andere Lesezeichen
-    expect(nonLeafNodes[1].children.length).toBe(1) // not bm1, but subfolder
-    expect(nonLeafNodes[1].subFoldersCount).toBe(1)
-    expect(nonLeafNodes[1].subNodesCount).toBe(2)
+    expect(nonLeafNodes[1]!.children.length).toBe(1) // not bm1, but subfolder
+    expect(nonLeafNodes[1]!.subFoldersCount).toBe(1)
+    expect(nonLeafNodes[1]!.subNodesCount).toBe(2)
 
     // Andere Lesezeichen > bm1
-    expect(nonLeafNodes[1].children[0].title).toBe("subfolder")
+    expect(nonLeafNodes[1]!.children[0]!.title).toBe("subfolder")
 
   })
 
@@ -307,17 +307,17 @@ describe('BookmarksStore', () => {
     expect(nonLeafNodes.length).toBe(2)
 
     // Lesezeichenleiste
-    expect(nonLeafNodes[0].children.length).toBe(1)
-    expect(nonLeafNodes[0].subFoldersCount).toBe(1)
-    expect(nonLeafNodes[0].subNodesCount).toBe(0)
+    expect(nonLeafNodes[0]!.children.length).toBe(1)
+    expect(nonLeafNodes[0]!.subFoldersCount).toBe(1)
+    expect(nonLeafNodes[0]!.subNodesCount).toBe(0)
 
     // Andere Lesezeichen
-    expect(nonLeafNodes[1].children.length).toBe(1) // not bm1, but subfolder
-    expect(nonLeafNodes[1].subFoldersCount).toBe(1)
-    expect(nonLeafNodes[1].subNodesCount).toBe(2)
+    expect(nonLeafNodes[1]!.children.length).toBe(1) // not bm1, but subfolder
+    expect(nonLeafNodes[1]!.subFoldersCount).toBe(1)
+    expect(nonLeafNodes[1]!.subNodesCount).toBe(2)
 
     // Andere Lesezeichen > bm1
-    expect(nonLeafNodes[1].children[0].title).toBe("subfolder")
+    expect(nonLeafNodes[1]!.children[0]!.title).toBe("subfolder")
 
   })
 });

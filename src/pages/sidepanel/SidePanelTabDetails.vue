@@ -280,7 +280,7 @@
           <div class="text-caption ellipsis">
             <div class="row">
               <div class="col-12 ellipsis">
-                {{ ref.data[0]['title' as keyof object] }}:
+                {{ ref.data[0]!['title' as keyof object] }}:
               </div>
             </div>
           </div>
@@ -431,7 +431,7 @@ watchEffect(() => {
     useThumbnailsService().getThumbnailFor(tab.value.url)
       .then(data => {
         if (data) {
-          thumbnail.value = data['thumbnail' as keyof object]
+          thumbnail.value = data['thumbnail' as keyof object]!
         } else {
           thumbnail.value = ''
         }

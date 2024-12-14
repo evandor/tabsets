@@ -5,7 +5,7 @@
               leave-active-class="animated fadeOutRight">
     <SearchWidget2
       :search-term="props.searchTerm"
-      :search-hits="props.searchHits"
+      :search-hits="props.searchHits!"
       style="position: absolute; left:10px;top:5px;max-width:260px"/>
   </Transition>
 

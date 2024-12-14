@@ -2,7 +2,7 @@
 // More info: https://quasar.dev/quasar-cli/developing-browser-extensions/dom-hooks
 import {bexDom} from 'quasar/wrappers'
 
-export default bexDom((bridge) => {
+export default bexDom((bridge:any) => {
 
   //console.log("====>", bridge)
 

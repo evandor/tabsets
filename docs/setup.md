@@ -35,7 +35,7 @@ git submodule add -b main https://github.com/evandor/submodule-opentabs.git src/
 git submodule add -b main https://github.com/evandor/submodule-requests.git src/requests
 git submodule add -b main https://github.com/evandor/submodule-search.git src/search
 git submodule add -b localstorage https://github.com/evandor/submodule-snapshots.git src/snapshots
-git submodule add -b main https://github.com/evandor/submodule-spaces.git src/spaces
+git submodule add -b localstorage https://github.com/evandor/submodule-spaces.git src/spaces
 git submodule add -b main https://github.com/evandor/submodule-suggestions.git src/suggestions
 git submodule add -b localstorage https://github.com/evandor/submodule-tabsets.git src/tabsets
 git submodule add -b localstorage https://github.com/evandor/submodule-thumbnails.git src/thumbnails

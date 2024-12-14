@@ -1,30 +1,16 @@
-/* eslint-env node */
-
-/*
- * This file runs in a Node context (it's NOT transpiled by Babel), so use only
- * the ES6 features that are supported by your Node version. https://node.green/
- */
-
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
+import { defineConfig } from '#q-app/wrappers';
+import { fileURLToPath } from 'node:url';
+import "dotenv/config.js";
+import path from "path";
 
-const {configure} = require('quasar/wrappers');
-const path = require('path');
-// const fs = require("fs");
-// const {sentryVitePlugin} = require("@sentry/vite-plugin");
-
-module.exports = configure(function (ctx) {
-
-  require('dotenv').config()
-
-  //console.log("======>", path.resolve(__dirname, './src/i18n/**'))
+export default defineConfig((ctx) => {
 
   return {
-
-
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
-    //preFetch: true,
+    // preFetch: true,
 
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
@@ -44,7 +30,7 @@ module.exports = configure(function (ctx) {
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
-      // 'mdi-v5',
+      // 'mdi-v7',
       // 'fontawesome-v6',
       'eva-icons',
       // 'themify',
@@ -59,21 +45,15 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
-
-      // https://github.com/quasarframework/quasar/issues/14589
-      sourcemap: 'true',
-
       target: {
-        browser: ['es2020', 'edge88', 'firefox78', 'chrome87'],
-        node: 'node16'
+        browser: [ 'es2022', 'firefox115', 'chrome115', 'safari14' ],
+        node: 'node20'
       },
 
-      viteVuePluginOptions: {
-        template: {
-          compilerOptions: {
-            isCustomElement: (tag) => tag.startsWith('webview')
-          }
-        }
+      typescript: {
+        strict: true,
+        vueShim: true
+        // extendTsConfig (tsConfig) {}
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
@@ -83,14 +63,14 @@ module.exports = configure(function (ctx) {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      //publicPath: '/www/',
+      // publicPath: '/',
       // analyze: true,
       env: {
         BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
-        BACKEND_URL: process.env.BACKEND_URL,
+        //BACKEND_URL: process.env.BACKEND_URL,
         HOST: process.env.HOST,
 
-        TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
+        //TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
         TABSETS_STAGE: process.env.STAGE,
         LOCALE: process.env.LOCALE,
         SENTRY_DSN: process.env.SENTRY_DSN
@@ -101,44 +81,44 @@ module.exports = configure(function (ctx) {
       // polyfillModulePreload: true,
       // distDir
 
-      // !== MIT
-      extendViteConf(viteConf) {
-
-        if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
-          // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
-          viteConf.define.global = {}
-        }
-        viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
-
-        // this caused an issue with the electron build
-        // //if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
-        // if (!ctx.mode.bex && !ctx.mode.pwa) {
-        //   // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
-        //   viteConf.define.global = {}
-        //   //https://stackoverflow.com/questions/77061323/error-pouchdb-on-vite-referenceerror-global-is-not-defined
-        //   //viteConf.define.window.global = window.global
-        // }
-        // viteConf.define.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = 'false'
-      },
+      // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
 
       vitePlugins: [
         ['@intlify/unplugin-vue-i18n/vite', {
+          // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
+          // compositionOnly: false,
+
+          // if you want to use named tokens in your Vue I18n messages, such as 'Hello {name}',
+          // you need to set `runtimeOnly: false`
+          // runtimeOnly: false,
+
+          ssr: ctx.modeName === 'ssr',
+
+          // you need to set i18n resource including paths !
+          // include: [ fileURLToPath(new URL('./src/i18n', import.meta.url)) ]
           include: [path.resolve(__dirname, './src/i18n/**')],
         }],
-        ['vite-plugin-package-version', {}],
-        [require('@sentry/vite-plugin').sentryVitePlugin,{
-            authToken: process.env.SENTRY_AUTH_TOKEN,
-            org: "skysail-dk",
-            disable: ctx.dev,
-            project: "tabsets"
-        }]
+
+        ['vite-plugin-checker', {
+          vueTsc: true,
+          eslint: {
+            lintCommand: 'eslint -c ./eslint.config.js "./src*/**/*.{ts,js,mjs,cjs,vue}"',
+            useFlatConfig: true
+          }
+        }, { server: false }],
+        // [require('@sentry/vite-plugin').sentryVitePlugin,{
+        //   authToken: process.env.SENTRY_AUTH_TOKEN,
+        //   org: "skysail-dk",
+        //   disable: ctx.dev,
+        //   project: "tabsets"
+        // }]
       ]
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
-      // https: true
+      // https: true,
       open: true // opens browser window automatically
     },
 
@@ -176,45 +156,49 @@ module.exports = configure(function (ctx) {
     //   rootComponent: 'src/App.vue',
     //   router: 'src/router/index',
     //   store: 'src/store/index',
-    //   registerServiceWorker: 'src-pwa/register-service-worker',
-    //   serviceWorker: 'src-pwa/custom-service-worker',
+    //   pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+    //   pwaServiceWorker: 'src-pwa/custom-service-worker',
     //   pwaManifestFile: 'src-pwa/manifest.json',
     //   electronMain: 'src-electron/electron-main',
     //   electronPreload: 'src-electron/electron-preload'
+    //   bexManifestFile: 'src-bex/manifest.json
     // },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
     ssr: {
-      // ssrPwaHtmlFilename: 'offline.html', // do NOT use index.html as name!
-      // will mess up SSR
-
-      // extendSSRWebserverConf (esbuildConf) {},
-      // extendPackageJson (json) {},
-
-      pwa: true,
-
-      // manualStoreHydration: true,
-      // manualPostHydrationTrigger: true,
-
       prodPort: 3000, // The default port that the production server should use
                       // (gets superseded if process.env.PORT is specified at runtime)
 
       middlewares: [
         'render' // keep this as last one
-      ]
+      ],
+
+      // extendPackageJson (json) {},
+      // extendSSRWebserverConf (esbuildConf) {},
+
+      // manualStoreSerialization: true,
+      // manualStoreSsrContextInjection: true,
+      // manualStoreHydration: true,
+      // manualPostHydrationTrigger: true,
+
+      pwa: false
+      // pwaOfflineHtmlFilename: 'offline.html', // do NOT use index.html as name!
+
+      // pwaExtendGenerateSWOptions (cfg) {},
+      // pwaExtendInjectManifestOptions (cfg) {}
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
-      workboxMode: 'generateSW', // or 'injectManifest'
-      injectPwaMetaTags: true,
-      swFilename: 'sw.js',
-      manifestFilename: 'manifest.json',
-      useCredentialsForManifestTag: false,
-      // extendGenerateSWOptions (cfg) {}
-      // extendInjectManifestOptions (cfg) {},
-      // extendManifestJson (json) {}
-      // extendPWACustomSWConf (esbuildConf) {}
+      workboxMode: 'GenerateSW' // 'GenerateSW' or 'InjectManifest'
+      // swFilename: 'sw.js',
+      // manifestFilename: 'manifest.json'
+      // extendManifestJson (json) {},
+      // useCredentialsForManifestTag: true,
+      // injectPwaMetaTags: false,
+      // extendPWACustomSWConf (esbuildConf) {},
+      // extendGenerateSWOptions (cfg) {},
+      // extendInjectManifestOptions (cfg) {}
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-cordova-apps/configuring-cordova
@@ -229,26 +213,27 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/configuring-electron
     electron: {
-      // extendElectronMainConf (esbuildConf)
-      // extendElectronPreloadConf (esbuildConf)
+      // extendElectronMainConf (esbuildConf) {},
+      // extendElectronPreloadConf (esbuildConf) {},
 
+      // extendPackageJson (json) {},
+
+      // Electron preload scripts (if any) from /src-electron, WITHOUT file extension
+      preloadScripts: [ 'electron-preload' ],
+
+      // specify the debugging port to use for the Electron app when running in development mode
       inspectPort: 5858,
 
-      bundler: 'builder', // 'packager' or 'builder'
+      bundler: 'packager', // 'packager' or 'builder'
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
+
         // OS X / Mac App Store
         // appBundleId: '',
         // appCategoryType: '',
         // osxSign: '',
         // protocol: 'myapp://path',
-        protocols: [
-          {
-            name: 'Electron Tabsets',
-            schemes: ['electron-tabsets']
-          }
-        ]
 
         // Windows only
         // win32metadata: { ... }
@@ -257,21 +242,24 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'tabsets.net',
-        publish: {
-          'provider': 'github',
-          'private': false,
-          'timeout': 480000
-        }
+        appId: 'quasar-project'
       }
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
     bex: {
-      contentScripts: [
-        'tabsets-content-script',
-        'tabsets-excalidraw-script'
-      ]
+      // extendBexScriptsConf (esbuildConf) {},
+      // extendBexManifestJson (json) {},
+
+      /**
+       * The list of extra scripts (js/ts) not in your bex manifest that you want to
+       * compile and use in your browser extension. Maybe dynamic use them?
+       *
+       * Each entry in the list should be a relative filename to /src-bex/
+       *
+       * @example [ 'my-script.ts', 'sub-folder/my-other-script.js' ]
+       */
+      extraScripts: []
     }
   }
 });

@@ -80,7 +80,7 @@ describe('AddTabToTabsetCommand', () => {
     expect(result.message).toBe("Link was added")
     const tabsetFromDB = useTabsetsStore().getTabset(tabset.id)
     expect(tabsetFromDB!.tabs.length).toBe(1);
-    expect(tabsetFromDB!.tabs[0].id).toBe("tabId")
+    expect(tabsetFromDB!.tabs[0]!.id).toBe("tabId")
     expect(useSearchStore().getIndex().size()).toBe(1)
     const content = await useContentService().getContent("tabId")
     expect(content!.content).toBe("some html")
@@ -116,7 +116,7 @@ describe('AddTabToTabsetCommand', () => {
     expect(tabsetFromDB.tabs.length).toBe(0)
     expect(tabsetFromDB.name).toBe("new Tabset2")
     expect(tabsetFromDB.folders.length).toBe(1)
-    expect(tabsetFromDB.folders[0].name).toBe("subfolder")
+    expect(tabsetFromDB.folders[0]!.name).toBe("subfolder")
     // @ts-ignore
     expect(useSearchStore().getIndex().size()).toBe(1)
   });

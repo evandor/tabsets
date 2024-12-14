@@ -1,10 +1,7 @@
 import {IDBPDatabase, openDB} from "idb";
-import _ from "lodash";
 import {INDEX_DB_VERSION} from "boot/constants";
 import PersistenceService from "src/services/PersistenceService";
-import {MetaLink} from "src/models/MetaLink";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 
 // Deprecated
 class IndexedDbPersistenceService implements PersistenceService {

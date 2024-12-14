@@ -64,7 +64,7 @@
 
 import {onMounted, PropType, ref, watchEffect} from "vue";
 import EditorJS, {OutputData} from "@editorjs/editorjs";
-import EditorJsConfig from "src/utils/EditorJsConfig";
+// import EditorJsConfig from "src/utils/EditorJsConfig";
 import {openURL} from "quasar";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {DeleteTabsetDescriptionCommand} from "src/tabsets/commands/DeleteTabsetDescriptionCommand";
@@ -72,7 +72,7 @@ import {useUiStore} from "src/ui/stores/uiStore";
 
 const props = defineProps({
   tabsetId: {type: String, required: true},
-  tabsetDesc: {type: Object, required: true}
+  tabsetDesc: {type: String, required: true}
 })
 
 const showDescription = ref(false)
@@ -110,7 +110,7 @@ onMounted(() => {
       readOnly: false,
       minHeight: 1,
       data: (props.tabsetDesc || {}) as OutputData,
-      tools: EditorJsConfig.toolsconfig
+     // tools: EditorJsConfig.toolsconfig
     });
     // if the editor is readonly from the start, I cannot update it when tabset.page changes
     setTimeout(() => {
@@ -137,7 +137,7 @@ watchEffect(() => {
   const fromStore = useUiStore().getTabsetDescriptionHeight(props.tabsetId)
   if (fromStore === undefined) {
     const blocksCount = props.tabsetDesc ? props.tabsetDesc['blocks' as keyof object]?.length : 0
-    let minHeight = Math.min(20 + blocksCount * 30, 110)
+    let minHeight = Math.min(20 + (blocksCount || 0) * 30, 110)
     scrollAreaHeight.value = minHeight
     useUiStore().setTabsetDescriptionHeight(props.tabsetId, minHeight)
   } else {
@@ -172,7 +172,7 @@ const changeSize = (diff: number) => {
 }
 
 const deleteTabsetDescription = () =>
-  useCommandExecutor().executeFromUi(new DeleteTabsetDescriptionCommand(props.tabsetId, props.tabsetDesc))
+  useCommandExecutor().executeFromUi(new DeleteTabsetDescriptionCommand(props.tabsetId, props.tabsetDesc!))
 
 
 </script>

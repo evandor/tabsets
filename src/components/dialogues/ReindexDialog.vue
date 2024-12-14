@@ -72,11 +72,11 @@ const hideWarning = ref(false)
 const duration = ref(1)
 
 watchEffect(() => {
-  if (tabsStore) {
+  if (useTabsetsStore()) {
     if (props.tabsetId !== '') {
       duration.value = 1 + Math.floor((useTabsetsStore().getTabset(props.tabsetId)?.tabs.length || 1) * 3 / 60)
     } else {
-      duration.value = 1 + Math.floor(tabsStore.allTabsCount * 3 / 60)
+      duration.value = 1 + Math.floor(useTabsetsStore().allTabsCount * 3 / 60)
     }
   }
 })
@@ -92,7 +92,7 @@ const newTabsetDialogWarning = () => {
 
 const startIndexing = () => {
   if (props.tabsetId !== '') {
-    searchStore.reindexTabset(props.tabsetId)
+    //searchStore.reindexTabset(props.tabsetId)
   } else {
     //searchStore.reindexAll()
   }

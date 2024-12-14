@@ -91,7 +91,7 @@ const newSearch = (term: string) => {
         h.item.favIconUrl,
         0, 0,
         Math.round(100 - (100 * (h?.score || 1))),
-        h.item.tabsets,
+        [],//h.item.tabsets,
         [],
         _.map(h['matches' as keyof object], (m: any) => {
           return {
@@ -102,9 +102,9 @@ const newSearch = (term: string) => {
         h.item.description,
         h.item.keywords
       )
-      if (h.item.bookmarkId) {
-        theHit.bookmarkId = h.item.bookmarkId
-      }
+      // if (h.item.bookmarkId) {
+      //   theHit.bookmarkId = h.item.bookmarkId
+      // }
       tabsetHits.value.push(theHit)
     })
   }

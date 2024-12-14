@@ -26,8 +26,8 @@ describe('SearchStore', () => {
     const searchResult = useSearchStore().search('foo')
 
     expect(searchResult.length).toBe(1)
-    expect(searchResult[0].item['name']).toBe('name')
-    expect(searchResult[0].item['title']).toBe('foo')
+    expect(searchResult[0]!.item['name']).toBe('name')
+    expect(searchResult[0]!.item['title']).toBe('foo')
   })
 
   it('second document with same url updates existing one', async () => {
@@ -36,7 +36,7 @@ describe('SearchStore', () => {
     const searchResult = useSearchStore().search('foo')
     //console.log("searchResult", searchResult[0].matches)
     expect(searchResult.length).toBe(1)
-    expect(searchResult[0].item['title']).toBe('foo2')
+    expect(searchResult[0]!.item['title']).toBe('foo2')
   })
 
   it('searching finds the proper document', async () => {
@@ -46,8 +46,8 @@ describe('SearchStore', () => {
     const searchResult = useSearchStore().search('heise')
 
     expect(searchResult.length).toBe(1)
-    expect(searchResult[0].item['name']).toBe('heise')
-    expect(searchResult[0].item['title']).toBe('homepage')
+    expect(searchResult[0]!.item['name']).toBe('heise')
+    expect(searchResult[0]!.item['title']).toBe('homepage')
   })
 
   it('upserting updates existing document', async () => {
@@ -59,7 +59,7 @@ describe('SearchStore', () => {
     expect(searchResultFooOld.length).toBe(0)
     const searchResult = useSearchStore().search('fooNew')
     expect(searchResult.length).toBe(1)
-    expect(searchResult[0].item['title']).toBe('fooNew')
+    expect(searchResult[0]!.item['title']).toBe('fooNew')
   })
 
   it('upserting creates new document for new url', async () => {

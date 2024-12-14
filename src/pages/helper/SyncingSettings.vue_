@@ -226,7 +226,6 @@
 </template>
 
 <script setup lang="ts">
-import {SyncType} from "stores/appStore";
 import {ref, watchEffect} from "vue";
 import {LocalStorage} from "quasar";
 import {

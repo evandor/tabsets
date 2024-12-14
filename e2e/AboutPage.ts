@@ -1,8 +1,6 @@
 import {expect, Locator, Page} from "@playwright/test";
-import {TabsetPage} from "app/e2e/TabsetPage";
-import {TabsetTestPage} from "app/e2e/TabsetTestPage";
 
-export class AboutPage extends TabsetPage {
+export class AboutPage { //extends TabsetPage {
 
   readonly page: Page;
   private extensionId: string;
@@ -16,7 +14,7 @@ export class AboutPage extends TabsetPage {
   private addUrlDialogBtn: Locator;
 
   constructor(page: Page, extensionId:string) {
-    super();
+    //super();
     this.page = page;
     this.extensionId = extensionId;
     this.createFirstTabsetBtn = page.locator('[data-testid=createFirstTabsetBtn]')

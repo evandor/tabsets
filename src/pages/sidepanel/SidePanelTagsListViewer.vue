@@ -148,7 +148,7 @@ watchEffect(() => {
         responsive: false,
         events: ['click'],
         onClick: (e, b) => {
-          selectTag(b[0].element['text' as keyof object])
+          selectTag(b[0]!.element['text' as keyof object])
         },
         elements: {
           word: {

@@ -12,7 +12,7 @@
               </q-icon>
             </div>
             <div class="col-10">
-              {{ rss.title }}
+               rss.title
             </div>
             <div class="col-1 text-right">
             </div>
@@ -27,28 +27,28 @@
 
         <div class="row q-mb-lg">
           <div class="col">
-            <div class="text-subtitle1">{{ rss.description }}</div>
-            <div class="text-caption">Created {{ date.formatDate(rss.published, 'DD.MM.YYYY HH:mm') }}</div>
+            <div class="text-subtitle1"> rss.description </div>
+            <div class="text-caption">Created date.formatDate(rss.published, 'DD.MM.YYYY HH:mm') </div>
           </div>
         </div>
 
         <div class="row q-mb-lg" v-for="entry in rss.items">
           <div class="col-5 q-pa-xs cursor-pointer">
-            <q-img v-if="imageEnclosure(entry)"
-                   @click="openInNewTab(entry.link)"
-                   :src="imageEnclosure(entry)">
-            </q-img>
+<!--            <q-img v-if="imageEnclosure(entry)"-->
+<!--                   @click="openInNewTab(entry.link)"-->
+<!--                   :src="imageEnclosure(entry)">-->
+<!--            </q-img>-->
 
           </div>
           <div class="col q-pa-xs">
             <div class="text-subtitle2" style="line-height: normal"> {{ getAsHtml(entry, "title") }}</div>
           </div>
           <div class="col-12 q-pa-xs">
-            <div class="text-caption"> {{ entry.description }}</div>
-            <div class="text-caption text-grey-8"> {{ formatDate(entry.published) }}</div>
-            <q-tooltip>this entry was created at
-              {{ date.formatDate(entry.published, 'DD.MM.YYYY HH:mm') }}
-            </q-tooltip>
+<!--            <div class="text-caption"> {{ entry.description }}</div>-->
+<!--            <div class="text-caption text-grey-8"> {{ formatDate(entry.published) }}</div>-->
+<!--            <q-tooltip>this entry was created at-->
+<!--              {{ date.formatDate(entry.published, 'DD.MM.YYYY HH:mm') }}-->
+<!--            </q-tooltip>-->
           </div>
         </div>
 

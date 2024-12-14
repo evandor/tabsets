@@ -188,34 +188,34 @@
         data is collected if the 'analyse tabs' feature is active.
       </q-banner>
 
-      Status Code: {{ request['statusCode'] }}<br><br>
+      Status Code: {{ request['statusCode' as keyof object] }}<br><br>
 
-      <q-table
-        title="Request data"
-        :rows="requestRows"
-        :columns="metaColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filterRequest"
-        dense
-      >
-        <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filterRequest" placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search"/>
-            </template>
-          </q-input>
-        </template>
+<!--      <q-table-->
+<!--        title="Request data"-->
+<!--        :rows="requestRows"-->
+<!--        :columns="metaColumns!"-->
+<!--        row-key="name"-->
+<!--        :pagination="metaInitialPagination"-->
+<!--        :filter="filterRequest"-->
+<!--        dense-->
+<!--      >-->
+<!--        <template v-slot:top-right>-->
+<!--          <q-input borderless dense debounce="300" v-model="filterRequest" placeholder="Search">-->
+<!--            <template v-slot:append>-->
+<!--              <q-icon name="search"/>-->
+<!--            </template>-->
+<!--          </q-input>-->
+<!--        </template>-->
 
-        <template v-slot:body-cell-name="props">
-          <q-td :props="props">
-            <div>
-              <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>
-            </div>
-          </q-td>
-        </template>
+<!--        <template v-slot:body-cell-name="props">-->
+<!--          <q-td :props="props">-->
+<!--            <div>-->
+<!--              <q-badge color="grey" class="cursor-pointer" @click="openNameLink(props.value)" :label="props.value"/>-->
+<!--            </div>-->
+<!--          </q-td>-->
+<!--        </template>-->
 
-      </q-table>
+<!--      </q-table>-->
     </div>
   </div>
 
@@ -226,35 +226,35 @@
         If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
 
-      <q-table
-        title="Meta Links"
-        :rows="metaLinkRows"
-        :columns="metaLinkColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filterMetaLinks"
-        dense>
-        <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search"/>
-            </template>
-          </q-input>
-        </template>
+<!--      <q-table-->
+<!--        title="Meta Links"-->
+<!--        :rows="metaLinkRows"-->
+<!--        :columns="metaLinkColumns"-->
+<!--        row-key="name"-->
+<!--        :pagination="metaInitialPagination"-->
+<!--        :filter="filterMetaLinks"-->
+<!--        dense>-->
+<!--        <template v-slot:top-right>-->
+<!--          <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">-->
+<!--            <template v-slot:append>-->
+<!--              <q-icon name="search"/>-->
+<!--            </template>-->
+<!--          </q-input>-->
+<!--        </template>-->
 
-        <template v-slot:body-cell-href="props">
-          <q-td :props="props">
-            <div class="cursor-pointer text-accent">
-              <span v-if="props.row.href.length > 0 && props.row.href.startsWith('/')"
-                    @click="openLink(selectedTab?.url + '/' + props.row.href.substring(1))">
-                {{ props.row.href }}
-              </span>
-              <span v-else @click="openLink(props.row.href)">{{ props.row.href }}</span>
-            </div>
-          </q-td>
-        </template>
+<!--        <template v-slot:body-cell-href="props">-->
+<!--          <q-td :props="props">-->
+<!--            <div class="cursor-pointer text-accent">-->
+<!--              <span v-if="props.row.href.length > 0 && props.row.href.startsWith('/')"-->
+<!--                    @click="openLink(selectedTab?.url + '/' + props.row.href.substring(1))">-->
+<!--                {{ props.row.href }}-->
+<!--              </span>-->
+<!--              <span v-else @click="openLink(props.row.href)">{{ props.row.href }}</span>-->
+<!--            </div>-->
+<!--          </q-td>-->
+<!--        </template>-->
 
-      </q-table>
+<!--      </q-table>-->
     </div>
   </div>
 
@@ -262,35 +262,35 @@
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded>This is data derived from the tab's html content</q-banner>
 
-      <q-table
-        title="Links"
-        :rows="links()"
-        :columns="linkColumns"
-        row-key="name"
-        :pagination="metaInitialPagination"
-        :filter="filterMetaLinks"
-        dense>
-        <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">
-            <template v-slot:append>
-              <q-icon name="search"/>
-            </template>
-          </q-input>
-        </template>
+<!--      <q-table-->
+<!--        title="Links"-->
+<!--        :rows="links()"-->
+<!--        :columns="linkColumns"-->
+<!--        row-key="name"-->
+<!--        :pagination="metaInitialPagination"-->
+<!--        :filter="filterMetaLinks"-->
+<!--        dense>-->
+<!--        <template v-slot:top-right>-->
+<!--          <q-input borderless dense debounce="300" v-model="filterMetaLinks" placeholder="Search">-->
+<!--            <template v-slot:append>-->
+<!--              <q-icon name="search"/>-->
+<!--            </template>-->
+<!--          </q-input>-->
+<!--        </template>-->
 
-        <template v-slot:body-cell-link="props">
-          <q-td :props="props">
-            <div class="cursor-pointer text-accent">
-              <span v-if="props.row.link.length > 0 && props.row.link.startsWith('/')"
-                    @click="openLink(domain + '/' + props.row.link.substring(1))">
-                {{ props.row.link }}
-              </span>
-              <span v-else @click="openLink(props.row.link)">{{ props.row.link }}</span>
-            </div>
-          </q-td>
-        </template>
+<!--        <template v-slot:body-cell-link="props">-->
+<!--          <q-td :props="props">-->
+<!--            <div class="cursor-pointer text-accent">-->
+<!--              <span v-if="props.row.link.length > 0 && props.row.link.startsWith('/')"-->
+<!--                    @click="openLink(domain + '/' + props.row.link.substring(1))">-->
+<!--                {{ props.row.link }}-->
+<!--              </span>-->
+<!--              <span v-else @click="openLink(props.row.link)">{{ props.row.link }}</span>-->
+<!--            </div>-->
+<!--          </q-td>-->
+<!--        </template>-->
 
-      </q-table>
+<!--      </q-table>-->
     </div>
   </div>
 
@@ -388,7 +388,7 @@ onMounted(() => {
 })
 
 watchEffect(() => {
-  const tabId = route.params.id.toString() || ''
+  const tabId = route.params.id?.toString() || ''
   console.log("got tabId", tabId)
   const tabInfo = useTabsetsStore().getTabAndTabsetId(tabId)
   //.then((tabInfo: TabAndTabsetId | undefined) => {
@@ -561,28 +561,16 @@ const getForKey = (key: any) => {
   return ""
 }
 
-const metaDataLabel = () => "Meta Data (" + metaRows.value.length + ")"
 const requestDataLabel = () => "Request Header (" + requestRows.value.length + ")"
 const metaLinksDataLabel = () => "Meta Links (" + metaLinkRows.value.length + ")"
 const linksDataLabel = () => "Links (" + Object.keys(linkRows.value || []).length + ")"
 const openNameLink = (key: string) => NavigationService.openOrCreateTab(["https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/" + key])
-const showNameLink = (key: string) => key.indexOf(":") < 0;
-
-const openValueLink = (name: any, value: string) => {
-  if ("fb:page_id" === name) {
-    NavigationService.openOrCreateTab(["https://www.facebook.com/" + value])
-  } else if ("twitter:account_id" === name) {
-    NavigationService.openOrCreateTab(["https://twitter.com/i/user/" + value])
-  }
-  return
-}
-const showValueLink = (name: string) => "fb:page_id" === name || "twitter:account_id" === name
 
 const analyseTab = () => {
   if (selectedTab.value) {
-    searchStore.reindexTab(selectedTab.value)
-      .then((windowId: number) => {
-      })
+    // searchStore.reindexTab(selectedTab.value)
+    //   .then((windowId: number) => {
+    //   })
   }
 }
 

@@ -180,7 +180,7 @@
         </div>
         <div class="col-1"></div>
         <div class="col-3">
-          <q-toggle v-model="ddgEnabled" @click="updateSettings('noDDG', ddgEnabled)"/>
+<!--          <q-toggle v-model="ddgEnabled" @click="updateSettings('noDDG', ddgEnabled)"/>-->
         </div>
       </div>
 

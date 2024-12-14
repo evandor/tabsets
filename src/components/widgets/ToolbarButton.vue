@@ -5,8 +5,8 @@
       <q-btn v-if="!props.feature || useFeaturesStore().hasFeature(FeatureIdent[props.feature as keyof typeof FeatureIdent])"
              :flat="!outlinedIfActive()"
              :outline="outlinedIfActive()"
-             name="sidebar" :icon="props.icon" :size="btnSize"
-             @click="tabsClicked(props.drawer)">
+             name="sidebar" :icon="props.icon" :size="btnSize">
+<!--             @click="tabsClicked(props.drawer!)">-->
         <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">{{ props.tooltip }}
         </q-tooltip>
       </q-btn>
@@ -17,8 +17,8 @@
       :flat="!outlinedIfActive()"
       :outline="outlinedIfActive()"
       name="sidebar" :icon="props.icon"
-      :size="btnSize"
-      @click="tabsClicked(props.drawer)">
+      :size="btnSize">
+<!--      @click="tabsClicked(props.drawer!)">-->
       <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200">{{ props.tooltip }}
       </q-tooltip>
     </q-btn>
@@ -42,10 +42,10 @@ const props = defineProps({
 const btnSize = "12px"
 
 const outlinedIfActive = (): boolean => {
-  const stack = useUiStore().rightDrawerViewStack
-  if (stack && stack.length > 0) {
-    return stack[stack.length - 1] === props.drawer
-  }
+  // const stack = useUiStore().rightDrawerViewStack
+  // if (stack && stack.length > 0) {
+  //   return stack[stack.length - 1] === props.drawer
+  // }
   return false
 }
 

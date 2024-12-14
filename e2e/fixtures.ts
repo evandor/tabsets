@@ -37,7 +37,7 @@ export const test = base.extend<{
       background = await context.waitForEvent('serviceworker');
 
     const extensionId = background.url().split('/')[2];
-    await use(extensionId);
+    await use(extensionId!);
   },
 });
 export const expect = test.expect;

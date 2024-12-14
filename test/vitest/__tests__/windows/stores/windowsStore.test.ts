@@ -123,8 +123,8 @@ describe('WindowsStore', () => {
 
     const windows = await windowsDb.getWindows()
     expect(windows.length).toBe(2)
-    expect(windows[0].id).toBe(100)
-    expect(windows[1].id).toBe(200)
+    expect(windows[0]!.id).toBe(100)
+    expect(windows[1]!.id).toBe(200)
 
     const window = await windowsDb.getWindow(100)
     expect(window?.id).toBe(100)

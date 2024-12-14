@@ -12,7 +12,7 @@
           :class="toastBannerClass()">
           {{ useUiStore().toasts[0]?.msg }}
           <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">
-            <q-btn flat :label="useUiStore().toasts[0].actions[0].label"
+            <q-btn flat :label="useUiStore().toasts[0]!.actions[0].label"
                    @click="useUiStore().callUndoActionFromCurrentToast()"/>
           </template>
         </q-banner>

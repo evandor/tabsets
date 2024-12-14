@@ -12,7 +12,7 @@ import _ from "lodash"
 import {ExecutionResult} from "src/core/domain/ExecutionResult";
 import {RefreshTabCommand} from "src/tabsets/commands/RefreshTabCommand";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
-import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId.ts";
+import {TabAndTabsetId} from "src/tabsets/models/TabAndTabsetId";
 
 /**
  * refactoring remark: uses many other modules, needs to be one-per-application
@@ -172,7 +172,7 @@ class NavigationService {
         })
       })
     } else {
-      openURL(withUrls[0])
+      openURL(withUrls[0]!)
     }
   }
 
@@ -180,9 +180,9 @@ class NavigationService {
     if (forceCurrent) {
       return 'current'
     } else if (urls.length === 1) {
-      const tabs = useTabsetsStore().tabsForUrl(urls[0])
+      const tabs = useTabsetsStore().tabsForUrl(urls[0]!)
       if (tabs.length === 1) {
-        const tabAndTabsetId = useTabsetsStore().getTabAndTabsetId(tabs[0].tab.id)
+        const tabAndTabsetId = useTabsetsStore().getTabAndTabsetId(tabs[0]!.tab.id)
         if (tabAndTabsetId) {
           return useTabsetsStore().getTabset(tabAndTabsetId.tabsetId)?.window || 'current'
         }
@@ -243,7 +243,7 @@ class NavigationService {
   }
 
   backOneTab() {
-    const [tabId, url] = useTabsStore2().tabHistoryBack()
+    const [tabId, url] = useTabsStore2().tabHistoryBack()!
     this.openTab(tabId)
       .catch((err) => {
         useTabsStore2().chromeTabsHistoryNavigating = false
@@ -252,7 +252,7 @@ class NavigationService {
   }
 
   forwardOneTab() {
-    const [tabId, url] = useTabsStore2().tabHistoryForward()
+    const [tabId, url] = useTabsStore2().tabHistoryForward()!
     this.openTab(tabId)
       .catch((err) => {
         useTabsStore2().chromeTabsHistoryNavigating = false

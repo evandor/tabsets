@@ -25,7 +25,7 @@ describe('NewTabsetDialog', () => {
         });
 
         const bodyWrapper = new DOMWrapper(document.body);
-        wrapper.vm.isDialogOpen = true;
+       // wrapper.vm.isDialogOpen = true;
 //wrapper.vm.$q.dialog.call()
         // `.find()` won't error out even if the element is not found
        // expect(bodyWrapper.find('.q-dialog').exists()).toBeTruthy();

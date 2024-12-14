@@ -64,7 +64,7 @@ class JsUtils {
         }
         switch (type) {
             case "sw":
-                return path.startsWith(pattern)
+                return path.startsWith(pattern!)
             default:
                 return false
         }

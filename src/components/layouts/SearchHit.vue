@@ -144,15 +144,15 @@ const openTabset = (tabsetId: string, encodedUrl: string | undefined = undefined
 
 const openBookmark = (badge: any) => {
   console.log("badge", badge)
-  BookmarksService.expandTreeForBookmarkId(badge.bookmarkId)
-    .then(parentId => {
-      if (props.inSidePanel) {
-        const url = chrome.runtime.getURL("www/index.html#/mainpanel/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
-        NavigationService.openOrCreateTab([url])
-      } else {
-        router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
-      }
-    })
+  // BookmarksService.expandTreeForBookmarkId(badge.bookmarkId)
+  //   .then(parentId => {
+  //     if (props.inSidePanel) {
+  //       const url = chrome.runtime.getURL("www/index.html#/mainpanel/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
+  //       NavigationService.openOrCreateTab([url])
+  //     } else {
+  //       router.push("/bookmarks/" + parentId + "?highlight=" + badge.bookmarkId)
+  //     }
+  //   })
 }
 
 const getFaviconUrl = (hitId: string, url: string, favIconUrl: string | undefined) => {
@@ -190,16 +190,16 @@ const open = (hit: Hit) => {
   if (hit.id.startsWith("tabset|")) {
     const tabsetId = hit.tabsets[0]
     if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-      const tabset = useTabsetsStore().getTabset(tabsetId)
+      const tabset = useTabsetsStore().getTabset(tabsetId!)
       const spaceId = (tabset && tabset.spaces.length > 0) ? tabset.spaces[0] : undefined
       console.log("selecting tabset/space", tabsetId, spaceId)
       useSpacesStore().setSpace(spaceId)
-      useCommandExecutor().execute(new SelectTabsetCommand(tabsetId))
+      useCommandExecutor().execute(new SelectTabsetCommand(tabsetId!))
     } else {
-      useCommandExecutor().execute(new SelectTabsetCommand(tabsetId))
+      useCommandExecutor().execute(new SelectTabsetCommand(tabsetId!))
     }
     //useTabsetsUiStore().addTabsetToLastUsedList(tabsetId)
-    openTabset(tabsetId)
+    openTabset(tabsetId!)
   } else {
     NavigationService.openOrCreateTab([hit.url || ''])
   }
