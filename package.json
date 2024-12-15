@@ -29,6 +29,9 @@
     "test:e2e:showReport": "npx playwright show-report",
     "test:specificTest": "npx playwright test addFirstTabset",
     "test:specificTest:debug": "npx playwright test addFirstTabset --debug",
+    "docs:dev": "./copySubmoduleDocs.sh && vitepress dev docs",
+    "docs:build": "./copySubmoduleDocs.sh && vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "info": "yarn list > docs/yarn.list.txt && quasar info > docs/quasar.info.txt",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org skysail-dk --project tabsets ./dist && sentry-cli sourcemaps upload --org skysail-dk --project tabsets ./dist"
   },
