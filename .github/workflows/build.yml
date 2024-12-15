@@ -36,6 +36,7 @@ jobs:
           echo SENTRY_PROJECT_NAME="tabsets" >> .env
           echo SENTRY_DSN="${{ secrets.SENTRY_DNS }}" >> .env
           echo HOST="chrome.extension" >> .env
+          echo LOCALE="en" >> .env
       - name: 'Install Deps'
         run: yarn install
       - name: 'Test'
