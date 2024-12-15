@@ -9,7 +9,7 @@
   "scripts": {
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "build bex (publish)": "quasar build -m bex",
+    "build bex (publish)": "quasar build -m bex -T chrome",
     "build bex firefox": "scripts/build.sh firefox",
     "build bex edge": "scripts/build.sh edge",
     "build bex opera": "scripts/build.sh opera",
