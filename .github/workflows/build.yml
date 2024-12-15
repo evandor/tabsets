@@ -27,6 +27,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo STAGE=PRD >> .env
+          echo BACKEND_URL="https://tabsets-72089.web.app" >> .env
+          echo TABSETS_PWA_URL="https://pwa.tabsets.net" >> .env
+          echo SENTRY_PROJECT_NAME="tabsets" >> .env
+          echo SENTRY_DSN="${{ secrets.SENTRY_DNS }}" >> .env
+          echo HOST="chrome.extension" >> .env
       - name: 'Install Deps'
         run: yarn install
       - name: 'Test'
