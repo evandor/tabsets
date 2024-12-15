@@ -17,14 +17,14 @@ export default defineConfig({
       'src/**/*.vitest.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       'test/vitest/__tests__/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
     ],
-    // coverage: {
-    //   reporter: ['text', 'lcov', 'json-summary', 'json'],
-    // },
-    // // https://vitest.dev/guide/browser.html
-    // browser: {
-    //   enabled: false,
-    //   name: 'chrome', // browser name is required
-    // }
+    coverage: {
+      reporter: ['text', 'lcov', 'json-summary', 'json'],
+    },
+    // https://vitest.dev/guide/browser.html
+    browser: {
+      enabled: false,
+      name: 'chrome', // browser name is required
+    }
   },
   resolve: {
     //conditions: process.env.VITEST ? ['node'] : []
