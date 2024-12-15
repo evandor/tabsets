@@ -9,6 +9,11 @@
   "scripts": {
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
+    "build bex (publish)": "quasar build -m bex",
+    "build bex firefox": "scripts/build.sh firefox",
+    "build bex edge": "scripts/build.sh edge",
+    "build bex opera": "scripts/build.sh opera",
+    "icon": "icongenie generate -i src/assets/icon.png",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "dev": "quasar dev -m bex -T chrome",
     "build": "quasar build",
