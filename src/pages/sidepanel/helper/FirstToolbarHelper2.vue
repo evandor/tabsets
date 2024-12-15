@@ -99,7 +99,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {useRouter} from "vue-router";
 import {ref, watchEffect} from "vue";
 import {useUiStore} from "src/ui/stores/uiStore";
-import SearchWithTransitionHelper from "pages/sidepanel/helper/SearchWithTransitionHelper.vue";
+import SearchWithTransitionHelper from "src/pages/sidepanel/helper/SearchWithTransitionHelper.vue";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
 import {useQuasar} from "quasar";
@@ -114,7 +114,7 @@ import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {ActionHandlerButtonClickedHolder} from "src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder";
 import {useActionHandlers} from "src/tabsets/actionHandling/ActionHandlers";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
-import SidePanelPageContextMenu from "pages/sidepanel/SidePanelPageContextMenu.vue";
+import SidePanelPageContextMenu from "src/pages/sidepanel/SidePanelPageContextMenu.vue";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import {Tab} from "src/tabsets/models/Tab";
 

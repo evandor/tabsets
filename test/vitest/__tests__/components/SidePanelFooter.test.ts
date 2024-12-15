@@ -6,15 +6,12 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {DOMWrapper, mount, shallowMount, VueWrapper} from '@vue/test-utils';
 import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
-import SidePanelFooter from "components/SidePanelFooter.vue";
+import SidePanelFooter from "src/components/SidePanelFooter.vue";
 import ChromeApi from "src/app/BrowserApi";
 import {useDB} from "src/services/usePersistenceService";
 import {useQuasar} from "quasar";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {useWindowsStore} from "src/windows/stores/windowsStore";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
-import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 
 installQuasarPlugin();
 

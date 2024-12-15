@@ -5,7 +5,7 @@ import {createPinia, setActivePinia} from "pinia";
 import ChromeApi from "src/app/BrowserApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useRoute, useRouter} from "vue-router";
-import WelcomePage from "pages/sidepanel/WelcomePage.vue";
+import WelcomePage from "src/pages/sidepanel/WelcomePage.vue";
 
 installQuasarPlugin();
 

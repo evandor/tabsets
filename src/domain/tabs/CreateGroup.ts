@@ -4,7 +4,7 @@ import TabsetService from "src/tabsets/services/TabsetService";
 import {TabsetColumn} from "src/tabsets/models/TabsetColumn";
 import {uid} from "quasar";
 import {Tabset} from "src/tabsets/models/Tabset";
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {STRIP_CHARS_IN_USER_INPUT} from "src/boot/constants";
 import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import _ from "lodash"
 

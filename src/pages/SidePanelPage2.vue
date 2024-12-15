@@ -66,7 +66,7 @@ import {useSpacesStore} from "src/spaces/stores/spacesStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import TabsetService from "src/tabsets/services/TabsetService";
 import Analytics from "src/core/utils/google-analytics";
-import {useAuthStore} from "stores/authStore";
+import {useAuthStore} from "src/stores/authStore";
 import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {useI18n} from 'vue-i18n'
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
@@ -74,10 +74,10 @@ import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import SidePanelPageTabList from "src/tabsets/layouts/SidePanelPageTabList.vue";
 import {useWindowsStore} from "src/windows/stores/windowsStore";
-import StartingHint from "pages/widgets/StartingHint.vue";
+import StartingHint from "src/pages/widgets/StartingHint.vue";
 import SidePanelNotesView from "src/notes/views/sidepanel/SidePanelNotesView.vue";
 import SidePanelFoldersView from "src/tabsets/views/sidepanel/SidePanelFoldersView.vue";
-import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
+import FirstToolbarHelper2 from "src/pages/sidepanel/helper/FirstToolbarHelper2.vue";
 import AppService from "src/app/AppService";
 import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
 

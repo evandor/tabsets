@@ -150,7 +150,7 @@ import ShortUrl from "src/core/utils/ShortUrl.vue";
 import {useRouter} from "vue-router";
 import _ from "lodash";
 import {useUiStore} from "src/ui/stores/uiStore";
-import {SHARING_AVATAR_IDENT} from "boot/constants";
+import {SHARING_AVATAR_IDENT} from "src/boot/constants";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import CommentDialog from "src/tabsets/dialogues/CommentDialog.vue";

@@ -6,7 +6,7 @@ import ChromeApi from "src/app/BrowserApi";
 import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
 import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
-import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
+import FirstToolbarHelper2 from "src/pages/sidepanel/helper/FirstToolbarHelper2.vue";
 
 installQuasarPlugin();
 

@@ -1,5 +1,5 @@
-// This file will be run before each test file
-import {INDEX_DB_VERSION} from "boot/constants";
+// // This file will be run before each test file
+import {INDEX_DB_VERSION} from "src/boot/constants";
 import {useJestHelper} from "src/domain/JestHelper";
 import "fake-indexeddb/auto"
 

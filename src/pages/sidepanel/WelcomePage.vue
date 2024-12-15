@@ -72,7 +72,7 @@ import {onMounted, ref, watchEffect} from "vue";
 import {useRouter} from "vue-router";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
-import {STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT} from "boot/constants";
+import {STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT} from "src/boot/constants";
 import Analytics from "src/core/utils/google-analytics";
 import DialogButton from "src/core/dialog/buttons/DialogButton.vue";
 import {LocalStorage, openURL} from "quasar";

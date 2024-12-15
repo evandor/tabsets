@@ -1,5 +1,5 @@
-import {api} from "boot/axios";
-import {useAppStore} from "stores/appStore";
+import {api} from "src/boot/axios";
+import {useAppStore} from "src/stores/appStore";
 
 const version = import.meta.env.PACKAGE_VERSION
 

@@ -190,7 +190,7 @@ import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useSettingsStore} from "src/stores/settingsStore"
 import ToolbarButton from "components/widgets/ToolbarButton.vue";
-import {useAuthStore} from "stores/authStore";
+import {useAuthStore} from "src/stores/authStore";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import {useFeaturesStore} from "src/features/stores/featuresStore";
 import OpenTabsThresholdWidget from "src/opentabs/widgets/OpenTabsThresholdWidget.vue";

@@ -1,5 +1,5 @@
 import {Tabset} from "src/tabsets/models/Tabset";
-import {CLEANUP_PERIOD_IN_MINUTES, GITHUB_AUTO_BACKUP, MONITORING_PERIOD_IN_MINUTES} from "boot/constants";
+import {CLEANUP_PERIOD_IN_MINUTES, GITHUB_AUTO_BACKUP, MONITORING_PERIOD_IN_MINUTES} from "src/boot/constants";
 import _ from "lodash"
 import NavigationService from "src/services/NavigationService";
 import {Tab} from "src/tabsets/models/Tab";

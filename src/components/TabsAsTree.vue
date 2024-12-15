@@ -59,7 +59,7 @@ import _ from "lodash"
 import {TreeNode} from "src/bookmarks/models/Tree";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import Highlighter from 'vue-highlight-words'
-import {useSettingsStore} from "stores/settingsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
 import {useUtils} from "src/core/services/Utils";
 import {Tab} from "src/tabsets/models/Tab";
 

@@ -59,7 +59,7 @@
 <script lang="ts" setup>
 
 import {ref, watchEffect} from "vue";
-import {useSettingsStore} from "stores/settingsStore";
+import {useSettingsStore} from "src/stores/settingsStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {ActivateFeatureCommand} from "src/features/commands/ActivateFeatureCommand";
 import {FeatureIdent} from "src/app/models/FeatureIdent";

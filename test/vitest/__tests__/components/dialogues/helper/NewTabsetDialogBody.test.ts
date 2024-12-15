@@ -2,7 +2,6 @@ import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vit
 import {DOMWrapper, mount, VueWrapper} from '@vue/test-utils';
 import {beforeEach, afterEach, describe, expect, it, vi} from 'vitest';
 import {createPinia, setActivePinia} from "pinia";
-import IndexedDbPersistenceService from "src/services/IndexedDbPersistenceService";
 import {useRouter} from "vue-router";
 import {Dialog, Notify} from "quasar";
 import NewTabsetDialogBody from "src/tabsets/dialogues/helper/NewTabsetDialogBody.vue";
@@ -11,6 +10,7 @@ import {useTabsetService} from "src/tabsets/services/TabsetService2";
 import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
 import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
+import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
 
 installQuasarPlugin({plugins: {Dialog, Notify}})
 

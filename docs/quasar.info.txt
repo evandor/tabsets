@@ -19,7 +19,7 @@ Important local packages
   vue - 3.5.13 -- The progressive JavaScript framework for building modern web UI.
   vue-router - 4.5.0
   pinia - 2.3.0 -- Intuitive, type safe and flexible Store for Vue
-  vite - 5.4.11 -- Native-ESM powered web dev build tool
+  vite - 6.0.3 -- Native-ESM powered web dev build tool
   vite-plugin-checker - Not installed
   eslint - 9.17.0 -- An AST-based pattern checker for JavaScript.
   esbuild - 0.24.0 -- An extremely fast JavaScript and CSS bundler and minifier.

@@ -14,7 +14,7 @@ import {useSearchStore} from "src/search/stores/searchStore";
 import {Router} from "vue-router";
 import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {useAppStore} from "stores/appStore";
+import {useAppStore} from "src/stores/appStore";
 import {useUiStore} from "src/ui/stores/uiStore";
 import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
 import {useContentService} from "src/content/services/ContentService";

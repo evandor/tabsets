@@ -236,12 +236,12 @@ import {Suggestion, SuggestionState} from "src/suggestions/models/Suggestion";
 import SuggestionDialog from "src/suggestions/dialogues/SuggestionDialog.vue";
 import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
 import {ToastType} from "src/core/models/Toast";
-import SidePanelFooterLeftButtons from "components/helper/SidePanelFooterLeftButtons.vue";
-import {useAuthStore} from "stores/authStore";
-import {useNotificationHandler} from "src/core/services/ErrorHandler";
-import SidePanelStatsMarkupTable from "components/helper/SidePanelStatsMarkupTable.vue"
-import {Window} from "src/windows/models/Window"
+import SidePanelFooterLeftButtons from "src/components/helper/SidePanelFooterLeftButtons.vue";
+import SidePanelStatsMarkupTable from "src/components/helper/SidePanelStatsMarkupTable.vue"
 import WindowsMarkupTable from "src/windows/components/WindowsMarkupTable.vue";
+import {useAuthStore} from "src/stores/authStore";
+import {useNotificationHandler} from "src/core/services/ErrorHandler";
+import {Window} from "src/windows/models/Window"
 import {WindowAction, WindowHolder} from "src/windows/models/WindowHolder";
 import NewTabsetDialog from "src/tabsets/dialogues/NewTabsetDialog.vue";
 import {useSpacesStore} from "src/spaces/stores/spacesStore";
@@ -257,7 +257,7 @@ import BrowserApi from "src/app/BrowserApi";
 import {useContentStore} from "src/content/stores/contentStore";
 import ContextMenuItem from "src/core/components/helper/ContextMenuItem.vue";
 import {useTabsetsUiStore} from "../tabsets/stores/tabsetsUiStore";
-import SidePanelTabsetListMarkup from "components/helper/SidePanelTabsetListMarkup.vue";
+import SidePanelTabsetListMarkup from "src/components/helper/SidePanelTabsetListMarkup.vue";
 import StartSessionDialog from "src/tabsets/dialogues/StartSessionDialog.vue";
 import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
 import {ExecutionResult} from "src/core/domain/ExecutionResult";

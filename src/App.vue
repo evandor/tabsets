@@ -9,8 +9,8 @@ import AppService from "src/app/AppService";
 import {EventEmitter} from "events";
 import {useRouter} from "vue-router";
 import {useLogger} from "src/services/Logger";
-import {useSettingsStore} from "stores/settingsStore";
-import {useAppStore} from "stores/appStore";
+import {useSettingsStore} from "src/stores/settingsStore";
+import {useAppStore} from "src/stores/appStore";
 import {usePermissionsStore} from "src/core/stores/usePermissionsStore";
 import {FontSize, useUiStore} from "src/ui/stores/uiStore";
 

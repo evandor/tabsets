@@ -371,7 +371,7 @@ import {useSnapshotsService} from "src/snapshots/services/SnapshotsService";
 import {TabReferenceType} from "src/content/models/TabReference";
 import {useRequestsService} from "src/requests/services/RequestsService";
 import {RequestInfo} from "src/requests/models/RequestInfo";
-import {STRIP_CHARS_IN_USER_INPUT} from "boot/constants";
+import {STRIP_CHARS_IN_USER_INPUT} from "src/boot/constants";
 
 const {inBexMode} = useUtils()
 

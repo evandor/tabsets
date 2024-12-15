@@ -27,6 +27,9 @@
     "info": "yarn list > docs/yarn.list.txt && quasar info > docs/quasar.info.txt",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org skysail-dk --project tabsets ./dist && sentry-cli sourcemaps upload --org skysail-dk --project tabsets ./dist"
   },
+  "resolutions": {
+    "vite": "^6.0.3"
+  },
   "dependencies": {
     "@calumk/editorjs-columns": "^0.3.2",
     "@codexteam/icons": "^0.3.3",

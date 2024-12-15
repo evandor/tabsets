@@ -1,5 +1,5 @@
 import {IDBPDatabase, openDB} from "idb";
-import {INDEX_DB_VERSION} from "boot/constants";
+import {INDEX_DB_VERSION} from "src/boot/constants";
 import PersistenceService from "src/services/PersistenceService";
 import {useUiStore} from "src/ui/stores/uiStore";
 
