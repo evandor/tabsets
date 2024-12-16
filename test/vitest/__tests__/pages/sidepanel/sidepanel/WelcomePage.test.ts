@@ -16,12 +16,12 @@ describe('WelcomePage', () => {
 
   const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
 
-  // @ts-ignore
+  // @ts-expect-error
   useRouter.mockReturnValue({
     push: vi.fn(),
   })
 
-  // @ts-ignore
+  // @ts-expect-error
   useRoute.mockReturnValue({
     query: {
       name,
@@ -34,7 +34,7 @@ describe('WelcomePage', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    // @ts-ignore
+    // @ts-expect-error
     useRouter().push.mockReset()
   })
 

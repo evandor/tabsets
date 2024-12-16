@@ -96,7 +96,7 @@ const thumbnailFor = async (tab: Tab): Promise<string> => {
 
 watchEffect(() => {
   if (props.tab) {
-    // @ts-ignore
+    // @ts-expect-error
     thumbnailFor(props.tab)
       .then((tn: any) => {
         //console.log("tn", tn)

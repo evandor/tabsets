@@ -5,6 +5,7 @@ import { defineConfig } from '#q-app/wrappers';
 import { fileURLToPath } from 'node:url';
 import "dotenv/config.js";
 import path from "path";
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig((ctx) => {
 
@@ -107,6 +108,7 @@ export default defineConfig((ctx) => {
             useFlatConfig: true
           }
         }, { server: false }],
+        nodePolyfills(), // as of https://stackoverflow.com/questions/76431747/module-has-been-externalized-for-browser-compatibility-error-in-vite-build
         // [require('@sentry/vite-plugin').sentryVitePlugin,{
         //   authToken: process.env.SENTRY_AUTH_TOKEN,
         //   org: "skysail-dk",

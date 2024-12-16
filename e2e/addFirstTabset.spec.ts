@@ -8,7 +8,9 @@ function urlFor(extensionId: string, path: string) {
 test('first tabset', async ({page, extensionId, context}) => {
 
   // === click in settings page to activate sidepanel ===
-  await page.goto(urlFor(extensionId, '/mainpanel/settings'));
+  const settingsUrl = urlFor(extensionId, '/mainpanel/settings')
+  console.log("settingsUrl", settingsUrl)
+  await page.goto(settingsUrl);
 
   await page.locator('[id=closeRightDrawerIcon]').click()
   const openSidePanelSpan = page.locator('[id=openSidePanelSpan]')

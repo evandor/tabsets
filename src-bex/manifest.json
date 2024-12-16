@@ -28,20 +28,9 @@
     ],
     "content_scripts": [
       {
-        "matches": [
-          "https://excalidraw.com/*"
-        ],
-        "js": [
-          "tabsets-excalidraw-script.ts"
-        ]
-      },
-      {
-        "matches": [
-          "*://*/*"
-        ],
-        "js": [
-          "tabsets-content-script.ts"
-        ]
+        "matches": [ "<all_urls>" ],
+        "css": [ "assets/content.css" ],
+        "js": [ "my-content-script.ts" ]
       }
     ],
     "content_security_policy": {

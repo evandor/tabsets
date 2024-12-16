@@ -23,7 +23,7 @@ export class CreateBookmarkFromOpenTabsCommand implements Command<any> {
       url: this.tab.url
     }
     console.log("newBookmark", newBookmark)
-    // @ts-ignore
+    // @ts-expect-error
     const res:chrome.bookmarks.BookmarkTreeNode = await chrome.bookmarks.create(newBookmark)
 
     return new ExecutionResult(

@@ -3,7 +3,7 @@ import type { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    // @ts-ignore
+    // @ts-expect-error
     redirect: (process.env.MODE === 'pwa') ?
       '/tabsets' : // use case: sharing tabset, opening link, import in PWA for anonymous user
       //'/sidepanel' : // use case: ???
@@ -190,11 +190,144 @@ const routes: RouteRecordRaw[] = [
     children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPdfPage.vue')}],
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
+  {
+    path: '/mainpanel/tabsets/overview/:tabsetId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue')}],
+  },
+  {
+    path: '/mainpanel/tabsets/overview',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/tabsets/pages/MainPanelTabsetsOverviewPage.vue')}],
+  },
+  {
+    path: '/mainpanel/png/:tabId/:blobId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue')}],
+  },
+  {
+    path: '/mainpanel/html/:tabId/:blobId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue')}],
+  },
+  {
+    path: '/mainpanel/pdf/:tabId/:blobId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue')}],
+  },
+  {
+    path: '/mainpanel/tab/:id',// TODO combine with Tag page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/TabPage.vue')}],
+  },
+  {
+    path: '/mainpanel/suggestions/:suggestionId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/suggestions/pages/MainPanelCheckSuggestionPage.vue')}],
+  },
+  {
+    path: '/mainpanel/spaces', // TODO combine with Spaces page
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/spaces/pages/MainPanelSpacesPage.vue')}],
+  },
+  {
+    path: '/mainpanel/bookmarks/:id',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/bookmarks/pages/MainPanelBookmarksPage.vue')}],
+  },
+  {
+    path: '/mainpanel/tabAssignment/:id',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('pages/mainpanel/MainPanelTabAssignmentPage.vue')}],
+  },
+  {
+    path: '/mainpanel/mhtml/:tabId/:blobIndex',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue')}],
+  },
+  {
+    path: '/mainpanel/readingmode/:tabId',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{path: '', component: () => import('src/pages/mainpanel/MainPanelReadingModePage.vue')}],
+  },
+  {
+    path: '/settings',
+    component: () => import('layouts/DefaultLayout.vue'),
+    children: [{path: '', component: () => import('pages/SettingsPage.vue')}],
+  },
+  {
+    path: '/tabsets/:tabsetId',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{path: '', component: () => import('src/tabsets/pages/TabsetPage.vue')}],
+  },
+  {
+    path: '/tabsets',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{path: '', component: () => import('src/tabsets/pages/TabsetPage.vue')}],
+  },
+  {
+    path: '/dynamicTs/:tabsetId',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{path: '', component: () => import('src/tabsets/pages/TabsetPage.vue')}],
+  },
+  // {
+  //   path: '/tab/:id',
+  //   component: () => import('layouts/DefaultLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/TabPage.vue')}],
+  // },
+  {
+    path: '/bookmarks/:id',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{path: '', component: () => import('src/bookmarks/pages/BookmarksPage.vue')}],
+  },
+  {
+    path: '/bydomain/:encodedUrl',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{path: '', component: () => import('src/tabsets/pages/ByDomainPage.vue')}],
+  },
+  {
+    path: '/historyByAge/:encodedAge',
+    component: () => import('layouts/DefaultLayout.vue'),
+    children: [{path: '', component: () => import('src/tabsets/pages/ByAgePage.vue')}],
+  },
+  {
+    path: '/features/:feature',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{path: '', component: () => import('src/features/pages/FeaturesPage.vue')}],
+  },
+  {
+    path: '/search',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{path: '', component: () => import('pages/SearchPage.vue')}],
+  },
+  {
+    path: '/searchresult',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{path: '', component: () => import('pages/SearchResultPage.vue')}],
+  },
+  // {
+  //   path: '/iframe/:tabId',
+  //   component: () => import('layouts/DefaultLayout.vue'),
+  //   children: [{path: '', component: () => import('pages/IFramePage.vue')}],
+  // },
+  {
+    path: '/preview/:tabId',
+    component: () => import('layouts/DefaultLayout.vue'),
+    children: [{path: '', component: () => import('pages/PreviewPage.vue')}],
+  },
+  {
+    path: '/browser/:tabId',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{path: '', component: () => import('pages/BrowserViewPage.vue')}],
+  },
+  {
+    path: '/help/:ident',
+    component: () => import('layouts/DefaultLayout.vue'),
+    children: [{path: '', component: () => import('pages/HelpPage.vue')}],
+  },
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    component: () => import('src/app/pages/ErrorNotFound.vue'),
   },
 ];
 

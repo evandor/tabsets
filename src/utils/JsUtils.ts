@@ -18,7 +18,7 @@ class JsUtils {
             allTextNodes.push(currentNode);
             currentNode = treeWalker.nextNode();
         }
-        // @ts-ignore
+        // @ts-expect-error
         CSS.highlights.clear();
 
 
@@ -46,9 +46,9 @@ class JsUtils {
                 });
             });
 
-        // @ts-ignore
+        // @ts-expect-error
         const highlight = new Highlight(...ranges.flat());
-        // @ts-ignore
+        // @ts-expect-error
         CSS.highlights.set("search-result-highlight", highlight);
     }
 

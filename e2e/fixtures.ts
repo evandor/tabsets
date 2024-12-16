@@ -1,25 +1,30 @@
-import { test as base, chromium, type BrowserContext } from '@playwright/test';
-import path from 'path';
+import { type BrowserContext, chromium, test as base } from '@playwright/test'
+import path from 'path'
+import { fileURLToPath } from 'url';
 
-process.env.PW_CHROMIUM_ATTACH_TO_OTHER = "1"
+process.env.PW_CHROMIUM_ATTACH_TO_OTHER = '1'
 
 export const test = base.extend<{
   context: BrowserContext;
   extensionId: string;
 }>({
-  context: async ({ }, use) => {
-    const pathToExtension = path.join(__dirname, "../dist/bex");
-    console.log("pathToExtension", pathToExtension);
+  context: async ({}, use) => {
+console.log("hier", use)
+    const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+    const __dirname = path.dirname(__filename); // get the name of the directory
+
+    const pathToExtension = path.join(__dirname, '../dist/bex-chrome--dev')
+    console.log('pathToExtension', pathToExtension)
     const context = await chromium.launchPersistentContext('', {
       headless: false,
       args: [
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
         '--start-maximized'
-      ],
-    });
-    await use(context);
-    await context.close();
+      ]
+    })
+    await use(context)
+    await context.close()
   },
   extensionId: async ({ context }, use) => {
     // console.log("context", context)
@@ -32,12 +37,12 @@ export const test = base.extend<{
     */
 
     // for manifest v3:
-    let [background] = context.serviceWorkers();
+    let [background] = context.serviceWorkers()
     if (!background)
-      background = await context.waitForEvent('serviceworker');
+      background = await context.waitForEvent('serviceworker')
 
-    const extensionId = background.url().split('/')[2];
-    await use(extensionId!);
-  },
-});
-export const expect = test.expect;
+    const extensionId = background.url().split('/')[2]
+    await use(extensionId!)
+  }
+})
+export const expect = test.expect

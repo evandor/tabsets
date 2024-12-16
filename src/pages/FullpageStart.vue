@@ -40,7 +40,7 @@ timer = setTimeout(() => {
       enabled: false
     }
     console.log("setting options", options)
-    // @ts-ignore
+    // @ts-expect-error
     chrome.sidePanel.setOptions(options);
   })
   if (useTabsetsStore().tabsets.size === 0) {

@@ -51,3 +51,6 @@ docs/.vitepress/cache
 /.edge.env
 /blob-report/
 /test-results/
+/playwright-report/trace/
+/playwright-report/data/8bc23f7d61d4feaf97c5e928f124a55ae23dd0c7.zip
+/playwright-report/index.html

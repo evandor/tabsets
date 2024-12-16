@@ -349,7 +349,7 @@ class BrowserApi {
     return {
       active: false,
       discarded: true,
-      // @ts-ignore
+      // @ts-expect-error
       groupId: -1,
       autoDiscardable: true,
       favIconUrl: favIconUrl,
@@ -404,7 +404,7 @@ class BrowserApi {
   }
 
   executeClippingJS(tabId: number) {
-    // @ts-ignore
+    // @ts-expect-error
     chrome.scripting.insertCSS({
       target: {tabId: tabId},
       files: ['assets/content.css']
@@ -414,7 +414,7 @@ class BrowserApi {
         alert(JSON.stringify(lastError))
         return
       }
-      // @ts-ignore
+      // @ts-expect-error
       chrome.scripting.executeScript({
         target: {tabId: tabId},
         files: ['clipping.js']
@@ -441,7 +441,7 @@ class BrowserApi {
   }
 
   executeAddToTS(tabId: number, tabsetId: string) {
-    // @ts-ignore
+    // @ts-expect-error
     chrome.scripting.executeScript({
       target: {tabId: tabId, allFrames: true},
       args: [tabId, tabsetId],

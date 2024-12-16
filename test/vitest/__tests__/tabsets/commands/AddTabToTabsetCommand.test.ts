@@ -117,7 +117,7 @@ describe('AddTabToTabsetCommand', () => {
     expect(tabsetFromDB.name).toBe("new Tabset2")
     expect(tabsetFromDB.folders.length).toBe(1)
     expect(tabsetFromDB.folders[0]!.name).toBe("subfolder")
-    // @ts-ignore
+
     expect(useSearchStore().getIndex().size()).toBe(1)
   });
 

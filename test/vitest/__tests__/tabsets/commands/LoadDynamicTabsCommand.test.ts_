@@ -75,7 +75,7 @@ describe('LoadDynamicTabsCommand', () => {
     const subfolder = tabset.folders[0]
     subfolder.dynamicUrl = "https://some.md"
 
-    // @ts-ignore
+    // @ts-expect-error
     fetch.mockResolvedValue({text: () => new Promise((resolve) => resolve(`
 # Git.io
 [Git.io](http://git.io) is a simple URL shortener for GitHub.
@@ -94,7 +94,7 @@ describe('LoadDynamicTabsCommand', () => {
     const subfolder = tabset.folders[0]
     subfolder.dynamicUrl = "https://some.md"
 
-    // @ts-ignore
+    // @ts-expect-error
     fetch.mockResolvedValue({text: () => new Promise((resolve) => resolve(`
 # Git.io
 [Git.io](http://git.io) is a simple URL shortener for GitHub.
@@ -116,7 +116,7 @@ describe('LoadDynamicTabsCommand', () => {
     const subfolder = tabset.folders[0]
     subfolder.dynamicUrl = "https://some.md"
 
-    // @ts-ignore
+    // @ts-expect-error
     fetch.mockResolvedValue({text: () => new Promise((resolve) => resolve(`
 # Git.io
 [Git.io](http://git.io) is a simple URL shortener for GitHub.
@@ -142,7 +142,7 @@ describe('LoadDynamicTabsCommand', () => {
     const subfolder = tabset.folders[0]
     subfolder.dynamicUrl = "https://some.md"
 
-    // @ts-ignore
+    // @ts-expect-error
     fetch.mockResolvedValue({text: () => new Promise((resolve) => resolve(`
 # Git.io
 [Git.io](http://git.io) is a simple URL shortener for GitHub.

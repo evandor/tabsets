@@ -13,7 +13,7 @@ describe('FeaturesPage', () => {
 
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
 
-  // @ts-ignore
+  // @ts-expect-error
   useRoute.mockReturnValue({
     params: {
       feature: "bookmarks"

@@ -194,7 +194,7 @@ describe('WindowsStore', () => {
     if (!window100FromDb) {
       expect(true).toBeFalsy()
     }
-    // @ts-ignore
+    // @ts-expect-error
     await useWindowsStore().upsertWindow(window100FromDb?.browserWindow, "","theTitle")
 
     const window: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0)

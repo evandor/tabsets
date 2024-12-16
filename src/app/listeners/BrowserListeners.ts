@@ -479,7 +479,7 @@ class BrowserListeners {
 
   private capture(request: any) {
     return new Promise((resolve, reject) => {
-      // @ts-ignore
+      // @ts-expect-error
       chrome.tabs.captureVisibleTab(null, {format: 'png'}, dataUrl => {
         const lastError = chrome.runtime.lastError;
         if (lastError) {
@@ -506,13 +506,13 @@ class BrowserListeners {
           const img = await createImageBitmap(blob);
 
           if (width && height) {
-            // @ts-ignore
+            // @ts-expect-error
             ctx.drawImage(img, left, top, width, height, 0, 0, width, height);
           } else {
-            // @ts-ignore
+            // @ts-expect-error
             ctx.drawImage(img, 0, 0);
           }
-          // @ts-ignore
+          // @ts-expect-error
           resolve(await canvas.convertToBlob({
             type: 'image/png',
             quality: 0.95 //prefs.quality

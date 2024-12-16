@@ -29,7 +29,7 @@ describe('SidePanelPage2', () => {
 
   beforeAll(() => {
     // https://vitest.dev/guide/browser.html
-    // @ts-ignore - needed as 'chrome' is undefined in vitest
+    // @ts-expect-error - needed as 'chrome' is undefined in vitest
     global.chrome = undefined
     // global.browser = browser
     //db = useDB(useQuasar()).localDb

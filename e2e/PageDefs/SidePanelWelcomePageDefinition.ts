@@ -1,7 +1,5 @@
 import {expect, Locator, Page} from "@playwright/test";
-// @ts-ignore
 import {TabsetPageDefinition} from "app/e2e/TabsetPageDefinition";
-// @ts-ignore
 import {SidePanelPageDefinition} from "app/e2e/PageDefs/SidePanelPageDefinition";
 
 export class SidePanelWelcomePageDefinition extends TabsetPageDefinition {
