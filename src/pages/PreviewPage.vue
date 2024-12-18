@@ -71,7 +71,7 @@ onMounted(() => {
   const iFrame = iFrameRef.value
   if (iFrame) {
     console.log("window.innerHeight", window.innerHeight)
-    // @ts-expect-error
+    // @ts-expect-error TODO
     iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 106) + "px;width:100%;border:0px");
   }
 })

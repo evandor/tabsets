@@ -288,7 +288,6 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  // @ts-expect-error
   indexSize.value = searchStore?.getIndex()?.size()
 })
 

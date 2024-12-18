@@ -23,12 +23,12 @@ describe('NewTabsetDialogBody', () => {
   let input: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
   let submitButton: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
 
-  // @ts-expect-error
+  // @ts-expect-error TODO
   useRouter.mockReturnValue({push: vi.fn()})
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    // @ts-expect-error
+    // @ts-expect-error TODO
     useRouter().push.mockReset()
     await IndexedDbPersistenceService.init("db")
     await IndexedDbTabsetsPersistence.init()

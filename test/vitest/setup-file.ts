@@ -9,10 +9,10 @@ request.onupgradeneeded = async function () {
 }
 process.env.MODE = "bex"
 
-// @ts-expect-error - needed as 'chrome' is undefined in vitest
+// @ts-expect-error TODO - needed as 'chrome' is undefined in vitest
 global.chrome = undefined
 
 global.CSS = {
-  // @ts-expect-error
+  // @ts-expect-error TODO
   supports: (k, v) => false,
 }

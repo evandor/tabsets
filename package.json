@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
+    "build": "quasar build -m bex -T chrome",
     "build bex (publish)": "quasar build -m bex -T chrome",
     "build bex firefox": "scripts/build.sh firefox",
     "build bex edge": "scripts/build.sh edge",
@@ -16,7 +17,6 @@
     "icon": "icongenie generate -i src/assets/icon.png",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
     "dev": "quasar dev -m bex -T chrome",
-    "build": "quasar build",
     "postinstall": "quasar prepare",
     "test:unit:ui": "vitest --ui",
     "test:unit": "vitest",
@@ -90,7 +90,7 @@
     "vue-draggable-next": "^2.2.1",
     "vue-grid-layout-v3": "^3.1.2",
     "vue-highlight-words": "^3.0.1",
-    "vue-i18n": "^9.14.2",
+    "vue-i18n": "^10.0.5",
     "vue-json-pretty": "^2.4.0",
     "vue-router": "^4.5.0",
     "vue-timeago3": "^2.3.2"

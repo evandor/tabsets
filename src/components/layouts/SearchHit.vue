@@ -130,7 +130,6 @@ const tabsetBadges = (hit: Hit): object[] => {
 const openTabset = (tabsetId: string, encodedUrl: string | undefined = undefined) => {
   selectTabset(tabsetId)
   let navigateTo = ""
-  // @ts-expect-error
   if (!inBexMode() || !chrome.sidePanel) {
     navigateTo = "/tabsets/" + tabsetId
   } else {

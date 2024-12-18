@@ -72,25 +72,25 @@ onMounted(() => {
   const webview = webviewRef.value
   if (webview) {
     console.log("window.innerHeight", window.innerHeight)
-    // @ts-expect-error
+    // @ts-expect-error TODO
     webview.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 106) + "px;width:100%;border:0px");
 
-    // @ts-expect-error
+    // @ts-expect-error TODO
     webview.addEventListener('did-start-loading', (a: any, b: any) => {
       console.log("loading", a.srcElement.src)
       src.value = a.srcElement.src
     })
-    // @ts-expect-error
+    // @ts-expect-error TODO
     webview.addEventListener('did-stop-loading', (a:any,b:any) => {
      // console.log("stopping", a,b )
-      // @ts-expect-error
+      // @ts-expect-error TODO
       canGoBack.value = webview.canGoBack()
     })
-    // @ts-expect-error
+    // @ts-expect-error TODO
     webview.addEventListener('dom-ready', () => {
-      // @ts-expect-error
+      // @ts-expect-error TODO
       canGoBack.value = webview.canGoBack()
-      // @ts-expect-error
+      // @ts-expect-error TODO
       canGoForward.value = webview.canGoForward()
     })
   }
@@ -133,9 +133,9 @@ const iFrameStyle = () => {
   return v
 }
 
-// @ts-expect-error
+// @ts-expect-error TODO
 const goBack = () => webviewRef.value.goBack()
-// @ts-expect-error
+// @ts-expect-error TODO
 const goForward = () => webviewRef.value.goForward()
 
 </script>

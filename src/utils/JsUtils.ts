@@ -18,9 +18,8 @@ class JsUtils {
             allTextNodes.push(currentNode);
             currentNode = treeWalker.nextNode();
         }
-        // @ts-expect-error
-        CSS.highlights.clear();
 
+        CSS.highlights.clear();
 
         const ranges = allTextNodes
             .map((el) => {
@@ -46,9 +45,7 @@ class JsUtils {
                 });
             });
 
-        // @ts-expect-error
         const highlight = new Highlight(...ranges.flat());
-        // @ts-expect-error
         CSS.highlights.set("search-result-highlight", highlight);
     }
 

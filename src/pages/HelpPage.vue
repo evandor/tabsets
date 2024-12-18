@@ -37,7 +37,7 @@ onMounted(() => {
   Analytics.firePageViewEvent('HelpPage', document.location.href);
   const iFrame = iFrameRef.value
   if (iFrame) {
-    // @ts-expect-error
+    // @ts-expect-error TODO
     iFrame.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 130) + "px;width:100%;border:0px");
   }
 })

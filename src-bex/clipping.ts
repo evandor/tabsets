@@ -1,4 +1,4 @@
-// @ts-expect-error
+// @ts-expect-error TODO
 import {bexContent} from 'quasar/wrappers'
 
 
@@ -171,6 +171,7 @@ export default bexContent((bridge: any) => {
   try {
     clipper.remove()
   } catch (e) {
+    // ignore
   }
   clipper.start()
 

@@ -308,7 +308,7 @@ function checkKeystroke(e: KeyboardEvent) {
     // TODO does not work properly yet
     //showSearchBox.value = true
     // e.preventDefault()
-    // // @ts-expect-error
+    // // @ts-expect-error TODO
     // searchBox.value.focus()
     // search.value = ''
   }

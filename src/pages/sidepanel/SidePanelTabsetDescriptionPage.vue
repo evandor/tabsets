@@ -103,7 +103,6 @@ let editorJS2: EditorJS = undefined as unknown as EditorJS
 
 onMounted(() => {
   if (!editorJS2) {
-    // @ts-expect-error
     editorJS2 = new EditorJS({
       holder: "editorjs_" + props.tabsetId,
       autofocus: true,

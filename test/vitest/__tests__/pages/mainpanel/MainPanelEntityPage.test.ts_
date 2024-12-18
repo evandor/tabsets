@@ -21,10 +21,10 @@ describe('MainPanelEntityPage', () => {
 
   const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
 
-  // @ts-expect-error
+  // @ts-expect-error TODO
   useRouter.mockReturnValue({push: vi.fn()})
 
-  // @ts-expect-error
+  // @ts-expect-error TODO
   useRoute.mockReturnValue({
     params: {
       entityId: "17"
@@ -33,7 +33,7 @@ describe('MainPanelEntityPage', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    // @ts-expect-error
+    // @ts-expect-error TODO
     //useRouter().push.mockReset()
 
     // const chromeMock = {

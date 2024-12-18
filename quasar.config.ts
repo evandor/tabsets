@@ -17,9 +17,9 @@ export default defineConfig((ctx) => {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
+      'i18n',
       'axios',
       'errorhandling',
-      'i18n',
       'constants'
     ],
 
@@ -85,6 +85,11 @@ export default defineConfig((ctx) => {
       // extendViteConf (viteConf) {},
       // viteVuePluginOptions: {},
 
+      // https://github.com/vitejs/vite/discussions/14966
+      alias: {
+        "source-map-js": "source-map"
+      },
+
       vitePlugins: [
         ['@intlify/unplugin-vue-i18n/vite', {
           // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
@@ -97,8 +102,8 @@ export default defineConfig((ctx) => {
           ssr: ctx.modeName === 'ssr',
 
           // you need to set i18n resource including paths !
-          // include: [ fileURLToPath(new URL('./src/i18n', import.meta.url)) ]
-          include: [path.resolve(__dirname, './src/i18n/**')],
+          include: [ fileURLToPath(new URL('./src/i18n', import.meta.url)) ]
+          //include: [path.resolve(__dirname, './src/i18n/**')],
         }],
 
         ['vite-plugin-checker', {

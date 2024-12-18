@@ -86,7 +86,7 @@ let editorJS2: EditorJS = undefined as unknown as EditorJS
 useMeta(() => {
   console.debug("using meta...")
   return {
-    // @ts-expect-error
+    // @ts-expect-error TODO
     title: 'Note: ' + title.value
   }
 })
@@ -130,7 +130,7 @@ watchEffect(async () => {
               originalTitle.value = title.value
             }
             if (!editorJS2) {
-              // @ts-expect-error
+              // @ts-expect-error TODO
               editorJS2 = new EditorJS({
                 holder: "editorjs",
                 readOnly: !editMode.value,
@@ -148,7 +148,7 @@ watchEffect(async () => {
     console.log("new Note")
 
     if (!editorJS2) { // && !editorJS2.isReady) {
-      // @ts-expect-error
+      // @ts-expect-error TODO
       editorJS2 = new EditorJS({
         holder: "editorjs",
         autofocus: true,

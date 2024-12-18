@@ -10,14 +10,14 @@
             </div>
           </div>
           <div class="col-12 text-h6 q-mb-md">
-            {{ t('welcome_to_tabsets') }}
+            {{ $t('welcome_to_tabsets') }}
           </div>
         </div>
 
         <div class="q-pa-sm q-mb-none row items-start q-gutter-md" @click.stop="selected()">
           <q-card class="my-card fit">
             <q-card-section>
-              <span class="text-subtitle2">{{ t('create_your_first_ts') }}</span>
+              <span class="text-subtitle2">{{ $t('create_your_first_ts') }}</span>
               <!--              <br>-->
               <!--              {{ t('provide_name_add_later')}}-->
             </q-card-section>
@@ -27,16 +27,16 @@
                        class="input-box"
                        autofocus
                        ref="tabsetNameRef"
-                       :error-message="t('no_special_chars_and_length')"
+                       :error-message="$t('no_special_chars_and_length')"
                        :error="!newTabsetNameIsValid()"
                        data-testid="newTabsetName"
                        @keydown.enter="addFirstTabset()"
                        hint="e.g. Music, Holidays, News..."
-                       :label="t('tabset_name')"/>
+                       label="t('tabset_name')"/>
             </q-card-section>
             <q-card-actions align="right" class="q-pr-md q-pb-xs q-ma-none q-mt-md">
               <DialogButton
-                :label="t('add_tabset')"
+                label="t('add_tabset')"
                 @was-clicked="addFirstTabset"
                 :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
             </q-card-actions>
@@ -56,7 +56,7 @@
                   @click.stop="clicked('https://tabsets.web.app/#/tos')">Terms of Service</span>
             <span class="q-ma-none q-pa-none q-mx-xs text-grey-5">|</span>
             <span class="text-grey q-mx-none cursor-pointer" style="font-size:smaller"
-                  @click.stop="clicked('https://docs.tabsets.net')">{{ t('documentation') }}</span>
+                  @click.stop="clicked('https://docs.tabsets.net')">Documentation</span>
           </div>
         </div>
 
@@ -82,7 +82,7 @@ import {SidePanelViews} from "src/app/models/SidePanelViews";
 import {ActivateFeatureCommand} from "src/features/commands/ActivateFeatureCommand";
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 
-const {t} = useI18n()
+// const {t} = useI18n()
 const router = useRouter()
 
 const tabsetName = ref('')

@@ -8,20 +8,95 @@
  * 3. Import it in your background service worker (if available for your target browser).
  */
 import { createBridge } from '#q-app/bex/background';
+import OnInstalledReason = chrome.runtime.OnInstalledReason;
 
-function openExtension () {
-  chrome.tabs.create(
-    {
-      url: chrome.runtime.getURL('www/index.html')
-    },
-    (/* newTab */) => {
-      // Tab opened.
-    }
-  );
+// chrome.runtime.onInstalled.addListener((callback) => {
+//   console.log("[BEX] ga: fire event install", callback.reason, callback.previousVersion)
+//   // getting error: "Service worker registration failed. Status code: 15"
+//   // Analytics.fireEvent('install-' + callback.reason);
+//   console.log("[BEX] callback:::", callback)
+//   if (callback.reason !== OnInstalledReason.CHROME_UPDATE) {
+//     chrome.tabs.create({
+//       active: false,
+//       url: callback.previousVersion ?
+//         "https://docs.tabsets.net/release-notes" :
+//         "https://tabsets.web.app/#/installed/"
+//     }).then((newTab: chrome.tabs.Tab) => {
+//       setTimeout(() => {
+//         chrome.tabs.update(newTab.id || 0, {active: true})
+//       }, 2000)
+//     })
+//   }
+//   if (chrome.runtime.lastError) {
+//     console.warn("got runtime error", chrome.runtime.lastError)
+//   }
+// });
+
+chrome.omnibox.onInputEntered.addListener((text) => {
+  const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
+  chrome.tabs.create({url: newURL})
+    .catch((err) => console.log("[BEX] background.js error", err))
+});
+
+if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
+  chrome.sidePanel
+    .setPanelBehavior({openPanelOnActionClick: true})
+    .catch((error: any) => console.error(error));
 }
 
-chrome.runtime.onInstalled.addListener(openExtension);
-chrome.action.onClicked.addListener(openExtension);
+// chrome.runtime.onInstalled.addListener((details) => {
+//   console.debug("adding onInstalled listener in background.ts", details)
+//   if (chrome.runtime.lastError) {
+//     console.warn("[BEX] got runtime error", chrome.runtime.lastError)
+//   }
+//   // @ts-ignore
+//   if (chrome.action) {
+//     // @ts-ignore
+//     chrome.action.onClicked.addListener((tab) => {
+//       chrome.tabs.create(
+//         {
+//           url: chrome.runtime.getURL('www/index.html'),
+//         },
+//         (newTab) => {
+//           console.log("[BEX] newTab", newTab)
+//         }
+//       );
+//     });
+//   } else {
+//     //browser.browserAction.onClicked.addListener(openMyPage);
+//   }
+// });
+
+// chrome.runtime.onInstalled.addListener(openExtension);
+// chrome.action.onClicked.addListener(openExtension);
+
+// chrome.runtime.onStartup.addListener(() => {
+//   console.log("[BEX] adding onStartup listener in background.ts")
+//   if (chrome.action) {
+//     chrome.action.onClicked.addListener((tab) => {
+//       // Opens our extension in a new browser window.
+//       // Only if a popup isn't defined in the manifest.
+//
+//       chrome.tabs.create(
+//         {
+//           url: chrome.runtime.getURL('www/index.html'),
+//         },
+//         (newTab) => {
+//           console.log("[BEX] newTab", newTab)
+//         }
+//       );
+//     });
+//   }
+// })
+//
+// chrome.runtime.onConnect.addListener(function (port) {
+//   if (port.name === 'tabsetsSidepanel') {
+//     //console.log("[BEX] port3", port)
+//     port.onDisconnect.addListener(async () => {
+//       //alert('Sidepanel closed.');
+//     });
+//   }
+// });
 
 declare module '@quasar/app-vite' {
   interface BexEventMap {

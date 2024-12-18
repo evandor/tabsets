@@ -96,7 +96,6 @@ watchEffect(() => {
 
 useMeta(() => {
   return {
-    // @ts-expect-error
     title: 'Tabsets Extension' //+ appVersion
   }
 })

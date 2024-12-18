@@ -3,7 +3,6 @@ import type { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    // @ts-expect-error
     redirect: (process.env.MODE === 'pwa') ?
       '/tabsets' : // use case: sharing tabset, opening link, import in PWA for anonymous user
       //'/sidepanel' : // use case: ???

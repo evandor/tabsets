@@ -315,7 +315,7 @@ const restoreHints = () => useUiStore().restoreHints()
 
 const simulateStaticSuggestion = () => {
   const suggestions: [Suggestion] = [
-    // @ts-expect-error
+    // @ts-expect-error TODO
     Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE),
     Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_BOOKMARKS_FEATURE)
   ]
@@ -323,12 +323,10 @@ const simulateStaticSuggestion = () => {
 }
 
 const openSidePanel = async () => {
-  // @ts-expect-error
   if (chrome.sidePanel) {
     const ts:chrome.tabs.Tab[] = await chrome.tabs.query({active: true, currentWindow: true})
-    // @ts-expect-error
+    // @ts-expect-error TODO
     await chrome.sidePanel.open({windowId: ts[0].windowId});
-    // @ts-expect-error
     await chrome.sidePanel.setOptions({
       path: 'www/index.html',
       enabled: true

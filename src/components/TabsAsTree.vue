@@ -179,7 +179,7 @@ $q.loadingBar.setDefaults({
 const resetFilter = () => {
   filter.value = ''
   if (filterRef.value) {
-    // @ts-expect-error
+    // @ts-expect-error TODO
     filterRef.value.focus()
   }
 }
