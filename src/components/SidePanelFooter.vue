@@ -4,7 +4,7 @@
     class="q-pa-none q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey;"
     :style="offsetBottom()">
 
-    <template v-if="checkToasts()" class="q-ma-xs q-pa-xs">
+    <template v-if="checkToasts()">
       <Transition name="fade" appear>
         <q-banner
           inline-actions dense rounded
@@ -206,7 +206,7 @@
           <!--            </q-list>-->
           <!--          </q-menu>-->
         </span>
-        <q-btn v-else-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)"
+        <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)"
                icon="o_open_in_new"
                :class="rightButtonClass()"
                flat

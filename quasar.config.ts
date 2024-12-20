@@ -1,11 +1,12 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-import { defineConfig } from '#q-app/wrappers';
-import { fileURLToPath } from 'node:url';
-import "dotenv/config.js";
-import path from "path";
+import { defineConfig } from '#q-app/wrappers'
+import { fileURLToPath } from 'node:url'
+import 'dotenv/config.js'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 
 export default defineConfig((ctx) => {
 
@@ -47,7 +48,7 @@ export default defineConfig((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
       target: {
-        browser: [ 'es2022', 'firefox115', 'chrome115', 'safari14' ],
+        browser: ['es2022', 'edge88', 'firefox115', 'chrome115'],
         node: 'node20'
       },
 
@@ -87,7 +88,7 @@ export default defineConfig((ctx) => {
 
       // https://github.com/vitejs/vite/discussions/14966
       alias: {
-        "source-map-js": "source-map"
+        'source-map-js': 'source-map'
       },
 
       vitePlugins: [
@@ -102,7 +103,7 @@ export default defineConfig((ctx) => {
           ssr: ctx.modeName === 'ssr',
 
           // you need to set i18n resource including paths !
-          include: [ fileURLToPath(new URL('./src/i18n', import.meta.url)) ]
+          include: [fileURLToPath(new URL('./src/i18n', import.meta.url))]
           //include: [path.resolve(__dirname, './src/i18n/**')],
         }],
 
@@ -114,12 +115,12 @@ export default defineConfig((ctx) => {
           }
         }, { server: false }],
         nodePolyfills(), // as of https://stackoverflow.com/questions/76431747/module-has-been-externalized-for-browser-compatibility-error-in-vite-build
-        // [require('@sentry/vite-plugin').sentryVitePlugin,{
-        //   authToken: process.env.SENTRY_AUTH_TOKEN,
-        //   org: "skysail-dk",
-        //   disable: ctx.dev,
-        //   project: "tabsets"
-        // }]
+        [sentryVitePlugin, {
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          org: 'skysail-dk',
+          disable: ctx.dev,
+          project: 'tabsets'
+        }]
       ]
     },
 
@@ -226,7 +227,7 @@ export default defineConfig((ctx) => {
       // extendPackageJson (json) {},
 
       // Electron preload scripts (if any) from /src-electron, WITHOUT file extension
-      preloadScripts: [ 'electron-preload' ],
+      preloadScripts: ['electron-preload'],
 
       // specify the debugging port to use for the Electron app when running in development mode
       inspectPort: 5858,
@@ -269,4 +270,4 @@ export default defineConfig((ctx) => {
       extraScripts: []
     }
   }
-});
+})

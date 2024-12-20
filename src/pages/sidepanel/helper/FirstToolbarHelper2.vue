@@ -1,12 +1,7 @@
 <template>
   <!-- FirstToolbarHelper2 -->
-  <q-toolbar class="q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom" :style="offsetTop()">
+  <q-toolbar class="q-pa-none q-pl-none q-pr-none q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
-      <div class="row q-ma-none q-pa-none" v-if="useUiStore().overlapIndicator">
-        <q-linear-progress :value="overlap" size="2px" :style="thresholdStyle()">
-          <q-tooltip class="tooltip-small">{{ overlapTooltip }}</q-tooltip>
-        </q-linear-progress>
-      </div>
       <div class="row q-ma-none q-pa-none">
 
         <div class="col-7 q-ma-none q-pa-none" style="border:0 solid red">
@@ -14,9 +9,9 @@
           <!-- no spaces && searching -->
           <SearchWithTransitionHelper v-if="searching"
                                       :search-term="props.searchTerm"
-                                      :search-hits="props.searchHits!"/>
+                                      :search-hits="props.searchHits!" />
 
-          <FilterWithTransitionHelper v-else-if="showFilter"/>
+          <FilterWithTransitionHelper v-else-if="showFilter" />
           <!-- no spaces && not searching -->
           <template v-else>
 
@@ -39,7 +34,7 @@
                      @click="router.push('/sidepanel/collections')">
                   <template v-if="currentTabset">
                     {{ currentTabset.name }}
-                    <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs"/>
+                    <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />
                     <q-tooltip class="tooltip-small" :delay="5000"
                                v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">{{ currentTabset?.id }}
                     </q-tooltip>
@@ -68,25 +63,30 @@
                                         class="q-mr-sm"
                                         id="toggleSearchBtn"
                                         size="11px"
-                                        @click="toggleSearch"/>
+                                        @click="toggleSearch" />
               </template>
 
-              <SidePanelToolbarTabNavigationHelper/>
+              <SidePanelToolbarTabNavigationHelper />
 
               <span>
               <SpecialUrlAddToTabsetComponent
                 v-if="currentChromeTab && currentTabset"
                 @button-clicked="(args:ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)"
                 :currentChromeTab="currentChromeTab"
-                :tabset="currentTabset"/>
+                :tabset="currentTabset" />
               </span>
-              <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer"/>
-              <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset"/>
+              <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer" />
+              <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset" />
             </div>
 
 
           </slot>
         </div>
+      </div>
+      <div class="row q-ma-none q-pa-none" v-if="useUiStore().overlapIndicator">
+        <q-linear-progress :value="overlap" size="2px" :style="thresholdStyle()">
+          <q-tooltip class="tooltip-small">{{ overlapTooltip }}</q-tooltip>
+        </q-linear-progress>
       </div>
     </q-toolbar-title>
   </q-toolbar>
@@ -94,38 +94,38 @@
 
 <script lang="ts" setup>
 
-import {FeatureIdent} from "src/app/models/FeatureIdent";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {useRouter} from "vue-router";
-import {ref, watchEffect} from "vue";
-import {useUiStore} from "src/ui/stores/uiStore";
-import SearchWithTransitionHelper from "src/pages/sidepanel/helper/SearchWithTransitionHelper.vue";
-import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
-import SidePanelToolbarButton from "src/core/components/SidePanelToolbarButton.vue";
-import {useQuasar} from "quasar";
-import {useI18n} from 'vue-i18n'
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {SidePanelViews} from "src/app/models/SidePanelViews";
-import FilterWithTransitionHelper from "src/core/widget/FilterWithTransitionHelper.vue";
-import SpecialUrlAddToTabsetComponent from "src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue";
-import {useWindowsStore} from "src/windows/stores/windowsStore";
-import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
-import {ActionHandlerButtonClickedHolder} from "src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder";
-import {useActionHandlers} from "src/tabsets/actionHandling/ActionHandlers";
-import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
-import SidePanelPageContextMenu from "src/pages/sidepanel/SidePanelPageContextMenu.vue";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {Tab} from "src/tabsets/models/Tab";
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import { useRouter } from 'vue-router'
+import { ref, watchEffect } from 'vue'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import SearchWithTransitionHelper from 'src/pages/sidepanel/helper/SearchWithTransitionHelper.vue'
+import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
+import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
+import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import FilterWithTransitionHelper from 'src/core/widget/FilterWithTransitionHelper.vue'
+import SpecialUrlAddToTabsetComponent from 'src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder'
+import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import SidePanelPageContextMenu from 'src/pages/sidepanel/SidePanelPageContextMenu.vue'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { Tab } from 'src/tabsets/models/Tab'
 
-const {t} = useI18n({useScope: 'global'})
+const { t } = useI18n({ useScope: 'global' })
 
 const props = defineProps({
-  title: {type: String, default: "My Tabsets"},
-  forceTitle: {type: Boolean, default: false},
-  showSearchBox: {type: Boolean, default: false},
-  searchTerm: {type: String, default: ''},
-  searchHits: {type: Number, required: false}
+  title: { type: String, default: 'My Tabsets' },
+  forceTitle: { type: Boolean, default: false },
+  showSearchBox: { type: Boolean, default: false },
+  searchTerm: { type: String, default: '' },
+  searchHits: { type: Number, required: false }
 })
 
 const $q = useQuasar()
@@ -143,9 +143,9 @@ const overlapTooltip = ref('')
 const toggleSearch = () => {
   searching.value = !searching.value
   if (searching.value) {
-    router.push("/sidepanel/search")
+    router.push('/sidepanel/search')
   } else {
-    router.push("/sidepanel")
+    router.push('/sidepanel')
   }
 }
 
@@ -167,7 +167,7 @@ watchEffect(() => {
 })
 
 const thresholdStyle = () =>
-  "color: hsl(" + (Math.round(120 * overlap.value)) + " 80% 50%)"
+  'color: hsl(' + (Math.round(120 * overlap.value)) + ' 80% 50%)'
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
@@ -192,7 +192,7 @@ watchEffect(() => {
 if ($q.platform.is.chrome && $q.platform.is.bex) {
   chrome.commands.onCommand.addListener((command) => {
     if (command === 'search') {
-      console.debug(`got Command: ${command}`);
+      console.debug(`got Command: ${command}`)
       toggleSearch()
     }
   })
@@ -207,10 +207,10 @@ const title = (): string => {
     const currentTs = useTabsetsStore().getCurrentTabset
     if (currentTs) {
       return currentTs.type !== TabsetType.SESSION
-        ? "Collection"
+        ? 'Collection'
         : `Session (${currentTs.tabs.length} tab${currentTs.tabs.length > 1 ? 's' : ''})`
     }
-    return "Collection"
+    return 'Collection'
   }
 }
 

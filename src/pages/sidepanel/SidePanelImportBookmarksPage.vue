@@ -72,6 +72,9 @@ import ChromeApi from "src/app/BrowserApi";
 import _ from "lodash";
 import {useUtils} from "src/core/services/Utils";
 import {useUiStore} from "src/ui/stores/uiStore";
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { CreateTabsetFromBookmarksRecursive } from 'src/domain/commands/CreateTabsetFromBookmarksRecursive'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 
 const {sendMsg} = useUtils()
 
@@ -87,27 +90,27 @@ onMounted(() => {
 const gotoSettingsPage = () => NavigationService.openOrCreateTab([chrome.runtime.getURL('/www/index.html#/mainpanel/settings?tab=importExport')])
 
 
-// TODO get rid of tabset-references here; use AppEventDispatcher
-async function createTabsetFrom(name: string, bookmarkId: string): Promise<Tabset> {
-  console.log("creating recursively", name, bookmarkId)
-  const subTree: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId)
-  const folders = _.filter(subTree, (e: chrome.bookmarks.BookmarkTreeNode) => e.url === undefined)
-  const nodes = _.filter(subTree, (e: chrome.bookmarks.BookmarkTreeNode) => e.url !== undefined)
-  const subfolders: Tabset[] = []
-  for (const f of folders) {
-    console.log("found folder", f)
-    const subTabset = await createTabsetFrom(f.title, f.id)
-    subfolders.push(subTabset)
-  }
-  const result = await useTabsetService().saveOrReplaceFromBookmarks(name, nodes, true, true)
-  console.log("result", result)
-  const ts: Tabset = result['tabset' as keyof object]
-  ts.folders = subfolders
-  ts.bookmarkId = bookmarkId
-  useUiStore().importedBookmarks.push(bookmarkId)
-  subfolders.forEach(f => f.folderParent = ts.id)
-  return ts
-}
+// // TODO get rid of tabset-references here; use AppEventDispatcher
+// async function createTabsetFrom(name: string, bookmarkId: string): Promise<Tabset> {
+//   console.log("creating recursively", name, bookmarkId)
+//   const subTree: chrome.bookmarks.BookmarkTreeNode[] = await ChromeApi.childrenFor(bookmarkId)
+//   const folders = _.filter(subTree, (e: chrome.bookmarks.BookmarkTreeNode) => e.url === undefined)
+//   const nodes = _.filter(subTree, (e: chrome.bookmarks.BookmarkTreeNode) => e.url !== undefined)
+//   const subfolders: Tabset[] = []
+//   for (const f of folders) {
+//     console.log("found folder", f)
+//     const subTabset = await createTabsetFrom(f.title, f.id)
+//     subfolders.push(subTabset)
+//   }
+//   const result = await useTabsetService().saveOrReplaceFromBookmarks(name, nodes, true, true)
+//   console.log("result", result)
+//   const ts: Tabset = result['tabset' as keyof object]
+//   ts.folders = subfolders
+//   ts.bookmarkId = bookmarkId
+//   useUiStore().importedBookmarks.push(bookmarkId)
+//   subfolders.forEach(f => f.folderParent = ts.id)
+//   return ts
+// }
 
 const imported = async (a:{ bmId: number, recursive: boolean, tsName: string }) => {
 
@@ -115,15 +118,24 @@ const imported = async (a:{ bmId: number, recursive: boolean, tsName: string }) 
   useUiStore().importedBookmarks = []
   $q.loadingBar?.start()
 
-  const tabset = await createTabsetFrom(a.tsName, "" + a.bmId)
-  await useTabsetService().saveTabset(tabset)
-  $q.loadingBar?.stop()
+  // const tabset = await createTabsetFrom(a.tsName, "" + a.bmId)
 
-  sendMsg('reload-tabset', {tabsetId: tabset.id})
-  sendMsg('sidepanel-switch-view', {view: 'main'})
+  useCommandExecutor().execute(new CreateTabsetFromBookmarksRecursive(a.tsName, "" + a.bmId))
+    .then(async (res: ExecutionResult<Tabset>) => {
+      const tabset = res.result
+      await useTabsetService().saveTabset(tabset)
+      $q.loadingBar?.stop()
+      sendMsg('reload-tabset', {tabsetId: tabset.id})
+      sendMsg('sidepanel-switch-view', {view: 'main'})
 
-  console.log("imported to tabset", tabset.id)
-  importedTabsetId.value = tabset.id
+      console.log("imported to tabset", tabset.id)
+      importedTabsetId.value = tabset.id
+
+    })
+    .catch((err: any) => {
+      console.warn("error", err.toString())
+      $q.loadingBar?.stop()
+    })
 }
 
 const openImportedTabset = () => {

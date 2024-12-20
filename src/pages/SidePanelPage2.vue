@@ -12,7 +12,7 @@
     </div>
 
     <!-- list of tabs, assuming here we have at least one tabset -->
-    <div class="q-ma-none q-pa-none">
+    <div class="q-ma-none q-pa-none q-pt-xs">
 
       <template v-if="useTabsetsStore().tabsets.size > 0">
 

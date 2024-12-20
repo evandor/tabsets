@@ -217,11 +217,6 @@ class BrowserListeners {
     this.inProgress = true
   }
 
-  createThumbnails(b: boolean) {
-    console.log("thumbnails active set to ", b)
-    this.thumbnailsActive = b
-  }
-
   onCreated(tab: chrome.tabs.Tab) {
     this.eventTriggered()
     // console.debug(`onCreated: tab ${tab.id}: >>> ${tab.pendingUrl}`, tab)
@@ -244,28 +239,28 @@ class BrowserListeners {
     if (info.status === "complete") {
       console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)}`)
 
-      if (chromeTab.id && chromeTab.url) {
-        try {
-          const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
-
-          // const bridge = useQuasar().bex
-          // const contentRequest = bridge.send('tabsets.getExcerpt')
-
-          console.log("got content request response", contentRequest)
-          // updating (transient) content in contentStore
-          useContentStore().setCurrentTabContent(contentRequest['html' as keyof object])
-          useContentStore().setCurrentTabUrl(chromeTab.url)
-
-          // update (persistent) content in content db if exists
-          const existing: ContentItem | undefined = await useContentService().getContentFor(chromeTab.url)
-          if (existing) {
-            const tokens = ContentUtils.html2tokens(contentRequest['html' as keyof object] || '')
-            useContentService().saveContent(existing.id, chromeTab.url, [...tokens].join(" "), contentRequest['metas' as keyof object], chromeTab.title || '', [])
-              .catch((err: any) => console.log("err", err))
-          }
-        } catch (err) {
-        } // ignore
-      }
+      // if (chromeTab.id && chromeTab.url) {
+      //   try {
+      //     const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
+      //
+      //     // const bridge = useQuasar().bex
+      //     // const contentRequest = bridge.send('tabsets.getExcerpt')
+      //
+      //     console.log("got content request response", contentRequest)
+      //     // updating (transient) content in contentStore
+      //     useContentStore().setCurrentTabContent(contentRequest['html' as keyof object])
+      //     useContentStore().setCurrentTabUrl(chromeTab.url)
+      //
+      //     // update (persistent) content in content db if exists
+      //     const existing: ContentItem | undefined = await useContentService().getContentFor(chromeTab.url)
+      //     if (existing) {
+      //       const tokens = ContentUtils.html2tokens(contentRequest['html' as keyof object] || '')
+      //       useContentService().saveContent(existing.id, chromeTab.url, [...tokens].join(" "), contentRequest['metas' as keyof object], chromeTab.title || '', [])
+      //         .catch((err: any) => console.log("err", err))
+      //     }
+      //   } catch (err) {
+      //   } // ignore
+      // }
 
       this.handleUpdateInjectScripts(info, chromeTab)
 
