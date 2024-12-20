@@ -103,7 +103,7 @@
     "@editorjs/raw": "^2.5.1",
     "@editorjs/table": "^2.4.3",
     "@eslint/js": "^9.17.0",
-    "@intlify/unplugin-vue-i18n": "^2.0.0",
+    "@intlify/unplugin-vue-i18n": "^6.0.1",
     "@playwright/test": "^1.49.1",
     "@quasar/app-vite": "^2.0.2",
     "@quasar/quasar-app-extension-testing-unit-vitest": "^1.1.0",
