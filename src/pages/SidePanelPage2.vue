@@ -2,7 +2,7 @@
   <!-- SidePanelPage2 -->
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 50px">
 
-    <offline-info/>
+    <offline-info />
 
     <div class="wrap" v-if="useUiStore().appLoading">
       <div class="loading">
@@ -20,23 +20,23 @@
 
           <!-- optional: notes -->
           <div class="col-12">
-            <SidePanelNotesView v-if="currentTabset" :tabset="currentTabset"/>
+            <SidePanelNotesView v-if="currentTabset" :tabset="currentTabset" />
           </div>
 
           <!-- folders -->
           <div class="col-12">
-            <SidePanelFoldersView v-if="currentTabset" :tabset="currentTabset"/>
+            <SidePanelFoldersView v-if="currentTabset" :tabset="currentTabset" />
           </div>
 
           <!-- list of tabs, assuming here we have at least one tabset-->
           <SidePanelPageTabList v-if="currentTabset"
                                 :tabsCount="useTabsetService().tabsToShow(currentTabset as Tabset)?.length"
-                                :tabset="tabsetForTabList(currentTabset as Tabset)"/>
+                                :tabset="tabsetForTabList(currentTabset as Tabset)" />
 
         </div>
       </template>
 
-      <StartingHint v-if="showStartingHint()"/>
+      <StartingHint v-if="showStartingHint()" />
 
     </div>
 
@@ -54,36 +54,36 @@
 
 <script lang="ts" setup>
 
-import {onMounted, onUnmounted, ref, watchEffect} from "vue";
-import _ from "lodash"
-import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
-import {useRouter} from "vue-router";
-import {useUtils} from "src/core/services/Utils";
-import {LocalStorage} from "quasar";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {useUiStore} from "src/ui/stores/uiStore";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import {FeatureIdent} from "src/app/models/FeatureIdent";
-import TabsetService from "src/tabsets/services/TabsetService";
-import Analytics from "src/core/utils/google-analytics";
-import {useAuthStore} from "src/stores/authStore";
-import {useSuggestionsStore} from "src/suggestions/stores/suggestionsStore";
-import {useI18n} from 'vue-i18n'
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
-import SidePanelPageTabList from "src/tabsets/layouts/SidePanelPageTabList.vue";
-import {useWindowsStore} from "src/windows/stores/windowsStore";
-import StartingHint from "src/pages/widgets/StartingHint.vue";
-import SidePanelNotesView from "src/notes/views/sidepanel/SidePanelNotesView.vue";
-import SidePanelFoldersView from "src/tabsets/views/sidepanel/SidePanelFoldersView.vue";
-import FirstToolbarHelper2 from "src/pages/sidepanel/helper/FirstToolbarHelper2.vue";
-import AppService from "src/app/AppService";
-import OfflineInfo from "src/core/components/helper/offlineInfo.vue";
+import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import _ from 'lodash'
+import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
+import { useRouter } from 'vue-router'
+import { useUtils } from 'src/core/services/Utils'
+import { LocalStorage } from 'quasar'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import TabsetService from 'src/tabsets/services/TabsetService'
+import Analytics from 'src/core/utils/google-analytics'
+import { useAuthStore } from 'src/stores/authStore'
+import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
+import { useI18n } from 'vue-i18n'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import SidePanelPageTabList from 'src/tabsets/layouts/SidePanelPageTabList.vue'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import StartingHint from 'src/pages/widgets/StartingHint.vue'
+import SidePanelNotesView from 'src/notes/views/sidepanel/SidePanelNotesView.vue'
+import SidePanelFoldersView from 'src/tabsets/views/sidepanel/SidePanelFoldersView.vue'
+import FirstToolbarHelper2 from 'src/pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import AppService from 'src/app/AppService'
+import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 
-const {t} = useI18n({locale: navigator.language, useScope: "global"})
+const { t } = useI18n({ locale: navigator.language, useScope: 'global' })
 
-const {inBexMode} = useUtils()
+const { inBexMode } = useUtils()
 
 const router = useRouter()
 const uiStore = useUiStore()
@@ -94,30 +94,30 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
 
 function updateOnlineStatus(e: any) {
-  const {type} = e
+  const { type } = e
   useUiStore().networkOnline = type === 'online'
 }
 
 onMounted(() => {
 
   if (LocalStorage.getItem('ui.sidepanel.oldLayout')) {
-    router.push("/sidepanelOld")
+    router.push('/sidepanelOld')
   }
 
-  window.addEventListener('keypress', checkKeystroke);
+  window.addEventListener('keypress', checkKeystroke)
 
-  window.addEventListener("offline", (e) => updateOnlineStatus(e));
-  window.addEventListener("online", (e) => updateOnlineStatus(e));
+  window.addEventListener('offline', (e) => updateOnlineStatus(e))
+  window.addEventListener('online', (e) => updateOnlineStatus(e))
 
   if (!useAuthStore().isAuthenticated) {
     //router.push("/authenticate")
   } else {
-    Analytics.firePageViewEvent('SidePanelPage', document.location.href);
+    Analytics.firePageViewEvent('SidePanelPage', document.location.href)
   }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keypress', checkKeystroke);
+  window.removeEventListener('keypress', checkKeystroke)
 })
 
 watchEffect(() => {
@@ -126,16 +126,16 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (useUiStore().tabsFilter) {
-    console.log("filtering:::", useUiStore().tabsFilter)
+    console.log('filtering:::', useUiStore().tabsFilter)
   }
 })
 
 const getTabsetOrder =
   [
-    function (o: Tabset) {
+    function(o: Tabset) {
       return o.status === TabsetStatus.FAVORITE ? 0 : 1
     },
-    function (o: Tabset) {
+    function(o: Tabset) {
       return o.name?.toLowerCase()
     }
   ]
@@ -146,7 +146,7 @@ function determineTabsets() {
       (ts: Tabset) => ts.status !== TabsetStatus.DELETED
         && ts.status !== TabsetStatus.HIDDEN &&
         ts.status !== TabsetStatus.ARCHIVED),
-    getTabsetOrder, ["asc"]);
+    getTabsetOrder, ['asc'])
 }
 
 watchEffect(() => {
@@ -163,7 +163,7 @@ watchEffect(() => {
           ts.status !== TabsetStatus.HIDDEN &&
           ts.status !== TabsetStatus.ARCHIVED
       }),
-      getTabsetOrder, ["asc"])
+      getTabsetOrder, ['asc'])
     // console.log("tabsets:", tabsets.value)
   } else {
     tabsets.value = determineTabsets()
@@ -175,21 +175,16 @@ watchEffect(() => {
   currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
-
 function inIgnoredMessages(message: any) {
-  return message.msg === "html2text" ||
-    message.msg === "captureThumbnail" ||
-    message.msg === "capture-annotation" ||
-    message.name === "reload-spaces" ||
-    // message.name === "window-updated" ||
-    message.msg === "html2links"
+  return message.msg === 'captureThumbnail' ||
+    message.name === 'reload-spaces'
 }
 
 if (inBexMode()) {
   // seems we need to define these listeners here to get the matching messages reliably
   // these messages are created by triggering events in the mainpanel
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log(" <<< received message", message)
+    console.log(' <<< received message', message)
     if (inIgnoredMessages(message)) {
       return true
     }
@@ -201,21 +196,21 @@ if (inBexMode()) {
       useTabsetsStore().selectCurrentTabset(tsId)
     } else if (message.name === 'feature-activated') {
       useFeaturesStore().activateFeature(message.data.feature)
-    } else if (message.name === "text-selection") {
-      console.log("message", message)
-    } else if (message.name === "feature-deactivated") {
+    } else if (message.name === 'text-selection') {
+      console.log('message', message)
+    } else if (message.name === 'feature-deactivated') {
       useFeaturesStore().deactivateFeature(message.data.feature)
-    } else if (message.name === "tabsets-imported") {
+    } else if (message.name === 'tabsets-imported') {
       useSpacesStore().reload()
       useTabsetService().init()
       // TODO reload
-    } else if (message.name === "tab-being-dragged") {
+    } else if (message.name === 'tab-being-dragged') {
       useUiStore().draggingTab(message.data.tabId, null as unknown as any)
-    } else if (message.name === "note-changed") {
+    } else if (message.name === 'note-changed') {
       // TODO needed?
       //const tabset = useTabsetsStore().getTabset(message.data.tabsetId) as Tabset
       if (message.data.notebookId) {
-        console.log("updating notebook/tabset", message.data.notebookId, message.data.tabsetId)
+        console.log('updating notebook/tabset', message.data.notebookId, message.data.tabsetId)
         useTabsetService().reloadTabset(message.data.tabsetId)
         // const res = useTabsetsStore().getTabAndTabsetId(message.data.noteId)
         // //.then((res: TabAndTabsetId | undefined) => {
@@ -228,73 +223,73 @@ if (inBexMode()) {
         // useTabsetService().saveTabset(tabset)
         //    })
       } else {
-        console.log("adding tab", message.data.tab)
+        console.log('adding tab', message.data.tab)
         //tabset.tabs.push(message.data.tab)
         //useTabsetService().saveTabset(tabset)
       }
-    } else if (message.name === "tab-added") {
+    } else if (message.name === 'tab-added') {
       // hmm - getting this twice...
-      console.log(" > got message '" + message.name + "'", message)
+      console.log(' > got message \'' + message.name + '\'', message)
       useTabsetService().reloadTabset(message.data.tabsetId)
       //updateSelectedTabset(message.data.tabsetId, true)
-    } else if (message.name === "tab-deleted") {
+    } else if (message.name === 'tab-deleted') {
       useTabsetService().reloadTabset(message.data.tabsetId)
-    } else if (message.name === "tabset-added") {
+    } else if (message.name === 'tabset-added') {
       useTabsetService().reloadTabset(message.data.tabsetId)
       // } else if (message.name === "mark-tabset-deleted") {
       //   TabsetService.markAsDeleted(message.data.tabsetId)
-    } else if (message.name === "tabset-renamed") {
+    } else if (message.name === 'tabset-renamed') {
       TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
-    } else if (message.name === "progress-indicator") {
+    } else if (message.name === 'progress-indicator') {
       if (message.percent) {
         uiStore.setProgress(message.percent)
         // uiStore.progressLabel = message.label
       }
-      if (message.status === "done") {
+      if (message.status === 'done') {
         uiStore.progress = undefined
         // uiStore.progressLabel = undefined
       }
-      sendResponse("ui store progress set to " + uiStore.progress)
-    } else if (message.name === "detail-level-changed") {
-      console.log("setting list detail level to ", message.data.level)
+      sendResponse('ui store progress set to ' + uiStore.progress)
+    } else if (message.name === 'detail-level-changed') {
+      console.log('setting list detail level to ', message.data.level)
       useUiStore().setListDetailLevel(message.data.level)
-    } else if (message.name === "detail-level-perTabset-changed") {
-      console.log("setting list detail perTabset level to ", message.data.level)
+    } else if (message.name === 'detail-level-perTabset-changed') {
+      console.log('setting list detail perTabset level to ', message.data.level)
       useUiStore().showDetailsPerTabset = message.data.level
-    } else if (message.name === "settings-changed") {
+    } else if (message.name === 'settings-changed') {
       console.log(`setting ${message.data.identifier} to ${message.data.value}`)
       switch (message.data.identifier) {
-        case "ui.hideIndicatorIcon":
+        case 'ui.hideIndicatorIcon':
           useUiStore().setHideIndicatorIcon(message.data.value)
-          break;
-        case "ui.fullUrls":
+          break
+        case 'ui.fullUrls':
           useUiStore().setShowFullUrls(message.data.value)
-          break;
-        case "ui.overlapIndicator":
+          break
+        case 'ui.overlapIndicator':
           useUiStore().setOverlapIndicator(message.data.value)
-          break;
-        case "ui.contentScriptLoggingOff":
+          break
+        case 'ui.contentScriptLoggingOff':
           useUiStore().setContentScriptLoggingOff(message.data.value)
-          break;
-        case "ui.fontsize":
+          break
+        case 'ui.fontsize':
           useUiStore().setFontsize(message.data.value)
-          break;
+          break
         default:
           console.log(`unknown message identifier ${message.data.identifier}`)
       }
-    } else if (message.name === "reload-suggestions") {
-      console.log("reload-suggestions message received")
+    } else if (message.name === 'reload-suggestions') {
+      console.log('reload-suggestions message received')
       useSuggestionsStore().loadSuggestionsFromDb()
-    } else if (message.name === "reload-tabset") {
-      console.log("reload-tabset message received")
+    } else if (message.name === 'reload-tabset') {
+      console.log('reload-tabset message received')
       const tabsetId = message.data.tabsetId ?
         message.data.tabsetId :
         useTabsetsStore().getCurrentTabset?.id
       useTabsetService().reloadTabset(tabsetId)
     } else if (message.name === 'reload-application') {
-      AppService.restart("restarted=true")
+      AppService.restart('restarted=true')
     } else {
-      console.log("got unmatched message", message)
+      console.log('got unmatched message', message)
     }
     return true
   })
@@ -329,4 +324,4 @@ const showStartingHint = () => !useUiStore().appLoading && useTabsetsStore().all
 
 </script>
 
-<style lang="scss" src="./css/sidePanelPage2.scss"/>
+<style lang="scss" src="./css/sidePanelPage2.scss" />
