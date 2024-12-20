@@ -428,10 +428,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   if (tab.value) {
-    useThumbnailsService().getThumbnailFor(tab.value.url)
+    useThumbnailsService().getThumbnailFor(tab.value.id)
       .then(data => {
         if (data) {
-          thumbnail.value = data['thumbnail' as keyof object]!
+          thumbnail.value = data
         } else {
           thumbnail.value = ''
         }

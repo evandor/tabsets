@@ -5,10 +5,10 @@
  *   Do not remove the import statement below. It is required for the extension to work.
  *   If you don't need createBridge(), leave it as "import '#q-app/bex/content'".
  */
-import { createBridge } from '#q-app/bex/content';
+import { createBridge } from '#q-app/bex/content'
 
 // The use of the bridge is optional.
-const bridge = createBridge({ debug: false });
+const bridge = createBridge({ debug: false })
 /**
  * bridge.portName is 'content@<path>-<number>'
  *   where <path> is the relative path of this content script
@@ -30,12 +30,42 @@ bridge.on('some.event', ({ payload }) => {
   if (payload.someProp) {
     // Access a DOM element from here.
     // Document in this instance is the underlying website the contentScript runs on
-    const el = document.getElementById('some-id');
+    const el = document.getElementById('some-id')
     if (el) {
-      el.innerText = 'Quasar Rocks!';
-    };
-  };
-});
+      el.innerText = 'Quasar Rocks!'
+    }
+  }
+})
+
+// bridge.on('tabsets.getExcerpt', () => {
+//   bridge.log('tabsets: got request \'getExcerpt\'')
+//   const responseMessage = {
+//     html: document.documentElement.outerHTML,
+//     metas: getMetas(document)
+//   }
+//   console.debug('tabsets: received message for content, html size:', responseMessage.html.length, responseMessage.metas)
+//   return responseMessage
+// })
+
+function getMetas(document: Document) {
+  //console.debug("tabsets: getting metas for document" )
+  const result: { [k: string]: string } = {}
+  //const res: string[] = []
+  const metaNodes: NodeList = document.querySelectorAll('meta')
+  metaNodes.forEach((node: Node) => {
+    const element = <Element>node
+    const nameAttr = element.attributes.getNamedItem('name')
+    const propAttr = element.attributes.getNamedItem('property')
+    const contAttr = element.attributes.getNamedItem('content')
+    const key: string = nameAttr ? (nameAttr.value.trim().toLowerCase() || 'undefName') : (propAttr?.value || 'undefProp')
+    //console.debug("tabsets: key", key, contAttr?.value || 'x')
+    if (key) {
+      result[key] = contAttr?.value || ''
+    }
+    // res.push((element.attributes.getNamedItem('name')?.textContent) || 'undef')
+  })
+  return result
+}
 
 /**
  * Leave this AFTER you attach your initial listeners
@@ -48,11 +78,21 @@ bridge.on('some.event', ({ payload }) => {
  */
 bridge.connectToBackground()
   .then(() => {
-    console.log('Connected to background');
+    console.log('[BEX-CT] Connected to background', bridge.portName)
+    const responseMessage = {
+      html: document.documentElement.outerHTML,
+      metas: getMetas(document),
+      port: bridge.portName,
+      url: window.location.href
+    }
+    bridge.send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage })
+      .catch((err: any) => {
+        console.log('[BEX-CT] Failed to send message to app', err)
+      })
   })
   .catch(err => {
-    console.error('Failed to connect to background:', err);
-  });
+    console.error('[BEX-CT] Failed to connect to background:', err)
+  })
 
 /*
 // More examples:

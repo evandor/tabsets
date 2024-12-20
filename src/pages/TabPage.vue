@@ -327,7 +327,7 @@
     </div>
   </div>
 
-  <div v-else-if="tab === 'debug'" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+  <div v-else-if="tab === 'debug' && useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded>The tabs internal representation</q-banner>
       <vue-json-pretty style="font-size: 80%" :show-length="true"

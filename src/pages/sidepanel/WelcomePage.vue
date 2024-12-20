@@ -32,11 +32,11 @@
                        data-testid="newTabsetName"
                        @keydown.enter="addFirstTabset()"
                        hint="e.g. Music, Holidays, News..."
-                       label="t('tabset_name')"/>
+                       :label="$t('tabset_name')"/>
             </q-card-section>
             <q-card-actions align="right" class="q-pr-md q-pb-xs q-ma-none q-mt-md">
               <DialogButton
-                label="t('add_tabset')"
+                :label="$t('add_tabset')"
                 @was-clicked="addFirstTabset"
                 :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()"/>
             </q-card-actions>

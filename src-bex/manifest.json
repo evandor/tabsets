@@ -28,9 +28,23 @@
     ],
     "content_scripts": [
       {
-        "matches": [ "<all_urls>" ],
-        "css": [ "assets/content.css" ],
-        "js": [ "my-content-script.ts" ]
+        "matches": [
+          "<all_urls>"
+        ],
+        "css": [
+          "assets/content.css"
+        ],
+        "js": [
+          "my-content-script.ts"
+        ]
+      },
+      {
+        "matches": [
+          "*://*/*"
+        ],
+        "js": [
+          "tabsets-content-script.ts"
+        ]
       }
     ],
     "content_security_policy": {
@@ -80,7 +94,6 @@
     },
     "options_page": "www/index.html#/mainpanel/settings"
   },
-
   "chrome": {
     "side_panel": {
       "default_path": "www/index.html"
@@ -89,7 +102,6 @@
       "service_worker": "background.ts"
     }
   },
-
   "firefox": {
     "background": {
       "scripts": [

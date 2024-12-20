@@ -7,8 +7,8 @@
  * 2. Do NOT import this file in multiple background scripts. Only in one!
  * 3. Import it in your background service worker (if available for your target browser).
  */
-import { createBridge } from '#q-app/bex/background';
-import OnInstalledReason = chrome.runtime.OnInstalledReason;
+import { createBridge } from '#q-app/bex/background'
+import { PortName } from '#q-app'
 
 // chrome.runtime.onInstalled.addListener((callback) => {
 //   console.log("[BEX] ga: fire event install", callback.reason, callback.previousVersion)
@@ -33,15 +33,15 @@ import OnInstalledReason = chrome.runtime.OnInstalledReason;
 // });
 
 chrome.omnibox.onInputEntered.addListener((text) => {
-  const newURL = chrome.runtime.getURL("/www/index.html#/searchresult?t=" + encodeURIComponent(text))
-  chrome.tabs.create({url: newURL})
-    .catch((err) => console.log("[BEX] background.js error", err))
-});
+  const newURL = chrome.runtime.getURL('/www/index.html#/searchresult?t=' + encodeURIComponent(text))
+  chrome.tabs.create({ url: newURL })
+    .catch((err) => console.log('[BEX] background.js error', err))
+})
 
 if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
   chrome.sidePanel
-    .setPanelBehavior({openPanelOnActionClick: true})
-    .catch((error: any) => console.error(error));
+    .setPanelBehavior({ openPanelOnActionClick: true })
+    .catch((error: any) => console.error(error))
 }
 
 // chrome.runtime.onInstalled.addListener((details) => {
@@ -100,14 +100,12 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 
 declare module '@quasar/app-vite' {
   interface BexEventMap {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
     log: [{ message: string; data?: any[] }, void];
     getTime: [never, number];
 
     'storage.get': [string | undefined, any];
     'storage.set': [{ key: string; value: any }, void];
     'storage.remove': [string, void];
-    /* eslint-enable @typescript-eslint/no-explicit-any */
   }
 }
 
@@ -116,30 +114,53 @@ declare module '@quasar/app-vite' {
  * (and between the app & content scripts), otherwise skip calling
  * useBridge() and use no bridge.
  */
-const bridge = createBridge({ debug: false });
+const bridge = createBridge({ debug: false })
+
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  //console.log("changeInfo", changeInfo, tab)
+  if (tab.url && tab.url.startsWith("http") && changeInfo.status === 'complete') {
+    const msg = { event: 'tabsets.bex.tab.updated', to: 'app' as PortName, payload: { url: tab.url } }
+    // console.log('[BEX] tabsets.bex.tab >>>', tabId, msg, changeInfo, tab)
+    // bridge.send(msg)
+    //
+    // bridge.portList.forEach(portName => {
+    //   //console.log('[BEX] bridge.portList', portName)
+    //   //bridge.send({ event: 'test', to: portName, payload: 'Hello from content-script!' });
+    // });
+
+
+  } else {
+    //bridge.send({ event: 'tabsets.bex.tab.opened', to: 'app', payload: { url: tab.url } })
+  }
+  // const result = await bridge. send({   event: 'sum',
+  //   to: 'app',   payload: { a: 1, b: 2 } });
+  // console. log(result); // 3
+
+})
+
 
 bridge.on('log', ({ from, payload }) => {
-  console.log(`[BEX] @log from "${ from }"`, payload);
-});
+  console.log(`[BEX] @log from "${from}"`, payload)
+})
 
 bridge.on('getTime', () => {
-  return Date.now();
-});
+  return Date.now()
+})
 
 bridge.on('storage.get', ({ payload: key }) => {
   return new Promise(resolve => {
     if (key === void 0) {
       chrome.storage.local.get(null, items => {
         // Group the values up into an array to take advantage of the bridge's chunk splitting.
-        resolve(Object.values(items));
-      });
+        resolve(Object.values(items))
+      })
     } else {
       chrome.storage.local.get([key], items => {
-        resolve(items[key]);
-      });
+        resolve(items[key])
+      })
     }
-  });
-});
+  })
+})
 // Usage:
 // bridge.send({
 //   event: 'storage.get',
@@ -148,8 +169,8 @@ bridge.on('storage.get', ({ payload: key }) => {
 // }).then((result) => { ... }).catch((error) => { ... });
 
 bridge.on('storage.set', async ({ payload: { key, value } }) => {
-  await chrome.storage.local.set({ [key]: value });
-});
+  await chrome.storage.local.set({ [key]: value })
+})
 // Usage:
 // bridge.send({
 //   event: 'storage.set',
@@ -158,8 +179,8 @@ bridge.on('storage.set', async ({ payload: { key, value } }) => {
 // }).then(() => { ... }).catch((error) => { ... });
 
 bridge.on('storage.remove', async ({ payload: key }) => {
-  await chrome.storage.local.remove(key);
-});
+  await chrome.storage.local.remove(key)
+})
 // Usage:
 // bridge.send({
 //   event: 'storage.remove',

@@ -17,6 +17,39 @@ const bridge = createBridge({ debug: false });
  *   and <number> is a unique instance number (1-10000).
  */
 
+/**
+ * When the drawer is toggled set the iFrame height to take the whole page.
+ * Reset when the drawer is closed.
+ */
+bridge.on('wb.drawer.toggle', (x) => {
+  if ((x['data' as keyof object] as any).open) {
+    setIFrameHeight('100%')
+  } else {
+    resetIFrameHeight()
+  }
+  const f = x['respond' as keyof object] as any
+  f()
+})
+
+const iFrame = document.createElement('iframe')
+const defaultFrameHeight = '62px'
+
+/**
+ * Set the height of our iFrame housing our BEX
+ * @param height
+ */
+function setIFrameHeight (height:any) {
+  iFrame.height = height
+}
+
+/**
+ * Reset the iFrame to its default height e.g The height of the top bar.
+ */
+function resetIFrameHeight () {
+  setIFrameHeight(defaultFrameHeight)
+}
+
+
 declare module '@quasar/app-vite' {
   interface BexEventMap {
     // /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -131,18 +164,18 @@ bridge.connectToBackground()
 // });
 
 // Current bridge port name (can be 'content@<name>-<xxxxx>')
-console.log("bridge.portName", bridge.portName);
+console.log("[BEX-CT] bridge.portName", bridge.portName);
 
 // Dynamically set debug mode
-bridge.setDebug(true); // boolean
-
-// Log a message on the console (if debug is enabled)
-bridge.log('Hello world!');
-bridge.log('Hello', 'world!');
-bridge.log('Hello world!', { some: 'data' });
-bridge.log('Hello', 'world', '!', { some: 'object' });
+// bridge.setDebug(true); // boolean
+//
+// // Log a message on the console (if debug is enabled)
+// bridge.log('Hello world!');
+// bridge.log('Hello', 'world!');
+// bridge.log('Hello world!', { some: 'data' });
+// bridge.log('Hello', 'world', '!', { some: 'object' });
 // Log a warning on the console (regardless of the debug setting)
-bridge.warn('bridge.portName', bridge.portName);
+// bridge.warn('bridge.portName', bridge.portName);
 // bridge.warn('Hello', 'world!');
 // bridge.warn('Hello world!', { some: 'data' });
 // bridge.warn('Hello', 'world', '!', { some: 'object' });

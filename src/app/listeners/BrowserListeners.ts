@@ -1,5 +1,5 @@
 import _ from "lodash";
-import {uid} from "quasar";
+import { uid, useQuasar } from 'quasar'
 import {FeatureIdent} from "src/app/models/FeatureIdent";
 import {useGroupsStore} from "src/tabsets/stores/groupsStore";
 import NavigationService from "src/services/NavigationService";
@@ -32,7 +32,7 @@ const {sanitize, inBexMode} = useUtils()
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({active: true, lastFocusedWindow: true})
   if (chrome.runtime.lastError) {
-    console.warn("got runtime error:" + chrome.runtime.lastError);
+    console.warn("got runtime error:" + chrome.runtime.lastError.toString());
   }
   //console.debug("setting current tab", tabs)
   if (tabs && tabs[0]) {
@@ -41,7 +41,7 @@ async function setCurrentTab() {
     // Seems to be necessary when creating a new chrome group
     const tabs2 = await chrome.tabs.query({active: true})
     if (chrome.runtime.lastError) {
-      console.warn("got runtime error:" + chrome.runtime.lastError);
+      console.warn("got runtime error:" + chrome.runtime.lastError.toString());
     }
     //console.log("setting current tab II", tabs2)
     if (tabs2 && tabs2[0]) {
@@ -247,6 +247,11 @@ class BrowserListeners {
       if (chromeTab.id && chromeTab.url) {
         try {
           const contentRequest = await chrome.tabs.sendMessage(chromeTab.id, 'getExcerpt')
+
+          // const bridge = useQuasar().bex
+          // const contentRequest = bridge.send('tabsets.getExcerpt')
+
+          console.log("got content request response", contentRequest)
           // updating (transient) content in contentStore
           useContentStore().setCurrentTabContent(contentRequest['html' as keyof object])
           useContentStore().setCurrentTabUrl(chromeTab.url)
@@ -259,7 +264,6 @@ class BrowserListeners {
               .catch((err: any) => console.log("err", err))
           }
         } catch (err) {
-          //console.log("got error", err)
         } // ignore
       }
 
@@ -329,7 +333,7 @@ class BrowserListeners {
 
     chrome.tabs.get(info.tabId, tab => {
       if (chrome.runtime.lastError) {
-        console.warn("got runtime error:" + chrome.runtime.lastError);
+        console.warn("got runtime error:" + chrome.runtime.lastError.toString());
       }
       const url = tab.url
       if (url) {

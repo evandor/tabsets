@@ -25,7 +25,7 @@ export default defineBoot(({ app }) => {
   const i18n = createI18n<{ message: MessageSchema }, MessageLanguages>({
     locale: 'en-US',
     legacy: false,
-    messages,
+    messages: messages,
   });
 
   // Set i18n instance on app
