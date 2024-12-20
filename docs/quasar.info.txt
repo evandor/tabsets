@@ -22,7 +22,7 @@ Important local packages
   vite - 6.0.3 -- Native-ESM powered web dev build tool
   vite-plugin-checker - Not installed
   eslint - 9.17.0 -- An AST-based pattern checker for JavaScript.
-  esbuild - 0.24.0 -- An extremely fast JavaScript and CSS bundler and minifier.
+  esbuild - 0.24.1 -- An extremely fast JavaScript and CSS bundler and minifier.
   typescript - 5.5.4 -- TypeScript is a language for application scale JavaScript development
   workbox-build - 7.3.0 -- A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.
   register-service-worker - 1.7.2 -- Script for registering service worker, with hooks
