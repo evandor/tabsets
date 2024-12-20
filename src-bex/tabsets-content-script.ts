@@ -6,6 +6,7 @@
  *   If you don't need createBridge(), leave it as "import '#q-app/bex/content'".
  */
 import { createBridge } from '#q-app/bex/content'
+import { LocalStorage } from 'quasar'
 
 // The use of the bridge is optional.
 const bridge = createBridge({ debug: false })
@@ -36,16 +37,6 @@ bridge.on('some.event', ({ payload }) => {
     }
   }
 })
-
-// bridge.on('tabsets.getExcerpt', () => {
-//   bridge.log('tabsets: got request \'getExcerpt\'')
-//   const responseMessage = {
-//     html: document.documentElement.outerHTML,
-//     metas: getMetas(document)
-//   }
-//   console.debug('tabsets: received message for content, html size:', responseMessage.html.length, responseMessage.metas)
-//   return responseMessage
-// })
 
 function getMetas(document: Document) {
   //console.debug("tabsets: getting metas for document" )
@@ -83,7 +74,12 @@ bridge.connectToBackground()
       html: document.documentElement.outerHTML,
       metas: getMetas(document),
       port: bridge.portName,
-      url: window.location.href
+      url: window.location.href,
+      storage: {
+        //tabsetsName: LocalStorage.getItem('tabsets_name'),
+        tabsetsTabId: LocalStorage.getItem('tabsets_tabId'),
+        tabsetsTimestamp: LocalStorage.getItem('tabsets_ts')
+      }
     }
     bridge.send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage })
       .catch((err: any) => {

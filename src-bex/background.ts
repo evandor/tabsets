@@ -10,6 +10,18 @@
 import { createBridge } from '#q-app/bex/background'
 import { PortName } from '#q-app'
 
+// https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
+const updateTrigger = 10
+
+// https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
+//console.log("ga: installing google analytics")
+
+addEventListener('unhandledrejection', async (event) => {
+  console.log("[service-worker] ga: fire error event", event)
+  // getting error: Service worker registration failed. Status code: 15
+  //Analytics.fireErrorEvent(event.reason);
+});
+
 // chrome.runtime.onInstalled.addListener((callback) => {
 //   console.log("[BEX] ga: fire event install", callback.reason, callback.previousVersion)
 //   // getting error: "Service worker registration failed. Status code: 15"
@@ -44,59 +56,62 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
     .catch((error: any) => console.error(error))
 }
 
-// chrome.runtime.onInstalled.addListener((details) => {
-//   console.debug("adding onInstalled listener in background.ts", details)
-//   if (chrome.runtime.lastError) {
-//     console.warn("[BEX] got runtime error", chrome.runtime.lastError)
-//   }
-//   // @ts-ignore
-//   if (chrome.action) {
-//     // @ts-ignore
-//     chrome.action.onClicked.addListener((tab) => {
-//       chrome.tabs.create(
-//         {
-//           url: chrome.runtime.getURL('www/index.html'),
-//         },
-//         (newTab) => {
-//           console.log("[BEX] newTab", newTab)
-//         }
-//       );
-//     });
-//   } else {
-//     //browser.browserAction.onClicked.addListener(openMyPage);
-//   }
-// });
+chrome.runtime.onInstalled.addListener((details) => {
+  console.debug("adding onInstalled listener in background.ts", details)
+  if (chrome.runtime.lastError) {
+    console.warn("got runtime error", chrome.runtime.lastError)
+  }
+  // @ts-ignore
+  if (chrome.action) {
+    // @ts-ignore
+    // chrome.action.onClicked.addListener((tab) => {
+    //   chrome.tabs.create(
+    //     {
+    //       url: chrome.runtime.getURL('www/index.html'),
+    //     },
+    //     (newTab) => {
+    //       console.log("[service-worker] newTab", newTab)
+    //     }
+    //   );
+    // });
+  } else {
+    // @ts-ignore
+    //browser.browserAction.onClicked.addListener(openMyPage);
+  }
+});
 
 // chrome.runtime.onInstalled.addListener(openExtension);
 // chrome.action.onClicked.addListener(openExtension);
 
-// chrome.runtime.onStartup.addListener(() => {
-//   console.log("[BEX] adding onStartup listener in background.ts")
-//   if (chrome.action) {
-//     chrome.action.onClicked.addListener((tab) => {
-//       // Opens our extension in a new browser window.
-//       // Only if a popup isn't defined in the manifest.
-//
-//       chrome.tabs.create(
-//         {
-//           url: chrome.runtime.getURL('www/index.html'),
-//         },
-//         (newTab) => {
-//           console.log("[BEX] newTab", newTab)
-//         }
-//       );
-//     });
-//   }
-// })
-//
-// chrome.runtime.onConnect.addListener(function (port) {
-//   if (port.name === 'tabsetsSidepanel') {
-//     //console.log("[BEX] port3", port)
-//     port.onDisconnect.addListener(async () => {
-//       //alert('Sidepanel closed.');
-//     });
-//   }
-// });
+chrome.runtime.onStartup.addListener(() => {
+  console.log("[service-worker] adding onStartup listener in background.ts")
+  // @ts-ignore
+  if (chrome.action) {
+    // @ts-ignore
+    // chrome.action.onClicked.addListener((tab) => {
+    //   // Opens our extension in a new browser window.
+    //   // Only if a popup isn't defined in the manifest.
+    //
+    //   chrome.tabs.create(
+    //     {
+    //       url: chrome.runtime.getURL('www/index.html'),
+    //     },
+    //     (newTab) => {
+    //       console.log("[service-worker] newTab", newTab)
+    //     }
+    //   );
+    // });
+  }
+})
+
+chrome.runtime.onConnect.addListener(function (port) {
+  if (port.name === 'tabsetsSidepanel') {
+    //console.log("[service-worker] port3", port)
+    // port.onDisconnect.addListener(async () => {
+    //   //alert('Sidepanel closed.');
+    // });
+  }
+});
 
 declare module '@quasar/app-vite' {
   interface BexEventMap {
@@ -115,29 +130,6 @@ declare module '@quasar/app-vite' {
  * useBridge() and use no bridge.
  */
 const bridge = createBridge({ debug: false })
-
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  //console.log("changeInfo", changeInfo, tab)
-  if (tab.url && tab.url.startsWith("http") && changeInfo.status === 'complete') {
-    const msg = { event: 'tabsets.bex.tab.updated', to: 'app' as PortName, payload: { url: tab.url } }
-    // console.log('[BEX] tabsets.bex.tab >>>', tabId, msg, changeInfo, tab)
-    // bridge.send(msg)
-    //
-    // bridge.portList.forEach(portName => {
-    //   //console.log('[BEX] bridge.portList', portName)
-    //   //bridge.send({ event: 'test', to: portName, payload: 'Hello from content-script!' });
-    // });
-
-
-  } else {
-    //bridge.send({ event: 'tabsets.bex.tab.opened', to: 'app', payload: { url: tab.url } })
-  }
-  // const result = await bridge. send({   event: 'sum',
-  //   to: 'app',   payload: { a: 1, b: 2 } });
-  // console. log(result); // 3
-
-})
-
 
 bridge.on('log', ({ from, payload }) => {
   console.log(`[BEX] @log from "${from}"`, payload)
