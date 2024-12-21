@@ -53,10 +53,10 @@ export class AppFeatures {
       'feature is customizable in the settings.',
       'o_tab', 'open_tabs_warning.png', ['bex']),
 
-    new Feature(FeatureIdent.EXPERIMENTAL_VIEWS, FeatureType.EXPERIMENTAL,
-      'Experimental Views',
-      'The default view of your tabset is a list - but there can be other views as well like grids or even a canvas.',
-      'o_explore', '', ['all']),
+    // new Feature(FeatureIdent.EXPERIMENTAL_VIEWS, FeatureType.EXPERIMENTAL,
+    //   'Experimental Views',
+    //   'The default view of your tabset is a list - but there can be other views as well like grids or even a canvas.',
+    //   'o_explore', '', ['all']),
 
     new Feature(FeatureIdent.RSS, FeatureType.DISABLED,
       'RSS View',
