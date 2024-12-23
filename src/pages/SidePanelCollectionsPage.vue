@@ -239,7 +239,6 @@ const handleTreeClick = (node: NodeTreeObject) => {
       return res
     })
     .then((res: ExecutionResult<Tabset | undefined>) => {
-      //useTabsetsUiStore().addTabsetToLastUsedList(node.tsId)
       if (res.result) {
         router.push("/sidepanel")
       }

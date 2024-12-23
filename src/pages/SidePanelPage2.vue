@@ -212,16 +212,6 @@ if (inBexMode()) {
       if (message.data.notebookId) {
         console.log('updating notebook/tabset', message.data.notebookId, message.data.tabsetId)
         useTabsetService().reloadTabset(message.data.tabsetId)
-        // const res = useTabsetsStore().getTabAndTabsetId(message.data.noteId)
-        // //.then((res: TabAndTabsetId | undefined) => {
-        // if (res) {
-        //   const note = res.tab
-        //   note.title = message.data.tab.title
-        //   note.description = message.data.tab.description
-        //   note.longDescription = message.data.tab.longDescription
-        // }
-        // useTabsetService().saveTabset(tabset)
-        //    })
       } else {
         console.log('adding tab', message.data.tab)
         //tabset.tabs.push(message.data.tab)
@@ -246,8 +236,7 @@ if (inBexMode()) {
         // uiStore.progressLabel = message.label
       }
       if (message.status === 'done') {
-        uiStore.progress = undefined
-        // uiStore.progressLabel = undefined
+        uiStore.stopProgress()
       }
       sendResponse('ui store progress set to ' + uiStore.progress)
     } else if (message.name === 'detail-level-changed') {
@@ -286,6 +275,14 @@ if (inBexMode()) {
         message.data.tabsetId :
         useTabsetsStore().getCurrentTabset?.id
       useTabsetService().reloadTabset(tabsetId)
+    } else if (message.name === 'tabsets.app.change.currentTabset') {
+      if (currentTabset.value) {
+        useTabsetService().reloadTabset(currentTabset.value.id)
+          .then((ts: Tabset) => {
+            currentTabset.value = ts
+            console.log("reloading tabset: ", ts)
+          })
+      }
     } else if (message.name === 'reload-application') {
       AppService.restart('restarted=true')
     } else {

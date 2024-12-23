@@ -21,6 +21,7 @@
           <ContextMenuItem v-close-popup
                            :dense="true"
                            icon="close"
+                           @click="closeTabsetListWidget()"
                            label="Close"/>
         </q-list>
       </q-menu>
@@ -40,6 +41,8 @@ import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
 import {useCommandExecutor} from "src/core/services/CommandExecutor";
 import {MarkTabsetAsFavoriteCommand} from "src/tabsets/commands/MarkTabsetAsFavorite";
 import {MarkTabsetAsDefaultCommand} from "src/tabsets/commands/MarkTabsetAsDefault";
+import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatureCommand'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 
 const lastTabsets = ref<Pick<Tabset, "id" | "name" | "status">[]>([])
 
@@ -64,6 +67,10 @@ const toggleFavorite = (t: Pick<Tabset, "id" | "name" | "status">) => {
     useCommandExecutor().executeFromUi(new MarkTabsetAsDefaultCommand(t.id))
   }
   useTabsetsUiStore().load()
+}
+
+const closeTabsetListWidget = () => {
+  useCommandExecutor().executeFromUi(new DeactivateFeatureCommand(FeatureIdent.TABSET_LIST))
 }
 
 </script>

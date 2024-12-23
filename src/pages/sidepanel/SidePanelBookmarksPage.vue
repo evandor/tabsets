@@ -5,6 +5,9 @@
     <div class="q-ma-none">
       <div class="q-ma-none">
         <div class="row q-ma-none q-pa-none">
+          <div class="col-12 q-mx-sm q-mt-md q-mb-none q-pt-md cursor-pointer text-center" v-if="importedTabsetId">
+            <q-btn label="open Imported Tabset" outline @click="openImportedTabset()"/>
+          </div>
           <div class="col-12 q-ma-none q-pa-none q-pt-md">
 
             <BookmarksTree
@@ -53,7 +56,7 @@ import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
 import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
 import {SidePanelViews} from "src/app/models/SidePanelViews";
 import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useRoute} from "vue-router";
+import { useRoute, useRouter } from 'vue-router'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useQuasar } from 'quasar'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
@@ -62,8 +65,10 @@ import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { Tabset } from 'src/tabsets/models/Tabset'
 
 const $q = useQuasar()
+const router = useRouter()
 
 const showOnlyFolders = ref(true)
+const importedTabsetId = ref<string | undefined>(undefined)
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelBookmarksPage', document.location.href);
@@ -79,8 +84,6 @@ const imported = async (a:{ bmId: number, recursive: boolean, tsName: string }) 
   useUiStore().importedBookmarks = []
   $q.loadingBar?.start()
 
-  // const tabset = await createTabsetFrom(a.tsName, "" + a.bmId)
-
   useCommandExecutor().execute(new CreateTabsetFromBookmarksRecursive(a.tsName, "" + a.bmId))
     .then(async (res: ExecutionResult<Tabset>) => {
       const tabset = res.result
@@ -88,10 +91,8 @@ const imported = async (a:{ bmId: number, recursive: boolean, tsName: string }) 
       $q.loadingBar?.stop()
       // sendMsg('reload-tabset', {tabsetId: tabset.id})
       // sendMsg('sidepanel-switch-view', {view: 'main'})
-
       console.log("imported to tabset", tabset.id)
-      // importedTabsetId.value = tabset.id
-
+      importedTabsetId.value = tabset.id
     })
     .catch((err: any) => {
       console.warn("error", err.toString())
@@ -99,4 +100,8 @@ const imported = async (a:{ bmId: number, recursive: boolean, tsName: string }) 
     })
 }
 
+const openImportedTabset = () => {
+  useTabsetService().selectTabset(importedTabsetId.value)
+  router.push("/sidepanel")
+}
 </script>

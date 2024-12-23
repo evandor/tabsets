@@ -33,13 +33,14 @@ import IndexedDbContentPersistence from "src/content/persistence/IndexedDbConten
 import IndexedDbRequestPersistence from "src/requests/persistence/IndexedDbRequestPersistence";
 import {useRequestsService} from "src/requests/services/RequestsService";
 import {useTabsetsUiStore} from "src/tabsets/stores/tabsetsUiStore";
+import { QVueGlobals } from 'quasar'
 
 class AppService {
 
   router: Router = null as unknown as Router
   initialized = false
 
-  async init(quasar: any, router: Router, forceRestart = false) {
+  async init(quasar: QVueGlobals, router: Router, forceRestart = false) {
 
     console.log(`%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, router set=${router !== undefined}`, "font-weight:bold")
 
@@ -121,7 +122,7 @@ class AppService {
     }
   }
 
-  private async initCoreSerivces(quasar: any, router: Router) {
+  private async initCoreSerivces(quasar: QVueGlobals, router: Router) {
 
     console.log(`%cinitializing AppService: initCoreSerivces`, "font-weight:bold")
 

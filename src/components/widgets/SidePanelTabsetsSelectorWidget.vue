@@ -216,7 +216,6 @@ const switchToTabset = (ts: Tabset) => {
     .execute(new SelectTabsetCommand(ts.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
       //useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
-      //useTabsetsUiStore().addTabsetToLastUsedList(ts.id)
       if (!props.useAsTabsetsSwitcher) {
         router.push("/sidepanel/tabsets/" + ts.id)
       }

@@ -184,28 +184,28 @@
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Show Stats</q-tooltip>
         </q-btn>
 
-        <span v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)">
-          <q-icon
-            name="o_open_in_new"
-            @click="openExtensionTab()"
-            :class="rightButtonClass()"
-            class="cursor-pointer"
-            flat
-            size="20px">
-            <q-tooltip :delay="2000" anchor="center left" self="center right"
-                       class="tooltip-small">Tabsets as full-page app</q-tooltip>
-          </q-icon>
-          <!--          <q-menu :offset="[0, 7]" fit>-->
-          <!--            <q-list dense style="min-width: 200px;min-height:50px">-->
-          <!--              <q-item clickable v-close-popup>-->
-          <!--                <q-item-section @click="openExtensionTab()">Tabsets as full-page app</q-item-section>-->
-          <!--              </q-item>-->
-          <!--              <q-item clickable v-close-popup>-->
-          <!--                <q-item-section @click="openPwaUrl()">Tabsets Online Access</q-item-section>-->
-          <!--              </q-item>-->
-          <!--            </q-list>-->
-          <!--          </q-menu>-->
-        </span>
+<!--        <span v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)">-->
+<!--          <q-icon-->
+<!--            name="o_open_in_new"-->
+<!--            @click="openExtensionTab()"-->
+<!--            :class="rightButtonClass()"-->
+<!--            class="cursor-pointer"-->
+<!--            flat-->
+<!--            size="20px">-->
+<!--            <q-tooltip :delay="2000" anchor="center left" self="center right"-->
+<!--                       class="tooltip-small">Tabsets as full-page app</q-tooltip>-->
+<!--          </q-icon>-->
+<!--          &lt;!&ndash;          <q-menu :offset="[0, 7]" fit>&ndash;&gt;-->
+<!--          &lt;!&ndash;            <q-list dense style="min-width: 200px;min-height:50px">&ndash;&gt;-->
+<!--          &lt;!&ndash;              <q-item clickable v-close-popup>&ndash;&gt;-->
+<!--          &lt;!&ndash;                <q-item-section @click="openExtensionTab()">Tabsets as full-page app</q-item-section>&ndash;&gt;-->
+<!--          &lt;!&ndash;              </q-item>&ndash;&gt;-->
+<!--          &lt;!&ndash;              <q-item clickable v-close-popup>&ndash;&gt;-->
+<!--          &lt;!&ndash;                <q-item-section @click="openPwaUrl()">Tabsets Online Access</q-item-section>&ndash;&gt;-->
+<!--          &lt;!&ndash;              </q-item>&ndash;&gt;-->
+<!--          &lt;!&ndash;            </q-list>&ndash;&gt;-->
+<!--          &lt;!&ndash;          </q-menu>&ndash;&gt;-->
+<!--        </span>-->
         <q-btn v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)"
                icon="o_open_in_new"
                :class="rightButtonClass()"

@@ -71,6 +71,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'entity-changed' ||
     request.name === 'reload-entities' ||
     request.name === 'api-changed' ||
+    request.name === 'tabsets.app.change.currentTabset' ||
     request.action === 'highlight-annotation'
 
 }

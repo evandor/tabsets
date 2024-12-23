@@ -197,7 +197,6 @@ const open = (hit: Hit) => {
     } else {
       useCommandExecutor().execute(new SelectTabsetCommand(tabsetId!))
     }
-    //useTabsetsUiStore().addTabsetToLastUsedList(tabsetId)
     openTabset(tabsetId!)
   } else {
     NavigationService.openOrCreateTab([hit.url || ''])
