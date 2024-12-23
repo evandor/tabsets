@@ -8,7 +8,7 @@ import path from 'path'
 export default defineConfig({
   test: {
     environment: 'happy-dom',
-    setupFiles: 'test/vitest/setup-file.ts',
+    setupFiles: 'test/vitest/setup-file.ts', // additional info see https://stackoverflow.com/questions/72260793/how-to-mock-stub-vue-i18n
     testTimeout: 50000,
     hookTimeout: 50000,
     include: [

@@ -42,7 +42,7 @@ describe('WelcomePage', () => {
     await IndexedDbPersistenceService.init("db")
     const wrapper = mount(WelcomePage);
     console.log("wrapper", wrapper.html())
-    expect(wrapper.text()).toContain("Welcome to Tabsets");
+    expect(wrapper.text()).toContain("welcome_to_tabsets");
   });
 
 

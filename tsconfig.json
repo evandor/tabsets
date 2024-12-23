@@ -1,6 +1,6 @@
 {
-  "extends": "./.quasar/tsconfig.json",
-//  "sourceMap": true,
+  "extends": "./.quasar/tsconfig.json"
+//  "sourceMap": true
 //  "compilerOptions": {
 //    "baseUrl": "."
 //  }

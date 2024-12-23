@@ -15,6 +15,7 @@ import {CreateFolderCommand} from "src/tabsets/commands/CreateFolderCommand";
 import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
 import {uid} from "quasar";
 import {Tabset} from "src/tabsets/models/Tabset";
+import BexFunctions from 'src/core/communication/BexFunctions'
 
 installQuasarPlugin();
 
@@ -47,22 +48,27 @@ describe('AddTabToTabsetCommand', () => {
     await useSearchStore().init()
     await useContentService().init(IndexedDbContentPersistence)
 
-    const chromeMock = {
-      tabs: {
-        sendMessage: vi.fn((id:any, msg:any) => {
-          return Promise.resolve({
-            html: "some html",
-            metas: {description: "Description"}
-          })
-        }),
-      },
-      runtime: {
-        sendMessage: vi.fn(() => {
-        })
-      }
-    };
+    await BexFunctions.handleBexTabExcerpt({from:"",to:"",event:"",payload: {
+        html: "some html",
+        metas: {description: "Description"}
+      }})
 
-    vi.stubGlobal('chrome', chromeMock);
+    // const chromeMock = {
+    //   tabs: {
+    //     sendMessage: vi.fn((id:any, msg:any) => {
+    //       return Promise.resolve({
+    //         html: "some html",
+    //         metas: {description: "Description"}
+    //       })
+    //     }),
+    //   },
+    //   runtime: {
+    //     sendMessage: vi.fn(() => {
+    //     })
+    //   }
+    // };
+    //
+    // vi.stubGlobal('chrome', chromeMock);
 
   })
 
