@@ -418,7 +418,7 @@
 │  ├─ @babel/helper-string-parser@^7.25.9
 │  └─ @babel/helper-validator-identifier@^7.25.9
 ├─ @bcoe/v8-coverage@0.2.3
-├─ @braintree/sanitize-url@7.1.0
+├─ @braintree/sanitize-url@7.1.1
 ├─ @bufbuild/protobuf@2.2.3
 ├─ @calumk/editorjs-columns@0.3.2
 │  ├─ @editorjs/editorjs@^2.26.5
@@ -471,31 +471,30 @@
 ├─ @editorjs/table@2.4.3
 │  ├─ @codexteam/icons@^0.0.6
 │  └─ @codexteam/icons@0.0.6
-├─ @esbuild/aix-ppc64@0.24.1
-├─ @esbuild/android-arm@0.24.1
-├─ @esbuild/android-arm64@0.24.1
-├─ @esbuild/android-x64@0.24.1
-├─ @esbuild/darwin-arm64@0.24.1
-├─ @esbuild/darwin-x64@0.24.1
-├─ @esbuild/freebsd-arm64@0.24.1
-├─ @esbuild/freebsd-x64@0.24.1
-├─ @esbuild/linux-arm@0.24.1
-├─ @esbuild/linux-arm64@0.24.1
-├─ @esbuild/linux-ia32@0.24.1
-├─ @esbuild/linux-loong64@0.24.1
-├─ @esbuild/linux-mips64el@0.24.1
-├─ @esbuild/linux-ppc64@0.24.1
-├─ @esbuild/linux-riscv64@0.24.1
-├─ @esbuild/linux-s390x@0.24.1
-├─ @esbuild/linux-x64@0.24.1
-├─ @esbuild/netbsd-arm64@0.24.1
-├─ @esbuild/netbsd-x64@0.24.1
-├─ @esbuild/openbsd-arm64@0.24.1
-├─ @esbuild/openbsd-x64@0.24.1
-├─ @esbuild/sunos-x64@0.24.1
-├─ @esbuild/win32-arm64@0.24.1
-├─ @esbuild/win32-ia32@0.24.1
-├─ @esbuild/win32-x64@0.24.1
+├─ @esbuild/aix-ppc64@0.24.0
+├─ @esbuild/android-arm@0.24.0
+├─ @esbuild/android-arm64@0.24.0
+├─ @esbuild/android-x64@0.24.0
+├─ @esbuild/darwin-arm64@0.24.0
+├─ @esbuild/darwin-x64@0.24.0
+├─ @esbuild/freebsd-arm64@0.24.0
+├─ @esbuild/freebsd-x64@0.24.0
+├─ @esbuild/linux-arm@0.24.0
+├─ @esbuild/linux-arm64@0.24.0
+├─ @esbuild/linux-ia32@0.24.0
+├─ @esbuild/linux-loong64@0.24.0
+├─ @esbuild/linux-mips64el@0.24.0
+├─ @esbuild/linux-ppc64@0.24.0
+├─ @esbuild/linux-riscv64@0.24.0
+├─ @esbuild/linux-s390x@0.24.0
+├─ @esbuild/linux-x64@0.24.0
+├─ @esbuild/netbsd-x64@0.24.0
+├─ @esbuild/openbsd-arm64@0.24.0
+├─ @esbuild/openbsd-x64@0.24.0
+├─ @esbuild/sunos-x64@0.24.0
+├─ @esbuild/win32-arm64@0.24.0
+├─ @esbuild/win32-ia32@0.24.0
+├─ @esbuild/win32-x64@0.24.0
 ├─ @eslint-community/eslint-utils@4.4.1
 │  └─ eslint-visitor-keys@^3.4.3
 ├─ @eslint-community/regexpp@4.12.1
@@ -541,7 +540,7 @@
 │  └─ @humanwhocodes/retry@0.3.1
 ├─ @humanwhocodes/module-importer@1.0.1
 ├─ @humanwhocodes/retry@0.4.1
-├─ @iconify-json/simple-icons@1.2.16
+├─ @iconify-json/simple-icons@1.2.17
 │  └─ @iconify/types@*
 ├─ @iconify/types@2.0.0
 ├─ @iconify/utils@2.2.1
@@ -553,7 +552,7 @@
 │  ├─ kolorist@^1.8.0
 │  ├─ local-pkg@^0.5.1
 │  └─ mlly@^1.7.3
-├─ @inquirer/figures@1.0.8
+├─ @inquirer/figures@1.0.9
 ├─ @interactjs/actions@1.10.27
 │  └─ @interactjs/interact@1.10.27
 ├─ @interactjs/auto-scroll@1.10.27
@@ -680,7 +679,7 @@
 ├─ @playwright/test@1.49.1
 │  └─ playwright@1.49.1
 ├─ @polka/url@1.0.0-next.28
-├─ @quasar/app-vite@2.0.2
+├─ @quasar/app-vite@2.0.4
 │  ├─ @quasar/render-ssr-error@^1.0.3
 │  ├─ @quasar/ssl-certificate@^1.0.0
 │  ├─ @quasar/vite-plugin@^1.8.1
@@ -698,7 +697,7 @@
 │  ├─ dotenv-expand@^11.0.6
 │  ├─ dotenv@^16.4.5
 │  ├─ elementtree@0.1.7
-│  ├─ esbuild@^0.24.0
+│  ├─ esbuild@=0.24.0
 │  ├─ express@^4.21.1
 │  ├─ fs-extra@^11.2.0
 │  ├─ html-minifier-terser@^7.2.0
@@ -767,25 +766,25 @@
 │  ├─ estree-walker@^2.0.2
 │  ├─ picomatch@^4.0.2
 │  └─ picomatch@4.0.2
-├─ @rollup/rollup-android-arm-eabi@4.28.1
-├─ @rollup/rollup-android-arm64@4.28.1
-├─ @rollup/rollup-darwin-arm64@4.28.1
-├─ @rollup/rollup-darwin-x64@4.28.1
-├─ @rollup/rollup-freebsd-arm64@4.28.1
-├─ @rollup/rollup-freebsd-x64@4.28.1
-├─ @rollup/rollup-linux-arm-gnueabihf@4.28.1
-├─ @rollup/rollup-linux-arm-musleabihf@4.28.1
-├─ @rollup/rollup-linux-arm64-gnu@4.28.1
-├─ @rollup/rollup-linux-arm64-musl@4.28.1
-├─ @rollup/rollup-linux-loongarch64-gnu@4.28.1
-├─ @rollup/rollup-linux-powerpc64le-gnu@4.28.1
-├─ @rollup/rollup-linux-riscv64-gnu@4.28.1
-├─ @rollup/rollup-linux-s390x-gnu@4.28.1
-├─ @rollup/rollup-linux-x64-gnu@4.28.1
-├─ @rollup/rollup-linux-x64-musl@4.28.1
-├─ @rollup/rollup-win32-arm64-msvc@4.28.1
-├─ @rollup/rollup-win32-ia32-msvc@4.28.1
-├─ @rollup/rollup-win32-x64-msvc@4.28.1
+├─ @rollup/rollup-android-arm-eabi@4.29.1
+├─ @rollup/rollup-android-arm64@4.29.1
+├─ @rollup/rollup-darwin-arm64@4.29.1
+├─ @rollup/rollup-darwin-x64@4.29.1
+├─ @rollup/rollup-freebsd-arm64@4.29.1
+├─ @rollup/rollup-freebsd-x64@4.29.1
+├─ @rollup/rollup-linux-arm-gnueabihf@4.29.1
+├─ @rollup/rollup-linux-arm-musleabihf@4.29.1
+├─ @rollup/rollup-linux-arm64-gnu@4.29.1
+├─ @rollup/rollup-linux-arm64-musl@4.29.1
+├─ @rollup/rollup-linux-loongarch64-gnu@4.29.1
+├─ @rollup/rollup-linux-powerpc64le-gnu@4.29.1
+├─ @rollup/rollup-linux-riscv64-gnu@4.29.1
+├─ @rollup/rollup-linux-s390x-gnu@4.29.1
+├─ @rollup/rollup-linux-x64-gnu@4.29.1
+├─ @rollup/rollup-linux-x64-musl@4.29.1
+├─ @rollup/rollup-win32-arm64-msvc@4.29.1
+├─ @rollup/rollup-win32-ia32-msvc@4.29.1
+├─ @rollup/rollup-win32-x64-msvc@4.29.1
 ├─ @rowanmanning/feed-parser@1.1.0
 │  ├─ fast-xml-parser@^4.0.8
 │  └─ html-entities@^2.3.3
@@ -852,23 +851,23 @@
 ├─ @sentry/vite-plugin@2.22.7
 │  ├─ @sentry/bundler-plugin-core@2.22.7
 │  └─ unplugin@1.0.1
-├─ @shikijs/core@1.24.3
-│  ├─ @shikijs/engine-javascript@1.24.3
-│  ├─ @shikijs/engine-oniguruma@1.24.3
-│  ├─ @shikijs/types@1.24.3
+├─ @shikijs/core@1.24.4
+│  ├─ @shikijs/engine-javascript@1.24.4
+│  ├─ @shikijs/engine-oniguruma@1.24.4
+│  ├─ @shikijs/types@1.24.4
 │  ├─ @shikijs/vscode-textmate@^9.3.1
 │  ├─ @types/hast@^3.0.4
 │  └─ hast-util-to-html@^9.0.4
-├─ @shikijs/engine-javascript@1.24.3
-│  ├─ @shikijs/types@1.24.3
+├─ @shikijs/engine-javascript@1.24.4
+│  ├─ @shikijs/types@1.24.4
 │  ├─ @shikijs/vscode-textmate@^9.3.1
-│  └─ oniguruma-to-es@0.8.0
-├─ @shikijs/engine-oniguruma@1.24.3
-│  ├─ @shikijs/types@1.24.3
+│  └─ oniguruma-to-es@0.8.1
+├─ @shikijs/engine-oniguruma@1.24.4
+│  ├─ @shikijs/types@1.24.4
 │  └─ @shikijs/vscode-textmate@^9.3.1
-├─ @shikijs/transformers@1.24.3
-│  └─ shiki@1.24.3
-├─ @shikijs/types@1.24.3
+├─ @shikijs/transformers@1.24.4
+│  └─ shiki@1.24.4
+├─ @shikijs/types@1.24.4
 │  ├─ @shikijs/vscode-textmate@^9.3.1
 │  └─ @types/hast@^3.0.4
 ├─ @shikijs/vscode-textmate@9.3.1
@@ -1056,34 +1055,34 @@
 ├─ @types/trusted-types@2.0.7
 ├─ @types/unist@3.0.3
 ├─ @types/web-bluetooth@0.0.20
-├─ @typescript-eslint/eslint-plugin@8.18.1
+├─ @typescript-eslint/eslint-plugin@8.18.2
 │  ├─ @eslint-community/regexpp@^4.10.0
-│  ├─ @typescript-eslint/scope-manager@8.18.1
-│  ├─ @typescript-eslint/type-utils@8.18.1
-│  ├─ @typescript-eslint/utils@8.18.1
-│  ├─ @typescript-eslint/visitor-keys@8.18.1
+│  ├─ @typescript-eslint/scope-manager@8.18.2
+│  ├─ @typescript-eslint/type-utils@8.18.2
+│  ├─ @typescript-eslint/utils@8.18.2
+│  ├─ @typescript-eslint/visitor-keys@8.18.2
 │  ├─ graphemer@^1.4.0
 │  ├─ ignore@^5.3.1
 │  ├─ natural-compare@^1.4.0
 │  └─ ts-api-utils@^1.3.0
-├─ @typescript-eslint/parser@8.18.1
-│  ├─ @typescript-eslint/scope-manager@8.18.1
-│  ├─ @typescript-eslint/types@8.18.1
-│  ├─ @typescript-eslint/typescript-estree@8.18.1
-│  ├─ @typescript-eslint/visitor-keys@8.18.1
+├─ @typescript-eslint/parser@8.18.2
+│  ├─ @typescript-eslint/scope-manager@8.18.2
+│  ├─ @typescript-eslint/types@8.18.2
+│  ├─ @typescript-eslint/typescript-estree@8.18.2
+│  ├─ @typescript-eslint/visitor-keys@8.18.2
 │  └─ debug@^4.3.4
-├─ @typescript-eslint/scope-manager@8.18.1
-│  ├─ @typescript-eslint/types@8.18.1
-│  └─ @typescript-eslint/visitor-keys@8.18.1
-├─ @typescript-eslint/type-utils@8.18.1
-│  ├─ @typescript-eslint/typescript-estree@8.18.1
-│  ├─ @typescript-eslint/utils@8.18.1
+├─ @typescript-eslint/scope-manager@8.18.2
+│  ├─ @typescript-eslint/types@8.18.2
+│  └─ @typescript-eslint/visitor-keys@8.18.2
+├─ @typescript-eslint/type-utils@8.18.2
+│  ├─ @typescript-eslint/typescript-estree@8.18.2
+│  ├─ @typescript-eslint/utils@8.18.2
 │  ├─ debug@^4.3.4
 │  └─ ts-api-utils@^1.3.0
-├─ @typescript-eslint/types@8.18.1
-├─ @typescript-eslint/typescript-estree@8.18.1
-│  ├─ @typescript-eslint/types@8.18.1
-│  ├─ @typescript-eslint/visitor-keys@8.18.1
+├─ @typescript-eslint/types@8.18.2
+├─ @typescript-eslint/typescript-estree@8.18.2
+│  ├─ @typescript-eslint/types@8.18.2
+│  ├─ @typescript-eslint/visitor-keys@8.18.2
 │  ├─ debug@^4.3.4
 │  ├─ fast-glob@^3.3.2
 │  ├─ is-glob@^4.0.3
@@ -1092,13 +1091,13 @@
 │  │  └─ brace-expansion@^2.0.1
 │  ├─ semver@^7.6.0
 │  └─ ts-api-utils@^1.3.0
-├─ @typescript-eslint/utils@8.18.1
+├─ @typescript-eslint/utils@8.18.2
 │  ├─ @eslint-community/eslint-utils@^4.4.0
-│  ├─ @typescript-eslint/scope-manager@8.18.1
-│  ├─ @typescript-eslint/types@8.18.1
-│  └─ @typescript-eslint/typescript-estree@8.18.1
-├─ @typescript-eslint/visitor-keys@8.18.1
-│  ├─ @typescript-eslint/types@8.18.1
+│  ├─ @typescript-eslint/scope-manager@8.18.2
+│  ├─ @typescript-eslint/types@8.18.2
+│  └─ @typescript-eslint/typescript-estree@8.18.2
+├─ @typescript-eslint/visitor-keys@8.18.2
+│  ├─ @typescript-eslint/types@8.18.2
 │  ├─ eslint-visitor-keys@^4.2.0
 │  └─ eslint-visitor-keys@4.2.0
 ├─ @ungap/structured-clone@1.2.1
@@ -2015,23 +2014,23 @@
 ├─ end-of-stream@1.4.4
 │  └─ once@^1.4.0
 ├─ entities@4.5.0
-├─ es-abstract@1.23.6
-│  ├─ array-buffer-byte-length@^1.0.1
+├─ es-abstract@1.23.7
+│  ├─ array-buffer-byte-length@^1.0.2
 │  ├─ arraybuffer.prototype.slice@^1.0.4
 │  ├─ available-typed-arrays@^1.0.7
 │  ├─ call-bind@^1.0.8
 │  ├─ call-bound@^1.0.3
-│  ├─ data-view-buffer@^1.0.1
-│  ├─ data-view-byte-length@^1.0.1
-│  ├─ data-view-byte-offset@^1.0.0
+│  ├─ data-view-buffer@^1.0.2
+│  ├─ data-view-byte-length@^1.0.2
+│  ├─ data-view-byte-offset@^1.0.1
 │  ├─ es-define-property@^1.0.1
 │  ├─ es-errors@^1.3.0
 │  ├─ es-object-atoms@^1.0.0
 │  ├─ es-set-tostringtag@^2.0.3
 │  ├─ es-to-primitive@^1.3.0
-│  ├─ function.prototype.name@^1.1.7
+│  ├─ function.prototype.name@^1.1.8
 │  ├─ get-intrinsic@^1.2.6
-│  ├─ get-symbol-description@^1.0.2
+│  ├─ get-symbol-description@^1.1.0
 │  ├─ globalthis@^1.0.4
 │  ├─ gopd@^1.2.0
 │  ├─ has-property-descriptors@^1.0.2
@@ -2039,31 +2038,30 @@
 │  ├─ has-symbols@^1.1.0
 │  ├─ hasown@^2.0.2
 │  ├─ internal-slot@^1.1.0
-│  ├─ is-array-buffer@^3.0.4
+│  ├─ is-array-buffer@^3.0.5
 │  ├─ is-callable@^1.2.7
 │  ├─ is-data-view@^1.0.2
-│  ├─ is-negative-zero@^2.0.3
 │  ├─ is-regex@^1.2.1
-│  ├─ is-shared-array-buffer@^1.0.3
+│  ├─ is-shared-array-buffer@^1.0.4
 │  ├─ is-string@^1.1.1
-│  ├─ is-typed-array@^1.1.13
+│  ├─ is-typed-array@^1.1.15
 │  ├─ is-weakref@^1.1.0
-│  ├─ math-intrinsics@^1.0.0
+│  ├─ math-intrinsics@^1.1.0
 │  ├─ object-inspect@^1.13.3
 │  ├─ object-keys@^1.1.1
-│  ├─ object.assign@^4.1.5
+│  ├─ object.assign@^4.1.7
 │  ├─ regexp.prototype.flags@^1.5.3
 │  ├─ safe-array-concat@^1.1.3
 │  ├─ safe-regex-test@^1.1.0
 │  ├─ string.prototype.trim@^1.2.10
 │  ├─ string.prototype.trimend@^1.0.9
 │  ├─ string.prototype.trimstart@^1.0.8
-│  ├─ typed-array-buffer@^1.0.2
-│  ├─ typed-array-byte-length@^1.0.1
-│  ├─ typed-array-byte-offset@^1.0.3
+│  ├─ typed-array-buffer@^1.0.3
+│  ├─ typed-array-byte-length@^1.0.3
+│  ├─ typed-array-byte-offset@^1.0.4
 │  ├─ typed-array-length@^1.0.7
-│  ├─ unbox-primitive@^1.0.2
-│  └─ which-typed-array@^1.1.16
+│  ├─ unbox-primitive@^1.1.0
+│  └─ which-typed-array@^1.1.18
 ├─ es-define-property@1.0.1
 ├─ es-errors@1.3.0
 ├─ es-module-lexer@1.5.4
@@ -2077,32 +2075,31 @@
 │  ├─ is-callable@^1.2.7
 │  ├─ is-date-object@^1.0.5
 │  └─ is-symbol@^1.0.4
-├─ esbuild@0.24.1
-│  ├─ @esbuild/aix-ppc64@0.24.1
-│  ├─ @esbuild/android-arm@0.24.1
-│  ├─ @esbuild/android-arm64@0.24.1
-│  ├─ @esbuild/android-x64@0.24.1
-│  ├─ @esbuild/darwin-arm64@0.24.1
-│  ├─ @esbuild/darwin-x64@0.24.1
-│  ├─ @esbuild/freebsd-arm64@0.24.1
-│  ├─ @esbuild/freebsd-x64@0.24.1
-│  ├─ @esbuild/linux-arm@0.24.1
-│  ├─ @esbuild/linux-arm64@0.24.1
-│  ├─ @esbuild/linux-ia32@0.24.1
-│  ├─ @esbuild/linux-loong64@0.24.1
-│  ├─ @esbuild/linux-mips64el@0.24.1
-│  ├─ @esbuild/linux-ppc64@0.24.1
-│  ├─ @esbuild/linux-riscv64@0.24.1
-│  ├─ @esbuild/linux-s390x@0.24.1
-│  ├─ @esbuild/linux-x64@0.24.1
-│  ├─ @esbuild/netbsd-arm64@0.24.1
-│  ├─ @esbuild/netbsd-x64@0.24.1
-│  ├─ @esbuild/openbsd-arm64@0.24.1
-│  ├─ @esbuild/openbsd-x64@0.24.1
-│  ├─ @esbuild/sunos-x64@0.24.1
-│  ├─ @esbuild/win32-arm64@0.24.1
-│  ├─ @esbuild/win32-ia32@0.24.1
-│  └─ @esbuild/win32-x64@0.24.1
+├─ esbuild@0.24.0
+│  ├─ @esbuild/aix-ppc64@0.24.0
+│  ├─ @esbuild/android-arm@0.24.0
+│  ├─ @esbuild/android-arm64@0.24.0
+│  ├─ @esbuild/android-x64@0.24.0
+│  ├─ @esbuild/darwin-arm64@0.24.0
+│  ├─ @esbuild/darwin-x64@0.24.0
+│  ├─ @esbuild/freebsd-arm64@0.24.0
+│  ├─ @esbuild/freebsd-x64@0.24.0
+│  ├─ @esbuild/linux-arm@0.24.0
+│  ├─ @esbuild/linux-arm64@0.24.0
+│  ├─ @esbuild/linux-ia32@0.24.0
+│  ├─ @esbuild/linux-loong64@0.24.0
+│  ├─ @esbuild/linux-mips64el@0.24.0
+│  ├─ @esbuild/linux-ppc64@0.24.0
+│  ├─ @esbuild/linux-riscv64@0.24.0
+│  ├─ @esbuild/linux-s390x@0.24.0
+│  ├─ @esbuild/linux-x64@0.24.0
+│  ├─ @esbuild/netbsd-x64@0.24.0
+│  ├─ @esbuild/openbsd-arm64@0.24.0
+│  ├─ @esbuild/openbsd-x64@0.24.0
+│  ├─ @esbuild/sunos-x64@0.24.0
+│  ├─ @esbuild/win32-arm64@0.24.0
+│  ├─ @esbuild/win32-ia32@0.24.0
+│  └─ @esbuild/win32-x64@0.24.0
 ├─ escalade@3.2.0
 ├─ escape-html@1.0.3
 ├─ escape-latex@1.2.0
@@ -2260,7 +2257,7 @@
 ├─ fast-uri@3.0.3
 ├─ fast-xml-parser@4.5.1
 │  └─ strnum@^1.0.5
-├─ fastq@1.17.1
+├─ fastq@1.18.0
 │  └─ reusify@^1.0.4
 ├─ fdir@6.4.2
 ├─ fflate@0.8.2
@@ -2507,7 +2504,7 @@
 │  ├─ call-bound@^1.0.2
 │  └─ has-tostringtag@^1.0.2
 ├─ is-callable@1.2.7
-├─ is-core-module@2.16.0
+├─ is-core-module@2.16.1
 │  └─ hasown@^2.0.2
 ├─ is-data-view@1.0.2
 │  ├─ call-bound@^1.0.2
@@ -2534,7 +2531,6 @@
 ├─ is-nan@1.3.2
 │  ├─ call-bind@^1.0.0
 │  └─ define-properties@^1.1.3
-├─ is-negative-zero@2.0.3
 ├─ is-number-object@1.1.1
 │  ├─ call-bound@^1.0.3
 │  └─ has-tostringtag@^1.0.2
@@ -3036,7 +3032,7 @@
 │  └─ wrappy@1
 ├─ onetime@5.1.2
 │  └─ mimic-fn@^2.1.0
-├─ oniguruma-to-es@0.8.0
+├─ oniguruma-to-es@0.8.1
 │  ├─ emoji-regex-xs@^1.0.0
 │  ├─ regex-recursion@^5.0.0
 │  └─ regex@^5.0.2
@@ -3073,7 +3069,7 @@
 │  └─ p-limit@^3.0.2
 ├─ p-try@2.2.0
 ├─ package-json-from-dist@1.0.1
-├─ package-manager-detector@0.2.7
+├─ package-manager-detector@0.2.8
 ├─ pako@1.0.11
 ├─ param-case@3.0.4
 │  ├─ dot-case@^3.0.4
@@ -3511,11 +3507,11 @@
 ├─ shebang-command@2.0.0
 │  └─ shebang-regex@^3.0.0
 ├─ shebang-regex@3.0.0
-├─ shiki@1.24.3
-│  ├─ @shikijs/core@1.24.3
-│  ├─ @shikijs/engine-javascript@1.24.3
-│  ├─ @shikijs/engine-oniguruma@1.24.3
-│  ├─ @shikijs/types@1.24.3
+├─ shiki@1.24.4
+│  ├─ @shikijs/core@1.24.4
+│  ├─ @shikijs/engine-javascript@1.24.4
+│  ├─ @shikijs/engine-oniguruma@1.24.4
+│  ├─ @shikijs/types@1.24.4
 │  ├─ @shikijs/vscode-textmate@^9.3.1
 │  └─ @types/hast@^3.0.4
 ├─ side-channel-list@1.0.0
@@ -3658,7 +3654,7 @@
 ├─ supports-color@7.2.0
 │  └─ has-flag@^4.0.0
 ├─ supports-preserve-symlinks-flag@1.0.0
-├─ sweetalert2@11.15.2
+├─ sweetalert2@11.15.3
 ├─ symbol-tree@3.2.4
 ├─ sync-child-process@1.0.2
 │  └─ sync-message-port@^1.0.0
@@ -3783,10 +3779,10 @@
 │  ├─ possible-typed-array-names@^1.0.0
 │  └─ reflect.getprototypeof@^1.0.6
 ├─ typed-function@4.2.1
-├─ typescript-eslint@8.18.1
-│  ├─ @typescript-eslint/eslint-plugin@8.18.1
-│  ├─ @typescript-eslint/parser@8.18.1
-│  └─ @typescript-eslint/utils@8.18.1
+├─ typescript-eslint@8.18.2
+│  ├─ @typescript-eslint/eslint-plugin@8.18.2
+│  ├─ @typescript-eslint/parser@8.18.2
+│  └─ @typescript-eslint/utils@8.18.2
 ├─ typescript@5.5.4
 ├─ ufo@1.5.4
 ├─ unbox-primitive@1.1.0
@@ -3899,31 +3895,31 @@
 │  ├─ debug@^4.1.1
 │  ├─ globrex@^0.1.2
 │  └─ tsconfck@^3.0.3
-├─ vite@6.0.3
-│  ├─ esbuild@^0.24.0
+├─ vite@6.0.5
+│  ├─ esbuild@0.24.0
 │  ├─ fsevents@~2.3.3
 │  ├─ postcss@^8.4.49
 │  ├─ rollup@^4.23.0
-│  └─ rollup@4.28.1
-│     ├─ @rollup/rollup-android-arm-eabi@4.28.1
-│     ├─ @rollup/rollup-android-arm64@4.28.1
-│     ├─ @rollup/rollup-darwin-arm64@4.28.1
-│     ├─ @rollup/rollup-darwin-x64@4.28.1
-│     ├─ @rollup/rollup-freebsd-arm64@4.28.1
-│     ├─ @rollup/rollup-freebsd-x64@4.28.1
-│     ├─ @rollup/rollup-linux-arm-gnueabihf@4.28.1
-│     ├─ @rollup/rollup-linux-arm-musleabihf@4.28.1
-│     ├─ @rollup/rollup-linux-arm64-gnu@4.28.1
-│     ├─ @rollup/rollup-linux-arm64-musl@4.28.1
-│     ├─ @rollup/rollup-linux-loongarch64-gnu@4.28.1
-│     ├─ @rollup/rollup-linux-powerpc64le-gnu@4.28.1
-│     ├─ @rollup/rollup-linux-riscv64-gnu@4.28.1
-│     ├─ @rollup/rollup-linux-s390x-gnu@4.28.1
-│     ├─ @rollup/rollup-linux-x64-gnu@4.28.1
-│     ├─ @rollup/rollup-linux-x64-musl@4.28.1
-│     ├─ @rollup/rollup-win32-arm64-msvc@4.28.1
-│     ├─ @rollup/rollup-win32-ia32-msvc@4.28.1
-│     ├─ @rollup/rollup-win32-x64-msvc@4.28.1
+│  └─ rollup@4.29.1
+│     ├─ @rollup/rollup-android-arm-eabi@4.29.1
+│     ├─ @rollup/rollup-android-arm64@4.29.1
+│     ├─ @rollup/rollup-darwin-arm64@4.29.1
+│     ├─ @rollup/rollup-darwin-x64@4.29.1
+│     ├─ @rollup/rollup-freebsd-arm64@4.29.1
+│     ├─ @rollup/rollup-freebsd-x64@4.29.1
+│     ├─ @rollup/rollup-linux-arm-gnueabihf@4.29.1
+│     ├─ @rollup/rollup-linux-arm-musleabihf@4.29.1
+│     ├─ @rollup/rollup-linux-arm64-gnu@4.29.1
+│     ├─ @rollup/rollup-linux-arm64-musl@4.29.1
+│     ├─ @rollup/rollup-linux-loongarch64-gnu@4.29.1
+│     ├─ @rollup/rollup-linux-powerpc64le-gnu@4.29.1
+│     ├─ @rollup/rollup-linux-riscv64-gnu@4.29.1
+│     ├─ @rollup/rollup-linux-s390x-gnu@4.29.1
+│     ├─ @rollup/rollup-linux-x64-gnu@4.29.1
+│     ├─ @rollup/rollup-linux-x64-musl@4.29.1
+│     ├─ @rollup/rollup-win32-arm64-msvc@4.29.1
+│     ├─ @rollup/rollup-win32-ia32-msvc@4.29.1
+│     ├─ @rollup/rollup-win32-x64-msvc@4.29.1
 │     ├─ @types/estree@1.0.6
 │     └─ fsevents@~2.3.2
 ├─ vitepress-plugin-mermaid@2.0.17
