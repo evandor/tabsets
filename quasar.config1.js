@@ -8,38 +8,27 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-
-const {configure} = require('quasar/wrappers');
-const path = require('path');
+const { configure } = require('quasar/wrappers')
+const path = require('path')
 // const fs = require("fs");
 // const {sentryVitePlugin} = require("@sentry/vite-plugin");
 
 module.exports = configure(function (ctx) {
-
   require('dotenv').config()
 
   //console.log("======>", path.resolve(__dirname, './src/i18n/**'))
 
   return {
-
-
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     //preFetch: true,
 
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: [
-      'axios',
-      'errorhandling',
-      'i18n',
-      'constants'
-    ],
+    boot: ['axios', 'errorhandling', 'i18n', 'constants'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
-    css: [
-      'app.scss'
-    ],
+    css: ['app.scss'],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
@@ -54,26 +43,25 @@ module.exports = configure(function (ctx) {
       'roboto-font',
       'material-icons',
       'material-icons-outlined',
-      'material-symbols-outlined'
+      'material-symbols-outlined',
     ],
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
-
       // https://github.com/quasarframework/quasar/issues/14589
       sourcemap: 'true',
 
       target: {
         browser: ['es2020', 'edge88', 'firefox78', 'chrome87'],
-        node: 'node16'
+        node: 'node16',
       },
 
       viteVuePluginOptions: {
         template: {
           compilerOptions: {
-            isCustomElement: (tag) => tag.startsWith('webview')
-          }
-        }
+            isCustomElement: (tag) => tag.startsWith('webview'),
+          },
+        },
       },
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
@@ -93,7 +81,7 @@ module.exports = configure(function (ctx) {
         TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
         TABSETS_STAGE: process.env.STAGE,
         LOCALE: process.env.LOCALE,
-        SENTRY_DSN: process.env.SENTRY_DSN
+        SENTRY_DSN: process.env.SENTRY_DSN,
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
@@ -103,8 +91,11 @@ module.exports = configure(function (ctx) {
 
       // !== MIT
       extendViteConf(viteConf) {
-
-        if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === "development") {
+        if (
+          (ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) &&
+          viteConf &&
+          viteConf.mode === 'development'
+        ) {
           // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
           viteConf.define.global = {}
         }
@@ -123,23 +114,29 @@ module.exports = configure(function (ctx) {
       // viteVuePluginOptions: {},
 
       vitePlugins: [
-        ['@intlify/unplugin-vue-i18n/vite', {
-          include: [path.resolve(__dirname, './src/i18n/**')],
-        }],
+        [
+          '@intlify/unplugin-vue-i18n/vite',
+          {
+            include: [path.resolve(__dirname, './src/i18n/**')],
+          },
+        ],
         ['vite-plugin-package-version', {}],
-        [require('@sentry/vite-plugin').sentryVitePlugin,{
+        [
+          require('@sentry/vite-plugin').sentryVitePlugin,
+          {
             authToken: process.env.SENTRY_AUTH_TOKEN,
-            org: "skysail-dk",
+            org: 'skysail-dk',
             disable: ctx.dev,
-            project: "tabsets"
-        }]
-      ]
+            project: 'tabsets',
+          },
+        ],
+      ],
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
       // https: true
-      open: true // opens browser window automatically
+      open: true, // opens browser window automatically
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
@@ -157,14 +154,7 @@ module.exports = configure(function (ctx) {
       // directives: [],
 
       // Quasar plugins
-      plugins: [
-        'LocalStorage',
-        'Dialog',
-        'Meta',
-        'Notify',
-        'Loading',
-        'LoadingBar'
-      ]
+      plugins: ['LocalStorage', 'Dialog', 'Meta', 'Notify', 'Loading', 'LoadingBar'],
     },
 
     // animations: 'all', // --- includes all animations
@@ -197,11 +187,11 @@ module.exports = configure(function (ctx) {
       // manualPostHydrationTrigger: true,
 
       prodPort: 3000, // The default port that the production server should use
-                      // (gets superseded if process.env.PORT is specified at runtime)
+      // (gets superseded if process.env.PORT is specified at runtime)
 
       middlewares: [
-        'render' // keep this as last one
-      ]
+        'render', // keep this as last one
+      ],
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
@@ -224,7 +214,7 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-capacitor-apps/configuring-capacitor
     capacitor: {
-      hideSplashscreen: true
+      hideSplashscreen: true,
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/configuring-electron
@@ -246,9 +236,9 @@ module.exports = configure(function (ctx) {
         protocols: [
           {
             name: 'Electron Tabsets',
-            schemes: ['electron-tabsets']
-          }
-        ]
+            schemes: ['electron-tabsets'],
+          },
+        ],
 
         // Windows only
         // win32metadata: { ... }
@@ -259,19 +249,16 @@ module.exports = configure(function (ctx) {
 
         appId: 'tabsets.net',
         publish: {
-          'provider': 'github',
-          'private': false,
-          'timeout': 480000
-        }
-      }
+          provider: 'github',
+          private: false,
+          timeout: 480000,
+        },
+      },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
     bex: {
-      contentScripts: [
-        'tabsets-content-script',
-        'tabsets-excalidraw-script'
-      ]
-    }
+      contentScripts: ['tabsets-content-script', 'tabsets-excalidraw-script'],
+    },
   }
-});
+})

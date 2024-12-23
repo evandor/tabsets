@@ -1,7 +1,6 @@
 <template>
   <!-- SidePanelPage2 -->
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 50px">
-
     <offline-info />
 
     <div class="wrap" v-if="useUiStore().appLoading">
@@ -13,11 +12,8 @@
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none q-pt-xs">
-
       <template v-if="useTabsetsStore().tabsets.size > 0">
-
         <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
-
           <!-- optional: notes -->
           <div class="col-12">
             <SidePanelNotesView v-if="currentTabset" :tabset="currentTabset" />
@@ -29,31 +25,25 @@
           </div>
 
           <!-- list of tabs, assuming here we have at least one tabset-->
-          <SidePanelPageTabList v-if="currentTabset"
-                                :tabsCount="useTabsetService().tabsToShow(currentTabset as Tabset)?.length"
-                                :tabset="tabsetForTabList(currentTabset as Tabset)" />
-
+          <SidePanelPageTabList
+            v-if="currentTabset"
+            :tabsCount="useTabsetService().tabsToShow(currentTabset as Tabset)?.length"
+            :tabset="tabsetForTabList(currentTabset as Tabset)"
+          />
         </div>
       </template>
 
       <StartingHint v-if="showStartingHint()" />
-
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-
-      <FirstToolbarHelper2
-        :showSearchBox="showSearchBox">
-      </FirstToolbarHelper2>
-
+      <FirstToolbarHelper2 :showSearchBox="showSearchBox"> </FirstToolbarHelper2>
     </q-page-sticky>
   </q-page>
-
 </template>
 
 <script lang="ts" setup>
-
 import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import _ from 'lodash'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
@@ -99,7 +89,6 @@ function updateOnlineStatus(e: any) {
 }
 
 onMounted(() => {
-
   if (LocalStorage.getItem('ui.sidepanel.oldLayout')) {
     router.push('/sidepanelOld')
   }
@@ -130,23 +119,27 @@ watchEffect(() => {
   }
 })
 
-const getTabsetOrder =
-  [
-    function(o: Tabset) {
-      return o.status === TabsetStatus.FAVORITE ? 0 : 1
-    },
-    function(o: Tabset) {
-      return o.name?.toLowerCase()
-    }
-  ]
+const getTabsetOrder = [
+  function (o: Tabset) {
+    return o.status === TabsetStatus.FAVORITE ? 0 : 1
+  },
+  function (o: Tabset) {
+    return o.name?.toLowerCase()
+  },
+]
 
 function determineTabsets() {
   return _.sortBy(
-    _.filter([...useTabsetsStore().tabsets.values()] as Tabset[],
-      (ts: Tabset) => ts.status !== TabsetStatus.DELETED
-        && ts.status !== TabsetStatus.HIDDEN &&
-        ts.status !== TabsetStatus.ARCHIVED),
-    getTabsetOrder, ['asc'])
+    _.filter(
+      [...useTabsetsStore().tabsets.values()] as Tabset[],
+      (ts: Tabset) =>
+        ts.status !== TabsetStatus.DELETED &&
+        ts.status !== TabsetStatus.HIDDEN &&
+        ts.status !== TabsetStatus.ARCHIVED,
+    ),
+    getTabsetOrder,
+    ['asc'],
+  )
 }
 
 watchEffect(() => {
@@ -159,11 +152,15 @@ watchEffect(() => {
             return false
           }
         }
-        return ts.status !== TabsetStatus.DELETED &&
+        return (
+          ts.status !== TabsetStatus.DELETED &&
           ts.status !== TabsetStatus.HIDDEN &&
           ts.status !== TabsetStatus.ARCHIVED
+        )
       }),
-      getTabsetOrder, ['asc'])
+      getTabsetOrder,
+      ['asc'],
+    )
     // console.log("tabsets:", tabsets.value)
   } else {
     tabsets.value = determineTabsets()
@@ -172,12 +169,12 @@ watchEffect(() => {
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+  currentChromeTab.value =
+    useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
 function inIgnoredMessages(message: any) {
-  return message.msg === 'captureThumbnail' ||
-    message.name === 'reload-spaces'
+  return message.msg === 'captureThumbnail' || message.name === 'reload-spaces'
 }
 
 if (inBexMode()) {
@@ -219,7 +216,7 @@ if (inBexMode()) {
       }
     } else if (message.name === 'tab-added') {
       // hmm - getting this twice...
-      console.log(' > got message \'' + message.name + '\'', message)
+      console.log(" > got message '" + message.name + "'", message)
       useTabsetService().reloadTabset(message.data.tabsetId)
       //updateSelectedTabset(message.data.tabsetId, true)
     } else if (message.name === 'tab-deleted') {
@@ -271,16 +268,17 @@ if (inBexMode()) {
       useSuggestionsStore().loadSuggestionsFromDb()
     } else if (message.name === 'reload-tabset') {
       console.log('reload-tabset message received')
-      const tabsetId = message.data.tabsetId ?
-        message.data.tabsetId :
-        useTabsetsStore().getCurrentTabset?.id
+      const tabsetId = message.data.tabsetId
+        ? message.data.tabsetId
+        : useTabsetsStore().getCurrentTabset?.id
       useTabsetService().reloadTabset(tabsetId)
     } else if (message.name === 'tabsets.app.change.currentTabset') {
       if (currentTabset.value) {
-        useTabsetService().reloadTabset(currentTabset.value.id)
+        useTabsetService()
+          .reloadTabset(currentTabset.value.id)
           .then((ts: Tabset) => {
             currentTabset.value = ts
-            console.log("reloading tabset: ", ts)
+            console.log('reloading tabset: ', ts)
           })
       }
     } else if (message.name === 'reload-application') {
@@ -317,8 +315,6 @@ const tabsetForTabList = (tabset: Tabset) => {
 }
 
 const showStartingHint = () => !useUiStore().appLoading && useTabsetsStore().allTabsCount === 0
-
-
 </script>
 
 <style lang="scss" src="./css/sidePanelPage2.scss" />

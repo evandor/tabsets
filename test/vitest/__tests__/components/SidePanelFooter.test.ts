@@ -1,37 +1,38 @@
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
 vi.mock('src/boot/firebase2.ts')
 
-import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
-import {DOMWrapper, mount, shallowMount, VueWrapper} from '@vue/test-utils';
-import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
-import {createPinia, setActivePinia} from "pinia";
-import SidePanelFooter from "src/components/SidePanelFooter.vue";
-import ChromeApi from "src/app/BrowserApi";
-import {useDB} from "src/services/usePersistenceService";
-import {useQuasar} from "quasar";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
+import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
+import { DOMWrapper, mount, shallowMount, VueWrapper } from '@vue/test-utils'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import SidePanelFooter from 'src/components/SidePanelFooter.vue'
+import ChromeApi from 'src/app/BrowserApi'
+import { useDB } from 'src/services/usePersistenceService'
+import { useQuasar } from 'quasar'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 
-installQuasarPlugin();
+installQuasarPlugin()
 
 async function setupStores() {
   // useWindowsStore().initialize()
   //useWindowsStore().initListeners()
 }
 
-
 describe('SidePanelFooter', () => {
-
   const skysailChromeTab = ChromeApi.createChromeTabObject(
-    "title", "https://www.skysail.io/some-subpage", "favicon")
+    'title',
+    'https://www.skysail.io/some-subpage',
+    'favicon',
+  )
 
   let db = null as unknown as TabsetsPersistence
   //let windowsDB = IndexedDbWindowsPersistence
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
   let manageWindowsButton: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
 
-  const tab1 = ChromeApi.createChromeTabObject("skysail", "https://www.skysail.io")
+  const tab1 = ChromeApi.createChromeTabObject('skysail', 'https://www.skysail.io')
   const window100: chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [tab1])
 
   let currentWindows: any[]
@@ -57,43 +58,43 @@ describe('SidePanelFooter', () => {
       commands: {
         onCommand: {
           addListener: vi.fn(() => {
-            return [];
+            return []
           }),
-        }
+        },
       },
       tabs: {
-        query: vi.fn(() => {
-        }),
+        query: vi.fn(() => {}),
         onCreated: {
           addListener: vi.fn((tab: chrome.tabs.Tab) => {
-            console.log("mocking chrome.windows.onCreated.addListener", tab)
-          })
+            console.log('mocking chrome.windows.onCreated.addListener', tab)
+          }),
         },
         onUpdated: {
           addListener: vi.fn((tabId: number, updateInfo: chrome.tabs.TabChangeInfo) => {
-            console.log("mocking chrome.windows.onUpdated.addListener", tabId)
-          })
+            console.log('mocking chrome.windows.onUpdated.addListener', tabId)
+          }),
         },
         onRemoved: {
           addListener: vi.fn((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
-            console.log("mocking chrome.windows.onRemoved.addListener", tabId)
-          })
-        }
+            console.log('mocking chrome.windows.onRemoved.addListener', tabId)
+          }),
+        },
       },
       runtime: {
-        sendMessage: vi.fn(() => {
-        }),
+        sendMessage: vi.fn(() => {}),
         onMessage: {
-          addListener: vi.fn((message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
-            console.log("mocking chrome.windows.onCreated.addListener", message)
-            //onCreatedListener = listener
-            return true
-          })
-        }
+          addListener: vi.fn(
+            (message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
+              console.log('mocking chrome.windows.onCreated.addListener', message)
+              //onCreatedListener = listener
+              return true
+            },
+          ),
+        },
       },
       windows: {
         getAll: vi.fn((options, callback) => {
-          console.log("mocking chrome.windows.getAll", currentWindows.length)
+          console.log('mocking chrome.windows.getAll', currentWindows.length)
           //callback(currentWindows);
           return Promise.resolve(currentWindows)
         }),
@@ -105,49 +106,48 @@ describe('SidePanelFooter', () => {
           addListener: vi.fn((listener) => {
             //console.log("mocking chrome.windows.onCreated.addListener", listener)
             //onCreatedListener = listener
-          })
+          }),
         },
         onRemoved: {
           addListener: vi.fn((listener) => {
             //console.log("mocking chrome.windows.onRemoved.addListener", listener)
             // onRemovedListener = listener
-          })
+          }),
         },
         onFocusChanged: {
           addListener: vi.fn((listener) => {
-            console.log("mocking chrome.windows.onFocusChanged.addListener", listener)
+            console.log('mocking chrome.windows.onFocusChanged.addListener', listener)
             //onFocusChangedListener = listener
-          })
+          }),
         },
         onBoundsChanged: {
           addListener: vi.fn((listener) => {
             //console.log("mocking chrome.windows.onBoundsChanged.addListener", listener)
             //callback(undefined)
-          })
-        }
-      }
-    };
+          }),
+        },
+      },
+    }
 
-    vi.stubGlobal('chrome', chromeMock);
+    vi.stubGlobal('chrome', chromeMock)
 
-    wrapper = mount(SidePanelFooter);
+    wrapper = mount(SidePanelFooter)
 
     manageWindowsButton = wrapper.find('[data-testid=buttonManageWindows]')
-
   })
 
   afterEach(async () => {
-    db.clear("tabsets")
+    db.clear('tabsets')
     //db.clear("windows")
   })
 
   it('should be mounted', async () => {
     // expect(wrapper.text()).toContain("grid");
     // expect(wrapper.text()).toContain("view");
-    expect(wrapper.text()).toContain("settings");
+    expect(wrapper.text()).toContain('settings')
     //expect(wrapper.text()).toContain("chart");
-    expect(wrapper.text()).not.toContain("Open Window");
-  });
+    expect(wrapper.text()).not.toContain('Open Window')
+  })
 
   // TODO activate again
   // it('should show window markup table when window management button is clicked', async () => {
@@ -170,5 +170,4 @@ describe('SidePanelFooter', () => {
   //   expect(windows[0].open).toBe(true)
   //   expect(windows[0].hostList).toStrictEqual(['www.skysail.io'])
   // });
-
 })

@@ -6,63 +6,66 @@
         <div class="text-h6" v-else>Index this Tabset</div>
       </q-card-section>
       <q-card-section>
-        <div class="text-body">If your search does not yield the results you'd expect, you can try re-indexing your
+        <div class="text-body">
+          If your search does not yield the results you'd expect, you can try re-indexing your
           tabsets.
         </div>
       </q-card-section>
 
       <q-card-section class="q-pt-none">
         <div class="text-body" v-if="props.tabsetId === ''">
-          Reindexing is the process of going through all your tabsets (and tabs), analyze the tabs' contents and create
-          new thumbnail screenshots. For this, <b>a new browser window is opened and the tabs are analyzed one by
-          one</b>.
-          Given your current data, this will take about {{ duration }} minute(s).<br><br>
-          <span class="text-negative">Please do not use your computer otherwise in that time as it will break the results.</span>
+          Reindexing is the process of going through all your tabsets (and tabs), analyze the tabs'
+          contents and create new thumbnail screenshots. For this,
+          <b>a new browser window is opened and the tabs are analyzed one by one</b>. Given your
+          current data, this will take about {{ duration }} minute(s).<br /><br />
+          <span class="text-negative"
+            >Please do not use your computer otherwise in that time as it will break the
+            results.</span
+          >
         </div>
         <div v-else>
-          Reindexing is the process of going through all the tabs of this tabset, analyze the tabs' contents and create
-          new thumbnail screenshots. For this, <b>a new browser window is opened and the tabs are analyzed one by
-          one</b>.
-          Given your current data, this will take about {{ duration }} minute(s).<br><br>
-          <span class="text-negative">Please do not use your computer otherwise in that time as it will break the results.</span>
+          Reindexing is the process of going through all the tabs of this tabset, analyze the tabs'
+          contents and create new thumbnail screenshots. For this,
+          <b>a new browser window is opened and the tabs are analyzed one by one</b>. Given your
+          current data, this will take about {{ duration }} minute(s).<br /><br />
+          <span class="text-negative"
+            >Please do not use your computer otherwise in that time as it will break the
+            results.</span
+          >
         </div>
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" @click="onDialogCancel"/>
-        <q-btn flat
-               data-testid="reindexSubmit"
-               label="Got it, start indexing"
-               v-close-popup
-               @click="startIndexing()"/>
+        <q-btn flat label="Cancel" @click="onDialogCancel" />
+        <q-btn
+          flat
+          data-testid="reindexSubmit"
+          label="Got it, start indexing"
+          v-close-popup
+          @click="startIndexing()"
+        />
       </q-card-actions>
-
-
     </q-card>
   </q-dialog>
-
 </template>
 
 <script lang="ts" setup>
+import { ref, watchEffect } from 'vue'
 
-import {ref, watchEffect} from "vue";
+import { useDialogPluginComponent } from 'quasar'
+import { useSearchStore } from 'src/search/stores/searchStore'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
-import {useDialogPluginComponent} from 'quasar'
-import {useSearchStore} from "src/search/stores/searchStore";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-
-defineEmits([
-  ...useDialogPluginComponent.emits
-])
+defineEmits([...useDialogPluginComponent.emits])
 
 const props = defineProps({
   tabsetId: {
     type: String,
-    default: ''
-  }
+    default: '',
+  },
 })
 
-const {dialogRef, onDialogHide, onDialogCancel} = useDialogPluginComponent()
+const { dialogRef, onDialogHide, onDialogCancel } = useDialogPluginComponent()
 
 const searchStore = useSearchStore()
 
@@ -74,20 +77,22 @@ const duration = ref(1)
 watchEffect(() => {
   if (useTabsetsStore()) {
     if (props.tabsetId !== '') {
-      duration.value = 1 + Math.floor((useTabsetsStore().getTabset(props.tabsetId)?.tabs.length || 1) * 3 / 60)
+      duration.value =
+        1 + Math.floor(((useTabsetsStore().getTabset(props.tabsetId)?.tabs.length || 1) * 3) / 60)
     } else {
-      duration.value = 1 + Math.floor(useTabsetsStore().allTabsCount * 3 / 60)
+      duration.value = 1 + Math.floor((useTabsetsStore().allTabsCount * 3) / 60)
     }
   }
 })
 
 watchEffect(() => {
-  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value);
+  newTabsetNameExists.value = !!useTabsetsStore().existingInTabset(newTabsetName.value)
 })
 
 const newTabsetDialogWarning = () => {
-  return (!hideWarning.value && useTabsetsStore().existingInTabset(newTabsetName.value)) ?
-    "Hint: Tabset exists, but you can add tabs" : ""
+  return !hideWarning.value && useTabsetsStore().existingInTabset(newTabsetName.value)
+    ? 'Hint: Tabset exists, but you can add tabs'
+    : ''
 }
 
 const startIndexing = () => {
@@ -97,6 +102,4 @@ const startIndexing = () => {
     //searchStore.reindexAll()
   }
 }
-
-
 </script>

@@ -1,4 +1,3 @@
-
 ### Installation
 
 Check out this page: [installation](../../src/search/docs/installation.md)
@@ -18,4 +17,3 @@ Once the submodule has been installed in your application, it needs to be [setup
 ### code
 
 [code](../../src/search/docs/code.md)
-

@@ -3,7 +3,6 @@
 </template>
 
 <script setup lang="ts">
-
 import { setCssVar, useQuasar } from 'quasar'
 import AppService from 'src/app/AppService'
 import { EventEmitter } from 'events'
@@ -34,11 +33,11 @@ const { info } = useLogger()
 const emitter = new EventEmitter()
 emitter.setMaxListeners(12)
 
-let useDarkMode: string = $q.localStorage.getItem('darkMode') || 'auto' as string
+let useDarkMode: string = $q.localStorage.getItem('darkMode') || ('auto' as string)
 
 if ($q.platform.is.safari && !$q.platform.is.bex) {
   console.log('switching dark mode default to false on safari non-bex')
-  useDarkMode = $q.localStorage.getItem('darkMode') || 'false' as string
+  useDarkMode = $q.localStorage.getItem('darkMode') || ('false' as string)
 }
 
 if (useDarkMode === 'true') {
@@ -107,5 +106,4 @@ $q.bex.on('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
 onBeforeUnmount(() => {
   $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
 })
-
 </script>

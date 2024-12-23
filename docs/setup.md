@@ -13,9 +13,11 @@ Change into the tabsets directory and checkout the branch for your browser
 ```
 git checkout chrome-extension
 ```
+
 ```
 git checkout firefox-extension
 ```
+
 ```
 git checkout edge-extension
 ```
@@ -51,16 +53,18 @@ rm src/bookmarks
 git rm --cached src/bookmarks
 ```
 
-
 ```bash
 yarn install
 ```
+
 or
+
 ```bash
 npm install
 ```
 
 ### Start the app in development mode
+
 ```bash
 quasar dev -m bex
 ```

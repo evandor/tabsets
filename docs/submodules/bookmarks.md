@@ -1,10 +1,8 @@
-
 <!--@include: ../../src/bookmarks/docs/intro.md-->
 
 ### Installation
 
 Check out this page: [installation](../../src/bookmarks/docs/installation.md)
-
 
 ### usage
 
@@ -13,5 +11,3 @@ Check out this page: [installation](../../src/bookmarks/docs/installation.md)
 ### code
 
 [code](../../src/bookmarks/docs/code.md)
-
-

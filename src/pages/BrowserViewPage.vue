@@ -1,18 +1,34 @@
 <template>
-
   <q-toolbar class="text-primary lightgrey">
     <div class="row fit">
       <div class="col-xs-12 col-md-9">
         <q-toolbar-title class="q-ma-none q-pa-none">
           <div class="row">
             <div class="col-2">
-              <q-btn icon="arrow_back_ios" @click="goBack()" size="0.5em" class="q-ma-xs q-pa-sm" :disable="!canGoBack"/>
-              <q-btn icon="arrow_forward_ios" @click="goForward()" size="0.5em" class="q-ma-xs q-pa-sm" :disable="!canGoForward"/>
-              <q-btn icon="refresh" @click="goForward()" size="0.5em" class="q-ma-xs q-pa-sm" :disable="!canGoForward"/>
+              <q-btn
+                icon="arrow_back_ios"
+                @click="goBack()"
+                size="0.5em"
+                class="q-ma-xs q-pa-sm"
+                :disable="!canGoBack"
+              />
+              <q-btn
+                icon="arrow_forward_ios"
+                @click="goForward()"
+                size="0.5em"
+                class="q-ma-xs q-pa-sm"
+                :disable="!canGoForward"
+              />
+              <q-btn
+                icon="refresh"
+                @click="goForward()"
+                size="0.5em"
+                class="q-ma-xs q-pa-sm"
+                :disable="!canGoForward"
+              />
             </div>
             <div class="col">
-              <q-input type="url" dense rounded v-model="src"/>
-
+              <q-input type="url" dense rounded v-model="src" />
             </div>
           </div>
         </q-toolbar-title>
@@ -43,17 +59,21 @@
 
   <!--    <iframe ref="iFrameRef" id="tabIFrame" :src='src' frameBorder="0" class="greyBorderTop"/>-->
 
-  <webview class="greyBorderTop" ref="webviewRef" plugins="plugins"
-           id="foo" :src="src" style="display:inline-flex; width:100%; height:480px"></webview>
-
+  <webview
+    class="greyBorderTop"
+    ref="webviewRef"
+    plugins="plugins"
+    id="foo"
+    :src="src"
+    style="display: inline-flex; width: 100%; height: 480px"
+  ></webview>
 </template>
 
 <script lang="ts" setup>
-
-import {onMounted, ref, watch, watchEffect} from "vue";
-import {useRoute, useRouter} from "vue-router";
-import _ from "lodash"
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import { onMounted, ref, watch, watchEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import _ from 'lodash'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
 const route = useRoute()
 const router = useRouter()
@@ -66,23 +86,25 @@ const webviewRef = ref(null)
 const canGoBack = ref(false)
 const canGoForward = ref(false)
 
-
 onMounted(() => {
-  console.log("mounting browser page")
+  console.log('mounting browser page')
   const webview = webviewRef.value
   if (webview) {
-    console.log("window.innerHeight", window.innerHeight)
+    console.log('window.innerHeight', window.innerHeight)
     // @ts-expect-error TODO
-    webview.setAttribute("style", "overflow:hidden;height:" + (window.innerHeight - 106) + "px;width:100%;border:0px");
+    webview.setAttribute(
+      'style',
+      'overflow:hidden;height:' + (window.innerHeight - 106) + 'px;width:100%;border:0px',
+    )
 
     // @ts-expect-error TODO
     webview.addEventListener('did-start-loading', (a: any, b: any) => {
-      console.log("loading", a.srcElement.src)
+      console.log('loading', a.srcElement.src)
       src.value = a.srcElement.src
     })
     // @ts-expect-error TODO
-    webview.addEventListener('did-stop-loading', (a:any,b:any) => {
-     // console.log("stopping", a,b )
+    webview.addEventListener('did-stop-loading', (a: any, b: any) => {
+      // console.log("stopping", a,b )
       // @ts-expect-error TODO
       canGoBack.value = webview.canGoBack()
     })
@@ -94,22 +116,24 @@ onMounted(() => {
       canGoForward.value = webview.canGoForward()
     })
   }
-
 })
 
-watch(() => webviewRef.value, (a: any, b: any) => {
-  console.log("webview!!!", a?.src, b?.src)
-  //console.log("webview", webviewRef.value?.canGoBack() || '?')
-  // console.log("webview", webviewRef.value?.src)
-  // webviewRef.value.getGoBack()
-})
+watch(
+  () => webviewRef.value,
+  (a: any, b: any) => {
+    console.log('webview!!!', a?.src, b?.src)
+    //console.log("webview", webviewRef.value?.canGoBack() || '?')
+    // console.log("webview", webviewRef.value?.src)
+    // webviewRef.value.getGoBack()
+  },
+)
 
 watchEffect(async () => {
   tabId.value = route.params.tabId as string
-  const found = _.find(useTabsetsStore().getCurrentTabs, t => t.id === route.params.tabId)
-  console.log("tabid set to ", tabId.value, found)
+  const found = _.find(useTabsetsStore().getCurrentTabs, (t) => t.id === route.params.tabId)
+  console.log('tabid set to ', tabId.value, found)
   if (found && found.url && webviewRef.value) {
-    console.log("found", found.url)
+    console.log('found', found.url)
     title.value = found?.title || 'unknown'
     // webviewRef.value.src = found.chromeTab.url
     src.value = found.url
@@ -119,17 +143,14 @@ watchEffect(async () => {
     // } else {
     //   src.value = found.chromeTab.url || 'data:text/html,<p>loading....</p>'
     // }
-
-
   }
-
 })
 
-const openInNewTab = () => console.log("not implemented A")
+const openInNewTab = () => console.log('not implemented A')
 
 const iFrameStyle = () => {
-  const v = "overflow:hidden;height:" + (window.innerHeight - 80) + "px;width:100%;border:0px"
-  console.log("v", v)
+  const v = 'overflow:hidden;height:' + (window.innerHeight - 80) + 'px;width:100%;border:0px'
+  console.log('v', v)
   return v
 }
 
@@ -137,5 +158,4 @@ const iFrameStyle = () => {
 const goBack = () => webviewRef.value.goBack()
 // @ts-expect-error TODO
 const goForward = () => webviewRef.value.goForward()
-
 </script>

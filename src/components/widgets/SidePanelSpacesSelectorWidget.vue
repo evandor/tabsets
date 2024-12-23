@@ -1,22 +1,25 @@
 <template>
-
   <div class="cursor-pointer">
-    <q-select dense options-dense
-              hide-bottom-space borderless
-              @update:modelValue="val => switchSpace(val)"
-              v-model="spaces" :options="spacesOptions" label="Select Space"/>
+    <q-select
+      dense
+      options-dense
+      hide-bottom-space
+      borderless
+      @update:modelValue="(val) => switchSpace(val)"
+      v-model="spaces"
+      :options="spacesOptions"
+      label="Select Space"
+    />
   </div>
-
 </template>
 
 <script lang="ts" setup>
-
-import {ref, watchEffect} from "vue";
-import {useSpacesStore} from "src/spaces/stores/spacesStore";
-import NewSpaceDialog from "src/spaces/dialogues/NewSpaceDialog.vue"
-import {useQuasar} from "quasar";
-import _ from "lodash";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import { ref, watchEffect } from 'vue'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import NewSpaceDialog from 'src/spaces/dialogues/NewSpaceDialog.vue'
+import { useQuasar } from 'quasar'
+import _ from 'lodash'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
 const spacesStore = useSpacesStore()
 const $q = useQuasar()
@@ -28,21 +31,23 @@ watchEffect(() => {
   if (useTabsetsStore().tabsets) {
     spacesOptions.value = _.map([...spacesStore.spaces.keys()], (key: string) => {
       const label = spacesStore.spaces.get(key)?.label || 'undef'
-      return {id: key, label: label}
+      return { id: key, label: label }
     })
     // if (spacesOptions.value.length > 0) {
-       spaces.value = spacesStore.space //spacesOptions.value[0]
+    spaces.value = spacesStore.space //spacesOptions.value[0]
     // }
-    spacesOptions.value = spacesOptions.value.concat({id: "unassigned-tabsets", label: "Show Unassigned tabsets"})
-    spacesOptions.value = spacesOptions.value.concat({id: "add-space", label: "Add new Space"})
-
+    spacesOptions.value = spacesOptions.value.concat({
+      id: 'unassigned-tabsets',
+      label: 'Show Unassigned tabsets',
+    })
+    spacesOptions.value = spacesOptions.value.concat({ id: 'add-space', label: 'Add new Space' })
   }
 })
 
 watchEffect(() => {
-  spacesOptions.value = _.map([...spacesStore.spaces.keys()], key => {
+  spacesOptions.value = _.map([...spacesStore.spaces.keys()], (key) => {
     const label = spacesStore.spaces.get(key)?.label || 'undef'
-    return {id: key, label: label}
+    return { id: key, label: label }
   })
 })
 
@@ -60,21 +65,17 @@ watchEffect(() => {
 // }
 
 const switchSpace = (s: any) => {
-  console.log("settings space to ", s)
+  console.log('settings space to ', s)
   if (s.id === 'add-space') {
     $q.dialog({
       component: NewSpaceDialog,
       componentProps: {
         tabsetId: useTabsetsStore().currentTabsetId,
-        fromPanel: true
-      }
+        fromPanel: true,
+      },
     })
   } else {
     spacesStore.space = s
   }
-
 }
-
-
-
 </script>

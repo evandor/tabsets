@@ -1,24 +1,34 @@
 <template>
-
-  <q-item-section v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, undefined)"
-                  @mouseover="hoveredTab = tab.id"
-                  @mouseleave="hoveredTab = undefined"
-                  class="q-mr-sm text-right" style="justify-content:start;width:40px;max-width:40px">
-    <q-img v-if="props.tab?.image && props.tab.image.startsWith('blob://')"
-           style="border:3px dotted white;border-radius:3px"
-           :src="imgFromBlob" width="40px"/>
-    <q-img v-else-if="props.tab.image"
-           style="border:1px dotted white;border-radius:3px"
-           :src="props.tab.image" width="40px"/>
-    <q-img v-else-if="thumbnail" style="border:1px dotted white;border-radius:3px"
-           :src="thumbnail" width="40px"/>
-    <TabFaviconWidget v-else
-                      :tab="props.tab" width="40px" height="40px"/>
+  <q-item-section
+    v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, undefined)"
+    @mouseover="hoveredTab = tab.id"
+    @mouseleave="hoveredTab = undefined"
+    class="q-mr-sm text-right"
+    style="justify-content: start; width: 40px; max-width: 40px"
+  >
+    <q-img
+      v-if="props.tab?.image && props.tab.image.startsWith('blob://')"
+      style="border: 3px dotted white; border-radius: 3px"
+      :src="imgFromBlob"
+      width="40px"
+    />
+    <q-img
+      v-else-if="props.tab.image"
+      style="border: 1px dotted white; border-radius: 3px"
+      :src="props.tab.image"
+      width="40px"
+    />
+    <q-img
+      v-else-if="thumbnail"
+      style="border: 1px dotted white; border-radius: 3px"
+      :src="thumbnail"
+      width="40px"
+    />
+    <TabFaviconWidget v-else :tab="props.tab" width="40px" height="40px" />
   </q-item-section>
 
   <!-- name, title, description, url && note -->
   <q-item-section class="q-mb-sm" :style="itemStyle()">
-
     <!-- name or title -->
     <q-item-label>
       <div>
@@ -44,35 +54,35 @@
       </div>
     </q-item-label>
   </q-item-section>
-
 </template>
 
 <script setup lang="ts">
-import {Tab} from "src/tabsets/models/Tab";
-import {onMounted, PropType, ref, watchEffect} from "vue";
-import {ListDetailLevel, useUiStore} from "src/ui/stores/uiStore";
-import TabFaviconWidget from "src/tabsets/widgets/TabFaviconWidget.vue";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {formatDistance} from "date-fns";
-import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
+import { Tab } from 'src/tabsets/models/Tab'
+import { onMounted, PropType, ref, watchEffect } from 'vue'
+import { ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
+import TabFaviconWidget from 'src/tabsets/widgets/TabFaviconWidget.vue'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { formatDistance } from 'date-fns'
+import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 
 const props = defineProps({
-  tab: {type: Object as PropType<Tab>, required: true}
+  tab: { type: Object as PropType<Tab>, required: true },
 })
 
 const thumbnail = ref<string | undefined>(undefined)
-const imgFromBlob = ref<string>("")
+const imgFromBlob = ref<string>('')
 const hoveredTab = ref<string | undefined>(undefined)
 
 onMounted(() => {
   const blobImgPath = props.tab.image
   if (blobImgPath && blobImgPath.startsWith('blob://')) {
-    useTabsetService().getBlob(blobImgPath.replace("blob://", ""))
+    useTabsetService()
+      .getBlob(blobImgPath.replace('blob://', ''))
       .then((res) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(res.content);
+        const reader = new FileReader()
+        reader.readAsDataURL(res.content)
         reader.onloadend = function () {
-          let base64data = reader.result;
+          let base64data = reader.result
           if (base64data) {
             imgFromBlob.value = base64data.toString()
           }
@@ -83,12 +93,12 @@ onMounted(() => {
 })
 
 const itemStyle = () => {
-  let border = ""
+  let border = ''
   let background = ''
   return `${border};${background}`
 }
 
-const nameOrTitle = (tab: Tab) => tab.name ? tab.name : tab.title
+const nameOrTitle = (tab: Tab) => (tab.name ? tab.name : tab.title)
 
 const thumbnailFor = async (tab: Tab): Promise<string> => {
   return await useThumbnailsService().getThumbnailFor(tab.url)
@@ -110,7 +120,5 @@ watchEffect(() => {
 })
 
 const formatDate = (timestamp: number | undefined) =>
-  timestamp ? formatDistance(timestamp, new Date(), {addSuffix: true}) : ""
-
-
+  timestamp ? formatDistance(timestamp, new Date(), { addSuffix: true }) : ''
 </script>

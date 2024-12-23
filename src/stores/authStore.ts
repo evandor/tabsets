@@ -1,24 +1,22 @@
-import {defineStore} from 'pinia';
-import PersistenceService from "src/services/PersistenceService";
-import {computed, ref} from "vue";
+import { defineStore } from 'pinia'
+import PersistenceService from 'src/services/PersistenceService'
+import { computed, ref } from 'vue'
 
 export enum AccessItem {
-  TABSETS = "TABSETS",
-  SYNC = "SYNC",
-  SHARE = "SHARE",
-  FEATURE_TOGGLES = "FEATURE_TOGGLES"
+  TABSETS = 'TABSETS',
+  SYNC = 'SYNC',
+  SHARE = 'SHARE',
+  FEATURE_TOGGLES = 'FEATURE_TOGGLES',
 }
 
 /**
  * dummy store for submodules integration
  */
 export const useAuthStore = defineStore('auth', () => {
-
   const user = ref<any>(null)
 
   // --- init ---
-  async function initialize(ps: PersistenceService) {
-  }
+  async function initialize(ps: PersistenceService) {}
 
   // --- getters ---
   const isAuthenticated = computed(() => {
@@ -26,7 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   const getUsername = computed(() => {
-    return "anonymous"
+    return 'anonymous'
   })
 
   const getAccount = computed(() => {
@@ -35,7 +33,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // --- actions ---
   async function setUser(u: any | undefined) {
-    console.log("noop: setting user id to ", u?.uid)
+    console.log('noop: setting user id to ', u?.uid)
   }
 
   const limitExceeded = computed(() => {
@@ -44,7 +42,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   })
 
-
   return {
     initialize,
     user,
@@ -52,6 +49,6 @@ export const useAuthStore = defineStore('auth', () => {
     getUsername,
     setUser,
     getAccount,
-    limitExceeded
+    limitExceeded,
   }
 })

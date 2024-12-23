@@ -17,10 +17,7 @@ import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
 import BrowserApi from 'src/app/BrowserApi'
 import { useContentStore } from 'src/content/stores/contentStore'
 
-const {
-  saveText,
-  addToTabsetId
-} = useTabsetService()
+const { saveText, addToTabsetId } = useTabsetService()
 
 const { sanitize, inBexMode } = useUtils()
 
@@ -45,10 +42,10 @@ async function setCurrentTab() {
   }
 }
 
-
 function inIgnoredMessages(request: any) {
   // TODO name vs. msg!
-  return request.name === 'progress-indicator' ||
+  return (
+    request.name === 'progress-indicator' ||
     request.name === 'current-tabset-id-change' ||
     request.name === 'tab-being-dragged' ||
     request.name === 'note-changed' ||
@@ -73,7 +70,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'api-changed' ||
     request.name === 'tabsets.app.change.currentTabset' ||
     request.action === 'highlight-annotation'
-
+  )
 }
 
 function runOnNotificationClick(notificationId: string, buttonIndex: number) {
@@ -83,7 +80,8 @@ function runOnNotificationClick(notificationId: string, buttonIndex: number) {
   if (notification) {
     switch (buttonIndex) {
       case 0: // show
-        const url = chrome.runtime.getURL('www/index.html') + '#/mainpanel/suggestions/' + notificationId
+        const url =
+          chrome.runtime.getURL('www/index.html') + '#/mainpanel/suggestions/' + notificationId
         NavigationService.openOrCreateTab([url])
         useSuggestionsStore().updateSuggestionState(notificationId, SuggestionState.CHECKED)
         break
@@ -94,13 +92,22 @@ function runOnNotificationClick(notificationId: string, buttonIndex: number) {
 }
 
 class BrowserListeners {
-
-  private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => this.onUpdated(number, info, tab)
-  private onMovedListener = (number: number, info: chrome.tabs.TabMoveInfo) => this.onMoved(number, info)
-  private onRemovedListener = (number: number, info: chrome.tabs.TabRemoveInfo) => this.onRemoved(number, info)
+  private onUpdatedListener = (
+    number: number,
+    info: chrome.tabs.TabChangeInfo,
+    tab: chrome.tabs.Tab,
+  ) => this.onUpdated(number, info, tab)
+  private onMovedListener = (number: number, info: chrome.tabs.TabMoveInfo) =>
+    this.onMoved(number, info)
+  private onRemovedListener = (number: number, info: chrome.tabs.TabRemoveInfo) =>
+    this.onRemoved(number, info)
   private onReplacedListener = (n1: number, n2: number) => this.onReplaced(n1, n2)
   private onActivatedListener = (info: chrome.tabs.TabActiveInfo) => this.onActivated(info)
-  private onMessageListener = (request: any, sender: chrome.runtime.MessageSender, sendResponse: any) => this.onMessage(request, sender, sendResponse)
+  private onMessageListener = (
+    request: any,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: any,
+  ) => this.onMessage(request, sender, sendResponse)
   private onCommandListener = (command: string) => {
     switch (command) {
       case 'tabHistoryBack':
@@ -118,7 +125,6 @@ class BrowserListeners {
   }
 
   async initListeners() {
-
     if (process.env.MODE === 'bex') {
       console.debug(' ...initializing chrome tab listeners')
 
@@ -141,14 +147,12 @@ class BrowserListeners {
 
       // TODO removed listeners as well?
       if (useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
-        chrome.notifications.onButtonClicked.addListener(
-          (notificationId, buttonIndex) => {
-            runOnNotificationClick(notificationId, buttonIndex)
-          })
-        chrome.notifications.onClicked.addListener(
-          (notificationId) => {
-            runOnNotificationClick(notificationId, 0)
-          })
+        chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+          runOnNotificationClick(notificationId, buttonIndex)
+        })
+        chrome.notifications.onClicked.addListener((notificationId) => {
+          runOnNotificationClick(notificationId, 0)
+        })
       }
     }
 
@@ -156,7 +160,6 @@ class BrowserListeners {
     if (inBexMode() && chrome && chrome.runtime) {
       chrome.runtime.connect({ name: 'tabsetsSidepanel' })
     }
-
   }
 
   async resetListeners() {
@@ -174,7 +177,6 @@ class BrowserListeners {
   }
 
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
-
     // set current browser tab in tabsStore
     await setCurrentTab()
 
@@ -195,9 +197,15 @@ class BrowserListeners {
         for (const tabAndTabsetId of matchingTabs) {
           // we care only about actually setting a group, not about removal
           if (info.groupId && info.groupId >= 0) {
-            console.log(' --- updating existing tabs for url: ', chromeTab.url, tabAndTabsetId, info)
+            console.log(
+              ' --- updating existing tabs for url: ',
+              chromeTab.url,
+              tabAndTabsetId,
+              info,
+            )
             tabAndTabsetId.tab.groupId = info.groupId
-            tabAndTabsetId.tab.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
+            tabAndTabsetId.tab.groupName =
+              useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
             tabAndTabsetId.tab.updated = new Date().getTime()
             const tabset = useTabsetsStore().tabsetFor(tabAndTabsetId.tab.id)
             if (tabset) {
@@ -211,7 +219,6 @@ class BrowserListeners {
       if (chromeTab.url) {
         useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
       }
-
     }
   }
 
@@ -238,7 +245,7 @@ class BrowserListeners {
     console.debug(`onActivated: tab ${info.tabId}: >>> ${JSON.stringify(info)}`)
     await setCurrentTab()
 
-    chrome.tabs.get(info.tabId, tab => {
+    chrome.tabs.get(info.tabId, (tab) => {
       if (chrome.runtime.lastError) {
         console.warn('got runtime error:' + chrome.runtime.lastError.toString())
       }
@@ -276,7 +283,11 @@ class BrowserListeners {
     return true
   }
 
-  private handleAddTabToTabset(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+  private handleAddTabToTabset(
+    request: any,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: any,
+  ) {
     console.log('handleAddTabToTabset', request, sender)
     if (sender.tab) {
       this.addToTabset(request.tabsetId, new Tab(uid(), sender.tab))
@@ -287,14 +298,16 @@ class BrowserListeners {
   private capture(request: any) {
     return new Promise((resolve, reject) => {
       // @ts-expect-error TODO
-      chrome.tabs.captureVisibleTab(null, { format: 'png' }, dataUrl => {
+      chrome.tabs.captureVisibleTab(null, { format: 'png' }, (dataUrl) => {
         const lastError = chrome.runtime.lastError
         if (lastError) {
           return reject(lastError)
         }
 
         if (!request) {
-          return fetch(dataUrl).then(r => r.blob()).then(resolve, reject)
+          return fetch(dataUrl)
+            .then((r) => r.blob())
+            .then(resolve, reject)
         }
 
         const left = request.left * request.dpr
@@ -305,30 +318,39 @@ class BrowserListeners {
         const canvas = new OffscreenCanvas(width, height)
         const ctx = canvas.getContext('2d')
 
-        fetch(dataUrl).then(r => r.blob()).then(async blob => {
-          // const prefs = await new Promise(resolve => chrome.storage.local.get({
-          //   quality: 0.95
-          // }, resolve));
+        fetch(dataUrl)
+          .then((r) => r.blob())
+          .then(async (blob) => {
+            // const prefs = await new Promise(resolve => chrome.storage.local.get({
+            //   quality: 0.95
+            // }, resolve));
 
-          const img = await createImageBitmap(blob)
+            const img = await createImageBitmap(blob)
 
-          if (width && height) {
-            // @ts-expect-error TODO
-            ctx.drawImage(img, left, top, width, height, 0, 0, width, height)
-          } else {
-            // @ts-expect-error TODO
-            ctx.drawImage(img, 0, 0)
-          }
-          resolve(await canvas.convertToBlob({
-            type: 'image/png',
-            quality: 0.95 //prefs.quality
-          }))
-        }).catch(reject)
+            if (width && height) {
+              // @ts-expect-error TODO
+              ctx.drawImage(img, left, top, width, height, 0, 0, width, height)
+            } else {
+              // @ts-expect-error TODO
+              ctx.drawImage(img, 0, 0)
+            }
+            resolve(
+              await canvas.convertToBlob({
+                type: 'image/png',
+                quality: 0.95, //prefs.quality
+              }),
+            )
+          })
+          .catch(reject)
       })
     })
   }
 
-  private async handleCaptureClipping(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
+  private async handleCaptureClipping(
+    request: any,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: any,
+  ) {
     console.log('handleCaptureClipping', request, sender, request.tabsetId)
 
     const blob = await this.capture(request)
@@ -357,32 +379,25 @@ class BrowserListeners {
         }
       })
       .then(() => {
-        chrome.notifications.create(
-          {
-            title: 'Tabset Extension Message',
-            type: 'basic',
-            //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-            iconUrl: chrome.runtime.getURL('www/favicon.ico'),
-            message: 'the tab has been created successfully'
-          }
-        )
+        chrome.notifications.create({
+          title: 'Tabset Extension Message',
+          type: 'basic',
+          //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+          iconUrl: chrome.runtime.getURL('www/favicon.ico'),
+          message: 'the tab has been created successfully',
+        })
       })
       .catch((err: any) => {
         console.log('catching rejection', err)
-        chrome.notifications.create(
-          {
-            title: 'Tabset Extension Message',
-            type: 'basic',
-            //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
-            iconUrl: chrome.runtime.getURL('www/favicon.ico'),
-            message: 'tab could not be added: ' + err
-          }
-        )
-
+        chrome.notifications.create({
+          title: 'Tabset Extension Message',
+          type: 'basic',
+          //iconUrl: "chrome-extension://" + selfId + "/www/favicon.ico",
+          iconUrl: chrome.runtime.getURL('www/favicon.ico'),
+          message: 'tab could not be added: ' + err,
+        })
       })
   }
-
 }
 
 export default new BrowserListeners()
-

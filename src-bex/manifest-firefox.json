@@ -19,31 +19,19 @@
     "contextMenus",
     "bookmarks"
   ],
-  "optional_permissions": [
-    "notifications",
-    "webRequest"
-  ],
-  "host_permissions": [
-    "<all_urls>",
-    "*://*/*"
-  ],
+  "optional_permissions": ["notifications", "webRequest"],
+  "host_permissions": ["<all_urls>", "*://*/*"],
   "background": {
     "scripts": ["background.js"]
   },
   "content_scripts": [
     {
       "matches": ["https://excalidraw.com/*"],
-      "js": [
-        "tabsets-excalidraw-script.js"
-      ]
+      "js": ["tabsets-excalidraw-script.js"]
     },
     {
-      "matches": [
-        "*://*/*"
-      ],
-      "js": [
-        "tabsets-content-script.js"
-      ]
+      "matches": ["*://*/*"],
+      "js": ["tabsets-content-script.js"]
     }
   ],
   "content_security_policy": {
@@ -51,18 +39,14 @@
   },
   "web_accessible_resources": [
     {
-      "resources": [
-        "*"
-      ],
-      "matches": [
-        "*://*/*"
-      ]
+      "resources": ["*"],
+      "matches": ["*://*/*"]
     }
   ],
   "omnibox": { "keyword": "ts" },
   "sidebar_action": {
     "default_icon": "icons/icon-48x48.png",
-    "default_title" : "Tabsets",
+    "default_title": "Tabsets",
     "default_panel": "www/index.html#/sidepanel"
   },
   "commands": {

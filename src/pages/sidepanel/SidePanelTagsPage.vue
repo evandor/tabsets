@@ -1,61 +1,50 @@
 <template>
-
   <q-page style="padding-top: 50px">
-
     <div class="row q-ma-none q-pa-none">
       <div class="col-12 q-ma-none q-pa-none q-pt-sm">
-
         <template v-for="hit in tabsetHits">
           <q-list>
-            <SearchHit :hit="hit"/>
+            <SearchHit :hit="hit" />
           </q-list>
         </template>
-
       </div>
     </div>
 
-
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-
       <FirstToolbarHelper :title="useUiStore().selectedTag + ' (Tags List)'">
-
         <template v-slot:iconsRight>
-          <SidePanelToolbarTabNavigationHelper/>
+          <SidePanelToolbarTabNavigationHelper />
           <CloseSidePanelViewButton />
         </template>
-
       </FirstToolbarHelper>
-
     </q-page-sticky>
-
   </q-page>
-
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watchEffect} from 'vue';
-import _ from "lodash"
-import {Tabset} from "src/tabsets/models/Tabset";
-import {uid, useQuasar} from "quasar";
-import SearchHit from "src/components/layouts/SearchHit.vue"
-import {Hit} from "src/search/models/Hit";
-import ReindexDialog from "components/dialogues/ReindexDialog.vue";
-import {useUiStore} from "src/ui/stores/uiStore";
-import {Tab} from "src/tabsets/models/Tab";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import FirstToolbarHelper from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
-import Analytics from "src/core/utils/google-analytics";
-import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
+import { onMounted, ref, watchEffect } from 'vue'
+import _ from 'lodash'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import { uid, useQuasar } from 'quasar'
+import SearchHit from 'src/components/layouts/SearchHit.vue'
+import { Hit } from 'src/search/models/Hit'
+import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import { Tab } from 'src/tabsets/models/Tab'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import FirstToolbarHelper from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import Analytics from 'src/core/utils/google-analytics'
+import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 
 const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
 const showReindexDialog = ref(false)
 
 onMounted(() => {
-  Analytics.firePageViewEvent('SidePanelTagsPage', document.location.href);
+  Analytics.firePageViewEvent('SidePanelTagsPage', document.location.href)
 })
 
 const newSearch = (term: string) => {
@@ -73,30 +62,31 @@ const newSearch = (term: string) => {
       })
     })
 
-    _.forEach(results, h => {
+    _.forEach(results, (h) => {
       //console.log("h", h.item.bookmarkId)
       let tabsets: string[] = []
       if (h.url) {
         tabsets = useTabsetService().tabsetsFor(h.url)
       }
       const theHit = new Hit(
-          uid(),
-          //       h.chromeTab,
-          h.title || '',
-          h.url || '',
-          h.favIconUrl || '',
-          0, 0,
-          100,
-          tabsets, //h.chromeTab.tabsets,
-          [],
-          _.map(h['matches' as keyof object], (m: any) => {
-            return {
-              key: m['key' as keyof object],
-              indices: m['indices' as keyof object]
-            }
-          }),
-          h.description,
-          h.keywords
+        uid(),
+        //       h.chromeTab,
+        h.title || '',
+        h.url || '',
+        h.favIconUrl || '',
+        0,
+        0,
+        100,
+        tabsets, //h.chromeTab.tabsets,
+        [],
+        _.map(h['matches' as keyof object], (m: any) => {
+          return {
+            key: m['key' as keyof object],
+            indices: m['indices' as keyof object],
+          }
+        }),
+        h.description,
+        h.keywords,
       )
       if (h.bookmarkId) {
         theHit.bookmarkId = h.bookmarkId
@@ -116,11 +106,10 @@ watchEffect(() => {
 watchEffect(() => {
   if (showReindexDialog.value) {
     $q.dialog({
-      component: ReindexDialog
+      component: ReindexDialog,
     }).onDismiss(() => {
       showReindexDialog.value = false
     })
   }
 })
-
 </script>

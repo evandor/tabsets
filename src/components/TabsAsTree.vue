@@ -3,69 +3,65 @@
 
   <div class="row q-mt-xs">
     <div class="col-12 q-mb-xs">
-      <q-input
-        dense
-        autofocus
-        ref="filterRef"
-        filled
-        v-model="filter"
-        label="Filter Urls">
+      <q-input dense autofocus ref="filterRef" filled v-model="filter" label="Filter Urls">
         <template v-slot:append>
-          <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter"/>
+          <q-icon v-if="filter !== ''" name="clear" class="cursor-pointer" @click="resetFilter" />
         </template>
       </q-input>
     </div>
   </div>
 
-  <q-tree v-if="!loading"
-          :nodes="tabNodes"
-          node-key="id"
-          :filter="filter"
-          :filter-method="filterMethod"
-          selected-color="dark"
-          @mouseenter="entered(true)"
-          @mouseleave="entered(false)"
-          v-model:selected="selected">
-
+  <q-tree
+    v-if="!loading"
+    :nodes="tabNodes"
+    node-key="id"
+    :filter="filter"
+    :filter-method="filterMethod"
+    selected-color="dark"
+    @mouseenter="entered(true)"
+    @mouseleave="entered(false)"
+    v-model:selected="selected"
+  >
     <template v-slot:default-header="prop">
-
-      <q-img v-if="prop.node.header === 'root'"
-             class="rounded-borders q-mr-sm"
-             width="20px"
-             height="20px"
-             :src="getFaviconUrl(prop.node)">
+      <q-img
+        v-if="prop.node.header === 'root'"
+        class="rounded-borders q-mr-sm"
+        width="20px"
+        height="20px"
+        :src="getFaviconUrl(prop.node)"
+      >
       </q-img>
 
-      <q-icon v-else name="o_folder" class="q-mr-sm"/>
+      <q-icon v-else name="o_folder" class="q-mr-sm" />
 
-      <Highlighter class="cursor-pointer fit no-wrap my-highlight"
-                   :highlightStyle="{backgroundColor:'yellow'}"
-                   :searchWords="[filter]"
-                   :autoEscape="true"
-                   :textToHighlight="prop.node.label"/>
+      <Highlighter
+        class="cursor-pointer fit no-wrap my-highlight"
+        :highlightStyle="{ backgroundColor: 'yellow' }"
+        :searchWords="[filter]"
+        :autoEscape="true"
+        :textToHighlight="prop.node.label"
+      />
     </template>
   </q-tree>
   <q-spinner v-else></q-spinner>
-
 </template>
 
 <script setup lang="ts">
-
-import {ref, watch, watchEffect} from "vue";
-import {uid, useQuasar} from "quasar";
-import {useBookmarksStore} from "src/bookmarks/stores/bookmarksStore";
-import NavigationService from "src/services/NavigationService";
-import _ from "lodash"
-import {TreeNode} from "src/bookmarks/models/Tree";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import { ref, watch, watchEffect } from 'vue'
+import { uid, useQuasar } from 'quasar'
+import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
+import NavigationService from 'src/services/NavigationService'
+import _ from 'lodash'
+import { TreeNode } from 'src/bookmarks/models/Tree'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import Highlighter from 'vue-highlight-words'
-import {useSettingsStore} from "src/stores/settingsStore";
-import {useUtils} from "src/core/services/Utils";
-import {Tab} from "src/tabsets/models/Tab";
+import { useSettingsStore } from 'src/stores/settingsStore'
+import { useUtils } from 'src/core/services/Utils'
+import { Tab } from 'src/tabsets/models/Tab'
 
-const {favIconFromUrl} = useUtils()
+const { favIconFromUrl } = useUtils()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
 const mouseHover = ref(false)
 const selected = ref('')
@@ -92,25 +88,34 @@ function createNodes(tabs: object[], level = 0): TreeNode[] {
     }
   }
 
-  for (const name of _.sortBy([...levelIdents.keys()], (k:any) => k)) {
+  for (const name of _.sortBy([...levelIdents.keys()], (k: any) => k)) {
     //console.log("name", name, level)
     const t: object = levelIdents.get(name) || {}
-    const filteredTabs:object[] = _.filter(tabs, (t:object) => {
+    const filteredTabs: object[] = _.filter(tabs, (t: object) => {
       const segments = t['segments' as keyof object] as string[]
       //console.log("checking", segments.length, level, segments[level], name)
-      return (segments && segments.length > level + 1 && segments[level] === name)
+      return segments && segments.length > level + 1 && segments[level] === name
     })
     const children: TreeNode[] = createNodes(filteredTabs, level + 1)
     // console.log("calculated children", children.length)
     const newNodeId = uid()
-    let url: string = (t['protocol' as keyof object] as string) + "//" + (t['hostname' as keyof object] as string)
+    let url: string =
+      (t['protocol' as keyof object] as string) + '//' + (t['hostname' as keyof object] as string)
     for (let i = 1; i <= level; i++) {
-      url += "/" + (t['segments' as keyof object][i] as string)
+      url += '/' + (t['segments' as keyof object][i] as string)
     }
-    children.length === 0 ?
-      nodesToUrl.value.set(newNodeId, t['url' as keyof object]) :
-      nodesToUrl.value.set(newNodeId, url)
-    const newNode = new TreeNode(newNodeId, name as string, name as string, url, "", children, level)
+    children.length === 0
+      ? nodesToUrl.value.set(newNodeId, t['url' as keyof object])
+      : nodesToUrl.value.set(newNodeId, url)
+    const newNode = new TreeNode(
+      newNodeId,
+      name as string,
+      name as string,
+      url,
+      '',
+      children,
+      level,
+    )
     nodes.push(newNode)
   }
   return nodes
@@ -125,46 +130,48 @@ watchEffect(() => {
         try {
           const url = new URL(t.url)
           const segments: string[] = []
-          segments.push(url.host.replace("www.", ""))
-          const splits = _.filter(url.pathname.split("/"), (e:string) => e.trim().length > 0)
-          segments.push(...(splits))
+          segments.push(url.host.replace('www.', ''))
+          const splits = _.filter(url.pathname.split('/'), (e: string) => e.trim().length > 0)
+          segments.push(...splits)
           tabs.push({
             protocol: url.protocol,
             hostname: url.hostname,
             url: t.url,
             name: t.name,
             title: t.title,
-            segments: segments
+            segments: segments,
           })
-        } catch (err) {
-        }
+        } catch (err) {}
       }
     }
   }
-  const nodes = createNodes(tabs, 0);
+  const nodes = createNodes(tabs, 0)
   tabNodes.value = JSON.parse(JSON.stringify(nodes))
   // console.log("v", tabNodes.value)
   loading.value = false
 })
 
 watchEffect(() => {
-  console.log("loading", loading.value)
+  console.log('loading', loading.value)
 })
 
 watchEffect(() => {
-  bookmarksPermissionGranted.value = true// useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS)
+  bookmarksPermissionGranted.value = true // useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS)
   useBookmarksStore().loadBookmarks()
 })
 
-watch(() => selected.value, (currentValue, oldValue) => {
-  if (currentValue !== oldValue) {
-    const found = nodesToUrl.value.get(currentValue)
-    console.log("found", found)
-    if (found) {
-      NavigationService.openOrCreateTab([found])
+watch(
+  () => selected.value,
+  (currentValue, oldValue) => {
+    if (currentValue !== oldValue) {
+      const found = nodesToUrl.value.get(currentValue)
+      console.log('found', found)
+      if (found) {
+        NavigationService.openOrCreateTab([found])
+      }
     }
-  }
-})
+  },
+)
 
 watchEffect(() => {
   deleteButtonId.value = selected.value
@@ -173,7 +180,7 @@ watchEffect(() => {
 $q.loadingBar.setDefaults({
   color: 'positive',
   size: '10px',
-  position: 'bottom'
+  position: 'bottom',
 })
 
 const resetFilter = () => {
@@ -185,10 +192,9 @@ const resetFilter = () => {
 }
 
 const filterMethod = (node: TreeNode, filter: any): boolean =>
-  (node.url !== undefined) && (node.url.toLowerCase().indexOf(filter.toLowerCase()) > -1)
+  node.url !== undefined && node.url.toLowerCase().indexOf(filter.toLowerCase()) > -1
 
-
-const entered = (b: boolean) => mouseHover.value = b
+const entered = (b: boolean) => (mouseHover.value = b)
 
 const getFaviconUrl = (n: TreeNode) => {
   // if (!useSettingsStore().isEnabled('noDDG')) {
@@ -208,14 +214,14 @@ const getFaviconUrl = (n: TreeNode) => {
   //   return theRealUrl ? "https://icons.duckduckgo.com/ip3/" + theRealUrl.hostname + ".ico" : 'favicon-unknown-32x32.png'
   //}
 
-    //const chromeTab = tab?.chromeTab
-    if (theUrl.startsWith("chrome")) {
-      return ''
-    }
-    if (!useSettingsStore().isEnabled('noDDG')) {
-      return favIconFromUrl(theUrl)
-    }
+  //const chromeTab = tab?.chromeTab
+  if (theUrl.startsWith('chrome')) {
     return ''
+  }
+  if (!useSettingsStore().isEnabled('noDDG')) {
+    return favIconFromUrl(theUrl)
+  }
+  return ''
 }
 </script>
 
@@ -232,5 +238,4 @@ const getFaviconUrl = (n: TreeNode) => {
 .v-enter-from,
 .v-leave-to
   opacity: 0
-
 </style>

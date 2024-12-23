@@ -96,7 +96,6 @@ Use this module to create a search index for the application
 
 [search](./search.md)
 
-
 ## Content
 
 ## Suggestions
@@ -108,5 +107,3 @@ Use this module to create a search index for the application
 The Windows Submodule provides a little ui component to list your browsers open windows.
 
 [windows](./windows.md)
-
-

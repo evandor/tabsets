@@ -1,30 +1,33 @@
-import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
-import {mount, VueWrapper} from '@vue/test-utils';
-import {beforeAll, beforeEach, describe, expect, it, vi} from 'vitest';
-import {createPinia, setActivePinia} from "pinia";
-import ChromeApi from "src/app/BrowserApi";
-import SidePanelPage2 from "src/pages/SidePanelPage2.vue";
-import {useDB} from "src/services/usePersistenceService";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {useTabsStore2} from "src/tabsets/stores/tabsStore2";
-import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
-import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
+import { mount, VueWrapper } from '@vue/test-utils'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import ChromeApi from 'src/app/BrowserApi'
+import SidePanelPage2 from 'src/pages/SidePanelPage2.vue'
+import { useDB } from 'src/services/usePersistenceService'
+import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
+import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
-installQuasarPlugin();
+installQuasarPlugin()
 
 describe('SidePanelPage2', () => {
-
-
-  vi.mock("vue-i18n", () => ({
-    useI18n: () => ({t: (key: string) => key === 'welcome_to_tabsets' ? "Welcome to Tabsets" : key}),
-  }));
+  vi.mock('vue-i18n', () => ({
+    useI18n: () => ({
+      t: (key: string) => (key === 'welcome_to_tabsets' ? 'Welcome to Tabsets' : key),
+    }),
+  }))
 
   const skysailChromeTab = ChromeApi.createChromeTabObject(
-    "title", "https://www.skysail.io/some-subpage", "favicon")
+    'title',
+    'https://www.skysail.io/some-subpage',
+    'favicon',
+  )
 
-  let db = null as unknown as TabsetsPersistence;
+  let db = null as unknown as TabsetsPersistence
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
 
   beforeAll(() => {
@@ -47,46 +50,40 @@ describe('SidePanelPage2', () => {
       commands: {
         onCommand: {
           addListener: vi.fn(() => {
-            return [];
+            return []
           }),
-        }
+        },
       },
       tabs: {
-        query: vi.fn(() => {
-        })
+        query: vi.fn(() => {}),
       },
       runtime: {
-        sendMessage: vi.fn(() => {
-        }),
+        sendMessage: vi.fn(() => {}),
         onMessage: {
-          addListener: vi.fn(() => {
-          })
-        }
-      }
-    };
+          addListener: vi.fn(() => {}),
+        },
+      },
+    }
 
-    vi.stubGlobal('chrome', chromeMock);
+    vi.stubGlobal('chrome', chromeMock)
 
-    wrapper = mount(SidePanelPage2);
-
+    wrapper = mount(SidePanelPage2)
   })
 
   it('should be mounted', async () => {
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
-    console.log("hier", wrapper.html())
-    expect(wrapper.text()).toContain("how to start?");
-    expect(wrapper.text()).not.toContain("search");
-  });
+    console.log('hier', wrapper.html())
+    expect(wrapper.text()).toContain('how to start?')
+    expect(wrapper.text()).not.toContain('search')
+  })
 
   it('should show existing tabset', async () => {
-    await new CreateTabsetCommand("existing Tabset", []).execute()
+    await new CreateTabsetCommand('existing Tabset', []).execute()
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
-    const wrapper = mount(SidePanelPage2);
+    const wrapper = mount(SidePanelPage2)
     //console.log("hier", wrapper.html())
     //console.log("hier2", wrapper.text())
-    expect(wrapper.html()).toContain("existing Tabset");
+    expect(wrapper.html()).toContain('existing Tabset')
     //expect(wrapper.html()).not.toContain("search");
-  });
-
-
-});
+  })
+})

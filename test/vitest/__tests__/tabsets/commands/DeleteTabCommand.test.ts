@@ -1,38 +1,41 @@
-import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import {createPinia, setActivePinia} from "pinia";
-import ChromeApi from "src/app/BrowserApi";
-import {AddTabToTabsetCommand} from "src/tabsets/commands/AddTabToTabsetCommand"
-import {Tab} from "src/tabsets/models/Tab";
-import {CreateTabsetCommand} from "src/tabsets/commands/CreateTabsetCommand";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {useDB} from "src/services/usePersistenceService";
-import {useSearchStore} from "src/search/stores/searchStore";
-import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {useContentService} from "src/content/services/ContentService";
-import {DeleteTabCommand} from "src/tabsets/commands/DeleteTabCommand";
-import IndexedDbContentPersistence from "src/content/persistence/IndexedDbContentPersistence";
+import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import ChromeApi from 'src/app/BrowserApi'
+import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
+import { Tab } from 'src/tabsets/models/Tab'
+import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useDB } from 'src/services/usePersistenceService'
+import { useSearchStore } from 'src/search/stores/searchStore'
+import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useContentService } from 'src/content/services/ContentService'
+import { DeleteTabCommand } from 'src/tabsets/commands/DeleteTabCommand'
+import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
 
-installQuasarPlugin();
+installQuasarPlugin()
 
 vi.mock('vue-router')
 
 async function createTabset() {
-  const createTabsetResult = await new CreateTabsetCommand("new Tabset", []).execute()
-  return createTabsetResult.result.tabset;
+  const createTabsetResult = await new CreateTabsetCommand('new Tabset', []).execute()
+  return createTabsetResult.result.tabset
 }
 
 function createTabWithChromeTabId(tabId: string, chromeTab: chrome.tabs.Tab) {
-  const t = new Tab(tabId, chromeTab);
+  const t = new Tab(tabId, chromeTab)
   t.chromeTabId = 100
   return t
 }
 
 describe('DeleteTabCommand', () => {
-
-  const skysailChromeTab = ChromeApi.createChromeTabObject("title", "https://www.skysail.io", "favicon")
-  const testDeChromeTab = ChromeApi.createChromeTabObject("title", "https://www.test.de", "favicon")
+  const skysailChromeTab = ChromeApi.createChromeTabObject(
+    'title',
+    'https://www.skysail.io',
+    'favicon',
+  )
+  const testDeChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.test.de', 'favicon')
 
   let db = null as unknown as TabsetsPersistence
 
@@ -49,37 +52,34 @@ describe('DeleteTabCommand', () => {
       tabs: {
         sendMessage: vi.fn((id: any, msg: any) => {
           return Promise.resolve({
-            html: "some html",
-            metas: {description: "Description"}
+            html: 'some html',
+            metas: { description: 'Description' },
           })
         }),
       },
       runtime: {
-        sendMessage: vi.fn(() => {
-        })
-      }
-    };
+        sendMessage: vi.fn(() => {}),
+      },
+    }
 
-    vi.stubGlobal('chrome', chromeMock);
+    vi.stubGlobal('chrome', chromeMock)
   })
 
   afterEach(async () => {
-    db.clear("tabsets")
+    db.clear('tabsets')
     // db.clear("content")
   })
 
   it('deletes existing tab from tabset', async () => {
     const tabset = await createTabset()
-    const tab = createTabWithChromeTabId("tabId1", skysailChromeTab)
+    const tab = createTabWithChromeTabId('tabId1', skysailChromeTab)
     await new AddTabToTabsetCommand(tab, tabset).execute()
 
     const result = await new DeleteTabCommand(tab, tabset).execute()
-    expect(result.message).toBe("Tab was deleted")
+    expect(result.message).toBe('Tab was deleted')
     // TODO
     //expect(useSearchStore().getIndex().size()).toBe(0)
-    const content = await useContentService().getContent("tabId")
+    const content = await useContentService().getContent('tabId')
     expect(content).toBeUndefined()
-  });
-
-
-});
+  })
+})

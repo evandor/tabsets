@@ -1,25 +1,25 @@
-import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
-import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
-import {createPinia, setActivePinia} from "pinia";
-import {useDB} from "src/services/usePersistenceService";
-import {useTabsetService} from "src/tabsets/services/TabsetService2";
-import {useWindowsStore} from "src/windows/stores/windowsStore";
-import ChromeApi from "src/app/BrowserApi";
-import IndexedDbWindowsPersistence from "src/windows/persistence/IndexedDbWindowsPersistence";
-import TabsetsPersistence from "src/tabsets/persistence/TabsetsPersistence";
-import IndexedDbTabsetsPersistence from "src/tabsets/persistence/IndexedDbTabsetsPersistence";
-import {useFeaturesStore} from "src/features/stores/featuresStore";
-import {FeatureIdent} from "src/app/models/FeatureIdent";
-import InMemoryFeaturesPersistence from "src/features/persistence/InMemoryFeaturesPersistence";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
+import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import { useDB } from 'src/services/usePersistenceService'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import ChromeApi from 'src/app/BrowserApi'
+import IndexedDbWindowsPersistence from 'src/windows/persistence/IndexedDbWindowsPersistence'
+import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
+import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import InMemoryFeaturesPersistence from 'src/features/persistence/InMemoryFeaturesPersistence'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
-installQuasarPlugin();
+installQuasarPlugin()
 
 vi.mock('vue-router')
 
-let onCreatedListener = null as unknown as ((window: chrome.windows.Window) => Promise<void>)
-let onRemovedListener = null as unknown as ((windowId: number) => Promise<void>)
-let onFocusChangedListener = null as unknown as ((windowId: number) => Promise<void>)
+let onCreatedListener = null as unknown as (window: chrome.windows.Window) => Promise<void>
+let onRemovedListener = null as unknown as (windowId: number) => Promise<void>
+let onFocusChangedListener = null as unknown as (windowId: number) => Promise<void>
 
 let currentWindows: any[]
 
@@ -29,7 +29,7 @@ async function setupMocks(currentWindow: any) {
   const chromeMock = {
     windows: {
       getAll: vi.fn((options, callback) => {
-        console.log("mocking chrome.windows.getAll", currentWindows.length)
+        console.log('mocking chrome.windows.getAll', currentWindows.length)
         //callback(currentWindows);
         return Promise.resolve(currentWindows)
       }),
@@ -42,41 +42,39 @@ async function setupMocks(currentWindow: any) {
         callback(currentWindow)
       }),
       get: vi.fn((windowId, queryOptions, callback) => {
-        console.log("mocking chrome.windows.get", windowId, queryOptions)
+        console.log('mocking chrome.windows.get', windowId, queryOptions)
         currentWindow.left = 33
         return currentWindow
       }),
       onCreated: {
         addListener: vi.fn((listener) => {
           onCreatedListener = listener
-        })
+        }),
       },
       onRemoved: {
         addListener: vi.fn((listener) => {
           onRemovedListener = listener
-        })
+        }),
       },
       onFocusChanged: {
         addListener: vi.fn((listener) => {
-          console.log("mocking chrome.windows.onFocusChanged.addListener", listener)
+          console.log('mocking chrome.windows.onFocusChanged.addListener', listener)
           onFocusChangedListener = listener
-        })
+        }),
       },
       onBoundsChanged: {
-        addListener: vi.fn((listener) => {
-        })
-      }
+        addListener: vi.fn((listener) => {}),
+      },
     },
     permissions: {
-      getAll: vi.fn(() => [])
+      getAll: vi.fn(() => []),
     },
     runtime: {
-      sendMessage: vi.fn(() => {
-      })
-    }
-  };
+      sendMessage: vi.fn(() => {}),
+    },
+  }
 
-  vi.stubGlobal('chrome', chromeMock);
+  vi.stubGlobal('chrome', chromeMock)
 }
 
 async function setupStores() {
@@ -85,15 +83,17 @@ async function setupStores() {
 }
 
 describe('WindowsStore', () => {
-
   let db = null as unknown as TabsetsPersistence
   let windowsDb = IndexedDbWindowsPersistence
 
-  const tab1 = ChromeApi.createChromeTabObject("skysail", "https://www.skysail.io")
-  const tab2 = ChromeApi.createChromeTabObject("tabsets", "https://www.tabsets.net")
-  const tab3 = ChromeApi.createChromeTabObject("docs", "https://docs.tabsets.net")
+  const tab1 = ChromeApi.createChromeTabObject('skysail', 'https://www.skysail.io')
+  const tab2 = ChromeApi.createChromeTabObject('tabsets', 'https://www.tabsets.net')
+  const tab3 = ChromeApi.createChromeTabObject('docs', 'https://docs.tabsets.net')
 
-  const window100: chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [tab1, tab2])
+  const window100: chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [
+    tab1,
+    tab2,
+  ])
   const window200: chrome.windows.Window = ChromeApi.createChromeWindowObject(200, 17, 28, [tab2])
   const window300: chrome.windows.Window = ChromeApi.createChromeWindowObject(300, 37, 48, [tab3])
 
@@ -111,12 +111,11 @@ describe('WindowsStore', () => {
   })
 
   afterEach(async () => {
-    db.clear("tabsets")
-    db.clear("windows")
+    db.clear('tabsets')
+    db.clear('windows')
   })
 
   it('initializing correctly with multiple windows and indices differing', async () => {
-
     currentWindows = [window100, window200]
     await setupMocks(window100)
     await setupStores()
@@ -136,7 +135,6 @@ describe('WindowsStore', () => {
     expect(w200?.id).toBe(200)
     expect(w200?.index).toBe(1)
     expect(w200?.hostList).toStrictEqual(['https://www.tabsets.net'])
-
   })
 
   it('upsertWindow saves new title', async () => {
@@ -146,9 +144,9 @@ describe('WindowsStore', () => {
 
     const window = await windowsDb.getWindow(100)
     if (window) {
-      await useWindowsStore().upsertWindow(window.browserWindow!, 100, "theTitle",0)
+      await useWindowsStore().upsertWindow(window.browserWindow!, 100, 'theTitle', 0)
       const updatedWindow = await windowsDb.getWindow(100)
-      expect(updatedWindow?.title).toBe("theTitle")
+      expect(updatedWindow?.title).toBe('theTitle')
     } else {
       expect(true).toBeFalsy()
     }
@@ -161,7 +159,7 @@ describe('WindowsStore', () => {
 
     const window = await windowsDb.getWindow(300)
     if (window) {
-      await useWindowsStore().upsertWindow(window.browserWindow!, 0,"theTitle")
+      await useWindowsStore().upsertWindow(window.browserWindow!, 0, 'theTitle')
       await onRemovedListener(300)
       const window300FromDb = await windowsDb.getWindow(300)
       expect(window300FromDb?.id).toBe(300)
@@ -195,36 +193,39 @@ describe('WindowsStore', () => {
       expect(true).toBeFalsy()
     }
     // @ts-expect-error TODO
-    await useWindowsStore().upsertWindow(window100FromDb?.browserWindow, "","theTitle")
+    await useWindowsStore().upsertWindow(window100FromDb?.browserWindow, '', 'theTitle')
 
     const window: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0)
     currentWindows = [window100, window200, window]
     await setupMocks(window100)
     await onCreatedListener(window)
     const updatedWindow100 = await windowsDb.getWindow(100)
-    expect(updatedWindow100?.title).toBe("theTitle")
+    expect(updatedWindow100?.title).toBe('theTitle')
   })
 
   it.skip('onCreate reuses existing window when matched', async () => {
-    const windowWithSameTabsAsWindow100: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0, [tab1, tab2])
+    const windowWithSameTabsAsWindow100: chrome.windows.Window = ChromeApi.createChromeWindowObject(
+      1000,
+      0,
+      0,
+      [tab1, tab2],
+    )
     currentWindows = [window100, window200]
     await setupMocks(window100)
     await setupStores()
 
     const w100 = await windowsDb.getWindow(100)
     if (w100) {
-      w100.title = "theTitle"
+      w100.title = 'theTitle'
       await windowsDb.updateWindow(w100)
     }
 
-    console.log("==============")
+    console.log('==============')
     currentWindows = [window100, window200, windowWithSameTabsAsWindow100]
     await onCreatedListener(windowWithSameTabsAsWindow100) // should 'reuse' existing window100
-    console.log("==============")
+    console.log('==============')
     const updatedWindow1000 = await windowsDb.getWindow(1000)
-    expect(updatedWindow1000?.title).toBe("theTitle")
+    expect(updatedWindow1000?.title).toBe('theTitle')
     expect((await windowsDb.getWindows()).length).toBe(2)
   })
-
-
-});
+})

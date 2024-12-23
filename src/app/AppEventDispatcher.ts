@@ -1,7 +1,7 @@
-import {useSearchStore} from "src/search/stores/searchStore";
-import {useThumbnailsService} from "src/thumbnails/services/ThumbnailsService";
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
+import { useSearchStore } from 'src/search/stores/searchStore'
+import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { RestoreTabsetCommand } from 'src/tabsets/commands/RestoreTabset'
 
 /**
  * meant for inter-submodule communication.
@@ -13,7 +13,6 @@ import {RestoreTabsetCommand} from "src/tabsets/commands/RestoreTabset";
  * This class has to be implemented once-per-application if this kind of dispatch is needed.
  */
 class AppEventDispatcher {
-
   dispatchEvent(name: string, params: object) {
     //console.debug(" >>> dispatching event", name, params)
     try {
@@ -25,19 +24,27 @@ class AppEventDispatcher {
           useSearchStore().upsertObject(params)
           break
         case 'capture-screenshot':
-          useThumbnailsService().handleCaptureCallback(params['tabId' as keyof object], params['data' as keyof object])
+          useThumbnailsService().handleCaptureCallback(
+            params['tabId' as keyof object],
+            params['data' as keyof object],
+          )
           break
         case 'restore-tabset':
-          useCommandExecutor().execute(new RestoreTabsetCommand(params['tabsetId' as keyof object], params['label' as keyof object], true))
+          useCommandExecutor().execute(
+            new RestoreTabsetCommand(
+              params['tabsetId' as keyof object],
+              params['label' as keyof object],
+              true,
+            ),
+          )
           break
         default:
           console.log(`unknown event ${name}`)
       }
     } catch (err) {
-      console.warn("problem dispatching event: ", err)
+      console.warn('problem dispatching event: ', err)
     }
   }
-
 }
 
-export default new AppEventDispatcher();
+export default new AppEventDispatcher()

@@ -17,10 +17,10 @@ const updateTrigger = 10
 //console.log("ga: installing google analytics")
 
 addEventListener('unhandledrejection', async (event) => {
-  console.log("[service-worker] ga: fire error event", event)
+  console.log('[service-worker] ga: fire error event', event)
   // getting error: Service worker registration failed. Status code: 15
   //Analytics.fireErrorEvent(event.reason);
-});
+})
 
 // chrome.runtime.onInstalled.addListener((callback) => {
 //   console.log("[BEX] ga: fire event install", callback.reason, callback.previousVersion)
@@ -45,9 +45,10 @@ addEventListener('unhandledrejection', async (event) => {
 // });
 
 chrome.omnibox.onInputEntered.addListener((text) => {
-  const newURL = chrome.runtime.getURL('/www/index.html#/searchresult?t=' + encodeURIComponent(text))
-  chrome.tabs.create({ url: newURL })
-    .catch((err) => console.log('[BEX] background.js error', err))
+  const newURL = chrome.runtime.getURL(
+    '/www/index.html#/searchresult?t=' + encodeURIComponent(text),
+  )
+  chrome.tabs.create({ url: newURL }).catch((err) => console.log('[BEX] background.js error', err))
 })
 
 if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
@@ -57,9 +58,9 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 }
 
 chrome.runtime.onInstalled.addListener((details) => {
-  console.debug("adding onInstalled listener in background.ts", details)
+  console.debug('adding onInstalled listener in background.ts', details)
   if (chrome.runtime.lastError) {
-    console.warn("got runtime error", chrome.runtime.lastError)
+    console.warn('got runtime error', chrome.runtime.lastError)
   }
   // @ts-ignore
   if (chrome.action) {
@@ -78,13 +79,13 @@ chrome.runtime.onInstalled.addListener((details) => {
     // @ts-ignore
     //browser.browserAction.onClicked.addListener(openMyPage);
   }
-});
+})
 
 // chrome.runtime.onInstalled.addListener(openExtension);
 // chrome.action.onClicked.addListener(openExtension);
 
 chrome.runtime.onStartup.addListener(() => {
-  console.log("[service-worker] adding onStartup listener in background.ts")
+  console.log('[service-worker] adding onStartup listener in background.ts')
   // @ts-ignore
   if (chrome.action) {
     // @ts-ignore
@@ -111,16 +112,16 @@ chrome.runtime.onConnect.addListener(function (port) {
     //   //alert('Sidepanel closed.');
     // });
   }
-});
+})
 
 declare module '@quasar/app-vite' {
   interface BexEventMap {
-    log: [{ message: string; data?: any[] }, void];
-    getTime: [never, number];
+    log: [{ message: string; data?: any[] }, void]
+    getTime: [never, number]
 
-    'storage.get': [string | undefined, any];
-    'storage.set': [{ key: string; value: any }, void];
-    'storage.remove': [string, void];
+    'storage.get': [string | undefined, any]
+    'storage.set': [{ key: string; value: any }, void]
+    'storage.remove': [string, void]
   }
 }
 
@@ -140,14 +141,14 @@ bridge.on('getTime', () => {
 })
 
 bridge.on('storage.get', ({ payload: key }) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     if (key === void 0) {
-      chrome.storage.local.get(null, items => {
+      chrome.storage.local.get(null, (items) => {
         // Group the values up into an array to take advantage of the bridge's chunk splitting.
         resolve(Object.values(items))
       })
     } else {
-      chrome.storage.local.get([key], items => {
+      chrome.storage.local.get([key], (items) => {
         resolve(items[key])
       })
     }

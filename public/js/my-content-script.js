@@ -1,1 +1,1 @@
-alert("Hier")
+alert('Hier')

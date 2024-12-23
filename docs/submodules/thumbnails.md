@@ -1,4 +1,3 @@
-
 <!--@include: build/thumbnails/intro.md-->
 
 ### Installation
@@ -20,4 +19,3 @@ Once the submodule has been installed in your application, it needs to be [setup
 ### code
 
 [code](build/thumbnails/code.md)
-

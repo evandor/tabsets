@@ -1,35 +1,36 @@
-import {IconLink} from '@codexteam/icons';
+import { IconLink } from '@codexteam/icons'
 
 function getMetaDataFor(doc: Document, ident: string, defaultValue = '') {
-    console.log(" === ", ident)
-    //const tryFirst = "og:" + ident;
-    // try "og: " + ident
-    //const firstTry = doc.getElementsByTagName("meta[property='" + tryFirst + "']")
-    const firstTry = doc.querySelector(`meta[property="og:${ident}"]`)
-    console.log("firstTry", firstTry)
-    if (firstTry && firstTry.getAttribute('content')) {
-       // return firstTry.getAttribute("content")
-    }
-    // try ident
-    const secondTry = doc.querySelector(`meta[name="${ident}"]`)
-    console.log("secondTry", secondTry)
-    if (secondTry && secondTry.getAttribute("content")) {
-        //return secondTry.getAttribute("content")
-    }
-    // try first match
-    const matchingMeta = [...doc.querySelectorAll('meta')]
-        .find(meta => {
-            console.log("meta", meta, meta.name, meta.getAttribute('property'), meta.name.indexOf(ident) )
-            return meta.name.indexOf(ident) >= 0 || (meta.getAttribute('property')?.indexOf(ident) || -1) >= 0
-        });
-    console.log("matchingMeta", matchingMeta)
-    if (matchingMeta?.getAttribute('content')) {
-        console.log("returning", matchingMeta.getAttribute('content'))
-        return matchingMeta.getAttribute('content');
-    }
+  console.log(' === ', ident)
+  //const tryFirst = "og:" + ident;
+  // try "og: " + ident
+  //const firstTry = doc.getElementsByTagName("meta[property='" + tryFirst + "']")
+  const firstTry = doc.querySelector(`meta[property="og:${ident}"]`)
+  console.log('firstTry', firstTry)
+  if (firstTry && firstTry.getAttribute('content')) {
+    // return firstTry.getAttribute("content")
+  }
+  // try ident
+  const secondTry = doc.querySelector(`meta[name="${ident}"]`)
+  console.log('secondTry', secondTry)
+  if (secondTry && secondTry.getAttribute('content')) {
+    //return secondTry.getAttribute("content")
+  }
+  // try first match
+  const matchingMeta = [...doc.querySelectorAll('meta')].find((meta) => {
+    console.log('meta', meta, meta.name, meta.getAttribute('property'), meta.name.indexOf(ident))
+    return (
+      meta.name.indexOf(ident) >= 0 || (meta.getAttribute('property')?.indexOf(ident) || -1) >= 0
+    )
+  })
+  console.log('matchingMeta', matchingMeta)
+  if (matchingMeta?.getAttribute('content')) {
+    console.log('returning', matchingMeta.getAttribute('content'))
+    return matchingMeta.getAttribute('content')
+  }
 
-    // return default
-    return defaultValue
+  // return default
+  return defaultValue
 }
 
 /**

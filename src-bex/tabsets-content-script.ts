@@ -21,7 +21,7 @@ const bridge = createBridge({ debug: false })
 declare module '@quasar/app-vite' {
   interface BexEventMap {
     // /* eslint-disable @typescript-eslint/no-explicit-any */
-    'some.event': [{ someProp: string }, void];
+    'some.event': [{ someProp: string }, void]
     // /* eslint-enable @typescript-eslint/no-explicit-any */
   }
 }
@@ -48,7 +48,9 @@ function getMetas(document: Document) {
     const nameAttr = element.attributes.getNamedItem('name')
     const propAttr = element.attributes.getNamedItem('property')
     const contAttr = element.attributes.getNamedItem('content')
-    const key: string = nameAttr ? (nameAttr.value.trim().toLowerCase() || 'undefName') : (propAttr?.value || 'undefProp')
+    const key: string = nameAttr
+      ? nameAttr.value.trim().toLowerCase() || 'undefName'
+      : propAttr?.value || 'undefProp'
     //console.debug("tabsets: key", key, contAttr?.value || 'x')
     if (key) {
       result[key] = contAttr?.value || ''
@@ -67,7 +69,8 @@ function getMetas(document: Document) {
  *
  * To check connection status, access bridge.isConnected
  */
-bridge.connectToBackground()
+bridge
+  .connectToBackground()
   .then(() => {
     console.log('[BEX-CT] Connected to background', bridge.portName)
     const responseMessage = {
@@ -78,15 +81,16 @@ bridge.connectToBackground()
       storage: {
         //tabsetsName: LocalStorage.getItem('tabsets_name'),
         tabsetsTabId: LocalStorage.getItem('tabsets_tabId'),
-        tabsetsTimestamp: LocalStorage.getItem('tabsets_ts')
-      }
+        tabsetsTimestamp: LocalStorage.getItem('tabsets_ts'),
+      },
     }
-    bridge.send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage })
+    bridge
+      .send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage })
       .catch((err: any) => {
         console.log('[BEX-CT] Failed to send message to app', err)
       })
   })
-  .catch(err => {
+  .catch((err) => {
     console.error('[BEX-CT] Failed to connect to background:', err)
   })
 

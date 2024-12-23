@@ -1,9 +1,7 @@
 // @ts-expect-error TODO
-import {bexContent} from 'quasar/wrappers'
-
+import { bexContent } from 'quasar/wrappers'
 
 class Clipper {
-
   clippingArea: any
   clickedX = 0
   clickedY = 0
@@ -26,9 +24,9 @@ class Clipper {
   }
 
   mouseMoved = (e: any) => {
-   // console.log("moved", e)
-    this.left = (e.clientX > this.clickedX ? this.clickedX : e.clientX - 1)
-    this.top = (e.clientY > this.clickedY ? this.clickedY : e.clientY - 1)
+    // console.log("moved", e)
+    this.left = e.clientX > this.clickedX ? this.clickedX : e.clientX - 1
+    this.top = e.clientY > this.clickedY ? this.clickedY : e.clientY - 1
     this.width = Math.abs(e.clientX - this.clickedX)
     this.height = Math.abs(e.clientY - this.clickedY)
 
@@ -39,19 +37,19 @@ class Clipper {
   }
 
   mouseUp = () => {
-    console.log("tabsets: about to send message!")
+    console.log('tabsets: about to send message!')
     const msg = {
       msg: 'captureClipping',
       left: this.left,
       top: this.top,
       width: this.width,
       height: this.height,
-      dpr: window.devicePixelRatio
+      dpr: window.devicePixelRatio,
     }
-    console.log("sending", msg)
+    console.log('sending', msg)
     chrome.runtime.sendMessage(msg, (callback) => {
       if (chrome.runtime.lastError) {
-        console.warn("got runtime error", chrome.runtime.lastError)
+        console.warn('got runtime error', chrome.runtime.lastError)
       }
     })
     this.crossHair.remove()
@@ -60,7 +58,7 @@ class Clipper {
   }
 
   mousedown = (e: any) => {
-    console.log("mousedown event", e)
+    console.log('mousedown event', e)
     e.stopPropagation()
     e.preventDefault()
     this.clippingArea = document.createElement('div')
@@ -84,7 +82,6 @@ class Clipper {
   }
 }
 
-
 class KeydownCheck {
   private ch: Crosshair
   private mt: Clipper
@@ -95,7 +92,7 @@ class KeydownCheck {
   }
 
   keydownEvent = (e: any) => {
-    console.log("keydown", e, e.keyCode)
+    console.log('keydown', e, e.keyCode)
     if (e.keyCode === 27) {
       this.ch.remove()
       this.mt.remove()
@@ -112,9 +109,7 @@ class KeydownCheck {
   }
 }
 
-
 class Crosshair {
-
   //vertocal line: box starting top left with width e.clientX and border-right
   vLine: HTMLDivElement
 
@@ -137,12 +132,12 @@ class Crosshair {
   mouseMovedCrosshair = (e: any) => {
     const length = 20
     this.vLine.style.width = e.clientX + 'px'
-    this.vLine.style.top = Math.max(0, (e.clientY - length)) + 'px'
-    this.vLine.style.height = (2*length)+"px"
+    this.vLine.style.top = Math.max(0, e.clientY - length) + 'px'
+    this.vLine.style.height = 2 * length + 'px'
 
     this.hLine.style.height = e.clientY + 'px'
-    this.hLine.style.left = Math.max(0, (e.clientX - length)) + 'px'
-    this.hLine.style.width = (2*length)+"px"
+    this.hLine.style.left = Math.max(0, e.clientX - length) + 'px'
+    this.hLine.style.width = 2 * length + 'px'
   }
 
   addListener() {
@@ -153,7 +148,7 @@ class Crosshair {
     document.removeEventListener('mousemove', this.mouseMovedCrosshair)
     this.removeDiv(this.vLine)
     this.removeDiv(this.hLine)
-   // this.removeDiv(this.guide3)
+    // this.removeDiv(this.guide3)
     this.mt.remove()
   }
 
@@ -162,11 +157,10 @@ class Crosshair {
       element.parentNode.removeChild(element)
     }
   }
-
 }
 
 export default bexContent((bridge: any) => {
-  console.log("tabsets: initializing content script for clipping")
+  console.log('tabsets: initializing content script for clipping')
   const clipper = new Clipper()
   try {
     clipper.remove()
@@ -174,5 +168,4 @@ export default bexContent((bridge: any) => {
     // ignore
   }
   clipper.start()
-
 })

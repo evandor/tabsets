@@ -1,4 +1,3 @@
-
 <!--@include: ../../src/windows/docs/intro.md-->
 
 ### Installation

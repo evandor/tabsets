@@ -33,7 +33,7 @@ export default [
    * pluginVue.configs["flat/recommended"]
    *   -> Above, plus rules to enforce subjective community defaults to ensure consistency.
    */
-  ...pluginVue.configs[ 'flat/essential' ],
+  ...pluginVue.configs['flat/essential'],
 
   // https://github.com/vuejs/eslint-config-typescript
   ...vueTsEslintConfig({
@@ -42,13 +42,13 @@ export default [
     // https://typescript-eslint.io/users/configs#recommended-configurations
     extends: [
       // By default, only the recommended rules are enabled.
-      'recommendedTypeChecked'
+      'recommendedTypeChecked',
       // You can also manually enable the stylistic rules.
       // "stylistic",
 
       // Other utility configurations, such as 'eslintRecommended', (note that it's in camelCase)
       // are also extendable here. But we don't recommend using them directly.
-    ]
+    ],
   }),
 
   {
@@ -64,68 +64,65 @@ export default [
         cordova: 'readonly',
         Capacitor: 'readonly',
         chrome: 'readonly', // BEX related
-        browser: 'readonly' // BEX related
-      }
+        browser: 'readonly', // BEX related
+      },
     },
 
     // add your custom rules here
     rules: {
-      "@typescript-eslint/no-unused-vars": "off",
-      "@typescript-eslint/no-misused-promises": "off",
-      "@typescript-eslint/no-floating-promises": "off",
-      "@typescript-eslint/no-explicit-any": "off",
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
       'prefer-promise-reject-errors': 'off',
-      "@typescript-eslint/no-base-to-string": "off",
-      "@typescript-eslint/no-this-alias": "off",
-      "@typescript-eslint/no-unused-expressions": "off",
-      "@typescript-eslint/no-unsafe-enum-comparison": "off",
-      "@typescript-eslint/no-unnecessary-type-assertion": "off",
-      "@typescript-eslint/no-wrapper-object-types": "off",
-      "@typescript-eslint/prefer-promise-reject-errors": "off",
-      '@typescript-eslint/require-await': "off",
-      "@typescript-eslint/no-redundant-type-constituents": "off",
-      "@typescript-eslint/await-thenable": "off",
-      "@typescript-eslint/unbound-method": "off",
-      "@typescript-eslint/ban-ts-comment": "off",
-      "@typescript-eslint/restrict-template-expressions": "off",
-      "@typescript-eslint/no-unsafe-function-type": "off",
-      "vue/no-deprecated-v-on-native-modifier": "off",
-      "vue/no-v-text-v-html-on-component": "off",
+      '@typescript-eslint/no-base-to-string': 'off',
+      '@typescript-eslint/no-this-alias': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      '@typescript-eslint/no-wrapper-object-types': 'off',
+      '@typescript-eslint/prefer-promise-reject-errors': 'off',
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/restrict-template-expressions': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
+      'vue/no-deprecated-v-on-native-modifier': 'off',
+      'vue/no-v-text-v-html-on-component': 'off',
       //"no-fallthrough": "off",
-      "no-cond-assign": "off",
-      "no-var": "off",
-      "no-empty": "off",
-      "no-empty-pattern": "off",
-      "no-useless-escape": "off",
-      "prefer-const": "off",
-      "vue/no-mutating-props": "off",
-      "vue/multi-word-component-names": "off",
-      "vue/no-deprecated-v-bind-sync": "off",
-      "tabsets.bex.tab.excerpt": "off",
-      "vue/valid-v-for": "off",
-      "vue/require-v-for-key": "off",
-      "no-case-declarations": "off",
-      "vue/no-use-v-if-with-v-for": "off",
-      "vue/no-ref-as-operand": "off",
-      "vue/no-dupe-keys": "off",
-      '@typescript-eslint/consistent-type-imports': [
-        'off',
-        { prefer: 'type-imports' }
-      ],
+      'no-cond-assign': 'off',
+      'no-var': 'off',
+      'no-empty': 'off',
+      'no-empty-pattern': 'off',
+      'no-useless-escape': 'off',
+      'prefer-const': 'off',
+      'vue/no-mutating-props': 'off',
+      'vue/multi-word-component-names': 'off',
+      'vue/no-deprecated-v-bind-sync': 'off',
+      'tabsets.bex.tab.excerpt': 'off',
+      'vue/valid-v-for': 'off',
+      'vue/require-v-for-key': 'off',
+      'no-case-declarations': 'off',
+      'vue/no-use-v-if-with-v-for': 'off',
+      'vue/no-ref-as-operand': 'off',
+      'vue/no-dupe-keys': 'off',
+      '@typescript-eslint/consistent-type-imports': ['off', { prefer: 'type-imports' }],
 
       // allow debugger during development only
-      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
-    }
+      'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    },
   },
 
   {
-    files: [ 'src-pwa/custom-service-worker.ts' ],
+    files: ['src-pwa/custom-service-worker.ts'],
     languageOptions: {
       globals: {
-        ...globals.serviceworker
-      }
-    }
+        ...globals.serviceworker,
+      },
+    },
   },
 
-  prettierSkipFormatting
+  prettierSkipFormatting,
 ]

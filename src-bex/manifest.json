@@ -16,24 +16,12 @@
       "contextMenus",
       "bookmarks"
     ],
-    "optional_permissions": [
-      "pageCapture",
-      "notifications",
-      "webRequest",
-      "tabGroups"
-    ],
-    "host_permissions": [
-      "<all_urls>",
-      "*://*/*"
-    ],
+    "optional_permissions": ["pageCapture", "notifications", "webRequest", "tabGroups"],
+    "host_permissions": ["<all_urls>", "*://*/*"],
     "content_scripts": [
       {
-        "matches": [
-          "*://*/*"
-        ],
-        "js": [
-          "tabsets-content-script.ts"
-        ]
+        "matches": ["*://*/*"],
+        "js": ["tabsets-content-script.ts"]
       }
     ],
     "content_security_policy": {
@@ -41,12 +29,8 @@
     },
     "web_accessible_resources": [
       {
-        "resources": [
-          "*"
-        ],
-        "matches": [
-          "*://*/*"
-        ]
+        "resources": ["*"],
+        "matches": ["*://*/*"]
       }
     ],
     "omnibox": {
@@ -93,9 +77,7 @@
   },
   "firefox": {
     "background": {
-      "scripts": [
-        "background.ts"
-      ]
+      "scripts": ["background.ts"]
     }
   }
 }

@@ -2,19 +2,18 @@
 
 const translate = require('translate-google')
 
-const source = require("../../../src/i18n/en/en.json")
-const german = require("../../../src/i18n/de/de.json")
+const source = require('../../../src/i18n/en/en.json')
+const german = require('../../../src/i18n/de/de.json')
 
-
-translate.engine = "deepl";
-translate.key = process.env.DEEPL_KEY;
+translate.engine = 'deepl'
+translate.key = process.env.DEEPL_KEY
 
 const keys = Object.keys(source)
 
-console.log("=== de ===")
+console.log('=== de ===')
 
-let de = "{"
-console.log("{")
+let de = '{'
+console.log('{')
 const germanKeys = Object.keys(german)
 for (const k of keys) {
   if (germanKeys.indexOf(k) >= 0) {
@@ -22,12 +21,11 @@ for (const k of keys) {
   } else {
     // console.log("translate", translate)
     // const translation =  translate(source[k], "bg")
-    translate(source[k], {from: 'en', to: 'de'})
-      .then(res => de.concat(res))
+    translate(source[k], { from: 'en', to: 'de' }).then((res) => de.concat(res))
     //console.log(" \"" + k + "\": \""+translation+"\",");
   }
 }
-console.log("}")
+console.log('}')
 console.log(de)
 // console.log("=== ja ===")
 //

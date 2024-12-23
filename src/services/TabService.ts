@@ -6,13 +6,13 @@ import { useUtils } from 'src/core/services/Utils'
 const { inBexMode } = useUtils()
 
 class TabService {
-
   isCurrentTab = (tab: Tab) => {
     if (!inBexMode() || !tab.url) {
       return false
     }
     const windowId = useWindowsStore().currentChromeWindow?.id || 0
-    const currentChromeTab: chrome.tabs.Tab | undefined = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+    const currentChromeTab: chrome.tabs.Tab | undefined =
+      useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
     // console.log("checking current tab", currentChromeTab, tab.url, currentChromeTab.url === tab.url)
 
     // special urls
@@ -31,8 +31,6 @@ class TabService {
     }
     return false
   }
-
-
 }
 
 export default new TabService()

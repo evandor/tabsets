@@ -1,11 +1,9 @@
-import {SidePanelViews} from "src/app/models/SidePanelViews";
+import { SidePanelViews } from 'src/app/models/SidePanelViews'
 
 export class SidePanel {
-
   relevantViews: SidePanelViews[] = []
 
-  constructor(
-    public activeView: SidePanelViews = SidePanelViews.MAIN) {
+  constructor(public activeView: SidePanelViews = SidePanelViews.MAIN) {
     this.relevantViews.push(SidePanelViews.TAG)
     this.relevantViews.push(SidePanelViews.TABS_LIST)
     this.relevantViews.push(SidePanelViews.BOOKMARKS)

@@ -10,6 +10,6 @@
 
 <script lang="ts" setup>
 const props = defineProps({
-  label: {type: String, required: false}
+  label: { type: String, required: false },
 })
 </script>

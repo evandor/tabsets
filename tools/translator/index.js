@@ -1,8 +1,8 @@
-import translate from "translate";
-import * as fs from 'fs';
+import translate from 'translate'
+import * as fs from 'fs'
 
-translate.engine = "deepl";
-translate.key = process.env.DEEPL_KEY;
+translate.engine = 'deepl'
+translate.key = process.env.DEEPL_KEY
 
 const source = JSON.parse(fs.readFileSync('../../src/i18n/en/en.json'))
 const de = JSON.parse(fs.readFileSync('../../src/i18n/de/de.json'))
@@ -19,35 +19,37 @@ const keys = Object.keys(source)
 
 async function writeTranslations(fromFile, language) {
   console.log(`=== ${language} ===`)
-  let deTranslation = "{\n"
+  let deTranslation = '{\n'
   const deKeys = Object.keys(de)
   for (const k of keys) {
     if (deKeys.indexOf(k) >= 0) {
-      deTranslation += "  \"" + k + "\": \"" + fromFile[k] + "\",\n"
+      deTranslation += '  "' + k + '": "' + fromFile[k] + '",\n'
     } else {
-      const text = "t"// await translate(englishIn[k], "bg");
-      deTranslation += "  \"" + k + "\": \"" + await translate(source[k], language) + "\",\n"
+      const text = 't' // await translate(englishIn[k], "bg");
+      deTranslation += '  "' + k + '": "' + (await translate(source[k], language)) + '",\n'
     }
   }
-  deTranslation += "}"
-  deTranslation = deTranslation.replace(",\n}", "\n}")
+  deTranslation += '}'
+  deTranslation = deTranslation.replace(',\n}', '\n}')
 
   const translated = JSON.parse(deTranslation)
 
-  const orderedTranslated = Object.keys(translated).sort().reduce(
-    (obj, key) => {
-      obj[key] = translated[key];
-      return obj;
-    },
-    {}
-  );
-  console.log("===>", typeof orderedTranslated)
+  const orderedTranslated = Object.keys(translated)
+    .sort()
+    .reduce((obj, key) => {
+      obj[key] = translated[key]
+      return obj
+    }, {})
+  console.log('===>', typeof orderedTranslated)
 
-  fs.writeFileSync(`../../src/i18n/${language}/${language}.json`, JSON.stringify(orderedTranslated, null, 2))
+  fs.writeFileSync(
+    `../../src/i18n/${language}/${language}.json`,
+    JSON.stringify(orderedTranslated, null, 2),
+  )
 }
 
-await writeTranslations(de, 'de');
-await writeTranslations(bg, 'bg');
+await writeTranslations(de, 'de')
+await writeTranslations(bg, 'bg')
 
 // });
 
@@ -69,7 +71,6 @@ await writeTranslations(bg, 'bg');
 //   console.log(data);
 // });
 
-
 // console.log("=== ja ===")
 //
 // console.log("{")
@@ -78,4 +79,3 @@ await writeTranslations(bg, 'bg');
 //   console.log(" \"" + k + "\": \""+text+"\",");
 // }
 // console.log("}")
-

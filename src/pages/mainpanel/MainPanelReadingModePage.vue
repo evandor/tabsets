@@ -1,5 +1,4 @@
 <template>
-
   <!-- toolbar -->
   <q-toolbar class="text-primary lightgrey">
     <div class="row fit">
@@ -7,39 +6,40 @@
         <q-toolbar-title>
           <div class="row justify-start items-baseline">
             <div class="col-12">
-                <span class="text-primary">
-                  <q-icon name="article"/> Reading Mode
-                </span>
+              <span class="text-primary"> <q-icon name="article" /> Reading Mode </span>
             </div>
           </div>
         </q-toolbar-title>
       </div>
       <div class="col-xs-12 col-md-5 text-right">
-
-<!--        <q-btn-->
-<!--          flat dense icon="block"-->
-<!--          color="primary"-->
-<!--          :label="$q.screen.gt.md ? 'Never open in Reading Mode' : 'Avoid Reading Mode'"-->
-<!--          class="q-mr-sm"-->
-<!--          @click="NavigationService.openOrCreateTab([tab?.tabReferences.filter(r => r.type === TabReferenceType.ORIGINAL_URL)[0].href || ''])">-->
-<!--          <q-tooltip>Open Original Page</q-tooltip>-->
-<!--        </q-btn>-->
+        <!--        <q-btn-->
+        <!--          flat dense icon="block"-->
+        <!--          color="primary"-->
+        <!--          :label="$q.screen.gt.md ? 'Never open in Reading Mode' : 'Avoid Reading Mode'"-->
+        <!--          class="q-mr-sm"-->
+        <!--          @click="NavigationService.openOrCreateTab([tab?.tabReferences.filter(r => r.type === TabReferenceType.ORIGINAL_URL)[0].href || ''])">-->
+        <!--          <q-tooltip>Open Original Page</q-tooltip>-->
+        <!--        </q-btn>-->
 
         <q-btn
-          flat dense icon="open_in_new"
+          flat
+          dense
+          icon="open_in_new"
           color="primary"
           :label="$q.screen.gt.md ? 'Open Original Page' : 'Original'"
-          class="q-mr-sm">
-<!--          @click="NavigationService.openOrCreateTab([tab?.tabReferences.filter(r => r.type === TabReferenceType.ORIGINAL_URL)[0].href || ''])">-->
+          class="q-mr-sm"
+        >
+          <!--          @click="NavigationService.openOrCreateTab([tab?.tabReferences.filter(r => r.type === TabReferenceType.ORIGINAL_URL)[0].href || ''])">-->
           <q-tooltip>Open Original Page</q-tooltip>
         </q-btn>
-
       </div>
     </div>
   </q-toolbar>
 
-
-  <div class="row justify-center items-center" style="max-width: 600px;margin-left:auto;margin-right:auto">
+  <div
+    class="row justify-center items-center"
+    style="max-width: 600px; margin-left: auto; margin-right: auto"
+  >
     <div class="col-12 text-h5 q-ma-lg q-pa-sm">
       {{ title }}
     </div>
@@ -57,18 +57,17 @@
 </template>
 
 <script lang="ts" setup>
+import { useRoute } from 'vue-router'
+import { onMounted, ref, watchEffect } from 'vue'
+import { Tab } from 'src/tabsets/models/Tab'
+import { useUtils } from 'src/core/services/Utils'
+import NavigationService from 'src/services/NavigationService'
+import Analytics from 'src/core/utils/google-analytics'
+import { useQuasar } from 'quasar'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 
-import {useRoute} from "vue-router";
-import {onMounted, ref, watchEffect} from "vue";
-import {Tab} from "src/tabsets/models/Tab";
-import {useUtils} from "src/core/services/Utils";
-import NavigationService from "src/services/NavigationService";
-import Analytics from "src/core/utils/google-analytics";
-import {useQuasar} from "quasar";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {TabReference, TabReferenceType} from "src/content/models/TabReference";
-
-const {sanitizeAsText} = useUtils()
+const { sanitizeAsText } = useUtils()
 
 const $q = useQuasar()
 const route = useRoute()
@@ -84,15 +83,16 @@ const byline = ref('')
 const siteName = ref('')
 
 onMounted(() => {
-  Analytics.firePageViewEvent('MainPanelReadingModePage', document.location.href);
+  Analytics.firePageViewEvent('MainPanelReadingModePage', document.location.href)
 })
-
 
 watchEffect(async () => {
   const res = useTabsetsStore().getTabAndTabsetId(tabId)
   if (res && res.tab) {
     tab.value = res.tab
-    const tabRefs:TabReference[] = res.tab.tabReferences.filter(r => r.type === TabReferenceType.READING_MODE)
+    const tabRefs: TabReference[] = res.tab.tabReferences.filter(
+      (r) => r.type === TabReferenceType.READING_MODE,
+    )
     if (tabRefs.length > 0) {
       const article = tabRefs[0]!.data[0]
       // const response = await fetch(tab.value.url || '')
@@ -111,5 +111,4 @@ watchEffect(async () => {
     }
   }
 })
-
 </script>

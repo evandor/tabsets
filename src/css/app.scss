@@ -46,7 +46,7 @@
   z-index: 12;
   border: 4px solid rgba(0, 0, 0, 0);
   background-clip: padding-box;
-  transition: background-color .32s ease-in-out;
+  transition: background-color 0.32s ease-in-out;
   margin: 4px;
   min-height: 32px;
   min-width: 32px;
@@ -55,9 +55,6 @@
 .body--dark::-webkit-scrollbar-thumb:hover {
   background: #c1c1c1;
 }
-
-
-
 
 .lightgrey {
   background-color: $lightgrey;
@@ -71,7 +68,10 @@
   background-color: white;
   color: black;
   font-size: smaller;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0 4px 5px rgba(0, 0, 0, 0.14),
+    0 1px 10px rgba(0, 0, 0, 0.12);
 }
 
 .tooltip-small {
@@ -80,7 +80,10 @@
   font-size: 12px;
   margin: 2px;
   padding: 3px 6px 3px 6px;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0 4px 5px rgba(0, 0, 0, 0.14),
+    0 1px 10px rgba(0, 0, 0, 0.12);
 }
 
 .tooltip-tour {
@@ -90,8 +93,11 @@
   margin: 2px;
   padding: 3px 6px 3px 6px;
   border: 1px solid orange;
-  border-radius:3px;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px rgba(0, 0, 0, 0.14), 0 1px 10px rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+  box-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0 4px 5px rgba(0, 0, 0, 0.14),
+    0 1px 10px rgba(0, 0, 0, 0.12);
 }
 
 .colorized-appear-enter-active {
@@ -100,17 +106,17 @@
 }
 
 .colorized-appear-enter-from {
-  background-color: $warning
+  background-color: $warning;
 }
 
 .delayed-appear-enter-active {
   transition: all 2s ease-in;
-  transition-delay: 1s
+  transition-delay: 1s;
 }
 
 .delayed-appear-enter-from,
 .delayed-appear-leave-to {
-  opacity: 0
+  opacity: 0;
 }
 
 #fixed-footer {
@@ -150,20 +156,20 @@
 
 // for notification (bottom) not to hide the panel footer
 .q-notifications__list {
-  margin-bottom: 45px
+  margin-bottom: 45px;
 }
 
 // shrink
 
 .shrink {
-  max-height:650px;
-  transition:all 700ms ease;
+  max-height: 650px;
+  transition: all 700ms ease;
 }
 
 .shrink.collapsed {
-  max-height:0;
-  overflow:hidden;
-  background-color:transparent;
+  max-height: 0;
+  overflow: hidden;
+  background-color: transparent;
 }
 
 // shake

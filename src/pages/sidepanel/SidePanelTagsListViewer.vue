@@ -1,13 +1,12 @@
 <template>
-
   <q-page style="padding-top: 50px">
-
     <div class="q-mt-md q-ma-none q-pa-none">
       <InfoMessageWidget
         :probability="1"
         ident="sidePanelTagsListViewer_overview"
         hint="Tabs you add are being tagged automatically (or you can tag them
-            yourself). This is a list of the most used tags."/>
+            yourself). This is a list of the most used tags."
+      />
     </div>
 
     <div class="row q-ma-none q-pa-none">
@@ -19,72 +18,64 @@
           active-color="primary"
           indicator-color="primary"
           align="left"
-          narrow-indicator>
-          <q-tab name="list" label="As List"/>
-          <q-tab name="cloud" label="As Word Cloud"/>
+          narrow-indicator
+        >
+          <q-tab name="list" label="As List" />
+          <q-tab name="cloud" label="As Word Cloud" />
         </q-tabs>
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel class="q-ma-none q-pa-none" name="list">
-            <TagsListViewerWidget :tags="tags" @tagSelected="(value: string) => selectTag(value)"/>
+            <TagsListViewerWidget :tags="tags" @tagSelected="(value: string) => selectTag(value)" />
           </q-tab-panel>
           <q-tab-panel class="q-ma-none q-pa-none" name="cloud">
             <!--            <Bar id="my-chart-id" :options="{                    responsive: true                  }"-->
             <!--                 :data="{                    labels: [ 'January', 'February', 'March' ],                    datasets: [ { data: [40, 20, 12] } ]                  }"/>-->
 
-            <div style="width:100%;height:500px">
-              <canvas ref="myCanvas" style="width:100%;height:500px"></canvas>
+            <div style="width: 100%; height: 500px">
+              <canvas ref="myCanvas" style="width: 100%; height: 500px"></canvas>
             </div>
-
           </q-tab-panel>
         </q-tab-panels>
-
-
       </div>
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-
       <FirstToolbarHelper2 title="Tags List">
         <template v-slot:iconsRight>
-
-          <SidePanelToolbarTabNavigationHelper/>
-          <CloseSidePanelViewButton/>
+          <SidePanelToolbarTabNavigationHelper />
+          <CloseSidePanelViewButton />
         </template>
       </FirstToolbarHelper2>
-
     </q-page-sticky>
-
   </q-page>
-
 </template>
 
 <script lang="ts" setup>
+import { useUiStore } from 'src/ui/stores/uiStore'
+import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
+import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
+import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import TagsListViewerWidget from 'src/tabsets/widgets/TagsListViewerWidget.vue'
+import { ref, watchEffect } from 'vue'
+import { Chart, LinearScale } from 'chart.js'
+import { WordCloudController, WordElement } from 'chartjs-chart-wordcloud'
+import _ from 'lodash'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { Tab } from 'src/tabsets/models/Tab'
 
-import {useUiStore} from "src/ui/stores/uiStore";
-import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
-import InfoMessageWidget from "src/ui/widgets/InfoMessageWidget.vue";
-import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
-import SidePanelToolbarTabNavigationHelper from "src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue";
-import {SidePanelViews} from "src/app/models/SidePanelViews";
-import TagsListViewerWidget from "src/tabsets/widgets/TagsListViewerWidget.vue";
-import {ref, watchEffect} from "vue";
-import {Chart, LinearScale} from 'chart.js'
-import {WordCloudController, WordElement} from 'chartjs-chart-wordcloud';
-import _ from "lodash";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {Tabset, TabsetStatus, TabsetType} from "src/tabsets/models/Tabset";
-import {Tab} from "src/tabsets/models/Tab";
-
-Chart.register(WordCloudController, WordElement, LinearScale);
+Chart.register(WordCloudController, WordElement, LinearScale)
 
 let myCanvas = ref<HTMLCanvasElement>(null as unknown as HTMLCanvasElement)
 
 const tab = ref('list')
 
 const selectTag = (tag: string) => {
-  console.log("selecting", tag)
+  console.log('selecting', tag)
   useUiStore().setSelectedTag(tag)
   useUiStore().sidePanelSetActiveView(SidePanelViews.TAG)
 }
@@ -93,12 +84,14 @@ const tags = ref<Map<string, number>>(new Map())
 const wordCloud = ref<Map<string, number>>(new Map())
 
 watchEffect(() => {
-  console.log("calculating tags")
+  console.log('calculating tags')
   let t = new Map<string, number>()
   let max = 0
   _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
-    if (tabset.type === TabsetType.DEFAULT &&
-      (tabset.status === TabsetStatus.DEFAULT || tabset.status === TabsetStatus.FAVORITE)) {
+    if (
+      tabset.type === TabsetType.DEFAULT &&
+      (tabset.status === TabsetStatus.DEFAULT || tabset.status === TabsetStatus.FAVORITE)
+    ) {
       _.forEach(tabset.tabs, (tab: Tab) => {
         _.forEach(tab.tags, (tag: string) => {
           const newCount = (t.get(tag) || 0) + 1
@@ -117,32 +110,32 @@ watchEffect(() => {
   const sliced: [string, number][] = Array.from(t).slice(0, 100)
   const limitedMap = new Map<string, number>()
   sliced.forEach(([s, n]: [string, number]) => {
-    limitedMap.set(s, Math.round(12 * n / max))
+    limitedMap.set(s, Math.round((12 * n) / max))
   })
-  console.log("tags", limitedMap)
+  console.log('tags', limitedMap)
   wordCloud.value = limitedMap
 })
 
 watchEffect(() => {
   if (myCanvas.value && wordCloud.value) {
-    const words: { key: string, value: number }[] = []
+    const words: { key: string; value: number }[] = []
     for (let [key, value] of wordCloud.value) {
-      words.push({key, value})
+      words.push({ key, value })
     }
     // console.log("heier", words.map((d) => d.key))
     // console.log("heier", words.map((d) => 10 + d.value * 2))
     // const ctx = document.getElementById("myCanvas")
     // console.log("ctx", ctx)
     const chart = new Chart(myCanvas.value, {
-      type: "wordCloud",
+      type: 'wordCloud',
       data: {
         labels: words.map((d) => d.key),
         datasets: [
           {
-            label: "",
-            data: words.map((d) => 10 + d.value * 2)
-          }
-        ]
+            label: '',
+            data: words.map((d) => 10 + d.value * 2),
+          },
+        ],
       },
       options: {
         responsive: false,
@@ -154,14 +147,11 @@ watchEffect(() => {
           word: {
             strokeStyle: 'white',
             strokeWidth: 2,
-            fontSize: 5
+            fontSize: 5,
           },
-        }
+        },
       },
-
     })
-
   }
 })
-
 </script>

@@ -1,24 +1,27 @@
 <template>
-
   <div class="q-ma-none">
-
     <q-toolbar>
       <div class="row fit">
         <q-toolbar-title>
           <div class="row">
             <div class="col-2">
-              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel/byDomainList')">
+              <q-icon
+                name="chevron_left"
+                class="cursor-pointer"
+                @click="router.push('/sidepanel/byDomainList')"
+              >
                 <q-tooltip>Back</q-tooltip>
               </q-icon>
             </div>
             <div class="col-10">
-              <div class="col-1"><span class="text-dark">Domain</span> <span
-                class="text-primary">
-              {{ domain }}
-            </span></div>
+              <div class="col-1">
+                <span class="text-dark">Domain</span>
+                <span class="text-primary">
+                  {{ domain }}
+                </span>
+              </div>
             </div>
-            <div class="col-1 text-right">
-            </div>
+            <div class="col-1 text-right"></div>
           </div>
         </q-toolbar-title>
       </div>
@@ -29,28 +32,26 @@
         <PanelTabList :tabs="groupedTabs as Tab[]" />
       </div>
     </div>
-
   </div>
-
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watchEffect} from 'vue'
-import {useRoute, useRouter} from "vue-router";
-import _ from "lodash"
-import {Tab} from "src/tabsets/models/Tab";
-import {Tabset, TabsetStatus} from "src/tabsets/models/Tabset";
-import Analytics from "src/core/utils/google-analytics"
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import PanelTabList from "src/tabsets/layouts/PanelTabList.vue";
+import { onMounted, ref, watchEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import _ from 'lodash'
+import { Tab } from 'src/tabsets/models/Tab'
+import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
+import Analytics from 'src/core/utils/google-analytics'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import PanelTabList from 'src/tabsets/layouts/PanelTabList.vue'
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
 const domain = ref(null as unknown as string)
 
 onMounted(() => {
-  Analytics.firePageViewEvent('SidePanelByDomainPage', document.location.href);
+  Analytics.firePageViewEvent('SidePanelByDomainPage', document.location.href)
 })
 
 watchEffect(() => {
@@ -63,41 +64,40 @@ watchEffect(() => {
 const groupedTabs = ref<Tab[]>([])
 
 watchEffect(() => {
-  console.log("checkin tabs2....")
-  const allTabs: Tab[] =
-    _.orderBy(
-      _.filter(
-        _.flatMap(
-          _.filter(
-            _.map([...useTabsetsStore().tabsets.values()] as Tabset[],
-              (ts: Tabset) => ts),
-            (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE),
-          (ts: Tabset) => ts.tabs), (t: Tab) => true),
-      (t: Tab) => t.activatedCount, ['desc'])
-  groupedTabs.value =
-    _.filter(allTabs, (t: Tab) => {
-      if (t.url) {
-        try {
-          const hostname = new URL(t.url).hostname
-          const splits = hostname.split('.')
-          switch (splits.length) {
-            case 3:
-              return hostname.substring(1 + hostname.indexOf(".")) === domain.value
-            default:
-              return hostname === domain.value
-          }
-        } catch (e) {
-          return false
+  console.log('checkin tabs2....')
+  const allTabs: Tab[] = _.orderBy(
+    _.filter(
+      _.flatMap(
+        _.filter(
+          _.map([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts),
+          (ts: Tabset) => ts.status === TabsetStatus.DEFAULT || ts.status === TabsetStatus.FAVORITE,
+        ),
+        (ts: Tabset) => ts.tabs,
+      ),
+      (t: Tab) => true,
+    ),
+    (t: Tab) => t.activatedCount,
+    ['desc'],
+  )
+  groupedTabs.value = _.filter(allTabs, (t: Tab) => {
+    if (t.url) {
+      try {
+        const hostname = new URL(t.url).hostname
+        const splits = hostname.split('.')
+        switch (splits.length) {
+          case 3:
+            return hostname.substring(1 + hostname.indexOf('.')) === domain.value
+          default:
+            return hostname === domain.value
         }
-      } else {
+      } catch (e) {
         return false
       }
-    })
-
-
+    } else {
+      return false
+    }
+  })
 })
-
-
 </script>
 
 <style lang="sass" scoped>
@@ -107,5 +107,4 @@ watchEffect(() => {
 
 .greyBorderTop
   border-top: 1px solid $bordergrey
-
 </style>

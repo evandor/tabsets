@@ -23,21 +23,19 @@ async function createTabsetFrom(name: string, bookmarkId: string) {
   ts.folders = subfolders
   ts.bookmarkId = bookmarkId
   useUiStore().importedBookmarks.push(bookmarkId)
-  subfolders.forEach(f => f.folderParent = ts.id)
+  subfolders.forEach((f) => (f.folderParent = ts.id))
   return ts
 }
 
 export class CreateTabsetFromBookmarksRecursive implements Command<Tabset> {
-
   constructor(
     public name: string,
-    public bookmarkId: string) {
-  }
+    public bookmarkId: string,
+  ) {}
 
   async execute(): Promise<ExecutionResult<any>> {
     //console.log('creating recursively', this.name, this.bookmarkId)
     const tabset = await createTabsetFrom(this.name, '' + this.bookmarkId)
     return Promise.resolve(new ExecutionResult(tabset, 'done'))
   }
-
 }

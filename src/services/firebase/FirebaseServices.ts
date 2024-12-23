@@ -2,9 +2,7 @@
  * noop service to satisfy submodules dependencies
  */
 class FirebaseServices {
-
-  init() {
-  }
+  init() {}
 
   getAuth() {
     return null
@@ -17,7 +15,6 @@ class FirebaseServices {
   getStorage() {
     return null
   }
-
 }
 
-export default new FirebaseServices();
+export default new FirebaseServices()

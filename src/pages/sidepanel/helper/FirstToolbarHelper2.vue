@@ -3,83 +3,97 @@
   <q-toolbar class="q-pa-none q-pl-none q-pr-none q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
-
-        <div class="col-7 q-ma-none q-pa-none" style="border:0 solid red">
-
+        <div class="col-7 q-ma-none q-pa-none" style="border: 0 solid red">
           <!-- no spaces && searching -->
-          <SearchWithTransitionHelper v-if="searching"
-                                      :search-term="props.searchTerm"
-                                      :search-hits="props.searchHits!" />
+          <SearchWithTransitionHelper
+            v-if="searching"
+            :search-term="props.searchTerm"
+            :search-hits="props.searchHits!"
+          />
 
           <FilterWithTransitionHelper v-else-if="showFilter" />
           <!-- no spaces && not searching -->
           <template v-else>
-
             <!-- no spaces && not searching -->
             <div class="col-12 text-subtitle1">
               <div class="q-ml-md q-mt-sm">
                 <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-                  <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">{{
-                      title()
-                    }}
+                  <div
+                    class="text-caption cursor-pointer"
+                    @click.stop="router.push('/sidepanel/spaces')"
+                  >
+                    {{ title() }}
                   </div>
                 </template>
                 <template v-else>
-                  <div class="text-caption cursor-pointer" @click="router.push('/sidepanel/collections')">{{
-                      title()
-                    }}
+                  <div
+                    class="text-caption cursor-pointer"
+                    @click="router.push('/sidepanel/collections')"
+                  >
+                    {{ title() }}
                   </div>
                 </template>
-                <div class="text-body1 text-bold cursor-pointer ellipsis"
-                     @click="router.push('/sidepanel/collections')">
+                <div
+                  class="text-body1 text-bold cursor-pointer ellipsis"
+                  @click="router.push('/sidepanel/collections')"
+                >
                   <template v-if="currentTabset">
                     {{ currentTabset.name }}
-                    <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />
-                    <q-tooltip class="tooltip-small" :delay="5000"
-                               v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">{{ currentTabset?.id }}
+                    <q-icon
+                      name="arrow_drop_down"
+                      class="q-ma-none q-pa-none"
+                      color="grey-5"
+                      size="xs"
+                    />
+                    <q-tooltip
+                      class="tooltip-small"
+                      :delay="5000"
+                      v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"
+                      >{{ currentTabset?.id }}
                     </q-tooltip>
                   </template>
                   <template v-else>
-                    <q-spinner
-                      color="primary"
-                      size="1em"
-                    />
+                    <q-spinner color="primary" size="1em" />
                   </template>
                 </div>
               </div>
             </div>
-
           </template>
         </div>
 
-        <div class="col-5 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none" v-if="!useUiStore().appLoading"
-             style="border:0 solid green">
-
+        <div
+          class="col-5 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none"
+          v-if="!useUiStore().appLoading"
+          style="border: 0 solid green"
+        >
           <slot name="iconsRight">
-
-            <div class="q-mt-sm q-ma-none q-qa-none" style="border:0 solid blue">
+            <div class="q-mt-sm q-ma-none q-qa-none" style="border: 0 solid blue">
               <template v-if="showSearchIcon()">
-                <SidePanelToolbarButton icon="search"
-                                        class="q-mr-sm"
-                                        id="toggleSearchBtn"
-                                        size="11px"
-                                        @click="toggleSearch" />
+                <SidePanelToolbarButton
+                  icon="search"
+                  class="q-mr-sm"
+                  id="toggleSearchBtn"
+                  size="11px"
+                  @click="toggleSearch"
+                />
               </template>
 
               <SidePanelToolbarTabNavigationHelper />
 
               <span>
-              <SpecialUrlAddToTabsetComponent
-                v-if="currentChromeTab && currentTabset"
-                @button-clicked="(args:ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)"
-                :currentChromeTab="currentChromeTab"
-                :tabset="currentTabset" />
+                <SpecialUrlAddToTabsetComponent
+                  v-if="currentChromeTab && currentTabset"
+                  @button-clicked="
+                    (args: ActionHandlerButtonClickedHolder) =>
+                      handleButtonClicked(currentTabset!, args)
+                  "
+                  :currentChromeTab="currentChromeTab"
+                  :tabset="currentTabset"
+                />
               </span>
               <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer" />
               <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset" />
             </div>
-
-
           </slot>
         </div>
       </div>
@@ -93,7 +107,6 @@
 </template>
 
 <script lang="ts" setup>
-
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useRouter } from 'vue-router'
@@ -125,7 +138,7 @@ const props = defineProps({
   forceTitle: { type: Boolean, default: false },
   showSearchBox: { type: Boolean, default: false },
   searchTerm: { type: String, default: '' },
-  searchHits: { type: Number, required: false }
+  searchHits: { type: Number, required: false },
 })
 
 const $q = useQuasar()
@@ -154,24 +167,27 @@ windowLocation.value = window.location.href
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
   if (currentTabset.value) {
-    const currentTabsetTabs: Set<string> = new Set(currentTabset.value!.tabs.map((t: Tab) => t.url || ''))
-    const browserTabs: Set<string> = new Set(useTabsStore2().browserTabs.map((t: chrome.tabs.Tab) => t.url || ''))
+    const currentTabsetTabs: Set<string> = new Set(
+      currentTabset.value!.tabs.map((t: Tab) => t.url || ''),
+    )
+    const browserTabs: Set<string> = new Set(
+      useTabsStore2().browserTabs.map((t: chrome.tabs.Tab) => t.url || ''),
+    )
     try {
       const allTabs = currentTabsetTabs.union(browserTabs)
       const lapover = currentTabsetTabs.intersection(allTabs)
       overlap.value = lapover.size / allTabs.size
       overlapTooltip.value = `${Math.round(100 * overlap.value)}% overlap between this tabset and the currenly open tabs`
-    } catch (err) {
-    }
+    } catch (err) {}
   }
 })
 
-const thresholdStyle = () =>
-  'color: hsl(' + (Math.round(120 * overlap.value)) + ' 80% 50%)'
+const thresholdStyle = () => 'color: hsl(' + Math.round(120 * overlap.value) + ' 80% 50%)'
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+  currentChromeTab.value =
+    useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
 watchEffect(() => {
@@ -185,8 +201,8 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelViews.TABS_LIST) &&
-    useUiStore().toolbarFilter
+  showFilter.value =
+    useUiStore().sidePanelActiveViewIs(SidePanelViews.TABS_LIST) && useUiStore().toolbarFilter
 })
 
 if ($q.platform.is.chrome && $q.platform.is.bex) {
@@ -220,18 +236,21 @@ function getActiveFolder(tabset: Tabset) {
     : undefined
 }
 
-const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClickedHolder, folder?: Tabset) => {
+const handleButtonClicked = async (
+  tabset: Tabset,
+  args: ActionHandlerButtonClickedHolder,
+  folder?: Tabset,
+) => {
   const useFolder: Tabset | undefined = folder ? folder : getActiveFolder(tabset)
   console.log(`button clicked: tsId=${tabset.id}, folderId=${useFolder?.id}, args=...`)
   await useActionHandlers(undefined).handleClick(tabset, currentChromeTab.value!, args, useFolder)
 }
 
-const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? 'margin-top:40px;' : ''
-
+const offsetTop = () =>
+  $q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : ''
 </script>
 
 <style scoped>
-
 .v-enter-active,
 .v-leave-active {
   transition: opacity 3.5s ease;
@@ -241,5 +260,4 @@ const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova) ? '
 .v-leave-to {
   opacity: 0;
 }
-
 </style>

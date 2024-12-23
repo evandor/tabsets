@@ -1,15 +1,10 @@
 <template>
-
   <q-page style="padding-top: 50px">
-
-
     <div class="row q-ma-none q-pa-none">
       <div class="col-12 q-ma-none q-pa-none">
-
         <q-list class="q-ma-none">
-
           <template v-for="hit in tabsetHits" v-if="tabsetHits.length > 0">
-            <SearchHit :hit="hit" :in-side-panel="true"/>
+            <SearchHit :hit="hit" :in-side-panel="true" />
           </template>
 
           <template v-else>
@@ -22,44 +17,40 @@
             </div>
           </template>
         </q-list>
-
       </div>
     </div>
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-
       <FirstToolbarHelper2
         :show-search-box="true"
         :search-term="searchStore.term"
         :search-hits="tabsetHits.length"
-        :title="'Found ' + searchStore.term + ' ' + tabsetHits.length + ' time(s)'">
+        :title="'Found ' + searchStore.term + ' ' + tabsetHits.length + ' time(s)'"
+      >
         <template v-slot:iconsRight>
-          <CloseSidePanelViewButton/>
+          <CloseSidePanelViewButton />
         </template>
       </FirstToolbarHelper2>
-
     </q-page-sticky>
-
   </q-page>
-
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watchEffect} from 'vue';
-import {useRoute} from "vue-router";
-import _ from "lodash"
-import {useSearchStore} from "src/search/stores/searchStore";
-import {uid, useQuasar} from "quasar";
-import SearchHit from "src/components/layouts/SearchHit.vue"
-import {Hit} from "src/search/models/Hit";
-import ReindexDialog from "components/dialogues/ReindexDialog.vue";
-import FirstToolbarHelper2 from "pages/sidepanel/helper/FirstToolbarHelper2.vue";
-import Analytics from "src/core/utils/google-analytics";
-import {Tabset} from "src/tabsets/models/Tabset";
-import CloseSidePanelViewButton from "src/ui/components/CloseSidePanelViewButton.vue";
-import {useTabsetsStore} from "src/tabsets/stores/tabsetsStore";
-import {Tab} from "src/tabsets/models/Tab";
+import { onMounted, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import _ from 'lodash'
+import { useSearchStore } from 'src/search/stores/searchStore'
+import { uid, useQuasar } from 'quasar'
+import SearchHit from 'src/components/layouts/SearchHit.vue'
+import { Hit } from 'src/search/models/Hit'
+import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
+import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import Analytics from 'src/core/utils/google-analytics'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { Tab } from 'src/tabsets/models/Tab'
 
 const route = useRoute()
 const searchStore = useSearchStore()
@@ -73,7 +64,7 @@ const tabsetIdents = ref<object[]>([])
 const tabIdents = ref<object[]>([])
 
 onMounted(() => {
-  Analytics.firePageViewEvent('SidePanelSearchPage', document.location.href);
+  Analytics.firePageViewEvent('SidePanelSearchPage', document.location.href)
 })
 
 watchEffect(() => {
@@ -81,10 +72,11 @@ watchEffect(() => {
   tabsetIdents.value = _.map(tabsets, (t: Tabset) => {
     return {
       name: t.name,
-      id: t.id
+      id: t.id,
     }
   })
-  tabIdents.value = tabsets.flatMap((ts: Tabset) => ts.tabs)
+  tabIdents.value = tabsets
+    .flatMap((ts: Tabset) => ts.tabs)
     .filter((t: Tab) => t.quickaccess && t.quickaccess.trim().length > 0)
     .map((t: Tab) => {
       return {
@@ -93,7 +85,7 @@ watchEffect(() => {
         url: t.url,
         favIconUrl: t.favIconUrl,
         description: t.description,
-        id: t.id
+        id: t.id,
       }
     })
 })
@@ -102,7 +94,7 @@ const newSearch = (term: string) => {
   tabsetHits.value = []
 
   if (term && term.trim() !== '') {
-    console.log("got term", term)
+    console.log('got term', term)
 
     // quick access hits
     tabIdents.value.forEach((tabIdent: any) => {
@@ -115,11 +107,14 @@ const newSearch = (term: string) => {
           name,
           tabIdent['url' as keyof object],
           tabIdent['favIconUrl' as keyof object],
-          0, 0,
+          0,
+          0,
           1,
-          [], [], [],
+          [],
+          [],
+          [],
           tabIdent['description' as keyof object],
-          'Quick Access'
+          'Quick Access',
         )
         tabsetHits.value.push(theHit)
       }
@@ -130,15 +125,13 @@ const newSearch = (term: string) => {
       const name = tabsetIdent['name' as keyof object]
       const id = tabsetIdent['id' as keyof object]
       if (name.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
-        const pseudoHit = new Hit("tabset|" + name,
-          name, '', '',
-          0, 0, 0, [id], [], [], "", "")
+        const pseudoHit = new Hit('tabset|' + name, name, '', '', 0, 0, 0, [id], [], [], '', '')
         tabsetHits.value.push(pseudoHit)
       }
     })
 
     const results = searchStore.search(term)
-    _.forEach(results, h => {
+    _.forEach(results, (h) => {
       //console.log("h", h.item.bookmarkId)
       const theHit = new Hit(
         uid(),
@@ -146,18 +139,19 @@ const newSearch = (term: string) => {
         h.item.title,
         h.item.url,
         h.item.favIconUrl,
-        0, 0,
-        Math.round(100 - (100 * (h?.score || 1))),
-        [],//h.item.tabsets,
+        0,
+        0,
+        Math.round(100 - 100 * (h?.score || 1)),
+        [], //h.item.tabsets,
         [],
         _.map(h['matches' as keyof object], (m: any) => {
           return {
             key: m['key' as keyof object],
-            indices: m['indices' as keyof object]
+            indices: m['indices' as keyof object],
           }
         }),
         h.item.description,
-        h.item.keywords
+        h.item.keywords,
       )
       // if (h.item.bookmarkId) {
       //   theHit.bookmarkId = h.item.bookmarkId
@@ -187,11 +181,10 @@ watchEffect(() => {
 watchEffect(() => {
   if (showReindexDialog.value) {
     $q.dialog({
-      component: ReindexDialog
+      component: ReindexDialog,
     }).onDismiss(() => {
       showReindexDialog.value = false
     })
   }
 })
-
 </script>

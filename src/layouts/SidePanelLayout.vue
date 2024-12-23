@@ -1,35 +1,28 @@
 <template>
   <q-layout view="hHh lpR fFf">
-
     <q-page-container>
-      <router-view/>
+      <router-view />
     </q-page-container>
 
     <q-footer elevated>
-      <SidePanelFooter/>
+      <SidePanelFooter />
     </q-footer>
-
   </q-layout>
-
 </template>
 
 <script setup lang="ts">
-
-import {ref, watchEffect} from "vue";
-import SidePanelFooter from "components/SidePanelFooter.vue";
-import {useMeta} from "quasar";
+import { ref, watchEffect } from 'vue'
+import SidePanelFooter from 'components/SidePanelFooter.vue'
+import { useMeta } from 'quasar'
 
 const location = ref('')
 
 useMeta(() => {
   //console.debug("using meta...")
   return {
-    title: 'Tabsets Extension...' //+ appVersion
+    title: 'Tabsets Extension...', //+ appVersion
   }
 })
 
-
-watchEffect(() => location.value = window.location.href.split('/www/')[1] || window.location.href)
-
-
+watchEffect(() => (location.value = window.location.href.split('/www/')[1] || window.location.href))
 </script>

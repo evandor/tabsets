@@ -1,12 +1,11 @@
-import {installQuasarPlugin} from '@quasar/quasar-app-extension-testing-unit-vitest';
-import {beforeEach, describe, expect, it} from 'vitest';
-import {createPinia, setActivePinia} from "pinia";
-import {useSearchStore} from "src/search/stores/searchStore";
+import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
+import { useSearchStore } from 'src/search/stores/searchStore'
 
-installQuasarPlugin();
+installQuasarPlugin()
 
 describe('SearchStore', () => {
-
   beforeEach(async () => {
     setActivePinia(createPinia())
     await useSearchStore().init()
@@ -17,11 +16,11 @@ describe('SearchStore', () => {
   })
 
   it('passing minimal object to addObjectToIndex succeeds', async () => {
-    useSearchStore().addObjectToIndex({url: 'some-pseudo-url'})
+    useSearchStore().addObjectToIndex({ url: 'some-pseudo-url' })
   })
 
   it('a valid object added with addObjectToIndex can be found in search', async () => {
-    useSearchStore().addObjectToIndex({url: 'https://www.skysail.io', name: 'name', title: 'foo'})
+    useSearchStore().addObjectToIndex({ url: 'https://www.skysail.io', name: 'name', title: 'foo' })
 
     const searchResult = useSearchStore().search('foo')
 
@@ -31,8 +30,12 @@ describe('SearchStore', () => {
   })
 
   it('second document with same url updates existing one', async () => {
-    useSearchStore().addObjectToIndex({url: 'https://www.skysail.io', name: 'name', title: 'foo'})
-    useSearchStore().addObjectToIndex({url: 'https://www.skysail.io', name: 'name2', title: 'foo2'})
+    useSearchStore().addObjectToIndex({ url: 'https://www.skysail.io', name: 'name', title: 'foo' })
+    useSearchStore().addObjectToIndex({
+      url: 'https://www.skysail.io',
+      name: 'name2',
+      title: 'foo2',
+    })
     const searchResult = useSearchStore().search('foo')
     //console.log("searchResult", searchResult[0].matches)
     expect(searchResult.length).toBe(1)
@@ -40,8 +43,12 @@ describe('SearchStore', () => {
   })
 
   it('searching finds the proper document', async () => {
-    useSearchStore().addObjectToIndex({url: 'https://www.skysail.io', name: 'name', title: 'foo'})
-    useSearchStore().addObjectToIndex({url: 'https://www.heise.de', name: 'heise', title: 'homepage'})
+    useSearchStore().addObjectToIndex({ url: 'https://www.skysail.io', name: 'name', title: 'foo' })
+    useSearchStore().addObjectToIndex({
+      url: 'https://www.heise.de',
+      name: 'heise',
+      title: 'homepage',
+    })
 
     const searchResult = useSearchStore().search('heise')
 
@@ -51,9 +58,13 @@ describe('SearchStore', () => {
   })
 
   it('upserting updates existing document', async () => {
-    useSearchStore().addObjectToIndex({url: 'https://www.skysail.io', name: 'name', title: 'fooOld'})
+    useSearchStore().addObjectToIndex({
+      url: 'https://www.skysail.io',
+      name: 'name',
+      title: 'fooOld',
+    })
 
-    useSearchStore().upsertObject({url: 'https://www.skysail.io', name: 'name', title: 'fooNew'})
+    useSearchStore().upsertObject({ url: 'https://www.skysail.io', name: 'name', title: 'fooNew' })
 
     const searchResultFooOld = useSearchStore().search('fooOld')
     expect(searchResultFooOld.length).toBe(0)
@@ -63,14 +74,21 @@ describe('SearchStore', () => {
   })
 
   it('upserting creates new document for new url', async () => {
-    useSearchStore().addObjectToIndex({url: 'https://www.skysail.io', name: 'name', title: 'fooOld'})
+    useSearchStore().addObjectToIndex({
+      url: 'https://www.skysail.io',
+      name: 'name',
+      title: 'fooOld',
+    })
 
-    useSearchStore().upsertObject({url: 'https://www.heise.de', name: 'heise', title: 'heisetitle'})
+    useSearchStore().upsertObject({
+      url: 'https://www.heise.de',
+      name: 'heise',
+      title: 'heisetitle',
+    })
 
     const searchResultFooOld = useSearchStore().search('fooOld')
     expect(searchResultFooOld.length).toBe(1)
     const searchResult = useSearchStore().search('heisetitle')
     expect(searchResult.length).toBe(1)
   })
-
-});
+})
