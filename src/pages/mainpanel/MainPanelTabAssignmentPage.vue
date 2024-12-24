@@ -77,7 +77,7 @@ import { useRoute } from 'vue-router'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Notify, QForm } from 'quasar'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { TabAssignmentCommand } from 'src/domain/tabs/TabAssignmentCommand'
+import { TabAssignmentCommand } from 'src/tabsets/commands/TabAssignmentCommand'
 import JsUtils from 'src/utils/JsUtils'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
