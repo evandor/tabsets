@@ -72,36 +72,7 @@ AppService.init($q, router, false)
 
 info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
 
-// const doOnTabOpened = (data: object) => {
-//   console.log('[BEX-APP] tabsets.bex.tab <<<', data)
-// }
-// $q.bex.on('tabsets.bex.tab.updated', doOnTabOpened)
-// onBeforeUnmount(() => {
-//   $q.bex.off('tabsets.bex.tab.updated', doOnTabOpened)
-// })
-
-// $q.bex.on('@quasar:ports', ({ from, to, event, payload }:{from:string, to:string, event: string, payload:object}) => {
-// // $q.bex.on('@quasar:ports', (data:object) => {
-//   console.log('[BEX-APP] Ports:::', from, to, event,payload)
-//   if (payload['added' as keyof object]) {
-//     console.log('[BEX-APP] New connection:', payload['added' as keyof object])
-//   } else if (payload['removed' as keyof object]) {
-//     console.log('[BEX-APP] Connection removed:', payload['removed' as keyof object])
-//   }
-// })
-// // TODO off
-
-// function setupBexCommunication(excerpt: string, handleBexTabExcerpt: ({ from, to, event, payload }: {
-//   from: string;
-//   to: string;
-//   event: string;
-//   payload: object
-// }) => Promise<void>) {
-//
-// }
-//
-// setupBexCommunication('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
-
+/
 $q.bex.on('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
 onBeforeUnmount(() => {
   $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)

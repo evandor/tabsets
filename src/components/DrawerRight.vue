@@ -114,7 +114,7 @@ import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import Features from 'src/features/components/Features.vue'
 import OpenTabsView from 'src/opentabs/views/OpenTabsView.vue'
-import TagListViewer from 'components/views/TagListViewer.vue'
+import TagListViewer from 'src/tabsets/views/TagListViewer.vue'
 
 const route = useRoute()
 

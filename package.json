@@ -7,6 +7,7 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "dev": "quasar dev -m bex -T chrome",
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "build": "quasar build -m bex -T chrome",
@@ -16,7 +17,6 @@
     "build bex opera": "scripts/build.sh opera",
     "icon": "icongenie generate -i src/assets/icon.png",
     "test": "echo \"See package.json => scripts for available tests.\" && exit 0",
-    "dev": "quasar dev -m bex -T chrome",
     "postinstall": "quasar prepare",
     "test:unit:ui": "vitest --ui",
     "test:unit": "vitest",
