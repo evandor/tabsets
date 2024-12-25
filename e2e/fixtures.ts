@@ -1,6 +1,6 @@
-import { type BrowserContext, chromium, test as base } from '@playwright/test'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { test as base, chromium, type BrowserContext } from '@playwright/test'
 
 process.env.PW_CHROMIUM_ATTACH_TO_OTHER = '1'
 

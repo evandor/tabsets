@@ -60,15 +60,15 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { useQuasar } from 'quasar'
-import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
-import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
-import { useUiStore } from 'src/ui/stores/uiStore'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
+import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
+import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import NavTabsetsListWidgetNonBex from 'src/tabsets/widgets/NavTabsetsListWidgetNonBex.vue'
+import { useUiStore } from 'src/ui/stores/uiStore'
 
 const spacesStore = useSpacesStore()
 

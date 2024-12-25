@@ -71,15 +71,15 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watchEffect } from 'vue'
-import Analytics from 'src/core/utils/google-analytics'
-import { useRoute } from 'vue-router'
-import { Tab } from 'src/tabsets/models/Tab'
 import { Notify, QForm } from 'quasar'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import Analytics from 'src/core/utils/google-analytics'
 import { TabAssignmentCommand } from 'src/tabsets/commands/TabAssignmentCommand'
-import JsUtils from 'src/utils/JsUtils'
+import { Tab } from 'src/tabsets/models/Tab'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import JsUtils from 'src/utils/JsUtils'
+import { onMounted, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 

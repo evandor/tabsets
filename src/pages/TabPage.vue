@@ -303,22 +303,22 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
-import { onMounted, reactive, ref, watchEffect } from 'vue'
-import TabsetService from 'src/tabsets/services/TabsetService'
-import NavigationService from 'src/services/NavigationService'
-import { date, openURL } from 'quasar'
-import { useSearchStore } from 'src/search/stores/searchStore'
 import _ from 'lodash'
+import { date, openURL } from 'quasar'
 import { useUtils } from 'src/core/services/Utils'
+import { useSearchStore } from 'src/search/stores/searchStore'
+import NavigationService from 'src/services/NavigationService'
+import TabsetService from 'src/tabsets/services/TabsetService'
+import { onMounted, reactive, ref, watchEffect } from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
+import { useRoute } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
-import Analytics from 'src/core/utils/google-analytics'
-import { Tab } from 'src/tabsets/models/Tab'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { ContentItem } from 'src/content/models/ContentItem'
+import Analytics from 'src/core/utils/google-analytics'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { Tab } from 'src/tabsets/models/Tab'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
 const searchStore = useSearchStore()
 const route = useRoute()

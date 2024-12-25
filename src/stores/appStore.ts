@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import { LocalStorage, uid } from 'quasar'
 import { APP_INSTALLATION_ID } from 'src/boot/constants'
+import { ref } from 'vue'
 
 export const useAppStore = defineStore('app', () => {
   const installationId = ref<string | undefined>(

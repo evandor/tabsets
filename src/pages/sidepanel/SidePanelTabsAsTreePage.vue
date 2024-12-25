@@ -28,16 +28,16 @@
 </template>
 
 <script lang="ts" setup>
-import BookmarksTree from 'src/bookmarks/components/BookmarksTree.vue'
+import TabsAsTree from 'components/TabsAsTree.vue'
 import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import BookmarksTree from 'src/bookmarks/components/BookmarksTree.vue'
+import ToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
+import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
+import Analytics from 'src/core/utils/google-analytics'
+import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted } from 'vue'
-import Analytics from 'src/core/utils/google-analytics'
-import ToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
-import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
-import TabsAsTree from 'components/TabsAsTree.vue'
-import { SidePanelViews } from 'src/app/models/SidePanelViews'
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelTabsAsTreePage', document.location.href)

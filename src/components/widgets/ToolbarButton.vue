@@ -36,9 +36,9 @@
 </template>
 
 <script lang="ts" setup>
-import { DrawerTabs, useUiStore } from 'src/ui/stores/uiStore'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { DrawerTabs, useUiStore } from 'src/ui/stores/uiStore'
 
 const props = defineProps({
   feature: { type: String, required: false },

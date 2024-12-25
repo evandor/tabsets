@@ -49,21 +49,21 @@
 </template>
 
 <script lang="ts" setup>
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { useRouter } from 'vue-router'
-import { ref, watchEffect } from 'vue'
-import { useUiStore } from 'src/ui/stores/uiStore'
-import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import { useQuasar } from 'quasar'
-import { useI18n } from 'vue-i18n'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
 import { Tabset } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { ref, watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n({ useScope: 'global' })
 

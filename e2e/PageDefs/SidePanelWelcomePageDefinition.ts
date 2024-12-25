@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test'
-import { TabsetPageDefinition } from 'app/e2e/TabsetPageDefinition'
 import { SidePanelPageDefinition } from 'app/e2e/PageDefs/SidePanelPageDefinition'
+import { TabsetPageDefinition } from 'app/e2e/TabsetPageDefinition'
 
 export class SidePanelWelcomePageDefinition extends TabsetPageDefinition {
   readonly page: Page

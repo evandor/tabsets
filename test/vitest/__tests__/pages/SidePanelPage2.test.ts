@@ -1,16 +1,16 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { mount, VueWrapper } from '@vue/test-utils'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import ChromeApi from 'src/app/BrowserApi'
 import SidePanelPage2 from 'src/pages/SidePanelPage2.vue'
 import { useDB } from 'src/services/usePersistenceService'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 

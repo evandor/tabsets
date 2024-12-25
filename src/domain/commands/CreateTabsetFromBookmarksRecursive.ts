@@ -1,10 +1,10 @@
+import _ from 'lodash'
+import BrowserApi from 'src/app/BrowserApi'
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { Tabset } from 'src/tabsets/models/Tabset'
-import { useUiStore } from 'src/ui/stores/uiStore'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import BrowserApi from 'src/app/BrowserApi'
-import _ from 'lodash'
+import { useUiStore } from 'src/ui/stores/uiStore'
 
 async function createTabsetFrom(name: string, bookmarkId: string) {
   console.log('creating recursively', name, bookmarkId)

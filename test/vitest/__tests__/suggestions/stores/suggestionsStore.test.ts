@@ -1,12 +1,9 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
-import { useDB } from 'src/services/usePersistenceService'
-import PersistenceService from 'src/services/PersistenceService'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import ChromeApi from 'src/app/BrowserApi'
+import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
+import PersistenceService from 'src/services/PersistenceService'
+import { useDB } from 'src/services/usePersistenceService'
 import {
   StaticSuggestionIdent,
   Suggestion,
@@ -14,6 +11,9 @@ import {
   SuggestionType,
 } from 'src/suggestions/models/Suggestion'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
+import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 

@@ -1,5 +1,5 @@
-import translate from 'translate'
 import * as fs from 'fs'
+import translate from 'translate'
 
 translate.engine = 'deepl'
 translate.key = process.env.DEEPL_KEY

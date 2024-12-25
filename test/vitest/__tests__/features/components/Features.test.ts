@@ -1,11 +1,11 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { DOMWrapper, mount, shallowMount, VueWrapper } from '@vue/test-utils'
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import Features from 'src/features/components/Features.vue'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import InMemoryFeaturesPersistence from 'src/features/persistence/InMemoryFeaturesPersistence'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import Features from 'src/features/components/Features.vue'
+import InMemoryFeaturesPersistence from 'src/features/persistence/InMemoryFeaturesPersistence'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 

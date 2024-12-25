@@ -26,8 +26,8 @@
 
 <script lang="ts" setup>
 import { date } from 'quasar'
-import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { BlobType } from 'src/snapshots/models/BlobMetadata'
+import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 
 const props = defineProps({
   extension: { type: String, default: 'mhtml' },

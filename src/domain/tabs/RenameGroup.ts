@@ -1,10 +1,10 @@
+import { uid } from 'quasar'
+import { SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
-import TabsetService from 'src/tabsets/services/TabsetService'
-import { TabsetColumn } from 'src/tabsets/models/TabsetColumn'
-import { uid } from 'quasar'
 import { Tabset } from 'src/tabsets/models/Tabset'
-import { SPECIAL_ID_FOR_NO_GROUP_ASSIGNED, STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
+import { TabsetColumn } from 'src/tabsets/models/TabsetColumn'
+import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 
 // class UndoCommand implements Command<any> {

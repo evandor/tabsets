@@ -90,13 +90,13 @@
 </template>
 
 <script setup lang="ts">
-import { PropType, ref } from 'vue'
-import { useUtils } from 'src/core/services/Utils'
-import { Bookmark } from 'src/bookmarks/models/Bookmark'
-import { useRouter } from 'vue-router'
 import { date } from 'quasar'
+import { Bookmark } from 'src/bookmarks/models/Bookmark'
+import { useUtils } from 'src/core/services/Utils'
 import NavigationService from 'src/services/NavigationService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { PropType, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { formatDate } = useUtils()
 

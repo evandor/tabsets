@@ -1,9 +1,9 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import ChromeApi from 'src/app/BrowserApi'
 import { TreeNode } from 'src/bookmarks/models/Tree'
+import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 

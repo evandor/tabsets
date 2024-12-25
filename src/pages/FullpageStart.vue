@@ -8,10 +8,10 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
 import Analytics from 'src/core/utils/google-analytics'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const router = useRouter()

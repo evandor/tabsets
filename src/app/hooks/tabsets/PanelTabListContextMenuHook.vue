@@ -39,18 +39,18 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from 'vue'
-import { Tab } from 'src/tabsets/models/Tab'
-import { Tabset } from 'src/tabsets/models/Tabset'
-import { useRoute, useRouter } from 'vue-router'
+import _ from 'lodash'
+import { openURL } from 'quasar'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import NavigationService from 'src/services/NavigationService'
 import { BlobMetadata } from 'src/snapshots/models/BlobMetadata'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
-import { openURL } from 'quasar'
-import _ from 'lodash'
-import NavigationService from 'src/services/NavigationService'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { Tab } from 'src/tabsets/models/Tab'
+import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { PropType } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 const props = defineProps({
   tab: { type: Object as PropType<Tab>, required: true },

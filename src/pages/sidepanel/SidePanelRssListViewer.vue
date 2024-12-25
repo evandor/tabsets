@@ -34,16 +34,16 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watchEffect } from 'vue'
-import { useRouter } from 'vue-router'
+import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import { useQuasar } from 'quasar'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'
-import { Tab } from 'src/tabsets/models/Tab'
-import TabFaviconWidget from 'src/tabsets/widgets/TabFaviconWidget.vue'
-import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import Analytics from 'src/core/utils/google-analytics'
+import { Tab } from 'src/tabsets/models/Tab'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import TabFaviconWidget from 'src/tabsets/widgets/TabFaviconWidget.vue'
+import { onMounted, ref, watchEffect } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { handleError, handleSuccess } = useNotificationHandler()
 const { inBexMode } = useUtils()

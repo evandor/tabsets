@@ -104,17 +104,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
-import { useSettingsStore } from 'src/stores/settingsStore'
-import { DrawerTabs, useUiStore } from 'src/ui/stores/uiStore'
 import BookmarksTree from 'src/bookmarks/components/BookmarksTree.vue'
-import ByDomainList from 'src/tabsets/components/ByDomainList.vue'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
-import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import Features from 'src/features/components/Features.vue'
 import OpenTabsView from 'src/opentabs/views/OpenTabsView.vue'
+import { useSettingsStore } from 'src/stores/settingsStore'
+import ByDomainList from 'src/tabsets/components/ByDomainList.vue'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import TagListViewer from 'src/tabsets/views/TagListViewer.vue'
+import { DrawerTabs, useUiStore } from 'src/ui/stores/uiStore'
+import { ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 

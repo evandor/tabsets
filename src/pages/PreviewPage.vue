@@ -49,13 +49,13 @@
 </template>
 
 <script lang="ts" setup>
+import _ from 'lodash'
+import { date } from 'quasar'
+import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { date } from 'quasar'
-import _ from 'lodash'
-import TabsetService from 'src/tabsets/services/TabsetService'
-import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
 const route = useRoute()
 const router = useRouter()

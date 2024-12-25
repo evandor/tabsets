@@ -3,17 +3,17 @@
 </template>
 
 <script setup lang="ts">
+import { EventEmitter } from 'events'
 import { setCssVar, useQuasar } from 'quasar'
 import AppService from 'src/app/AppService'
-import { EventEmitter } from 'events'
-import { useRouter } from 'vue-router'
-import { useLogger } from 'src/services/Logger'
-import { useSettingsStore } from 'src/stores/settingsStore'
-import { useAppStore } from 'src/stores/appStore'
+import BexFunctions from 'src/core/communication/BexFunctions'
 import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
+import { useLogger } from 'src/services/Logger'
+import { useAppStore } from 'src/stores/appStore'
+import { useSettingsStore } from 'src/stores/settingsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
-import BexFunctions from 'src/core/communication/BexFunctions'
+import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const router = useRouter()

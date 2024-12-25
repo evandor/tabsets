@@ -58,22 +58,22 @@
 </template>
 
 <script lang="ts" setup>
-import BookmarksTree from 'src/bookmarks/components/BookmarksTree.vue'
-import { onMounted, ref } from 'vue'
-import Analytics from 'src/core/utils/google-analytics'
-import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
-import { useRouter } from 'vue-router'
-import NavigationService from 'src/services/NavigationService'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useQuasar } from 'quasar'
-import { Tabset } from 'src/tabsets/models/Tabset'
-import ChromeApi from 'src/app/BrowserApi'
 import _ from 'lodash'
-import { useUtils } from 'src/core/services/Utils'
-import { useUiStore } from 'src/ui/stores/uiStore'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { CreateTabsetFromBookmarksRecursive } from 'src/domain/commands/CreateTabsetFromBookmarksRecursive'
+import { useQuasar } from 'quasar'
+import ChromeApi from 'src/app/BrowserApi'
+import BookmarksTree from 'src/bookmarks/components/BookmarksTree.vue'
+import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useUtils } from 'src/core/services/Utils'
+import Analytics from 'src/core/utils/google-analytics'
+import { CreateTabsetFromBookmarksRecursive } from 'src/domain/commands/CreateTabsetFromBookmarksRecursive'
+import NavigationService from 'src/services/NavigationService'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { sendMsg } = useUtils()
 

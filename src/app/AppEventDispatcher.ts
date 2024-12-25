@@ -1,7 +1,7 @@
-import { useSearchStore } from 'src/search/stores/searchStore'
-import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useSearchStore } from 'src/search/stores/searchStore'
 import { RestoreTabsetCommand } from 'src/tabsets/commands/RestoreTabset'
+import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 
 /**
  * meant for inter-submodule communication.

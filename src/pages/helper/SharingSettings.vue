@@ -41,14 +41,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from 'vue'
+import { LocalStorage } from 'quasar'
 import {
   SHARING_AUTHOR_IDENT,
   SHARING_AVATAR_IDENT,
   STRIP_CHARS_IN_USER_INPUT,
 } from 'src/boot/constants'
-import { LocalStorage } from 'quasar'
 import { useUtils } from 'src/core/services/Utils'
+import { ref, watchEffect } from 'vue'
 
 const { sanitize } = useUtils()
 

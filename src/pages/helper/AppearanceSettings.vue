@@ -203,22 +203,22 @@
 </template>
 
 <script lang="ts" setup>
-import NavigationService from 'src/services/NavigationService'
-import { FontSize, ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import InfoLine from 'pages/helper/InfoLine.vue'
-import { useI18n } from 'vue-i18n'
-import { ref, watch, watchEffect } from 'vue'
 import { LocalStorage, useQuasar } from 'quasar'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT } from 'src/boot/constants'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
+import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCommand'
+import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatureCommand'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import NavigationService from 'src/services/NavigationService'
 import { useSettingsStore } from 'src/stores/settingsStore'
 import { StaticSuggestionIdent, Suggestion } from 'src/suggestions/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCommand'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatureCommand'
+import { FontSize, ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
+import { ref, watch, watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const { sendMsg } = useUtils()

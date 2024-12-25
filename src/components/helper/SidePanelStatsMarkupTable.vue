@@ -85,14 +85,14 @@
 </template>
 
 <script lang="ts" setup>
-import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { onMounted, ref, watch, watchEffect } from 'vue'
 import { date, useQuasar } from 'quasar'
-import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import NavigationService from 'src/services/NavigationService'
-import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { onMounted, ref, watch, watchEffect } from 'vue'
 
 const localstorage = useQuasar().localStorage
 

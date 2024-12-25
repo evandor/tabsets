@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
 import SidePanelFooter from 'components/SidePanelFooter.vue'
 import { useMeta } from 'quasar'
+import { ref, watchEffect } from 'vue'
 
 const location = ref('')
 

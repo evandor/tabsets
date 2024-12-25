@@ -1,12 +1,12 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-import { defineConfig } from '#q-app/wrappers'
 import { fileURLToPath } from 'node:url'
+import { defineConfig } from '#q-app/wrappers'
 import 'dotenv/config.js'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
-import version from 'vite-plugin-package-version';
 import { sentryVitePlugin } from '@sentry/vite-plugin'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import version from 'vite-plugin-package-version'
 
 export default defineConfig((ctx) => {
   return {

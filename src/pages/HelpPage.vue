@@ -13,9 +13,9 @@
 </template>
 
 <script lang="ts" setup>
+import Analytics from 'src/core/utils/google-analytics'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Analytics from 'src/core/utils/google-analytics'
 
 const route = useRoute()
 const router = useRouter()

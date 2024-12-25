@@ -91,8 +91,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useUiStore } from 'src/ui/stores/uiStore'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { useUiStore } from 'src/ui/stores/uiStore'
 </script>

@@ -1,23 +1,23 @@
-import { Tabset } from 'src/tabsets/models/Tabset'
+import _ from 'lodash'
+import { LocalStorage, uid } from 'quasar'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import {
   CLEANUP_PERIOD_IN_MINUTES,
   GITHUB_AUTO_BACKUP,
   MONITORING_PERIOD_IN_MINUTES,
 } from 'src/boot/constants'
-import _ from 'lodash'
-import NavigationService from 'src/services/NavigationService'
-import { Tab } from 'src/tabsets/models/Tab'
-import { LocalStorage, uid } from 'quasar'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { Router } from 'vue-router'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { GithubBackupCommand } from 'src/tabsets/commands/github/GithubBackupCommand'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useRequestsService } from 'src/requests/services/RequestsService'
 import { useRequestsStore } from 'src/requests/stores/requestsStore'
+import NavigationService from 'src/services/NavigationService'
+import { GithubBackupCommand } from 'src/tabsets/commands/github/GithubBackupCommand'
+import { Tab } from 'src/tabsets/models/Tab'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { Router } from 'vue-router'
 
 function runHousekeeping() {
   //console.log("housekeeping now...")

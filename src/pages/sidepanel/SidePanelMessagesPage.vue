@@ -27,12 +27,12 @@
 
 <script lang="ts" setup>
 import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
-import { useUiStore } from 'src/ui/stores/uiStore'
-import { onMounted, ref } from 'vue'
+import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
-import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
-import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import { onMounted, ref } from 'vue'
 
 const messages = ref<object[]>([])
 

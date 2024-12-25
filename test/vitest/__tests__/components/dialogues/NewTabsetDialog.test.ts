@@ -1,11 +1,11 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils'
-import { beforeEach, describe, expect, it } from 'vitest'
 import AddBookmarkFolderDialog from 'components/dialogues/AddBookmarkFolderDialog.vue'
 import { createPinia, setActivePinia } from 'pinia'
+import { Dialog } from 'quasar'
 import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
 import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
-import { Dialog } from 'quasar'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 installQuasarPlugin({ plugins: { Dialog } })
 

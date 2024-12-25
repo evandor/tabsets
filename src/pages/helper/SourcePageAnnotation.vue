@@ -53,11 +53,11 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
-import { Annotation } from 'src/snapshots/models/Annotation'
-import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import _ from 'lodash'
+import { Annotation } from 'src/snapshots/models/Annotation'
 import { BlobMetadata } from 'src/snapshots/models/BlobMetadata'
+import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
+import { PropType, ref } from 'vue'
 
 const props = defineProps({
   sourceId: { type: String, required: true },

@@ -18,10 +18,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, PropType, ref, watchEffect } from 'vue'
-import { useSearchStore } from 'src/search/stores/searchStore'
 import _ from 'lodash'
+import { useSearchStore } from 'src/search/stores/searchStore'
 import { Tab } from 'src/tabsets/models/Tab'
+import { onMounted, PropType, ref, watchEffect } from 'vue'
 
 const props = defineProps({
   tab: { type: Object as PropType<Tab>, required: true },

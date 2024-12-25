@@ -1,5 +1,5 @@
-import { Tab } from 'src/tabsets/models/Tab'
 import { Placeholders, PlaceholdersType } from 'src/tabsets/models/Placeholders'
+import { Tab } from 'src/tabsets/models/Tab'
 
 class PH {
   constructor(

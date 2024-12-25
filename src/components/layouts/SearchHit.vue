@@ -89,24 +89,24 @@
 </template>
 
 <script setup lang="ts">
-import NavigationService from 'src/services/NavigationService'
-import TabsetService from 'src/tabsets/services/TabsetService'
-import { Hit } from 'src/search/models/Hit'
 import _ from 'lodash'
-import { useRouter } from 'vue-router'
-import BookmarksService from 'src/bookmarks/services/BookmarksService'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useSettingsStore } from 'src/stores/settingsStore'
-import { useUtils } from 'src/core/services/Utils'
-import { ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
-import ShortUrl from 'src/core/utils/ShortUrl.vue'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import BookmarksService from 'src/bookmarks/services/BookmarksService'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useUtils } from 'src/core/services/Utils'
+import ShortUrl from 'src/core/utils/ShortUrl.vue'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { Hit } from 'src/search/models/Hit'
+import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import { useSettingsStore } from 'src/stores/settingsStore'
+import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
+import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
+import { ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   hit: { type: Hit, required: true },

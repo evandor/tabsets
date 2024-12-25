@@ -37,20 +37,20 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
 import _ from 'lodash'
-import { useSearchStore } from 'src/search/stores/searchStore'
+import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import { uid, useQuasar } from 'quasar'
 import SearchHit from 'src/components/layouts/SearchHit.vue'
-import { Hit } from 'src/search/models/Hit'
-import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
-import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import Analytics from 'src/core/utils/google-analytics'
-import { Tabset } from 'src/tabsets/models/Tabset'
-import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { Hit } from 'src/search/models/Hit'
+import { useSearchStore } from 'src/search/stores/searchStore'
 import { Tab } from 'src/tabsets/models/Tab'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import { onMounted, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const searchStore = useSearchStore()

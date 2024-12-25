@@ -7,8 +7,8 @@
  * 2. Do NOT import this file in multiple background scripts. Only in one!
  * 3. Import it in your background service worker (if available for your target browser).
  */
-import { createBridge } from '#q-app/bex/background'
 import { PortName } from '#q-app'
+import { createBridge } from '#q-app/bex/background'
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10

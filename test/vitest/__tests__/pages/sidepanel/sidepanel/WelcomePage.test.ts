@@ -1,11 +1,11 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { mount, config } from '@vue/test-utils'
-import { beforeEach, describe, expect, vi, it } from 'vitest'
+import { config, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import ChromeApi from 'src/app/BrowserApi'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
-import { useRoute, useRouter } from 'vue-router'
 import WelcomePage from 'src/pages/sidepanel/WelcomePage.vue'
+import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { useRoute, useRouter } from 'vue-router'
 
 installQuasarPlugin()
 

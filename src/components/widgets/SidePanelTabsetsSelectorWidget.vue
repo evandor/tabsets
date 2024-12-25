@@ -111,23 +111,23 @@
 </template>
 
 <script lang="ts" setup>
+import _ from 'lodash'
+import { useQuasar } from 'quasar'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
+import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
+import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
+import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
+import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
+import { useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
-import _ from 'lodash'
-import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
-import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { ExecutionResult } from 'src/core/domain/ExecutionResult'
-import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
-import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
-import { useUiStore } from 'src/ui/stores/uiStore'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
 
 const props = defineProps({
   fromPanel: { type: Boolean, default: true },

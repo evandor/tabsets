@@ -57,12 +57,12 @@
 </template>
 
 <script setup lang="ts">
+import { formatDistance, parseISO } from 'date-fns'
+import { date } from 'quasar'
+import Analytics from 'src/core/utils/google-analytics'
+import NavigationService from 'src/services/NavigationService'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { date } from 'quasar'
-import NavigationService from 'src/services/NavigationService'
-import { formatDistance, parseISO } from 'date-fns'
-import Analytics from 'src/core/utils/google-analytics'
 
 const route = useRoute()
 const router = useRouter()

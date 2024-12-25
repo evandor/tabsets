@@ -1,5 +1,5 @@
-import { boot } from 'quasar/wrappers'
 import axios from 'axios'
+import { boot } from 'quasar/wrappers'
 
 const api = axios.create({ baseURL: 'https://api.example.com' })
 

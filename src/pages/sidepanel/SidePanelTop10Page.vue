@@ -42,17 +42,17 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import { Tabset } from 'src/tabsets/models/Tabset'
-import { Tab } from 'src/tabsets/models/Tab'
-import PanelTabListElementWidget from 'src/tabsets/widgets/PanelTabListElementWidget.vue'
 import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
-import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
-import { onMounted, ref, watchEffect } from 'vue'
 import Analytics from 'src/core/utils/google-analytics'
 import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
-import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { Tab } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import PanelTabListElementWidget from 'src/tabsets/widgets/PanelTabListElementWidget.vue'
+import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
+import { onMounted, ref, watchEffect } from 'vue'
 
 const top10 = ref<TabAndTabsetId[]>([])
 const loading = ref(true)

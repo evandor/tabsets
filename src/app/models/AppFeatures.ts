@@ -1,8 +1,8 @@
 import _ from 'lodash'
-import { Feature } from 'src/features/models/Feature'
 import { FeatureIdent, FeatureType } from 'src/app/models/FeatureIdent'
 import { GrantPermissionCommand } from 'src/core/domain/commands/GrantPermissionCommand'
 import { RevokePermissionCommand } from 'src/core/domain/commands/RevokePermissionCommand'
+import { Feature } from 'src/features/models/Feature'
 
 export class AppFeatures {
   features: Feature[] = [

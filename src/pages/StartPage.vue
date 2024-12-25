@@ -8,8 +8,8 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-import { useRouter } from 'vue-router'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const router = useRouter()

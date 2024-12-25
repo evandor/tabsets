@@ -3,8 +3,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
 const redirect = useRoute().params.redirect as string

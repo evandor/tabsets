@@ -48,17 +48,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
 import _ from 'lodash'
-import { useSearchStore } from 'src/search/stores/searchStore'
 import { uid, useQuasar } from 'quasar'
 import SearchHit from 'src/components/layouts/SearchHit.vue'
-import { Hit } from 'src/search/models/Hit'
-import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { GrantPermissionCommand } from 'src/core/domain/commands/GrantPermissionCommand'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { Hit } from 'src/search/models/Hit'
+import { useSearchStore } from 'src/search/stores/searchStore'
 import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
+import { ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const searchStore = useSearchStore()

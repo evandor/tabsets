@@ -53,20 +53,20 @@
 </template>
 
 <script lang="ts" setup>
-import { useUiStore } from 'src/ui/stores/uiStore'
-import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
-import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
-import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
-import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import TagsListViewerWidget from 'src/tabsets/widgets/TagsListViewerWidget.vue'
-import { ref, watchEffect } from 'vue'
 import { Chart, LinearScale } from 'chart.js'
 import { WordCloudController, WordElement } from 'chartjs-chart-wordcloud'
 import _ from 'lodash'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import { Tab } from 'src/tabsets/models/Tab'
+import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import TagsListViewerWidget from 'src/tabsets/widgets/TagsListViewerWidget.vue'
+import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
+import { ref, watchEffect } from 'vue'
 
 Chart.register(WordCloudController, WordElement, LinearScale)
 

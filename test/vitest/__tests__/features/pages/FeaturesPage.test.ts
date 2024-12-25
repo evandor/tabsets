@@ -1,8 +1,8 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { mount, VueWrapper } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import FeaturesPage from 'src/features/pages/FeaturesPage.vue'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useRoute, useRouter } from 'vue-router'
 
 installQuasarPlugin()

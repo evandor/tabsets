@@ -61,19 +61,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from 'vue'
 import _ from 'lodash'
-import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
-import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
-import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
-import { useUiStore } from 'src/ui/stores/uiStore'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import { useQuasar } from 'quasar'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
+import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
+import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
+import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import { ref, watchEffect } from 'vue'
 
 const $q = useQuasar()
 const spacesStore = useSpacesStore()

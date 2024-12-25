@@ -47,17 +47,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, watchEffect } from 'vue'
-import { uid, useQuasar } from 'quasar'
-import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
-import NavigationService from 'src/services/NavigationService'
 import _ from 'lodash'
+import { uid, useQuasar } from 'quasar'
 import { TreeNode } from 'src/bookmarks/models/Tree'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import Highlighter from 'vue-highlight-words'
-import { useSettingsStore } from 'src/stores/settingsStore'
+import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { useUtils } from 'src/core/services/Utils'
+import NavigationService from 'src/services/NavigationService'
+import { useSettingsStore } from 'src/stores/settingsStore'
 import { Tab } from 'src/tabsets/models/Tab'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { ref, watch, watchEffect } from 'vue'
+import Highlighter from 'vue-highlight-words'
 
 const { favIconFromUrl } = useUtils()
 

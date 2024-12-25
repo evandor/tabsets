@@ -91,18 +91,18 @@
 </template>
 
 <script lang="ts" setup>
-import _ from 'lodash'
-import { Tabset } from 'src/tabsets/models/Tabset'
-import { Tab } from 'src/tabsets/models/Tab'
-import PanelTabListElementWidget from 'src/tabsets/widgets/PanelTabListElementWidget.vue'
 import { formatDistance } from 'date-fns'
+import _ from 'lodash'
 import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
-import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
-import { onMounted, ref, watchEffect } from 'vue'
 import Analytics from 'src/core/utils/google-analytics'
 import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
-import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import { Tab } from 'src/tabsets/models/Tab'
+import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import PanelTabListElementWidget from 'src/tabsets/widgets/PanelTabListElementWidget.vue'
+import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
+import { onMounted, ref, watchEffect } from 'vue'
 
 const tab = ref('latest_by_access')
 const byAccess = ref<_.Dictionary<Tab[]> | undefined>(undefined)

@@ -37,17 +37,17 @@
 </template>
 
 <script lang="ts" setup>
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
-import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
-import { ref, watchEffect } from 'vue'
-import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { MarkTabsetAsFavoriteCommand } from 'src/tabsets/commands/MarkTabsetAsFavorite'
-import { MarkTabsetAsDefaultCommand } from 'src/tabsets/commands/MarkTabsetAsDefault'
-import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatureCommand'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatureCommand'
+import { MarkTabsetAsDefaultCommand } from 'src/tabsets/commands/MarkTabsetAsDefault'
+import { MarkTabsetAsFavoriteCommand } from 'src/tabsets/commands/MarkTabsetAsFavorite'
+import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
+import { ref, watchEffect } from 'vue'
 
 const lastTabsets = ref<Pick<Tabset, 'id' | 'name' | 'status'>[]>([])
 

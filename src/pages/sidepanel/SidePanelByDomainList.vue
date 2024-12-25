@@ -29,14 +29,14 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import Analytics from 'src/core/utils/google-analytics'
-import ByDomainListWidget from 'src/tabsets/widgets/ByDomainListWidget.vue'
 import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
+import ByDomainListWidget from 'src/tabsets/widgets/ByDomainListWidget.vue'
 import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 

@@ -81,15 +81,15 @@
 </template>
 
 <script setup lang="ts">
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useUtils } from 'src/core/services/Utils'
+import NavigationService from 'src/services/NavigationService'
+import { DeleteTabCommand } from 'src/tabsets/commands/DeleteTabCommand'
 import { Tab, UrlExtension } from 'src/tabsets/models/Tab'
 import TabsetService from 'src/tabsets/services/TabsetService'
-import { PropType, ref } from 'vue'
-import NavigationService from 'src/services/NavigationService'
 import TabFaviconWidget from 'src/tabsets/widgets/TabFaviconWidget.vue'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { DeleteTabCommand } from 'src/tabsets/commands/DeleteTabCommand'
-import { useUtils } from 'src/core/services/Utils'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
+import { PropType, ref } from 'vue'
 
 const props = defineProps({
   tab: { type: Object as PropType<Tab>, required: true },

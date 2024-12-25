@@ -1,7 +1,7 @@
-import { Tab } from 'src/tabsets/models/Tab'
-import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUtils } from 'src/core/services/Utils'
+import { Tab } from 'src/tabsets/models/Tab'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
 
 const { inBexMode } = useUtils()
 

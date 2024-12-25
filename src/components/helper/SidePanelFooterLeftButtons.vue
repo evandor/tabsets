@@ -159,18 +159,18 @@
   </span>
 </template>
 <script setup lang="ts">
-import { useUiStore } from 'src/ui/stores/uiStore'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import { ref, watchEffect } from 'vue'
-import { SuggestionState } from 'src/suggestions/models/Suggestion'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import OpenTabsThresholdWidget from 'src/opentabs/widgets/OpenTabsThresholdWidget.vue'
+import { SuggestionState } from 'src/suggestions/models/Suggestion'
+import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
-import SidePanelFooterViewMenuItem from 'src/ui/components/SidePanelFooterViewMenuItem.vue'
 import SidePanelFooterLeftButton from 'src/ui/components/SidePanelFooterLeftButton.vue'
+import SidePanelFooterViewMenuItem from 'src/ui/components/SidePanelFooterViewMenuItem.vue'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import { ref, watchEffect } from 'vue'
 
 const props = defineProps({
   showSuggestionIcon: { type: Boolean, required: true },

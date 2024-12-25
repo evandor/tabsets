@@ -1,14 +1,14 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
-import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import { useDB } from 'src/services/usePersistenceService'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
-import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
+import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
+import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
+import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 

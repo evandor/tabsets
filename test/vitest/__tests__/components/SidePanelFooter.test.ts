@@ -1,17 +1,16 @@
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-
-vi.mock('src/boot/firebase2.ts')
-
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { DOMWrapper, mount, shallowMount, VueWrapper } from '@vue/test-utils'
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import SidePanelFooter from 'src/components/SidePanelFooter.vue'
-import ChromeApi from 'src/app/BrowserApi'
-import { useDB } from 'src/services/usePersistenceService'
 import { useQuasar } from 'quasar'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import ChromeApi from 'src/app/BrowserApi'
+import SidePanelFooter from 'src/components/SidePanelFooter.vue'
+import { useDB } from 'src/services/usePersistenceService'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('src/boot/firebase2.ts')
 
 installQuasarPlugin()
 

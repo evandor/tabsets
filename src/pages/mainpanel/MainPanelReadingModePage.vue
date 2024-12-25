@@ -57,15 +57,15 @@
 </template>
 
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
-import { onMounted, ref, watchEffect } from 'vue'
-import { Tab } from 'src/tabsets/models/Tab'
-import { useUtils } from 'src/core/services/Utils'
-import NavigationService from 'src/services/NavigationService'
-import Analytics from 'src/core/utils/google-analytics'
 import { useQuasar } from 'quasar'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
+import { useUtils } from 'src/core/services/Utils'
+import Analytics from 'src/core/utils/google-analytics'
+import NavigationService from 'src/services/NavigationService'
+import { Tab } from 'src/tabsets/models/Tab'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { onMounted, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { sanitizeAsText } = useUtils()
 

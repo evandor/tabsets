@@ -1,12 +1,12 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
+import { uid } from 'quasar'
 import { useDB } from 'src/services/usePersistenceService'
+import { CreateFolderCommand } from 'src/tabsets/commands/CreateFolderCommand'
+import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { CreateFolderCommand } from 'src/tabsets/commands/CreateFolderCommand'
-import { uid } from 'quasar'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 

@@ -23,21 +23,21 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watchEffect } from 'vue'
+import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
 import _ from 'lodash'
-import { Tabset } from 'src/tabsets/models/Tabset'
+import FirstToolbarHelper from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import { uid, useQuasar } from 'quasar'
 import SearchHit from 'src/components/layouts/SearchHit.vue'
-import { Hit } from 'src/search/models/Hit'
-import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
-import { useUiStore } from 'src/ui/stores/uiStore'
-import { Tab } from 'src/tabsets/models/Tab'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import FirstToolbarHelper from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import Analytics from 'src/core/utils/google-analytics'
-import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
+import { Hit } from 'src/search/models/Hit'
+import { Tab } from 'src/tabsets/models/Tab'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import { onMounted, ref, watchEffect } from 'vue'
 
 const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])

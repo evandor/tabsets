@@ -45,23 +45,23 @@
 </template>
 
 <script lang="ts" setup>
-import BookmarksTree from 'src/bookmarks/components/BookmarksTree.vue'
 import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import { useQuasar } from 'quasar'
+import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import BookmarksTree from 'src/bookmarks/components/BookmarksTree.vue'
+import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
+import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import Analytics from 'src/core/utils/google-analytics'
+import { CreateTabsetFromBookmarksRecursive } from 'src/domain/commands/CreateTabsetFromBookmarksRecursive'
+import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, ref } from 'vue'
-import Analytics from 'src/core/utils/google-analytics'
-import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
-import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
-import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useRoute, useRouter } from 'vue-router'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useQuasar } from 'quasar'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { CreateTabsetFromBookmarksRecursive } from 'src/domain/commands/CreateTabsetFromBookmarksRecursive'
-import { ExecutionResult } from 'src/core/domain/ExecutionResult'
-import { Tabset } from 'src/tabsets/models/Tabset'
 
 const $q = useQuasar()
 const router = useRouter()

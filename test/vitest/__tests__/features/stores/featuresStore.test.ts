@@ -1,12 +1,12 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
-import { useDB } from 'src/services/usePersistenceService'
-import PersistenceService from 'src/services/PersistenceService'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import InMemoryFeaturesPersistence from 'src/features/persistence/InMemoryFeaturesPersistence'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import InMemoryFeaturesPersistence from 'src/features/persistence/InMemoryFeaturesPersistence'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
+import PersistenceService from 'src/services/PersistenceService'
+import { useDB } from 'src/services/usePersistenceService'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 

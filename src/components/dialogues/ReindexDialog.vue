@@ -50,11 +50,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from 'vue'
-
 import { useDialogPluginComponent } from 'quasar'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { ref, watchEffect } from 'vue'
 
 defineEmits([...useDialogPluginComponent.emits])
 

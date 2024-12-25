@@ -1,7 +1,7 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { beforeEach, describe, expect, it } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { useSearchStore } from 'src/search/stores/searchStore'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 installQuasarPlugin()
 

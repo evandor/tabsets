@@ -1,5 +1,5 @@
-import { test, expect } from './fixtures'
 import { Page } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 function urlFor(extensionId: string, path: string) {
   return `chrome-extension://${extensionId}/www/index.html#${path}`
