@@ -2,7 +2,8 @@
   <q-footer
     class="q-pa-none q-mt-sm darkInDarkMode brightInBrightMode"
     style="border-top: 1px solid lightgrey"
-    :style="offsetBottom()">
+    :style="offsetBottom()"
+  >
     <template v-if="checkToasts()">
       <Transition name="fade" appear>
         <q-banner
@@ -10,7 +11,8 @@
           dense
           rounded
           style="font-size: smaller; text-align: center"
-          :class="toastBannerClass()">
+          :class="toastBannerClass()"
+        >
           {{ useUiStore().toasts[0]?.msg }}
           <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">
             <q-btn
@@ -206,7 +208,8 @@
           :class="rightButtonClass()"
           flat
           :size="getButtonSize()"
-          @click="toggleShowStatsTable()">
+          @click="toggleShowStatsTable()"
+        >
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left"
             >Show Stats</q-tooltip
           >
@@ -250,47 +253,48 @@
     </div>
   </q-footer>
 </template>
+
 <script setup lang="ts">
-import { useUiStore } from 'src/ui/stores/uiStore'
-import { onMounted, ref, watch, watchEffect } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import NavigationService from 'src/services/NavigationService'
-import { openURL, uid, useQuasar } from 'quasar'
-import { useUtils } from 'src/core/services/Utils'
-import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import _ from 'lodash'
-import { Suggestion, SuggestionState } from 'src/suggestions/models/Suggestion'
-import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
-import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
-import { ToastType } from 'src/core/models/Toast'
+import { openURL, uid, useQuasar } from 'quasar'
+import BrowserApi from 'src/app/BrowserApi'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import SidePanelFooterLeftButtons from 'src/components/helper/SidePanelFooterLeftButtons.vue'
 import SidePanelStatsMarkupTable from 'src/components/helper/SidePanelStatsMarkupTable.vue'
-import WindowsMarkupTable from 'src/windows/components/WindowsMarkupTable.vue'
-import { useAuthStore } from 'src/stores/authStore'
-import { useNotificationHandler } from 'src/core/services/ErrorHandler'
-import { Window } from 'src/windows/models/Window'
-import { WindowAction, WindowHolder } from 'src/windows/models/WindowHolder'
-import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
-import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
-import { Tab, TabSnippet } from 'src/tabsets/models/Tab'
-import BrowserApi from 'src/app/BrowserApi'
+import SidePanelTabsetListMarkup from 'src/components/helper/SidePanelTabsetListMarkup.vue'
 import { useContentStore } from 'src/content/stores/contentStore'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
-import { useTabsetsUiStore } from '../tabsets/stores/tabsetsUiStore'
-import SidePanelTabsetListMarkup from 'src/components/helper/SidePanelTabsetListMarkup.vue'
-import StartSessionDialog from 'src/tabsets/dialogues/StartSessionDialog.vue'
-import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { ToastType } from 'src/core/models/Toast'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useNotificationHandler } from 'src/core/services/ErrorHandler'
+import { useUtils } from 'src/core/services/Utils'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import NavigationService from 'src/services/NavigationService'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import { useAuthStore } from 'src/stores/authStore'
+import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
+import { Suggestion, SuggestionState } from 'src/suggestions/models/Suggestion'
+import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
+import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
+import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
+import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
+import StartSessionDialog from 'src/tabsets/dialogues/StartSessionDialog.vue'
 import { SaveOrReplaceResult } from 'src/tabsets/models/SaveOrReplaceResult'
+import { Tab, TabSnippet } from 'src/tabsets/models/Tab'
+import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useUiStore } from 'src/ui/stores/uiStore'
+import WindowsMarkupTable from 'src/windows/components/WindowsMarkupTable.vue'
+import { Window } from 'src/windows/models/Window'
+import { WindowAction, WindowHolder } from 'src/windows/models/WindowHolder'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { onMounted, ref, watch, watchEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useTabsetsUiStore } from '../tabsets/stores/tabsetsUiStore'
 
 const { handleError } = useNotificationHandler()
 

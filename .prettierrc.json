@@ -1,6 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/prettierrc",
   "semi": false,
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
   "singleQuote": true,
   "printWidth": 100
 }
