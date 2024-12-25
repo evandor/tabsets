@@ -23,7 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
 import _ from 'lodash'
 import FirstToolbarHelper from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import { uid, useQuasar } from 'quasar'
@@ -100,16 +99,6 @@ watchEffect(() => {
   const tag = useUiStore().selectedTag
   if (tag && tag.trim() !== '') {
     newSearch(tag)
-  }
-})
-
-watchEffect(() => {
-  if (showReindexDialog.value) {
-    $q.dialog({
-      component: ReindexDialog,
-    }).onDismiss(() => {
-      showReindexDialog.value = false
-    })
   }
 })
 </script>

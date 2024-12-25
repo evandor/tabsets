@@ -5,14 +5,12 @@
     bordered
     :style="cardStyle(tab)"
     @mouseover="setInfo(tab)"
-    @click="selectTab(tab)"
-  >
+    @click="selectTab(tab)">
     {{ loadThumbnail(tab) }}
     <q-card-section
       :data-testid="useUtils().createDataTestIdentifier('tabcardwidget', tab.title || '')"
       class="q-pt-xs cursor-pointer bg-primary text-white"
-      style="width: 100%"
-    >
+      style="width: 100%">
       <div class="row items-baseline">
         <!-- favicon -->
         <TabFaviconWidget :tab="tab" width="22px" height="22px" />
@@ -23,8 +21,7 @@
           <q-popup-edit
             :model-value="dynamicNameOrTitleModel(tab)"
             v-slot="scope"
-            @update:model-value="(val) => setCustomTitle(tab, val)"
-          >
+            @update:model-value="(val) => setCustomTitle(tab, val)">
             <q-input v-model="scope.value" dense autofocus counter @keyup.enter="scope.set" />
           </q-popup-edit>
           <q-tooltip>{{ tab.title }}</q-tooltip>
@@ -43,8 +40,7 @@
 
       <div
         class="text-subtitle2 ellipsis text-secondary"
-        @click.stop="NavigationService.openOrCreateTab([tab.url || ''])"
-      >
+        @click.stop="NavigationService.openOrCreateTab([tab.url || ''])">
         {{ tab.url?.replace('https://www.', '').replace('https://', '') }}
         <q-icon name="launch" color="secondary"></q-icon>
         <q-tooltip>
@@ -60,8 +56,7 @@
             width="48px"
             height="32px"
             no-spinner
-            style="border: 1px solid #efefef; border-right: 3px"
-          ></q-img>
+            style="border: 1px solid #efefef; border-right: 3px"></q-img>
         </div>
         <div class="col-8 text-right">
           <q-btn
@@ -70,8 +65,7 @@
             color="red"
             size="11px"
             icon="delete_outline"
-            @click.stop="deleteTab(tab)"
-          >
+            @click.stop="deleteTab(tab)">
             <q-tooltip>Delete this tab from this list!</q-tooltip>
           </q-btn>
         </div>
@@ -81,10 +75,8 @@
 </template>
 
 <script setup lang="ts">
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import NavigationService from 'src/services/NavigationService'
-import { DeleteTabCommand } from 'src/tabsets/commands/DeleteTabCommand'
 import { Tab, UrlExtension } from 'src/tabsets/models/Tab'
 import TabsetService from 'src/tabsets/services/TabsetService'
 import TabFaviconWidget from 'src/tabsets/widgets/TabFaviconWidget.vue'
