@@ -2,8 +2,7 @@
   <q-footer
     class="q-pa-none q-mt-sm darkInDarkMode brightInBrightMode"
     style="border-top: 1px solid lightgrey"
-    :style="offsetBottom()"
-  >
+    :style="offsetBottom()">
     <template v-if="checkToasts()">
       <Transition name="fade" appear>
         <q-banner
@@ -11,15 +10,13 @@
           dense
           rounded
           style="font-size: smaller; text-align: center"
-          :class="toastBannerClass()"
-        >
+          :class="toastBannerClass()">
           {{ useUiStore().toasts[0]?.msg }}
           <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">
             <q-btn
               flat
               :label="useUiStore().toasts[0]!.actions[0].label"
-              @click="useUiStore().callUndoActionFromCurrentToast()"
-            />
+              @click="useUiStore().callUndoActionFromCurrentToast()" />
           </template>
         </q-banner>
       </Transition>
@@ -36,8 +33,7 @@
         :rows="useWindowsStore().getWindowsForMarkupTable(getAdditionalActions)"
         @was-clicked="(e) => additionalActionWasClicked(e)"
         @recalculate-windows="windowHolderRows = calcWindowHolderRows()"
-        :key="randomKey"
-      />
+        :key="randomKey" />
     </div>
 
     <div class="row fit q-mb-sm" v-if="showStatsTable">
@@ -51,8 +47,7 @@
           size="18px"
           :value="progressValue"
           color="grey-7"
-          track-color="grey-4"
-        >
+          track-color="grey-4">
           <div class="absolute-full flex flex-center">
             <q-badge :label="progressLabel" color="grey" />
           </div>
@@ -84,16 +79,14 @@
           :color="dependingOnStates()"
           size="12px"
           @click="suggestionDialog()"
-          class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer"
-        >
+          class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer">
         </q-btn>
 
         <template v-if="!transitionGraceTime && !showSuggestionButton">
           <SidePanelFooterLeftButtons
             @was-clicked="doShowSuggestionButton = true"
             :size="getButtonSize()"
-            :show-suggestion-icon="showSuggestionIcon"
-          />
+            :show-suggestion-icon="showSuggestionIcon" />
         </template>
       </div>
       <div class="col text-right" v-if="useUiStore().appLoading">&nbsp;</div>
@@ -107,8 +100,7 @@
             "
             v-model="ignored"
             style="border: 1px dotted grey; border-radius: 3px; max-width: 30px; max-height: 20px"
-            @drop="drop($event)"
-          />
+            @drop="drop($event)" />
           <q-tooltip class="tooltip_small"
             >Drag and drop text or images from your current tab</q-tooltip
           >
@@ -120,8 +112,7 @@
             class="q-my-xs q-px-xs q-mr-none"
             :class="{ shake: animateSettingsButton }"
             flat
-            :size="getButtonSize()"
-          >
+            :size="getButtonSize()">
             <q-tooltip :delay="4000" class="tooltip_small" anchor="top left" self="bottom left">{{
               settingsTooltip()
             }}</q-tooltip>
@@ -132,8 +123,7 @@
                 v-close-popup
                 @was-clicked="openOptionsPage()"
                 icon="o_settings"
-                label="Open Settings"
-              />
+                label="Open Settings" />
 
               <q-separator />
 
@@ -141,8 +131,7 @@
                 v-close-popup
                 @was-clicked="openURL('https://docs.tabsets.net')"
                 icon="o_open_in_new"
-                label="Documentation"
-              />
+                label="Documentation" />
 
               <ContextMenuItem
                 v-close-popup
@@ -152,15 +141,13 @@
                   )
                 "
                 icon="o_open_in_new"
-                label="Feedback"
-              />
+                label="Feedback" />
 
               <ContextMenuItem
                 v-close-popup
                 @was-clicked="openURL('https://github.com/evandor/tabsets/issues')"
                 icon="o_open_in_new"
-                label="Issues"
-              />
+                label="Issues" />
 
               <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)">
                 <q-separator />
@@ -171,8 +158,7 @@
                   @was-clicked="startSession()"
                   color="warning"
                   icon="sym_o_new_window"
-                  label="Start new Session..."
-                />
+                  label="Start new Session..." />
               </template>
 
               <q-separator />
@@ -182,8 +168,7 @@
                 @was-clicked="reload()"
                 color="negative"
                 icon="o_replay"
-                label="Restart Tabsets"
-              />
+                label="Restart Tabsets" />
             </q-list>
           </q-menu>
         </span>
@@ -195,8 +180,7 @@
           :class="rightButtonClass()"
           flat
           :size="getButtonSize()"
-          @click="toggleShowWindowTable()"
-        >
+          @click="toggleShowWindowTable()">
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left"
             >Manage Windows</q-tooltip
           >
@@ -208,8 +192,7 @@
           :class="rightButtonClass()"
           flat
           :size="getButtonSize()"
-          @click="toggleShowStatsTable()"
-        >
+          @click="toggleShowStatsTable()">
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left"
             >Show Stats</q-tooltip
           >
@@ -243,8 +226,7 @@
           :class="rightButtonClass()"
           flat
           :size="getButtonSize()"
-          @click="openExtensionTab()"
-        >
+          @click="openExtensionTab()">
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left"
             >Tabsets as full-page app</q-tooltip
           >
@@ -262,7 +244,6 @@ import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import SidePanelFooterLeftButtons from 'src/components/helper/SidePanelFooterLeftButtons.vue'
 import SidePanelStatsMarkupTable from 'src/components/helper/SidePanelStatsMarkupTable.vue'
-import SidePanelTabsetListMarkup from 'src/components/helper/SidePanelTabsetListMarkup.vue'
 import { useContentStore } from 'src/content/stores/contentStore'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
@@ -279,6 +260,7 @@ import { Suggestion, SuggestionState } from 'src/suggestions/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
+import SidePanelTabsetListMarkup from 'src/tabsets/components/helper/SidePanelTabsetListMarkup.vue'
 import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
 import StartSessionDialog from 'src/tabsets/dialogues/StartSessionDialog.vue'
 import { SaveOrReplaceResult } from 'src/tabsets/models/SaveOrReplaceResult'
