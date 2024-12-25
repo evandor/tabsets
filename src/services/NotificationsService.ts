@@ -1,6 +1,4 @@
-import { useDB } from 'src/services/usePersistenceService'
-
-const { db } = useDB()
+import { Notification } from 'src/core/models/Notification'
 
 class NotificationsService {
   async init() {

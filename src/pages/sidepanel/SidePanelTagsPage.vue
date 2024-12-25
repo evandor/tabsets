@@ -62,7 +62,7 @@ const newSearch = (term: string) => {
       })
     })
 
-    _.forEach(results, (h) => {
+    _.forEach(results, (h: any) => {
       //console.log("h", h.item.bookmarkId)
       let tabsets: string[] = []
       if (h.url) {

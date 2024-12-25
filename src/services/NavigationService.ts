@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { openURL, uid } from 'quasar'
+import { openURL } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'

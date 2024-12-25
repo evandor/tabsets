@@ -218,7 +218,7 @@ const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 
 const title = (): string => {
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-    return useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
+    return useSpacesStore().space ? useSpacesStore().space.label : 'no_space_selected'
   } else {
     const currentTs = useTabsetsStore().getCurrentTabset
     if (currentTs) {

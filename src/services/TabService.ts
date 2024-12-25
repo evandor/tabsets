@@ -16,10 +16,9 @@ class TabService {
     // console.log("checking current tab", currentChromeTab, tab.url, currentChromeTab.url === tab.url)
 
     // special urls
-    //if (currentChromeTab?.url === "https://excalidraw.com/" && useContentStore().currentLocalStorage) {
-    //  console.warn("fix needed")
-    //return tab.id === useContentStore().currentLocalStorage['tabsetsTabId']
-    //}
+    // if (currentChromeTab?.url === "https://excalidraw.com/" && useContentStore().currentLocalStorage) {
+    //   return tab.id === useContentStore().currentLocalStorage['tabsetsTabId']
+    // }
 
     if (currentChromeTab?.url === tab.url) {
       tab.chromeTabId = currentChromeTab.id
