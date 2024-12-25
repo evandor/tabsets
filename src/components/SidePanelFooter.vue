@@ -2,8 +2,7 @@
   <q-footer
     class="q-pa-none q-mt-sm darkInDarkMode brightInBrightMode"
     style="border-top: 1px solid lightgrey"
-    :style="offsetBottom()"
-  >
+    :style="offsetBottom()">
     <template v-if="checkToasts()">
       <Transition name="fade" appear>
         <q-banner
@@ -11,8 +10,7 @@
           dense
           rounded
           style="font-size: smaller; text-align: center"
-          :class="toastBannerClass()"
-        >
+          :class="toastBannerClass()">
           {{ useUiStore().toasts[0]?.msg }}
           <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">
             <q-btn
@@ -208,8 +206,7 @@
           :class="rightButtonClass()"
           flat
           :size="getButtonSize()"
-          @click="toggleShowStatsTable()"
-        >
+          @click="toggleShowStatsTable()">
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left"
             >Show Stats</q-tooltip
           >

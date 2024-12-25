@@ -1325,13 +1325,13 @@
     helper-js "^3.1.2"
 
 "@he-tree/vue@^2.9.3":
-  version "2.9.3"
-  resolved "https://registry.yarnpkg.com/@he-tree/vue/-/vue-2.9.3.tgz#86be39c454278101b51a016c3a0b120e056a046a"
-  integrity sha512-8hM635PNFpRCLzZ+atSbpSVi278+cpZk46J3AnfppDLc+4rRgkTELn4jxfQICSXOamlleijhzg18QErJRy5p5g==
+  version "2.9.4"
+  resolved "https://registry.yarnpkg.com/@he-tree/vue/-/vue-2.9.4.tgz#869dd7cc219d16d686902cca7264e65fcc0315ac"
+  integrity sha512-n8yycL4fk46mlg6sIkcdSZmSCRvdzqj7Ts14ulKXLqmyR6NyTSnP6O9pj6dPk2S2wJIuX2Ad6MOzpg0qDhlBXA==
   dependencies:
     "@he-tree/dnd-utils" "^0.1.0-alpha.4"
     "@he-tree/tree-utils" "^0.1.0-alpha.6"
-    "@virtual-list/vue" "^1.2.0"
+    "@virtual-list/vue" "^1.2.1"
     helper-js "^3.1.2"
     vue-demi latest
 
@@ -2677,12 +2677,12 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.1.tgz#28fa185f67daaf7b7a1a8c1d445132c5d979f8bd"
   integrity sha512-fEzPV3hSkSMltkw152tJKNARhOupqbH96MZWyRjNaYZOMIzbrTeQDG+MTc6Mr2pgzFQzFxAfmhGDNP5QK++2ZA==
 
-"@virtual-list/vue@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@virtual-list/vue/-/vue-1.2.0.tgz#f0e1f6a5b97034e047b5812afb7d3c40838a894f"
-  integrity sha512-sTWCJAIU6NoRWU+6Nzw6TDJcwxnFgK3NmwGu4iDgV6Nhh/iaCEZDDhmChTV+CoXbShLfsgasQRhaVyC7SmkDDg==
+"@virtual-list/vue@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@virtual-list/vue/-/vue-1.2.1.tgz#6920dc3850362587cc71f6955fec382e4bb8dbab"
+  integrity sha512-sVangNRLgHJsrwjf2EeXuc8mUExbLRJO39J9/FXFWXXQkue/FBT4ZWN7GH5+GJTeVaEEfHW1W2UuVaf3LEB3jQ==
   dependencies:
-    helper-js "^3.1.0"
+    helper-js "^3.1.2"
     vue-demi latest
 
 "@vitejs/plugin-vue@^5.1.4":
@@ -3108,9 +3108,9 @@ algoliasearch@^5.14.2:
     "@algolia/requester-node-http" "5.18.0"
 
 alien-signals@^0.4.9:
-  version "0.4.9"
-  resolved "https://registry.yarnpkg.com/alien-signals/-/alien-signals-0.4.9.tgz#19b491645c8dd6141aee0e789330adf16f1703b9"
-  integrity sha512-piRGlMgQ65uRiY06mGU7I432AwPwAGf64TK1RXtM1Px4pPfLMTGI9TmsHTfioW1GukZRsNzkVQ/uHjhhd231Ow==
+  version "0.4.10"
+  resolved "https://registry.yarnpkg.com/alien-signals/-/alien-signals-0.4.10.tgz#78cb19d5bcdef6e0b38711aba0933b8c80f5ea70"
+  integrity sha512-7S60rz/mMjz0Djq1VI9rd4bGqKNgxTUGE6k7kwrRO6tF95qt1S3ohz1qaQisvUsfbGh7yXnm6DPRrOhOl1ho1A==
 
 ansi-escapes@^4.3.0, ansi-escapes@^4.3.2:
   version "4.3.2"
@@ -5923,7 +5923,7 @@ he@^1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
-helper-js@^3.0.0, helper-js@^3.1.0, helper-js@^3.1.2:
+helper-js@^3.0.0, helper-js@^3.1.2:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/helper-js/-/helper-js-3.1.5.tgz#ab81bbe99bd9807d00a9293060354c150707c2f2"
   integrity sha512-CQ56onWqmWwJRUK55/aJ6EeJUV/eqoRiayG6bk2i0Bhs79U94M+aRdA2QLOUGXp/Hy5yAos+YQK1LQHRWiSOHw==

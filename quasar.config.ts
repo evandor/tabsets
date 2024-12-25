@@ -5,7 +5,7 @@ import { defineConfig } from '#q-app/wrappers'
 import { fileURLToPath } from 'node:url'
 import 'dotenv/config.js'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
-
+import version from 'vite-plugin-package-version';
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 
 export default defineConfig((ctx) => {
@@ -117,6 +117,7 @@ export default defineConfig((ctx) => {
           { server: false },
         ],
         nodePolyfills(), // as of https://stackoverflow.com/questions/76431747/module-has-been-externalized-for-browser-compatibility-error-in-vite-build
+        version(),
         [
           sentryVitePlugin,
           {

@@ -72,7 +72,6 @@ AppService.init($q, router, false)
 
 info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
 
-/
 $q.bex.on('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
 onBeforeUnmount(() => {
   $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
