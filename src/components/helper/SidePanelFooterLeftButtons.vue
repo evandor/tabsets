@@ -6,8 +6,7 @@
     class="q-my-xs q-ml-xs q-px-xs"
     flat
     color="warning"
-    :size="props.size"
-  >
+    :size="props.size">
     <q-tooltip class="tooltip-small">{{ suggestionsLabel() }}</q-tooltip>
   </q-btn>
 
@@ -16,8 +15,7 @@
     icon="o_view_list"
     :size="props.size"
     class="q-my-xs q-ml-xs q-mr-none q-px-xs"
-    flat
-  >
+    flat>
     <q-menu>
       <q-list dense>
         <!--        <q-item dense clickable v-close-popup>-->
@@ -33,36 +31,31 @@
           label="Tabs By Domain"
           icon="o_dns"
           :size="buttonSize"
-          tooltip="List all your tabs URLs by domain"
-        />
+          tooltip="List all your tabs URLs by domain" />
         <SidePanelFooterViewMenuItem
           :side-panel-view="SidePanelViews.TAGS_LIST"
           icon="o_label"
           label="Tags List"
           :size="buttonSize"
-          tooltip="List of all tags sorted by prevalence"
-        />
+          tooltip="List of all tags sorted by prevalence" />
         <SidePanelFooterViewMenuItem
           :side-panel-view="SidePanelViews.NEWEST_TABS_LIST"
           label="Newest Tabs"
           icon="o_schedule"
           :size="buttonSize"
-          tooltip="Latest Tabs List"
-        />
+          tooltip="Latest Tabs List" />
         <SidePanelFooterViewMenuItem
           :side-panel-view="SidePanelViews.TOP_10_TABS_LIST"
           label="Top 10 Tabs"
           icon="o_workspace_premium"
           :size="buttonSize"
-          tooltip="Top 10 Tabs List"
-        />
+          tooltip="Top 10 Tabs List" />
         <SidePanelFooterViewMenuItem
           :side-panel-view="SidePanelViews.TABS_AS_TREE"
           label="Tabs as Tree"
           icon="o_account_tree"
           :size="buttonSize"
-          tooltip="Show a tree view of your tabs"
-        />
+          tooltip="Show a tree view of your tabs" />
 
         <!-- :disable="useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN)" -->
         <SidePanelFooterViewMenuItem
@@ -70,8 +63,7 @@
           label="Default View"
           icon=""
           :size="buttonSize"
-          tooltip="Back to Default View"
-        />
+          tooltip="Back to Default View" />
       </q-list>
     </q-menu>
   </q-btn>
@@ -81,52 +73,45 @@
       :side-panel-view="SidePanelViews.BY_DOMAIN_LIST"
       :size="props.size"
       icon="o_dns"
-      tooltip="List all your tabs URLs by domain"
-    />
+      tooltip="List all your tabs URLs by domain" />
 
     <SidePanelFooterLeftButton
       :side-panel-view="SidePanelViews.TAGS_LIST"
       :size="props.size"
       icon="o_label"
-      tooltip="Tags List"
-    />
+      tooltip="Tags List" />
 
     <SidePanelFooterLeftButton
       :side-panel-view="SidePanelViews.NEWEST_TABS_LIST"
       :size="props.size"
       icon="o_schedule"
-      tooltip="Latest Tabs List"
-    />
+      tooltip="Latest Tabs List" />
 
     <SidePanelFooterLeftButton
       :side-panel-view="SidePanelViews.TABS_AS_TREE"
       :size="props.size"
       icon="o_account_tree"
-      tooltip="Show a tree view of your tabs"
-    />
+      tooltip="Show a tree view of your tabs" />
 
     <SidePanelFooterLeftButton
       :side-panel-view="SidePanelViews.TOP_10_TABS_LIST"
       :size="props.size"
       icon="o_workspace_premium"
-      tooltip="Top 10 Tabs List (by access)"
-    />
+      tooltip="Top 10 Tabs List (by access)" />
   </template>
 
   <SidePanelFooterLeftButton
     :side-panel-view="SidePanelViews.TABS_LIST"
     :size="props.size"
     icon="o_playlist_add"
-    tooltip="All your browser's open tabs"
-  />
+    tooltip="All your browser's open tabs" />
 
   <SidePanelFooterLeftButton
     v-if="unreadMessagesCount > 0"
     :side-panel-view="SidePanelViews.MESSAGES"
     icon="o_chat"
     :size="props.size"
-    tooltip="Your messages"
-  >
+    tooltip="Your messages">
     <q-badge color="red" floating v-if="unreadMessagesCount > 0">{{ unreadMessagesCount }}</q-badge>
   </SidePanelFooterLeftButton>
 
@@ -136,28 +121,26 @@
     defaultColor="warning"
     :class="{ shake: animateBookmarksButton }"
     :size="props.size"
-    tooltip="Show the Bookmarks Browser"
-  />
+    tooltip="Show the Bookmarks Browser" />
 
   <SidePanelFooterLeftButton
     :side-panel-view="SidePanelViews.RSS_LIST"
     icon="o_rss_feed"
     :size="props.size"
-    tooltip="List all your RSS feeds"
-  />
+    tooltip="List all your RSS feeds" />
 
   <span
     class="q-ma-none"
     v-if="
       useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) &&
       useTabsetsStore().tabsets?.size > 0
-    "
-  >
+    ">
     <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
       <q-tooltip>{{ useTabsStore2().browserTabs?.length }} open tabs</q-tooltip>
     </OpenTabsThresholdWidget>
   </span>
 </template>
+
 <script setup lang="ts">
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'

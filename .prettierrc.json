@@ -3,5 +3,6 @@
   "semi": false,
   "plugins": ["@ianvs/prettier-plugin-sort-imports"],
   "singleQuote": true,
+  "bracketSameLine": true,
   "printWidth": 100
 }
