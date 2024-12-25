@@ -91,7 +91,6 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import BookmarksService from 'src/bookmarks/services/BookmarksService'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import ShortUrl from 'src/core/utils/ShortUrl.vue'
@@ -104,7 +103,6 @@ import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
 import { ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
 import { useRouter } from 'vue-router'
 

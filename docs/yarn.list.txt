@@ -527,10 +527,10 @@
 │  ├─ @babel/runtime@^7.7.7
 │  ├─ drag-event-service@^2.0.0
 │  └─ helper-js@^3.1.2
-├─ @he-tree/vue@2.9.3
+├─ @he-tree/vue@2.9.4
 │  ├─ @he-tree/dnd-utils@^0.1.0-alpha.4
 │  ├─ @he-tree/tree-utils@^0.1.0-alpha.6
-│  ├─ @virtual-list/vue@^1.2.0
+│  ├─ @virtual-list/vue@^1.2.1
 │  ├─ helper-js@^3.1.2
 │  └─ vue-demi@latest
 ├─ @humanfs/core@0.19.1
@@ -540,6 +540,12 @@
 │  └─ @humanwhocodes/retry@0.3.1
 ├─ @humanwhocodes/module-importer@1.0.1
 ├─ @humanwhocodes/retry@0.4.1
+├─ @ianvs/prettier-plugin-sort-imports@4.4.0
+│  ├─ @babel/generator@^7.26.2
+│  ├─ @babel/parser@^7.26.2
+│  ├─ @babel/traverse@^7.25.9
+│  ├─ @babel/types@^7.26.0
+│  └─ semver@^7.5.2
 ├─ @iconify-json/simple-icons@1.2.17
 │  └─ @iconify/types@*
 ├─ @iconify/types@2.0.0
@@ -1101,8 +1107,8 @@
 │  ├─ eslint-visitor-keys@^4.2.0
 │  └─ eslint-visitor-keys@4.2.0
 ├─ @ungap/structured-clone@1.2.1
-├─ @virtual-list/vue@1.2.0
-│  ├─ helper-js@^3.1.0
+├─ @virtual-list/vue@1.2.1
+│  ├─ helper-js@^3.1.2
 │  └─ vue-demi@latest
 ├─ @vitejs/plugin-vue@5.2.1
 ├─ @vitest/coverage-c8@0.33.0
@@ -1209,12 +1215,12 @@
 │  ├─ fast-glob@^3.3.2
 │  ├─ typescript-eslint@^8.15.0
 │  └─ vue-eslint-parser@^9.4.3
-├─ @vue/language-core@2.1.10
-│  ├─ @volar/language-core@~2.4.8
+├─ @vue/language-core@2.2.0
+│  ├─ @volar/language-core@~2.4.11
 │  ├─ @vue/compiler-dom@^3.5.0
 │  ├─ @vue/compiler-vue2@^2.7.16
 │  ├─ @vue/shared@^3.5.0
-│  ├─ alien-signals@^0.2.0
+│  ├─ alien-signals@^0.4.9
 │  ├─ minimatch@^9.0.3
 │  ├─ minimatch@9.0.5
 │  │  └─ brace-expansion@^2.0.1
@@ -1285,7 +1291,7 @@
 │  ├─ @algolia/requester-browser-xhr@5.18.0
 │  ├─ @algolia/requester-fetch@5.18.0
 │  └─ @algolia/requester-node-http@5.18.0
-├─ alien-signals@0.2.2
+├─ alien-signals@0.4.10
 ├─ ansi-escapes@4.3.2
 │  ├─ type-fest@^0.21.3
 │  └─ type-fest@0.21.3
@@ -1952,7 +1958,7 @@
 │  └─ domelementtype@^2.3.0
 ├─ dompurify@3.2.3
 │  └─ @types/trusted-types@^2.0.7
-├─ domutils@3.1.0
+├─ domutils@3.2.1
 │  ├─ dom-serializer@^2.0.0
 │  ├─ domelementtype@^2.3.0
 │  └─ domhandler@^5.0.3
@@ -1988,7 +1994,7 @@
 ├─ ee-first@1.1.1
 ├─ ejs@3.1.10
 │  └─ jake@^10.8.5
-├─ electron-to-chromium@1.5.75
+├─ electron-to-chromium@1.5.76
 ├─ element-resize-detector@1.2.4
 │  └─ batch-processor@1.0.0
 ├─ elementtree@0.1.7
@@ -3981,7 +3987,7 @@
 │  └─ vscode-languageserver-protocol@3.16.0
 ├─ vscode-uri@3.0.8
 ├─ vue-chartjs@5.3.2
-├─ vue-component-type-helpers@2.1.10
+├─ vue-component-type-helpers@2.2.0
 ├─ vue-demi@0.14.10
 ├─ vue-draggable-next@2.2.1
 ├─ vue-eslint-parser@9.4.3
@@ -4021,10 +4027,9 @@
 │  ├─ date-fns@^2.28.0
 │  └─ date-fns@2.30.0
 │     └─ @babel/runtime@^7.21.0
-├─ vue-tsc@2.1.10
-│  ├─ @volar/typescript@~2.4.8
-│  ├─ @vue/language-core@2.1.10
-│  └─ semver@^7.5.4
+├─ vue-tsc@2.2.0
+│  ├─ @volar/typescript@~2.4.11
+│  └─ @vue/language-core@2.2.0
 ├─ vue@3.5.13
 │  ├─ @vue/compiler-dom@3.5.13
 │  ├─ @vue/compiler-sfc@3.5.13
