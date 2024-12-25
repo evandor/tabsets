@@ -38,7 +38,7 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper2 :showSearchBox="showSearchBox"> </FirstToolbarHelper2>
+      <FirstToolbarHelper2 :showSearchBox="showSearchBox"></FirstToolbarHelper2>
     </q-page-sticky>
   </q-page>
 </template>
@@ -56,7 +56,6 @@ import SidePanelNotesView from 'src/notes/views/sidepanel/SidePanelNotesView.vue
 import FirstToolbarHelper2 from 'src/pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import StartingHint from 'src/pages/widgets/StartingHint.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { useAuthStore } from 'src/stores/authStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import SidePanelPageTabList from 'src/tabsets/layouts/SidePanelPageTabList.vue'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
@@ -67,11 +66,9 @@ import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import SidePanelFoldersView from 'src/tabsets/views/sidepanel/SidePanelFoldersView.vue'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { useAuthStore } from 'stores/authStore'
 import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-
-const { t } = useI18n({ locale: navigator.language, useScope: 'global' })
 
 const { inBexMode } = useUtils()
 

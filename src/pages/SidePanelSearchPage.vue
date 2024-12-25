@@ -131,7 +131,7 @@ const newSearch = (term: string) => {
     })
 
     const results = searchStore.search(term)
-    _.forEach(results, (h) => {
+    _.forEach(results, (h: any) => {
       //console.log("h", h.item.bookmarkId)
       const theHit = new Hit(
         uid(),

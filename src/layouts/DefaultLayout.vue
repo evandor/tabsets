@@ -275,7 +275,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  spacesOptions.value = _.map([...spacesStore.spaces.keys()], (key) => {
+  spacesOptions.value = _.map([...spacesStore.spaces.keys()], (key: any) => {
     const label = spacesStore.spaces.get(key)?.label || 'undef'
     return { id: key, label: label }
   })
@@ -329,7 +329,7 @@ const suggestionDialog = (s: Suggestion) =>
 const dependingOnStates = () =>
   _.find(
     useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]),
-    (s) => s.state === SuggestionState.NEW,
+    (s: Suggestion) => s.state === SuggestionState.NEW,
   )
     ? 'warning'
     : 'white'

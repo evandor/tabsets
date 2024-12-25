@@ -52,8 +52,6 @@ import ReindexDialog from 'components/dialogues/ReindexDialog.vue'
 import _ from 'lodash'
 import { uid, useQuasar } from 'quasar'
 import SearchHit from 'src/components/layouts/SearchHit.vue'
-import { GrantPermissionCommand } from 'src/core/domain/commands/GrantPermissionCommand'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { Hit } from 'src/search/models/Hit'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
@@ -74,7 +72,7 @@ const newSearch = (term: string) => {
 
   if (term && term.trim() !== '') {
     const results = searchStore.search(term)
-    _.forEach(results, (h) => {
+    _.forEach(results, (h: any) => {
       //console.log("h", h.item.bookmarkId)
       const theHit = new Hit(
         uid(),

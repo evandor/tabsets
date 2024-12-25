@@ -71,6 +71,7 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
+import { Tab } from 'src/tabsets/models/Tab'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { onMounted, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -130,7 +131,7 @@ watch(
 
 watchEffect(async () => {
   tabId.value = route.params.tabId as string
-  const found = _.find(useTabsetsStore().getCurrentTabs, (t) => t.id === route.params.tabId)
+  const found = _.find(useTabsetsStore().getCurrentTabs, (t: Tab) => t.id === route.params.tabId)
   console.log('tabid set to ', tabId.value, found)
   if (found && found.url && webviewRef.value) {
     console.log('found', found.url)

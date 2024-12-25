@@ -60,13 +60,10 @@ import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import '@he-tree/vue/style/default.css'
 import { DeleteTabsetFolderCommand } from 'src/tabsets/commands/DeleteTabsetFolderCommand'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-
-const { t } = useI18n({ locale: navigator.language, useScope: 'global' })
 
 type NodeTreeObject = {
   text: string

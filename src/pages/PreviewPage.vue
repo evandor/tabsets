@@ -50,8 +50,7 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import { date } from 'quasar'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { Tab } from 'src/tabsets/models/Tab'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import { onMounted, ref, watchEffect } from 'vue'
@@ -81,7 +80,7 @@ onMounted(() => {
 watchEffect(async () => {
   tabId.value = route.params.tabId as string
   console.log('checking tabId', tabId.value)
-  const found = _.find(useTabsetsStore().getCurrentTabs, (t) => t.id === route.params.tabId)
+  const found = _.find(useTabsetsStore().getCurrentTabs, (t: Tab) => t.id === route.params.tabId)
   console.log('found', found)
   if (found && found.url) {
     title.value = found.title || 'unknown'
