@@ -20,16 +20,14 @@
     selected-color="dark"
     @mouseenter="entered(true)"
     @mouseleave="entered(false)"
-    v-model:selected="selected"
-  >
+    v-model:selected="selected">
     <template v-slot:default-header="prop">
       <q-img
         v-if="prop.node.header === 'root'"
         class="rounded-borders q-mr-sm"
         width="20px"
         height="20px"
-        :src="getFaviconUrl(prop.node)"
-      >
+        :src="getFaviconUrl(prop.node)">
       </q-img>
 
       <q-icon v-else name="o_folder" class="q-mr-sm" />
@@ -39,8 +37,7 @@
         :highlightStyle="{ backgroundColor: 'yellow' }"
         :searchWords="[filter]"
         :autoEscape="true"
-        :textToHighlight="prop.node.label"
-      />
+        :textToHighlight="prop.node.label" />
     </template>
   </q-tree>
   <q-spinner v-else></q-spinner>

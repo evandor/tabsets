@@ -5,8 +5,7 @@
         <div class="row q-ma-none q-pa-none">
           <div
             class="col-12 q-mx-sm q-mt-md q-mb-none q-pt-md cursor-pointer text-center"
-            v-if="importedTabsetId"
-          >
+            v-if="importedTabsetId">
             <q-btn label="open Imported Tabset" outline @click="openImportedTabset()" />
           </div>
           <div class="col-12 q-ma-none q-pa-none q-pt-md">
@@ -20,8 +19,7 @@
               :nodes-actions="'import'"
               @imported="(a: any) => imported(a)"
               @toggle-show-only-folders="toggleShowOnlyFolders()"
-              :in-side-panel="true"
-            />
+              :in-side-panel="true" />
           </div>
         </div>
       </div>
@@ -36,8 +34,7 @@
           <SidePanelToolbarButton
             icon="close"
             tooltip="Close this view"
-            @click="useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)"
-          />
+            @click="useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)" />
         </template>
       </FirstToolbarHelper2>
     </q-page-sticky>
@@ -54,11 +51,10 @@ import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.v
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import Analytics from 'src/core/utils/google-analytics'
-import { CreateTabsetFromBookmarksRecursive } from 'src/domain/commands/CreateTabsetFromBookmarksRecursive'
 import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
+import { CreateTabsetFromBookmarksRecursive } from 'src/tabsets/commands/CreateTabsetFromBookmarksRecursive'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'

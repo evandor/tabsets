@@ -6,15 +6,13 @@
           <div
             class="col-12 q-mx-sm q-my-none q-pa-none q-pt-md cursor-pointer text-accent"
             style="font-size: smaller"
-            @click="router.push('/sidepanel/welcome')"
-          >
+            @click="router.push('/sidepanel/welcome')">
             ... or create a new collection manually
           </div>
           <div
             class="col-12 q-mx-sm q-my-none q-pa-none cursor-pointer text-accent"
             style="font-size: smaller"
-            @click="gotoSettingsPage()"
-          >
+            @click="gotoSettingsPage()">
             ... or import from existing backup
           </div>
 
@@ -25,8 +23,7 @@
           </div>
           <div
             class="col-12 q-mx-sm q-mt-md q-mb-none cursor-pointer text-center"
-            v-if="importedTabsetId"
-          >
+            v-if="importedTabsetId">
             <q-btn label="open Imported Tabset" outline @click="openImportedTabset()" />
           </div>
 
@@ -38,8 +35,7 @@
               :show-only-folders="true"
               :show-filter="false"
               :show-toggle="false"
-              :in-side-panel="true"
-            >
+              :in-side-panel="true">
             </BookmarksTree>
           </div>
         </div>
@@ -67,8 +63,8 @@ import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import Analytics from 'src/core/utils/google-analytics'
-import { CreateTabsetFromBookmarksRecursive } from 'src/domain/commands/CreateTabsetFromBookmarksRecursive'
 import NavigationService from 'src/services/NavigationService'
+import { CreateTabsetFromBookmarksRecursive } from 'src/tabsets/commands/CreateTabsetFromBookmarksRecursive'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useUiStore } from 'src/ui/stores/uiStore'
