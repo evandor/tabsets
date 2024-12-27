@@ -1,31 +1,27 @@
 <template>
-  <!-- FirstToolbarHelper -->
-  <q-toolbar
-    class="text-primary q-pa-none q-pl-sm q-pr-xs q-pb-none greyBorderBottom"
-    :style="offsetTop()"
-  >
+  <!-- SidePanelCollectionsPageToolbar -->
+  <q-toolbar class="q-pa-none q-pl-none q-pr-none q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
       <div class="row q-ma-none q-pa-none">
         <div class="col-5 q-ma-none q-pa-none">
           <div class="col-12 text-subtitle1">
             <div class="q-ml-md q-mt-sm">
               <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-                <div
-                  class="text-caption cursor-pointer"
-                  @click.stop="router.push('/sidepanel/spaces')"
-                >
+                <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">
                   {{ title() }}
                 </div>
               </template>
               <template v-else>
                 <div class="text-caption">{{ title() }}</div>
               </template>
-              <div class="text-body1 text-bold cursor-pointer">Select a Collection</div>
+              <div class="text-body1 text-bold cursor-pointer" @click="router.push('/sidepanel')">
+                {{ currentTabset.name }}
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="col-7 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none q-pt-sm">
+        <div class="col-7 text-subtitle1 text-right q-ma-none q-pa-none q-pr-sm q-pt-sm">
           <slot name="iconsRight">
             <SidePanelToolbarTabNavigationHelper />
             <q-btn
@@ -33,14 +29,12 @@
               dense
               icon="add"
               label="Collection"
-              color="primary"
               size="sm"
               :class="{ shake: annimateNewTabsetButton }"
               data-testid="addTabsetBtn"
               @click="openNewTabsetDialog()"
               class="q-ma-none q-pl-xs q-pr-sm q-py-xs"
-              name="o_bookmark_add"
-            />
+              name="o_bookmark_add" />
           </slot>
         </div>
       </div>
@@ -102,8 +96,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value =
-    useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
 watchEffect(() => {
@@ -117,8 +110,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  showFilter.value =
-    useUiStore().sidePanelActiveViewIs(SidePanelViews.TABS_LIST) && useUiStore().toolbarFilter
+  showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelViews.TABS_LIST) && useUiStore().toolbarFilter
 })
 
 if ($q.platform.is.chrome && $q.platform.is.bex) {
@@ -134,7 +126,7 @@ const title = (): string => {
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     return useSpacesStore().space ? useSpacesStore().space.label : 'no_space_selected'
   } else {
-    return 'Collection'
+    return 'Switch Collection'
   }
 }
 
@@ -149,8 +141,7 @@ const openNewTabsetDialog = () => {
   })
 }
 
-const offsetTop = () =>
-  $q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : ''
+const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : '')
 </script>
 
 <style scoped>

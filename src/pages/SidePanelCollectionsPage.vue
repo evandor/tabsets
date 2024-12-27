@@ -1,37 +1,31 @@
 <template>
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
-    <div class="row q-ma-none q-pa-none items-start">
+    <div class="row q-ma-none q-pa-none items-start" :class="topLevelSubfolderExist() ? 'q-ml-md' : ''">
       <div>
         <Draggable
           v-if="treeData"
-          class="q-pl-md"
+          class="q-pl-none"
           v-model="treeData"
           @change="ondrop2($event)"
           :treeLine="false"
           :tree-line-offset="0"
-          :defaultOpen="true"
-          :indent="25"
-        >
+          :defaultOpen="false"
+          :indent="25">
           <template #default="{ node, stat }">
-            <!-- v-if="stat.children.length"-->
-            <OpenIcon :open="stat.open" @click.native="stat.open = !stat.open" />
-            <!--            <q-icon v-else name="remove" color="white"/>-->
-            <!--            <span v-else class="q-ma-none q-ml-md" style="background-color:yellow"></span>-->
+            <q-icon :name="openIndicatorIcon(stat)" @click="stat.open = !stat.open" />
             <span class="mtl-ml cursor-pointer" @click="handleTreeClick(node)">
               <q-icon
                 v-if="node.level == 0 && node.type !== TabsetType.SESSION"
                 name="o_tab"
                 color="primary"
-                class="q-mx-sm"
-              />
+                class="q-mx-sm" />
               <q-icon
                 v-else-if="node.level == 0 && node.type === TabsetType.SESSION"
                 name="sym_o_new_window"
                 color="secondary"
-                class="q-mx-sm"
-              />
+                class="q-mx-sm" />
               <q-icon v-else name="o_folder" color="warning" class="q-mx-sm" />
-              {{ node.text }}
+              {{ node.text }} {{ node.id === currentTabset?.id ? ' (current)' : '' }}
             </span>
           </template>
         </Draggable>
@@ -46,7 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-import { dragContext, Draggable, OpenIcon } from '@he-tree/vue'
+import { dragContext, Draggable } from '@he-tree/vue'
 import _ from 'lodash'
 import SidePanelCollectionsPageToolbar from 'pages/sidepanel/helper/SidePanelCollectionsPageToolbar.vue'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
@@ -79,6 +73,7 @@ const router = useRouter()
 
 const tabsets = ref<Tabset[]>([])
 const treeData = ref<NodeTreeObject[]>()
+const currentTabset = ref<Tabset | undefined>(undefined)
 
 function updateOnlineStatus(e: any) {
   const { type } = e
@@ -96,6 +91,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   // window.removeEventListener('keypress', checkKeystroke);
+})
+
+watchEffect(() => {
+  currentTabset.value = useTabsetsStore().getCurrentTabset
 })
 
 const ondrop2 = (evt: any) => {
@@ -131,10 +130,7 @@ const ondrop2 = (evt: any) => {
       const draggedTabset: Tabset | undefined = useTabsetsStore().getTabset(dragged.tsId)
       const draggedToTabset: Tabset | undefined = useTabsetsStore().getTabset(draggedTo.tsId)
       if (draggedTabset && draggedToTabset) {
-        const beingDraggedFolder: Tabset | undefined = useTabsetsStore().getActiveFolder(
-          draggedTabset,
-          dragged.id,
-        )
+        const beingDraggedFolder: Tabset | undefined = useTabsetsStore().getActiveFolder(draggedTabset, dragged.id)
         const beingDraggedToFolder: Tabset | undefined = useTabsetsStore().getActiveFolder(
           draggedToTabset,
           draggedTo.id,
@@ -148,19 +144,14 @@ const ondrop2 = (evt: any) => {
           beingDraggedFolder.folderParent = beingDraggedToFolder.id
           beingDraggedToFolder.folders.push(beingDraggedFolder)
           useTabsetsStore().saveTabset(draggedToTabset)
-          useCommandExecutor().execute(
-            new DeleteTabsetFolderCommand(draggedTabset, beingDraggedFolder),
-          )
+          useCommandExecutor().execute(new DeleteTabsetFolderCommand(draggedTabset, beingDraggedFolder))
         }
       }
     } else if (dragged.id === dragged.tsId && draggedTo.id !== draggedTo.tsId) {
       const draggedTs: Tabset | undefined = useTabsetsStore().getTabset(dragged.id)
       const draggedToTabset: Tabset | undefined = useTabsetsStore().getTabset(draggedTo.tsId)
       if (draggedTs && draggedToTabset) {
-        const draggedToFolder: Tabset | undefined = useTabsetsStore().getActiveFolder(
-          draggedToTabset,
-          draggedTo.id,
-        )
+        const draggedToFolder: Tabset | undefined = useTabsetsStore().getActiveFolder(draggedToTabset, draggedTo.id)
         if (draggedToFolder) {
           draggedTs.folderActive = undefined
           draggedTs.folderParent = draggedToFolder.id
@@ -179,10 +170,7 @@ const ondrop2 = (evt: any) => {
       const tabset: Tabset | undefined = useTabsetsStore().getTabset(dragged.tsId)
       console.log('got tabset', tabset)
       if (tabset) {
-        const beingDraggedTs: Tabset | undefined = useTabsetsStore().getActiveFolder(
-          tabset,
-          dragged.id,
-        )
+        const beingDraggedTs: Tabset | undefined = useTabsetsStore().getActiveFolder(tabset, dragged.id)
         console.log('beingDraggedTs', beingDraggedTs)
         if (beingDraggedTs) {
           beingDraggedTs.folderActive = undefined
@@ -253,9 +241,7 @@ watchEffect(async () => {
           }
         }
         return (
-          ts.status !== TabsetStatus.DELETED &&
-          ts.status !== TabsetStatus.HIDDEN &&
-          ts.status !== TabsetStatus.ARCHIVED
+          ts.status !== TabsetStatus.DELETED && ts.status !== TabsetStatus.HIDDEN && ts.status !== TabsetStatus.ARCHIVED
         )
       }),
       getTabsetOrder,
@@ -280,6 +266,15 @@ const handleTreeClick = (node: NodeTreeObject) => {
       }
     })
 }
+
+const openIndicatorIcon = (stat: any) => {
+  if (stat.children.length === 0) {
+    return ''
+  }
+  return stat.open ? 'keyboard_arrow_down' : 'chevron_right'
+}
+
+const topLevelSubfolderExist = () => treeData.value?.findIndex((nto: NodeTreeObject) => nto.children.length > 0) >= 0
 </script>
 
 <style lang="scss">

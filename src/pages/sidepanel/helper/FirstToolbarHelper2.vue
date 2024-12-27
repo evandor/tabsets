@@ -8,8 +8,7 @@
           <SearchWithTransitionHelper
             v-if="searching"
             :search-term="props.searchTerm"
-            :search-hits="props.searchHits!"
-          />
+            :search-hits="props.searchHits!" />
 
           <FilterWithTransitionHelper v-else-if="showFilter" />
           <!-- no spaces && not searching -->
@@ -18,33 +17,21 @@
             <div class="col-12 text-subtitle1">
               <div class="q-ml-md q-mt-sm">
                 <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-                  <div
-                    class="text-caption cursor-pointer"
-                    @click.stop="router.push('/sidepanel/spaces')"
-                  >
+                  <div class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel/spaces')">
                     {{ title() }}
                   </div>
                 </template>
                 <template v-else>
-                  <div
-                    class="text-caption cursor-pointer"
-                    @click="router.push('/sidepanel/collections')"
-                  >
+                  <div class="text-caption cursor-pointer" @click="router.push('/sidepanel/collections')">
                     {{ title() }}
                   </div>
                 </template>
                 <div
                   class="text-body1 text-bold cursor-pointer ellipsis"
-                  @click="router.push('/sidepanel/collections')"
-                >
+                  @click="router.push('/sidepanel/collections')">
                   <template v-if="currentTabset">
                     {{ currentTabset.name }}
-                    <q-icon
-                      name="arrow_drop_down"
-                      class="q-ma-none q-pa-none"
-                      color="grey-5"
-                      size="xs"
-                    />
+                    <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />
                     <q-tooltip
                       class="tooltip-small"
                       :delay="5000"
@@ -64,8 +51,7 @@
         <div
           class="col-5 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none"
           v-if="!useUiStore().appLoading"
-          style="border: 0 solid green"
-        >
+          style="border: 0 solid green">
           <slot name="iconsRight">
             <div class="q-mt-sm q-ma-none q-qa-none" style="border: 0 solid blue">
               <template v-if="showSearchIcon()">
@@ -74,8 +60,7 @@
                   class="q-mr-sm"
                   id="toggleSearchBtn"
                   size="11px"
-                  @click="toggleSearch"
-                />
+                  @click="toggleSearch" />
               </template>
 
               <SidePanelToolbarTabNavigationHelper />
@@ -84,12 +69,10 @@
                 <SpecialUrlAddToTabsetComponent
                   v-if="currentChromeTab && currentTabset"
                   @button-clicked="
-                    (args: ActionHandlerButtonClickedHolder) =>
-                      handleButtonClicked(currentTabset!, args)
+                    (args: ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)
                   "
                   :currentChromeTab="currentChromeTab"
-                  :tabset="currentTabset"
-                />
+                  :tabset="currentTabset" />
               </span>
               <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer" />
               <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset" />
@@ -167,12 +150,8 @@ windowLocation.value = window.location.href
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
   if (currentTabset.value) {
-    const currentTabsetTabs: Set<string> = new Set(
-      currentTabset.value!.tabs.map((t: Tab) => t.url || ''),
-    )
-    const browserTabs: Set<string> = new Set(
-      useTabsStore2().browserTabs.map((t: chrome.tabs.Tab) => t.url || ''),
-    )
+    const currentTabsetTabs: Set<string> = new Set(currentTabset.value!.tabs.map((t: Tab) => t.url || ''))
+    const browserTabs: Set<string> = new Set(useTabsStore2().browserTabs.map((t: chrome.tabs.Tab) => t.url || ''))
     try {
       const allTabs = currentTabsetTabs.union(browserTabs)
       const lapover = currentTabsetTabs.intersection(allTabs)
@@ -186,8 +165,7 @@ const thresholdStyle = () => 'color: hsl(' + Math.round(120 * overlap.value) + '
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value =
-    useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
 watchEffect(() => {
@@ -201,8 +179,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  showFilter.value =
-    useUiStore().sidePanelActiveViewIs(SidePanelViews.TABS_LIST) && useUiStore().toolbarFilter
+  showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelViews.TABS_LIST) && useUiStore().toolbarFilter
 })
 
 if ($q.platform.is.chrome && $q.platform.is.bex) {
@@ -231,23 +208,16 @@ const title = (): string => {
 }
 
 function getActiveFolder(tabset: Tabset) {
-  return tabset.folderActive
-    ? useTabsetService().findFolder([tabset], tabset.folderActive)
-    : undefined
+  return tabset.folderActive ? useTabsetService().findFolder([tabset], tabset.folderActive) : undefined
 }
 
-const handleButtonClicked = async (
-  tabset: Tabset,
-  args: ActionHandlerButtonClickedHolder,
-  folder?: Tabset,
-) => {
+const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClickedHolder, folder?: Tabset) => {
   const useFolder: Tabset | undefined = folder ? folder : getActiveFolder(tabset)
   console.log(`button clicked: tsId=${tabset.id}, folderId=${useFolder?.id}, args=...`)
   await useActionHandlers(undefined).handleClick(tabset, currentChromeTab.value!, args, useFolder)
 }
 
-const offsetTop = () =>
-  $q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : ''
+const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : '')
 </script>
 
 <style scoped>
