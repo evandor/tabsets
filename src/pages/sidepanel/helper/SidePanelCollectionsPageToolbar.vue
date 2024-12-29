@@ -15,7 +15,7 @@
                 <div class="text-caption">{{ title() }}</div>
               </template>
               <div class="text-body1 text-bold cursor-pointer" @click="router.push('/sidepanel')">
-                {{ currentTabset.name }}
+                {{ currentTabset?.name }}
               </div>
             </div>
           </div>

@@ -1,11 +1,7 @@
 import _ from 'lodash'
 import { LocalStorage, uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import {
-  CLEANUP_PERIOD_IN_MINUTES,
-  GITHUB_AUTO_BACKUP,
-  MONITORING_PERIOD_IN_MINUTES,
-} from 'src/boot/constants'
+import { CLEANUP_PERIOD_IN_MINUTES, GITHUB_AUTO_BACKUP, MONITORING_PERIOD_IN_MINUTES } from 'src/boot/constants'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useRequestsService } from 'src/requests/services/RequestsService'
@@ -78,11 +74,17 @@ class BrowserApi {
 
   startWebRequestListener() {
     console.log(' ...adding WebRequestListener')
-    chrome.webRequest.onHeadersReceived.addListener(
+    chrome.webRequest?.onHeadersReceived.addListener(
       this.onHeadersReceivedListener,
       { urls: ['*://*/*'], types: ['main_frame'] },
       ['responseHeaders'],
     )
+    // chrome.webRequest?.onCompleted.addListener(
+    //   (details: any) => {
+    //     console.log('====>', details)
+    //   },
+    //   { urls: ['*://*/*'], types: ['main_frame'] },
+    // )
   }
 
   stopWebRequestListener() {

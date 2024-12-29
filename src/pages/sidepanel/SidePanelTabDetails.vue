@@ -18,13 +18,7 @@
 
     <div class="row items-baseline q-mx-sm q-my-sm">
       <div class="col-2">
-        <TabFaviconWidget
-          v-if="tab"
-          class="q-mr-md q-mb-md"
-          :tab="tab as Tab"
-          width="24px"
-          height="24px"
-        />
+        <TabFaviconWidget v-if="tab" class="q-mr-md q-mb-md" :tab="tab as Tab" width="24px" height="24px" />
       </div>
       <div class="col-10 text-body1 ellipsis-3">
         {{ getHost(tab?.url || '', true) }}
@@ -36,13 +30,8 @@
       <div class="col-12">
         <div
           class="text-overline ellipsis text-accent cursor-pointer"
-          @click.stop="NavigationService.openOrCreateTab([tab?.url || ''])"
-        >
-          {{ tab?.url }}&nbsp;<q-icon
-            name="launch"
-            color="secondary"
-            class="cursor-pointer"
-          ></q-icon>
+          @click.stop="NavigationService.openOrCreateTab([tab?.url || ''])">
+          {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary" class="cursor-pointer"></q-icon>
         </div>
         <div class="text-body2 ellipsis">
           {{ tab?.id }}
@@ -59,8 +48,7 @@
           size="8px"
           clickable
           icon="tab"
-          @click="openTabset(chip)"
-        >
+          @click="openTabset(chip)">
           {{ chip['label' as keyof object] }}
         </q-chip>
       </div>
@@ -73,11 +61,7 @@
 
     <div class="row q-ma-sm">
       <div class="col-12" v-if="true">
-        <q-img
-          :src="thumbnail"
-          style="border: 1px dotted grey; border-radius: 5px"
-          no-native-menu
-        />
+        <q-img :src="thumbnail" style="border: 1px dotted grey; border-radius: 5px" no-native-menu />
       </div>
       <div class="col-12 bg-amber-1" v-else-if="!inBexMode()">
         <!--        <q-img src="thumbnail-not-available.png" style="border:1px solid grey;border-radius: 5px;" no-native-menu/>-->
@@ -104,8 +88,7 @@
           size="11px"
           color="primary"
           flat
-          icon="o_more_horiz"
-        >
+          icon="o_more_horiz">
           <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>
         </q-btn>
       </div>
@@ -137,8 +120,7 @@
             input-debounce="0"
             new-value-mode="add-unique"
             @update:model-value="(val) => updatedTags(val)"
-            style="width: 250px"
-          />
+            style="width: 250px" />
         </q-card-section>
       </q-card>
     </q-expansion-item>
@@ -222,18 +204,13 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item
-      label="Tab References Status"
-      group="tabrefgroup"
-      v-if="tab && tab.tabReferences"
-    >
+    <q-expansion-item label="Tab References" group="tabrefgroup" v-if="tab && tab.tabReferences">
       <div class="q-ma-sm q-ml-lg" v-for="ref in tab.tabReferences">
         <template v-if="ref.type === TabReferenceType.RSS">
-          <div class="text-caption text-bold">found RSS:</div>
+          <div class="text-caption text-bold">found RSS ({{ ref.status }}):</div>
           <div
             class="text-caption ellipsis text-accent cursor-pointer"
-            @click="useNavigationService().browserTabFor(ref.href || '')"
-          >
+            @click="useNavigationService().browserTabFor(ref.href || '')">
             {{ ref.href }}
           </div>
         </template>
@@ -301,8 +278,7 @@
               <li
                 v-for="p in ref.data"
                 class="ellipsis"
-                @click="useNavigationService().browserTabFor(p['parent' as keyof object])"
-              >
+                @click="useNavigationService().browserTabFor(p['parent' as keyof object])">
                 {{ p['parent' as keyof object] }}
               </li>
             </ul>
@@ -516,9 +492,7 @@ const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), { addSuffix: true }) : ''
 
 const showTabDetails = () =>
-  NavigationService.openOrCreateTab([
-    chrome.runtime.getURL('/www/index.html#/mainpanel/tab/' + tab.value?.id),
-  ])
+  NavigationService.openOrCreateTab([chrome.runtime.getURL('/www/index.html#/mainpanel/tab/' + tab.value?.id)])
 
 const updatedTags = (val: string[]) => {
   console.log('val', val)
@@ -539,8 +513,7 @@ const openTabset = (chip: any) => {
 const openInJsonCrackEditor = (data: string) => {
   $q.dialog({
     title: 'Open in external Editor?',
-    message:
-      'The current JSON-LD Data will be copied to your clipboard to be added by you to the external editor',
+    message: 'The current JSON-LD Data will be copied to your clipboard to be added by you to the external editor',
     cancel: true,
     persistent: true,
   }).onOk(() => {
@@ -551,7 +524,7 @@ const openInJsonCrackEditor = (data: string) => {
 }
 
 const linkingHeading = (data: object | undefined) => {
-  console.log('data', data)
+  //console.log('data', data)
   if (!data) {
     return '---'
   }
@@ -560,10 +533,7 @@ const linkingHeading = (data: object | undefined) => {
 
 const openSearch = () => {
   useNavigationService().browserTabFor(
-    'https://github.com/search?q={searchTerms}&amp;ref=opensearch'.replace(
-      '{searchTerms}',
-      opensearchterm.value || '',
-    ),
+    'https://github.com/search?q={searchTerms}&amp;ref=opensearch'.replace('{searchTerms}', opensearchterm.value || ''),
   )
 }
 </script>

@@ -2,9 +2,7 @@
   <q-toolbar class="text-primary lightgrey">
     <div class="row fit">
       <q-toolbar-title>
-        <div class="row justify-start items-baseline">
-          Tab Info for '{{ selectedTab?.url }}' (for testing purposes)
-        </div>
+        <div class="row justify-start items-baseline">Tab Info for '{{ selectedTab?.url }}' (for testing purposes)</div>
       </q-toolbar-title>
     </div>
   </q-toolbar>
@@ -24,9 +22,8 @@
   <div v-if="tab === 'tabdata'">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded
-        >Tabsets analyses the URLs you track in order to provide you with additional features like
-        searching and thumbnails. This is the main info about this tab, retrieved when the page was
-        opened in a tab.
+        >Tabsets analyses the URLs you track in order to provide you with additional features like searching and
+        thumbnails. This is the main info about this tab, retrieved when the page was opened in a tab.
       </q-banner>
       <div class="row items-baseline q-ma-lg">
         <div class="col-2">
@@ -48,8 +45,7 @@
             {{ selectedTab?.url }}&nbsp;<q-icon
               name="launch"
               color="secondary"
-              @click.stop="NavigationService.openOrCreateTab([selectedTab?.url || ''])"
-            ></q-icon>
+              @click.stop="NavigationService.openOrCreateTab([selectedTab?.url || ''])"></q-icon>
           </div>
         </div>
       </div>
@@ -67,8 +63,7 @@
             <div
               class="col-9 text-subtitle2"
               v-if="selectedTab?.longDescription"
-              v-html="selectedTab?.longDescription"
-            ></div>
+              v-html="selectedTab?.longDescription"></div>
           </div>
           <div class="row items-baseline q-ma-lg" v-if="selectedTab?.author">
             <div class="col-3 text-subtitle1">Author</div>
@@ -139,22 +134,22 @@
           <q-img :src="thumbnail" width="512px" style="border: 1px solid grey" />
         </div>
       </div>
-      <hr />
-      <div class="row items-baseline q-ma-lg">
-        <div class="col-12">Not happy with the results?</div>
-        <div class="col-12">
-          <q-btn label="Rerun Analysis" @click="analyseTab" />
-        </div>
-        <div class="col-12">This will open a new window, analyse the page and close it again.</div>
-      </div>
+      <!--      <hr />-->
+      <!--      <div class="row items-baseline q-ma-lg">-->
+      <!--        <div class="col-12">Not happy with the results?</div>-->
+      <!--        <div class="col-12">-->
+      <!--          <q-btn label="Rerun Analysis" @click="analyseTab" />-->
+      <!--        </div>-->
+      <!--        <div class="col-12">This will open a new window, analyse the page and close it again.</div>-->
+      <!--      </div>-->
     </div>
   </div>
 
   <div v-else-if="tab === 'request'">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded
-        >This is a data derived from the request to the tabs content. This data is collected if the
-        'analyse tabs' feature is active.
+        >This is a data derived from the request to the tabs content. This data is collected if the 'analyse tabs'
+        feature is active.
       </q-banner>
 
       Status Code: {{ request['statusCode' as keyof object] }}<br /><br />
@@ -191,9 +186,8 @@
   <div v-else-if="tab === 'metalinks'">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded
-        >This is a data derived from the tab's content link tags. This data is collected if the
-        'analyse tabs' feature is active. If this does not work as expected, you might have to
-        refresh or reinstall the tabsets extension.
+        >This is a data derived from the tab's content link tags. This data is collected if the 'analyse tabs' feature
+        is active. If this does not work as expected, you might have to refresh or reinstall the tabsets extension.
       </q-banner>
 
       <!--      <q-table-->
@@ -296,8 +290,7 @@
         style="font-size: 80%"
         :show-length="true"
         v-model:data="state.data"
-        :show-double-quotes="true"
-      />
+        :show-double-quotes="true" />
     </div>
   </div>
 </template>
@@ -523,9 +516,7 @@ const requestDataLabel = () => 'Request Header (' + requestRows.value.length + '
 const metaLinksDataLabel = () => 'Meta Links (' + metaLinkRows.value.length + ')'
 const linksDataLabel = () => 'Links (' + Object.keys(linkRows.value || []).length + ')'
 const openNameLink = (key: string) =>
-  NavigationService.openOrCreateTab([
-    'https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/' + key,
-  ])
+  NavigationService.openOrCreateTab(['https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/' + key])
 
 const analyseTab = () => {
   if (selectedTab.value) {
