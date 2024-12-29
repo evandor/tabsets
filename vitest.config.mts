@@ -1,8 +1,8 @@
-import { defineConfig } from 'vitest/config';
-import vue from '@vitejs/plugin-vue';
-import { quasar, transformAssetUrls } from '@quasar/vite-plugin';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path'
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
+import vue from '@vitejs/plugin-vue'
+import tsconfigPaths from 'vite-tsconfig-paths'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -19,18 +19,27 @@ export default defineConfig({
     ],
     coverage: {
       reporter: ['text', 'lcov', 'json-summary', 'json'],
+      exclude: [
+        ...configDefaults.exclude,
+        '**/*.config.{js,ts}',
+        'e2e/**',
+        '.quasar/**',
+        'playwright-report/**',
+        'docs/**',
+        'tools/**',
+      ],
     },
     // https://vitest.dev/guide/browser.html
     browser: {
       enabled: false,
       name: 'chrome', // browser name is required
-    }
+    },
   },
   resolve: {
     //conditions: process.env.VITEST ? ['node'] : []
     alias: {
-      'src': path.resolve(__dirname, './src')
-    }
+      src: path.resolve(__dirname, './src'),
+    },
   },
   plugins: [
     tsconfigPaths(),
@@ -39,6 +48,6 @@ export default defineConfig({
     }),
     quasar({
       sassVariables: 'src/quasar-variables.scss',
-    })
-  ]
-});
+    }),
+  ],
+})

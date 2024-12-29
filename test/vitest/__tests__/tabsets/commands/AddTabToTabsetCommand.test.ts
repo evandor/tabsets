@@ -33,11 +33,7 @@ function createTabWithChromeTabId(tabId: string, chromeTab: chrome.tabs.Tab) {
 }
 
 describe('AddTabToTabsetCommand', () => {
-  const skysailChromeTab = ChromeApi.createChromeTabObject(
-    'title',
-    'https://www.skysail.io',
-    'favicon',
-  )
+  const skysailChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.skysail.io', 'favicon')
   const testDeChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.test.de', 'favicon')
 
   let db = null as unknown as TabsetsPersistence
@@ -60,23 +56,6 @@ describe('AddTabToTabsetCommand', () => {
         metas: { description: 'Description' },
       },
     })
-
-    // const chromeMock = {
-    //   tabs: {
-    //     sendMessage: vi.fn((id:any, msg:any) => {
-    //       return Promise.resolve({
-    //         html: "some html",
-    //         metas: {description: "Description"}
-    //       })
-    //     }),
-    //   },
-    //   runtime: {
-    //     sendMessage: vi.fn(() => {
-    //     })
-    //   }
-    // };
-    //
-    // vi.stubGlobal('chrome', chromeMock);
   })
 
   afterEach(async () => {
@@ -102,14 +81,8 @@ describe('AddTabToTabsetCommand', () => {
 
   it('adding second tab to tabset', async () => {
     const tabset = await createTabset()
-    await new AddTabToTabsetCommand(
-      createTabWithChromeTabId('tabId1', skysailChromeTab),
-      tabset,
-    ).execute()
-    await new AddTabToTabsetCommand(
-      createTabWithChromeTabId('tabId2', testDeChromeTab),
-      tabset,
-    ).execute()
+    await new AddTabToTabsetCommand(createTabWithChromeTabId('tabId1', skysailChromeTab), tabset).execute()
+    await new AddTabToTabsetCommand(createTabWithChromeTabId('tabId2', testDeChromeTab), tabset).execute()
 
     const tabsetFromDB = useTabsetsStore().getTabset(tabset.id)
     console.log('tabsetFromDB', tabsetFromDB)
@@ -124,9 +97,7 @@ describe('AddTabToTabsetCommand', () => {
     const theTab = new Tab('tabId3', testDeChromeTab)
 
     const rootTabset = (await new CreateTabsetCommand('new Tabset2', []).execute()).result.tabset
-    const subfolder: Tabset = (
-      await new CreateFolderCommand(uid(), 'subfolder', [], rootTabset.id).execute()
-    ).result
+    const subfolder: Tabset = (await new CreateFolderCommand(uid(), 'subfolder', [], rootTabset.id).execute()).result
     rootTabset.folderActive = subfolder.id
 
     const result = await new AddTabToTabsetCommand(theTab, rootTabset, subfolder.id).execute()
