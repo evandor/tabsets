@@ -7,7 +7,6 @@
  * 2. Do NOT import this file in multiple background scripts. Only in one!
  * 3. Import it in your background service worker (if available for your target browser).
  */
-import { PortName } from '#q-app'
 import { createBridge } from '#q-app/bex/background'
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
@@ -45,17 +44,22 @@ addEventListener('unhandledrejection', async (event) => {
 // });
 
 chrome.omnibox.onInputEntered.addListener((text) => {
-  const newURL = chrome.runtime.getURL(
-    '/www/index.html#/searchresult?t=' + encodeURIComponent(text),
-  )
+  const newURL = chrome.runtime.getURL('/www/index.html#/searchresult?t=' + encodeURIComponent(text))
   chrome.tabs.create({ url: newURL }).catch((err) => console.log('[BEX] background.js error', err))
 })
 
 if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
-  chrome.sidePanel
-    .setPanelBehavior({ openPanelOnActionClick: true })
-    .catch((error: any) => console.error(error))
+  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch((error: any) => console.error(error))
 }
+
+/* Firefox specific */
+chrome.action.onClicked.addListener((t: chrome.tabs.Tab) => {
+  // @ts-expect-error unknown
+  if (browser && browser.sidebarAction) {
+    // @ts-expect-error unknown
+    browser.sidebarAction.toggle()
+  }
+})
 
 chrome.runtime.onInstalled.addListener((details) => {
   console.debug('adding onInstalled listener in background.ts', details)

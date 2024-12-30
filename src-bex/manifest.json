@@ -6,22 +6,19 @@
       "48": "icons/icon-48x48.png",
       "128": "icons/icon-128x128.png"
     },
-    "permissions": [
-      "storage",
-      "tabs",
-      "activeTab",
-      "alarms",
-      "scripting",
-      "sidePanel",
-      "contextMenus",
-      "bookmarks"
+    "host_permissions": [
+      "<all_urls>",
+      "*://*/*"
     ],
-    "optional_permissions": ["pageCapture", "notifications", "webRequest", "tabGroups"],
-    "host_permissions": ["<all_urls>", "*://*/*"],
     "content_scripts": [
       {
-        "matches": ["*://*/*"],
-        "js": ["tabsets-content-script.ts"]
+        "matches": [
+          "<all_urls>",
+          "*://*/*"
+        ],
+        "js": [
+          "tabsets-content-script.ts"
+        ]
       }
     ],
     "content_security_policy": {
@@ -29,8 +26,12 @@
     },
     "web_accessible_resources": [
       {
-        "resources": ["*"],
-        "matches": ["*://*/*"]
+        "resources": [
+          "*"
+        ],
+        "matches": [
+          "*://*/*"
+        ]
       }
     ],
     "omnibox": {
@@ -71,13 +72,66 @@
     "side_panel": {
       "default_path": "www/index.html"
     },
+    "permissions": [
+      "storage",
+      "tabs",
+      "activeTab",
+      "alarms",
+      "scripting",
+      "sidePanel",
+      "contextMenus",
+      "bookmarks"
+    ],
+    "optional_permissions": [
+      "pageCapture",
+      "notifications",
+      "webRequest",
+      "tabGroups"
+    ],
     "background": {
       "service_worker": "background.ts"
     }
   },
   "firefox": {
+    "browser_specific_settings": {
+      "gecko": {
+        "id": "{5809ba95-274e-4fd3-a92d-5baf03026290}"
+      }
+    },
+    "permissions": [
+      "storage",
+      "tabs",
+      "activeTab",
+      "alarms",
+      "scripting",
+      "contextMenus",
+      "webRequest",
+      "bookmarks"
+    ],
+    "optional_permissions": [
+      "notifications"
+    ],
+    "optional_host_permissions": [
+      "<all_urls>",
+      "*://*/*"
+    ],
     "background": {
-      "scripts": ["background.ts"]
+      "scripts": [
+        "background.ts"
+      ]
+    },
+    "sidebar_action": {
+      "default_icon": "icons/icon-48x48.png",
+      "default_title": "Tabsets",
+      "default_panel": "www/index.html#/sidepanel",
+      "open_at_install": true
+    },
+    "commands": {
+      "_execute_sidebar_action": {
+        "suggested_key": {
+          "default": "Ctrl+Shift+Period"
+        }
+      }
     }
   }
 }

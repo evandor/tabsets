@@ -48,9 +48,7 @@ function getMetas(document: Document) {
     const nameAttr = element.attributes.getNamedItem('name')
     const propAttr = element.attributes.getNamedItem('property')
     const contAttr = element.attributes.getNamedItem('content')
-    const key: string = nameAttr
-      ? nameAttr.value.trim().toLowerCase() || 'undefName'
-      : propAttr?.value || 'undefProp'
+    const key: string = nameAttr ? nameAttr.value.trim().toLowerCase() || 'undefName' : propAttr?.value || 'undefProp'
     //console.debug("tabsets: key", key, contAttr?.value || 'x')
     if (key) {
       result[key] = contAttr?.value || ''
@@ -84,11 +82,9 @@ bridge
         tabsetsTimestamp: LocalStorage.getItem('tabsets_ts'),
       },
     }
-    bridge
-      .send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage })
-      .catch((err: any) => {
-        console.log('[BEX-CT] Failed to send message to app', err)
-      })
+    bridge.send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage }).catch((err: any) => {
+      console.log('[BEX-CT] Failed to send message to app', err)
+    })
   })
   .catch((err) => {
     console.error('[BEX-CT] Failed to connect to background:', err)

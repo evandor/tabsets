@@ -20,20 +20,11 @@
       <q-tab
         name="archived"
         label="Archived Tabsets"
-        v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)"
-      />
-      <q-tab
-        name="search"
-        label="Search Engine"
-        v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"
-      />
+        v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)" />
+      <q-tab name="search" label="Search Engine" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
       <q-tab name="importExport" label="Import/Export" />
       <q-tab name="backup" label="Backup" />
-      <q-tab
-        name="internals"
-        label="Internals"
-        v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)"
-      />
+      <q-tab name="internals" label="Internals" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
       <!--      <q-tab name="featureToggles" label="Feature Toggles"-->
       <!--             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>-->
       <q-tab name="featureToggles" label="Feature Toggles" />
@@ -45,45 +36,7 @@
   </div>
 
   <div v-if="tab === 'internals'">
-    <div class="q-pa-md q-gutter-sm">
-      <div class="text-h6">Permissions</div>
-
-      <q-banner rounded>The active permissions for the Tabset Extension</q-banner>
-
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">Active Permissions</div>
-        <div class="col-9">
-          {{ permissionsList.join(', ') }}
-        </div>
-      </div>
-
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">Allowed Origins</div>
-        <div class="col-9">
-          {{ usePermissionsStore().permissions?.origins }}
-        </div>
-      </div>
-
-      <div class="text-h6">Groups</div>
-
-      <q-banner rounded>All Chrome Groups, active and non-active</q-banner>
-
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">All Groups</div>
-        <div class="col-9">
-          {{ useGroupsStore().tabGroups }}
-        </div>
-      </div>
-
-      <q-banner rounded>All active Chrome Groups</q-banner>
-
-      <div class="row items-baseline q-ma-md">
-        <div class="col-3">Active Groups</div>
-        <div class="col-9">
-          {{ useGroupsStore().currentTabGroups }}
-        </div>
-      </div>
-    </div>
+    <InternalSettings />
   </div>
 
   <div v-if="tab === 'ignored'">
@@ -106,8 +59,8 @@
   <div v-if="tab === 'archived'">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded style="border: 1px solid orange"
-        >Tabsets can be archived to remove them from direct view. Here's the list of archived
-        tabsets so that they can be restored if needed.
+        >Tabsets can be archived to remove them from direct view. Here's the list of archived tabsets so that they can
+        be restored if needed.
       </q-banner>
 
       <div class="row q-pa-md" v-for="tabset in archivedTabsets()">
@@ -126,8 +79,7 @@
   <div v-if="tab === 'search'">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded style="border: 1px solid orange"
-        >This Browser Extension tracks your tabsets and provides a search bar to search for
-        keywords.
+        >This Browser Extension tracks your tabsets and provides a search bar to search for keywords.
       </q-banner>
 
       <div class="row q-pa-md">
@@ -145,8 +97,7 @@
           :show-length="true"
           :deep="2"
           v-model:data="state.data"
-          :show-double-quotes="true"
-        />
+          :show-double-quotes="true" />
       </div>
     </div>
   </div>
@@ -158,10 +109,9 @@
       <div class="row q-pa-md">
         <div class="col-3"><b>DuckDuckGo FavIcon Service</b></div>
         <div class="col-5">
-          Usually, the favicon (the little icon displayed next to a tab url) is provided by the page
-          you are visiting. Sometimes, Tabsets does not have the information (yet) and might defer
-          to a third party service, here duckduckgo. Switch this off if you do not want to use this
-          service.
+          Usually, the favicon (the little icon displayed next to a tab url) is provided by the page you are visiting.
+          Sometimes, Tabsets does not have the information (yet) and might defer to a third party service, here
+          duckduckgo. Switch this off if you do not want to use this service.
         </div>
         <div class="col-1"></div>
         <div class="col-3">
@@ -212,6 +162,7 @@ import { useRoute } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
 import AppearanceSettings from 'pages/helper/AppearanceSettings.vue'
 import ImportExportSettings from 'pages/helper/ImportExportSettings.vue'
+import InternalSettings from 'pages/helper/InternalSettings.vue'
 import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
 import BackupSettings from 'src/tabsets/pages/settings/BackupSettings.vue'
 import OpenRightDrawerWidget from 'src/ui/widgets/OpenRightDrawerWidget.vue'
@@ -240,7 +191,6 @@ const state = reactive({
 
 const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
 const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
-const permissionsList = ref<string[]>([])
 
 const tab = ref<string>(route.query['tab'] ? (route.query['tab'] as string) : 'appearance')
 
@@ -258,8 +208,6 @@ watchEffect(() => {
   ddgEnabled.value = settingsStore.isEnabled('noDDG')
   ignoreExtensionsEnabled.value = settingsStore.isEnabled('extensionsAsTabs')
 })
-
-watchEffect(() => (permissionsList.value = usePermissionsStore().permissions?.permissions || []))
 
 watchEffect(() => {
   localStorage.set('layout', view.value)
