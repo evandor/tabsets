@@ -36,7 +36,7 @@ jobs:
       - name: Upload & release
         uses: mnao305/chrome-extension-upload@v4.0.1
         with:
-          file-path: tabsets/dist/bex-chrome/Packaged.tabsets.net.zip
+          file-path: /home/runner/work/tabsets/tabsets/dist/bex-chrome/Packaged.tabsets.net.zip
           extension-id: afkknkdbgondbbfjehipnjmojndnjhjg
           client-id: ${{ secrets.CLIENT_ID }}
           client-secret: ${{ secrets.CLIENT_SECRET }}
