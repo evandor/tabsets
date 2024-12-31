@@ -43,7 +43,7 @@ jobs:
         uses: kewisch/action-web-ext@v1
         with:
           cmd: build
-          source: dist/bex
+          source: dist/bex-firefox
           #          filename: "{name}-{version}.xpi"
           filename: "{name}.xpi"
           ignoreFiles: '[ "package.json","package-lock.json","yarn.lock" ]'
@@ -54,14 +54,14 @@ jobs:
           # omitting it will create a new addon
           uuid: '{5809ba95-274e-4fd3-a92d-5baf03026290}'
           xpi: web-ext-artifacts/tabsets.net.xpi
-          manifest: dist/bex/manifest.json
+          manifest: dist/bex-firefox/manifest.json
           api-key: ${{ secrets.FIREFOX_API_KEY }}
           api-secret: ${{ secrets.FIREFOX_API_SECRET }}
 
 #      - name: Upload & release
 #        uses: mnao305/chrome-extension-upload@v4.0.1
 #        with:
-#          file-path: dist/bex/Packaged.tabsets.net.zip
+#          file-path: dist/bex-firefox/Packaged.tabsets.net.zip
 #          extension-id: afkknkdbgondbbfjehipnjmojndnjhjg
 #          client-id: ${{ secrets.CLIENT_ID }}
 #          client-secret: ${{ secrets.CLIENT_SECRET }}
