@@ -56,3 +56,4 @@ docs/.vitepress/cache
 /playwright-report/index.html
 /playwright-report/data/5d4853c068e16f8f2bfce4a4c55e11ce76176f22.zip
 /coverage/
+/.env.opera

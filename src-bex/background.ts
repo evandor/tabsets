@@ -1,12 +1,3 @@
-/**
- * Importing the file below initializes the extension background.
- *
- * Warnings:
- * 1. Do NOT remove the import statement below. It is required for the extension to work.
- *    If you don't need createBridge(), leave it as "import '#q-app/bex/background'".
- * 2. Do NOT import this file in multiple background scripts. Only in one!
- * 3. Import it in your background service worker (if available for your target browser).
- */
 import { createBridge } from '#q-app/bex/background'
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
@@ -52,14 +43,25 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch((error: any) => console.error(error))
 }
 
-/* Firefox specific */
+// if (useQuasar().platform.is.firefox) {
 chrome.action.onClicked.addListener((t: chrome.tabs.Tab) => {
-  // @ts-expect-error unknown
-  if (browser && browser.sidebarAction) {
+  try {
     // @ts-expect-error unknown
-    browser.sidebarAction.toggle()
+    if (browser && browser.sidebarAction) {
+      // @ts-expect-error unknown
+      browser.sidebarAction.toggle()
+    }
+  } catch (e: any) {
+    console.log('e', e)
+    // opera maybe?
+    // @ts-expect-error unknown
+    if (opr && opr.sidebarAction) {
+      // @ts-expect-error unknown
+      opr.sidebarAction.setPanel({ panel: 'www/index.html' })
+    }
   }
 })
+// }
 
 chrome.runtime.onInstalled.addListener((details) => {
   console.debug('adding onInstalled listener in background.ts', details)

@@ -17,7 +17,7 @@ elif [ "$1" = "edge" ]; then
   envfile=".edge.env"
 elif [ "$1" = "opera" ]; then
   manifest="manifest-opera.json"
-  envfile=".opera.dev"
+  envfile=".env.opera"
 fi
 
 echo "using manifest src-bex/$manifest and $envfile"
@@ -27,10 +27,11 @@ mv .env .env.tmp
 cp src-bex/$manifest src-bex/manifest.json
 cp $envfile .env
 
-quasar build -m bex
+quasar build -m bex -T chrome
 
 echo "output folder dist/bex-$1"
-cp -R dist/bex/ "dist/bex-$1/"
+mkdir "dist/bex-$1"
+cp -R dist/bex-chrome/ "dist/bex-$1/"
 
 mv src-bex/manifest.tmp src-bex/manifest.json
 mv .env.tmp .env
