@@ -33,6 +33,9 @@ jobs:
         run: |
           yarn install
           npm run "build bex (publish)"
+      - name: Output
+        run:
+          ls -la /home/runner/work/tabsets/tabsets/dist/bex-chrome
       - name: Upload & release
         uses: mnao305/chrome-extension-upload@v4.0.1
         with:
