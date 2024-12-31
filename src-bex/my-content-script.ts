@@ -8,7 +8,7 @@
 import { createBridge } from '#q-app/bex/content'
 
 // The use of the bridge is optional.
-const bridge = createBridge({ debug: false })
+const bridge = createBridge({ debug: true })
 /**
  * bridge.portName is 'content@<path>-<number>'
  *   where <path> is the relative path of this content script
@@ -38,7 +38,8 @@ const defaultFrameHeight = '62px'
  * Set the height of our iFrame housing our BEX
  * @param height
  */
-function setIFrameHeight(height: any) {
+function setIFrameHeight(height: string) {
+  bridge.log('logging2', height)
   iFrame.height = height
 }
 
@@ -49,11 +50,34 @@ function resetIFrameHeight() {
   setIFrameHeight(defaultFrameHeight)
 }
 
+/**
+ * The code below will get everything going. Initialize the iFrame with defaults and add it to the page.
+ * @type {string}
+ */
+iFrame.id = 'bex-app-iframe'
+iFrame.width = '100%'
+resetIFrameHeight()
+
+// Assign some styling so it looks seamless
+Object.assign(iFrame.style, {
+  //position: 'fixed',
+  top: '0',
+  right: '0',
+  bottom: '0',
+  left: '0',
+  border: '0',
+  zIndex: '9999999', // Make sure it's on top
+  // overflow: 'visible'
+})
+;(function () {
+  // When the page loads, insert our browser extension app.
+  iFrame.src = chrome.runtime.getURL('www/index.html')
+  document.body.prepend(iFrame)
+})()
+
 declare module '@quasar/app-vite' {
   interface BexEventMap {
-    // /* eslint-disable @typescript-eslint/no-explicit-any */
     'some.event': [{ someProp: string }, void]
-    // /* eslint-enable @typescript-eslint/no-explicit-any */
   }
 }
 

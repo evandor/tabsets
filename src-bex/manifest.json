@@ -19,6 +19,14 @@
         "js": [
           "tabsets-content-script.ts"
         ]
+      },
+      {
+        "matches": [
+          "*://*/www/index.html#/mainpanel/MHTML---disabled---*"
+        ],
+        "js": [
+          "my-content-script.ts"
+        ]
       }
     ],
     "content_security_policy": {
