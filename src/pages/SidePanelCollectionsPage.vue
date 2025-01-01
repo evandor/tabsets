@@ -274,7 +274,8 @@ const openIndicatorIcon = (stat: any) => {
   return stat.open ? 'keyboard_arrow_down' : 'chevron_right'
 }
 
-const topLevelSubfolderExist = () => treeData.value!.findIndex((nto: NodeTreeObject) => nto.children.length > 0) >= 0
+const topLevelSubfolderExist = () =>
+  treeData.value ? treeData.value.findIndex((nto: NodeTreeObject) => nto.children.length > 0) >= 0 : false
 </script>
 
 <style lang="scss">
