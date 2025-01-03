@@ -17,10 +17,8 @@ export class SidePanelViews {
 
   static readonly TAG = new SidePanelViews('tag', '/sidepanel/tags')
 
-  static readonly BY_DOMAIN_LIST = new SidePanelViews(
-    'byDomainList',
-    '/sidepanel/byDomainList',
-    () => useFeaturesStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN),
+  static readonly BY_DOMAIN_LIST = new SidePanelViews('byDomainList', '/sidepanel/byDomainList', () =>
+    useFeaturesStore().hasFeature(FeatureIdent.GROUP_BY_DOMAIN),
   )
 
   static readonly RSS_LIST = new SidePanelViews('rssList', '/sidepanel/rsslist', () =>
@@ -39,16 +37,10 @@ export class SidePanelViews {
     useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS),
   ) //&& useRoute()?.path !== "/sidepanel/welcome");
 
-  static readonly PUBLIC_TABSETS = new SidePanelViews(
-    'categorized_tabsets',
-    '/sidepanel/byCategory',
-    () => true,
-  )
+  static readonly PUBLIC_TABSETS = new SidePanelViews('categorized_tabsets', '/sidepanel/byCategory', () => true)
 
-  static readonly TAGS_VIEWER = new SidePanelViews(
-    'categorized_tabsets',
-    '/sidepanel/byCategory',
-    () => useFeaturesStore().hasFeature(FeatureIdent.TAGS),
+  static readonly TAGS_VIEWER = new SidePanelViews('categorized_tabsets', '/sidepanel/byCategory', () =>
+    useFeaturesStore().hasFeature(FeatureIdent.TAGS),
   )
 
   static readonly MESSAGES = new SidePanelViews('messages', '/sidepanel/messages')

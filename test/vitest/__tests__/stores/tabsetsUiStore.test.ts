@@ -60,9 +60,7 @@ describe('tabsetsUiStore', () => {
   it('addTabsetToLastUsedList adds tabset id to list for space', async () => {
     useTabsetsUiStore().load()
 
-    const res: ExecutionResult<Space> = await useCommandExecutor().execute(
-      new CreateSpaceCommand('spaceA'),
-    )
+    const res: ExecutionResult<Space> = await useCommandExecutor().execute(new CreateSpaceCommand('spaceA'))
     useSpacesStore().space = res.result
     useTabsetsUiStore().addTabsetToLastUsedList('tsId')
 

@@ -21,8 +21,7 @@
                   : tabAndTabsetId.tab.activatedCount + ' time'
               "
               :tab="tabAndTabsetId.tab"
-              :tabsetId="tabAndTabsetId.tabsetId"
-            />
+              :tabsetId="tabAndTabsetId.tabsetId" />
           </q-item>
         </q-list>
       </div>
@@ -69,15 +68,12 @@ onMounted(() => {
 watchEffect(() => {
   loading.value = true
   setTimeout(() => {
-    const r: TabAndTabsetId[] = _.flatMap(
-      [...useTabsetsStore().tabsets.values()] as Tabset[],
-      (tabset: Tabset) => {
-        return _.map(
-          _.filter(tabset.tabs, (t: Tab) => t.url !== undefined && t.url.trim() !== ''),
-          (t: Tab) => new TabAndTabsetId(t, tabset.id),
-        )
-      },
-    )
+    const r: TabAndTabsetId[] = _.flatMap([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
+      return _.map(
+        _.filter(tabset.tabs, (t: Tab) => t.url !== undefined && t.url.trim() !== ''),
+        (t: Tab) => new TabAndTabsetId(t, tabset.id),
+      )
+    })
     top10.value = _.take(
       _.orderBy(r, (t: TabAndTabsetId) => t.tab.activatedCount || 0, 'desc'),
       25,

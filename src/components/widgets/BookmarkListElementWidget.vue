@@ -5,15 +5,9 @@
       <q-icon name="o_folder_open" size="24px" color="warning"></q-icon>
     </q-item-section>
     <q-item-section
-      :data-testid="
-        useUtils().createDataTestIdentifier(
-          'tabListElementWidget',
-          props.bookmark.chromeBookmark.title,
-        )
-      "
+      :data-testid="useUtils().createDataTestIdentifier('tabListElementWidget', props.bookmark.chromeBookmark.title)"
       class="cursor-pointer"
-      @click="selectBookmark(props.bookmark)"
-    >
+      @click="selectBookmark(props.bookmark)">
       <q-item-label
         >{{ props.bookmark.chromeBookmark?.title }}
         <span class="text-caption text-grey-8">
@@ -39,16 +33,14 @@
         style="cursor: move"
         width="20px"
         height="20px"
-        :src="getFaviconUrl(props.bookmark.chromeBookmark)"
-      >
+        :src="getFaviconUrl(props.bookmark.chromeBookmark)">
       </q-img>
     </q-item-section>
 
     <q-item-section
       @mouseover="showButtons(props.bookmark.chromeBookmark?.id, true)"
       @mouseleave="showButtons(props.bookmark.chromeBookmark?.id, false)"
-      @click.stop="NavigationService.openOrCreateTab([props.bookmark.chromeBookmark?.url])"
-    >
+      @click.stop="NavigationService.openOrCreateTab([props.bookmark.chromeBookmark?.url])">
       <q-item-label>
         <div>
           {{ props.bookmark.chromeBookmark?.title }}
@@ -72,8 +64,7 @@
     <q-item-section
       avatar
       @mouseover="showButtons(props.bookmark.chromeBookmark?.id, true)"
-      @mouseleave="showButtons(props.bookmark.chromeBookmark?.id, false)"
-    >
+      @mouseleave="showButtons(props.bookmark.chromeBookmark?.id, false)">
       <q-btn
         v-if="showDeleteButton.get(props.bookmark.chromeBookmark?.id)"
         flat
@@ -81,8 +72,7 @@
         color="red"
         size="11px"
         icon="delete_outline"
-        @click.stop="deleteBookmark(props.bookmark)"
-      >
+        @click.stop="deleteBookmark(props.bookmark)">
         <q-tooltip>Delete this bookmark</q-tooltip>
       </q-btn>
     </q-item-section>
@@ -127,9 +117,7 @@ const getFaviconUrl = (chromeBookmark: chrome.bookmarks.BookmarkTreeNode | undef
         } catch (err) {}
       }
     }
-    return theRealUrl
-      ? 'https://icons.duckduckgo.com/ip3/' + theRealUrl.hostname + '.ico'
-      : 'favicon-unknown-32x32.png'
+    return theRealUrl ? 'https://icons.duckduckgo.com/ip3/' + theRealUrl.hostname + '.ico' : 'favicon-unknown-32x32.png'
   }
   return 'favicon-unknown-32x32.png'
 }
@@ -145,6 +133,5 @@ const deleteBookmark = (bm: Bookmark) => {
 
 const existsInTabset = (url: string) => useTabsetService().tabsetsFor(url)?.length > 0
 
-const showButtons = (bookmarkId: string, show: boolean) =>
-  showDeleteButton.value.set(bookmarkId, show)
+const showButtons = (bookmarkId: string, show: boolean) => showDeleteButton.value.set(bookmarkId, show)
 </script>

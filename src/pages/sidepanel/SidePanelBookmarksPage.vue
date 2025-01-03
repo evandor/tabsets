@@ -3,18 +3,12 @@
     <div class="q-ma-none">
       <div class="q-ma-none">
         <div class="row q-ma-none q-pa-none">
-          <div
-            class="col-12 q-mx-sm q-mt-md q-mb-none q-pt-md cursor-pointer text-center"
-            v-if="importedTabsetId">
+          <div class="col-12 q-mx-sm q-mt-md q-mb-none q-pt-md cursor-pointer text-center" v-if="importedTabsetId">
             <q-btn label="open Imported Tabset" outline @click="openImportedTabset()" />
           </div>
           <div class="col-12 q-ma-none q-pa-none q-pt-md">
             <BookmarksTree
-              :nodes="
-                showOnlyFolders
-                  ? useBookmarksStore().nonLeafNodes
-                  : useBookmarksStore().bookmarksNodes2
-              "
+              :nodes="showOnlyFolders ? useBookmarksStore().nonLeafNodes : useBookmarksStore().bookmarksNodes2"
               :show-only-folders="showOnlyFolders"
               :nodes-actions="'import'"
               @imported="(a: any) => imported(a)"

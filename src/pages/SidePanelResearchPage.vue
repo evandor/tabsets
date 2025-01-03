@@ -43,8 +43,7 @@
             indicator-color="primary"
             align="justify"
             no-caps
-            narrow-indicator
-          >
+            narrow-indicator>
             <q-tab name="metadata" label="Metadata" />
             <q-tab name="snapshots" :label="snapshotsLabel()" />
             <q-tab name="alerts" label="Alerts" />
@@ -59,8 +58,7 @@
                   <q-img
                     :src="thumbnail"
                     style="border: 1px dotted grey; border-radius: 5px; max-width: 230px"
-                    no-native-menu
-                  />
+                    no-native-menu />
                 </div>
 
                 <template v-for="[k, v] of ogMetadata()">
@@ -84,8 +82,7 @@
                   color="primary"
                   dense
                   no-caps
-                  label="New Snapshot..."
-                >
+                  label="New Snapshot...">
                   <q-list>
                     <q-item clickable v-close-popup @click="saveHtml(source as Tab)">
                       <q-item-section>
@@ -135,32 +132,25 @@
                   :extension="md.type"
                   :wasEdited="editedSnapshot ? editedSnapshot.snapshotId === md.id : false"
                   @save-snapshot="saveSnapshot"
-                  @new-snapshot-was-clicked="view = 'start_research'"
-                />
+                  @new-snapshot-was-clicked="view = 'start_research'" />
 
                 <div class="row q-ma-sm q-ml-lg" v-for="a in md.annotations">
                   <div
                     class="col-9 ellipsis text-caption text-accent cursor-pointer"
-                    @click="toggleEditAnnotation(a, index)"
-                  >
+                    @click="toggleEditAnnotation(a, index)">
                     {{ a.title }}
                     <q-tooltip v-if="a.comment" class="tooltip-small">{{ a.comment }}</q-tooltip>
                   </div>
                   <div class="col-3 ellipsis">
                     <template v-if="showAnnotationMenu(md.id)">
-                      <q-icon
-                        name="o_visibility"
-                        class="q-mr-md cursor-pointer"
-                        @click="restoreAnnotation(a)"
-                      >
+                      <q-icon name="o_visibility" class="q-mr-md cursor-pointer" @click="restoreAnnotation(a)">
                         <q-tooltip class="tooltip-small">Show Annotation in Page</q-tooltip>
                       </q-icon>
                       <q-icon
                         name="o_delete"
                         class="q-mr-md cursor-pointer"
                         size="11px"
-                        @click="deleteAnnotation(md, a)"
-                      >
+                        @click="deleteAnnotation(md, a)">
                         <q-tooltip class="tooltip-small">Delete Annotation from Page</q-tooltip>
                       </q-icon>
                     </template>
@@ -181,8 +171,7 @@
                       :selectionTitle="currentSelectionTitle || ''"
                       :selectionRemark="currentSelectionRemark!"
                       @set-annotations="(as: Annotation[]) => setAnnotations(as)"
-                      @close-view="currentSelectionText = undefined"
-                    />
+                      @close-view="currentSelectionText = undefined" />
                   </div>
                 </div>
 
@@ -200,8 +189,7 @@
                     :selectionRect="currentSelectionRect!"
                     :selectionRemark="currentSelectionRemark!"
                     @set-annotations="(as: Annotation[]) => setAnnotations(as)"
-                    @close-view="currentSelectionText = undefined"
-                  />
+                    @close-view="currentSelectionText = undefined" />
                 </div>
               </template>
             </q-tab-panel>
@@ -304,10 +292,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         titleSuggestion = getTitleSuggestion(split[0] + ' ' + split[1] + ' ' + split[2])
         break
       default:
-        titleSuggestion =
-          message.data.text.length > 40
-            ? message.data.text.substring(0, 37) + '...'
-            : message.data.text
+        titleSuggestion = message.data.text.length > 40 ? message.data.text.substring(0, 37) + '...' : message.data.text
         break
     }
 
@@ -332,12 +317,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         .getMetadataById(snapshotId)
         .then((metadata: BlobMetadata | undefined) => {
           console.log('metadata', metadata)
-          editedSnapshot.value = new EditedSnapshot(
-            snapshotId,
-            metadata!.sourceId,
-            metadata!.url,
-            message.data.html,
-          )
+          editedSnapshot.value = new EditedSnapshot(snapshotId, metadata!.sourceId, metadata!.url, message.data.html)
         })
     } else {
       editedSnapshot.value = undefined
@@ -521,9 +501,7 @@ const snapshotsLabel = () => `Snapshots (${metadatas.value.length})`
 const ogMetadata = () => {
   const result: Map<string, string> = new Map()
   if (content.value && content.value.metas) {
-    const ogKeys = _.filter(Object.keys(content.value.metas), (key: string) =>
-      key.toLowerCase().startsWith('og:'),
-    )
+    const ogKeys = _.filter(Object.keys(content.value.metas), (key: string) => key.toLowerCase().startsWith('og:'))
     // console.log("ogKeys", ogKeys)
     for (const k of ogKeys) {
       result.set(k.substring(3), content.value.metas[k as keyof object])

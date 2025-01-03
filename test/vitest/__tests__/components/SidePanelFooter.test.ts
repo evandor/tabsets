@@ -20,11 +20,7 @@ async function setupStores() {
 }
 
 describe('SidePanelFooter', () => {
-  const skysailChromeTab = ChromeApi.createChromeTabObject(
-    'title',
-    'https://www.skysail.io/some-subpage',
-    'favicon',
-  )
+  const skysailChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.skysail.io/some-subpage', 'favicon')
 
   let db = null as unknown as TabsetsPersistence
   //let windowsDB = IndexedDbWindowsPersistence
@@ -82,13 +78,11 @@ describe('SidePanelFooter', () => {
       runtime: {
         sendMessage: vi.fn(() => {}),
         onMessage: {
-          addListener: vi.fn(
-            (message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
-              console.log('mocking chrome.windows.onCreated.addListener', message)
-              //onCreatedListener = listener
-              return true
-            },
-          ),
+          addListener: vi.fn((message: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
+            console.log('mocking chrome.windows.onCreated.addListener', message)
+            //onCreatedListener = listener
+            return true
+          }),
         },
       },
       windows: {

@@ -90,10 +90,7 @@ describe('WindowsStore', () => {
   const tab2 = ChromeApi.createChromeTabObject('tabsets', 'https://www.tabsets.net')
   const tab3 = ChromeApi.createChromeTabObject('docs', 'https://docs.tabsets.net')
 
-  const window100: chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [
-    tab1,
-    tab2,
-  ])
+  const window100: chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [tab1, tab2])
   const window200: chrome.windows.Window = ChromeApi.createChromeWindowObject(200, 17, 28, [tab2])
   const window300: chrome.windows.Window = ChromeApi.createChromeWindowObject(300, 37, 48, [tab3])
 
@@ -204,12 +201,10 @@ describe('WindowsStore', () => {
   })
 
   it.skip('onCreate reuses existing window when matched', async () => {
-    const windowWithSameTabsAsWindow100: chrome.windows.Window = ChromeApi.createChromeWindowObject(
-      1000,
-      0,
-      0,
-      [tab1, tab2],
-    )
+    const windowWithSameTabsAsWindow100: chrome.windows.Window = ChromeApi.createChromeWindowObject(1000, 0, 0, [
+      tab1,
+      tab2,
+    ])
     currentWindows = [window100, window200]
     await setupMocks(window100)
     await setupStores()

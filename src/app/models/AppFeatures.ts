@@ -302,11 +302,6 @@ export class AppFeatures {
       ['bex'],
     ),
 
-    // new Feature(FeatureIdent.TABSET_SUBFOLDER, FeatureType.OPTIONAL,
-    //   'Subfolder for Tabsets',
-    //   'Use Subfolders in Tabsets. Currently the only way to create subfolders is by importing recursive levels of bookmarks.',
-    //   'o_folder', '', ['all']),
-
     new Feature(
       FeatureIdent.WEBSITE_CLIP,
       FeatureType.EXPERIMENTAL,
@@ -316,6 +311,18 @@ export class AppFeatures {
       '',
       ['bex'],
     ).setActivateCommands([new GrantPermissionCommand('notifications')]),
+
+    new Feature(
+      FeatureIdent.TAB_HELPER,
+      FeatureType.EXPERIMENTAL,
+      'Tab Helper',
+      'Add a small tag on any website to access tabsets features quickly.<br>' +
+        'You need to restart tabsets if you activate or deactivate this feature.<br>' +
+        'The Tabsets Helper Icon will appear on all pages you open once activated.',
+      'o_article',
+      'tabhelper.png',
+      ['bex'],
+    ),
 
     new Feature(
       FeatureIdent.DYNAMIC_TABSET,

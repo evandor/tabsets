@@ -116,9 +116,7 @@ class NavigationService {
 
                 const tabsForUrl = useTabsetsStore().tabsForUrl(url)
                 console.log('tabsForUrl', tabsForUrl)
-                const lastActive = _.min(
-                  _.map(tabsForUrl, (tfu: TabAndTabsetId) => tfu.tab.lastActive),
-                )
+                const lastActive = _.min(_.map(tabsForUrl, (tfu: TabAndTabsetId) => tfu.tab.lastActive))
                 const { handleSuccess } = useNotificationHandler()
                 if (r.active) {
                   console.log(
@@ -278,12 +276,7 @@ class NavigationService {
     })
   }
 
-  private async createNewWindow(
-    createData: any,
-    useWindowIdent: string,
-    withUrls: string[],
-    groups: string[],
-  ) {
+  private async createNewWindow(createData: any, useWindowIdent: string, withUrls: string[], groups: string[]) {
     console.log('opening new window with', createData)
 
     chrome.windows.create(createData, (window) => {

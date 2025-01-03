@@ -30,11 +30,7 @@ function createTabWithChromeTabId(tabId: string, chromeTab: chrome.tabs.Tab) {
 }
 
 describe('DeleteTabCommand', () => {
-  const skysailChromeTab = ChromeApi.createChromeTabObject(
-    'title',
-    'https://www.skysail.io',
-    'favicon',
-  )
+  const skysailChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.skysail.io', 'favicon')
   const testDeChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.test.de', 'favicon')
 
   let db = null as unknown as TabsetsPersistence

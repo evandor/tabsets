@@ -42,11 +42,7 @@
 
 <script lang="ts" setup>
 import { LocalStorage } from 'quasar'
-import {
-  SHARING_AUTHOR_IDENT,
-  SHARING_AVATAR_IDENT,
-  STRIP_CHARS_IN_USER_INPUT,
-} from 'src/boot/constants'
+import { SHARING_AUTHOR_IDENT, SHARING_AVATAR_IDENT, STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 import { useUtils } from 'src/core/services/Utils'
 import { ref, watchEffect } from 'vue'
 

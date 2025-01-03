@@ -27,8 +27,7 @@
           icon="open_in_new"
           color="primary"
           :label="$q.screen.gt.md ? 'Open Original Page' : 'Original'"
-          class="q-mr-sm"
-        >
+          class="q-mr-sm">
           <!--          @click="NavigationService.openOrCreateTab([tab?.tabReferences.filter(r => r.type === TabReferenceType.ORIGINAL_URL)[0].href || ''])">-->
           <q-tooltip>Open Original Page</q-tooltip>
         </q-btn>
@@ -36,10 +35,7 @@
     </div>
   </q-toolbar>
 
-  <div
-    class="row justify-center items-center"
-    style="max-width: 600px; margin-left: auto; margin-right: auto"
-  >
+  <div class="row justify-center items-center" style="max-width: 600px; margin-left: auto; margin-right: auto">
     <div class="col-12 text-h5 q-ma-lg q-pa-sm">
       {{ title }}
     </div>
@@ -90,9 +86,7 @@ watchEffect(async () => {
   const res = useTabsetsStore().getTabAndTabsetId(tabId)
   if (res && res.tab) {
     tab.value = res.tab
-    const tabRefs: TabReference[] = res.tab.tabReferences.filter(
-      (r) => r.type === TabReferenceType.READING_MODE,
-    )
+    const tabRefs: TabReference[] = res.tab.tabReferences.filter((r) => r.type === TabReferenceType.READING_MODE)
     if (tabRefs.length > 0) {
       const article = tabRefs[0]!.data[0]
       // const response = await fetch(tab.value.url || '')

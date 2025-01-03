@@ -4,9 +4,7 @@ import { APP_INSTALLATION_ID } from 'src/boot/constants'
 import { ref } from 'vue'
 
 export const useAppStore = defineStore('app', () => {
-  const installationId = ref<string | undefined>(
-    (LocalStorage.getItem(APP_INSTALLATION_ID) as string) || undefined,
-  )
+  const installationId = ref<string | undefined>((LocalStorage.getItem(APP_INSTALLATION_ID) as string) || undefined)
 
   const logflowId = ref<string>((Math.random() * 10).toString(36).replace('.', ''))
   //const user = ref<object | undefined>(undefined)

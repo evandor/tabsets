@@ -20,11 +20,7 @@ installQuasarPlugin()
 vi.mock('vue-router')
 
 describe('UpdateTabUrl', () => {
-  const skysailChromeTab = ChromeApi.createChromeTabObject(
-    'title',
-    'https://www.skysail.io',
-    'favicon',
-  )
+  const skysailChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.skysail.io', 'favicon')
 
   let db = null as unknown as TabsetsPersistence
 

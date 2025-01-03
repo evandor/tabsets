@@ -39,7 +39,6 @@ export default {
   title: 'Title',
   thumbnail_quality: 'Thumbnail Quality in %',
   warning_thresholds: 'Warning Thresholds',
-  warnings_info:
-    'warnings start when minimum open tabs count is reached. Reaching the maximum will turn the bar red.',
+  warnings_info: 'warnings start when minimum open tabs count is reached. Reaching the maximum will turn the bar red.',
   welcome_to_tabsets: 'Welcome  to Tabsets',
 }

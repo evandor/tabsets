@@ -14,10 +14,7 @@ class PlaceholderUtils {
       /^(.*)(github\.com)\/([^\/]*)\/([^\/]*)\/($)/gm,
       new PH('$1$2/$3/$4/${path}', new Map([['path', 'actions,issues']])),
     ],
-    [
-      /^(.*)(sueddeutsche\.de)\/($)/gm,
-      new PH('$1$2/$3${path}', new Map([['path', 'muenchen,sport,bayern']])),
-    ],
+    [/^(.*)(sueddeutsche\.de)\/($)/gm, new PH('$1$2/$3${path}', new Map([['path', 'muenchen,sport,bayern']]))],
   ])
 
   applyForDefaultDomains(tab: Tab): Tab {

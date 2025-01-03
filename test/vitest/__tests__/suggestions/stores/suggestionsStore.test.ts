@@ -4,12 +4,7 @@ import ChromeApi from 'src/app/BrowserApi'
 import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
 import PersistenceService from 'src/services/PersistenceService'
 import { useDB } from 'src/services/usePersistenceService'
-import {
-  StaticSuggestionIdent,
-  Suggestion,
-  SuggestionState,
-  SuggestionType,
-} from 'src/suggestions/models/Suggestion'
+import { StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType } from 'src/suggestions/models/Suggestion'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -115,13 +110,7 @@ describe('SuggestionsStore', () => {
   })
 
   it.skip('adds suggestion for URL', async () => {
-    var s = new Suggestion(
-      '',
-      'title',
-      'msg',
-      'https://www.skysail.io',
-      SuggestionType.CONTENT_CHANGE,
-    )
+    var s = new Suggestion('', 'title', 'msg', 'https://www.skysail.io', SuggestionType.CONTENT_CHANGE)
     await useSuggestionsStore().addSuggestion(s)
     expect(useSuggestionsStore().getSuggestions([SuggestionState.NEW]).length).toBe(1)
   })

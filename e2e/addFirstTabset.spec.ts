@@ -21,12 +21,7 @@ test('first tabset', async ({ page, extensionId, context }) => {
     .context()
     .pages()
     .find((value) => {
-      return (
-        value &&
-        value.url() &&
-        value.url().match(extensionId) &&
-        value.url().match('sidepanel/welcome')
-      )
+      return value && value.url() && value.url().match(extensionId) && value.url().match('sidepanel/welcome')
     }) as Page
   console.log('found sidePanelPage', sidePanelPage.url())
 
@@ -56,9 +51,7 @@ test('first tabset', async ({ page, extensionId, context }) => {
     'this website uses cookies ensure best experience',
   )
   expect(skysailTabDetails.locator('[data-testid=content-meta]')).toContainText('noindex, nofollow')
-  expect(skysailTabDetails.locator('[data-testid=content-title]')).toContainText(
-    'Skysail Consulting',
-  )
+  expect(skysailTabDetails.locator('[data-testid=content-title]')).toContainText('Skysail Consulting')
 
   // await skysailTabDetails.locator('#debugTabA').click()
 })

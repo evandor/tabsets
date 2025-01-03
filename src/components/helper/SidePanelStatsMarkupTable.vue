@@ -8,17 +8,11 @@
           <th class="text-right q-pr-none">
             <span v-if="!statsSnapshot" class="cursor-pointer" @click="saveStatsSnapshot()"
               ><q-icon name="save" class="q-mr-xs" />Save snapshot
-              <q-tooltip class="tooltip-small">
-                Store the current numbers for comparison
-              </q-tooltip>
+              <q-tooltip class="tooltip-small"> Store the current numbers for comparison </q-tooltip>
             </span>
             <span v-else>
               <span class="cursor-pointer">
-                <q-icon
-                  name="restart_alt"
-                  class="q-mr-xs cursor-pointer"
-                  @click="saveStatsSnapshot()"
-                >
+                <q-icon name="restart_alt" class="q-mr-xs cursor-pointer" @click="saveStatsSnapshot()">
                   <q-tooltip class="tooltip-small">Reset Snapshot Counters</q-tooltip>
                 </q-icon> </span
               >{{ snapshotDate() }}
@@ -48,32 +42,25 @@
               size="11px"
               color="warning"
               class="cursor-pointer"
-              @click="NavigationService.openSingleTab(row['link' as keyof object])"
-            />
+              @click="NavigationService.openSingleTab(row['link' as keyof object])" />
           </td>
           <td
             v-else-if="
-              row['snapshot' as keyof object] &&
-              row['count' as keyof object] > row['snapshot' as keyof object]
-            "
-          >
+              row['snapshot' as keyof object] && row['count' as keyof object] > row['snapshot' as keyof object]
+            ">
             <q-icon
               name="north"
               size="11px"
-              :color="row['name' as keyof object] === 'Open Tabs' ? 'negative' : 'positive'"
-            />
+              :color="row['name' as keyof object] === 'Open Tabs' ? 'negative' : 'positive'" />
           </td>
           <td
             v-else-if="
-              row['snapshot' as keyof object] &&
-              row['count' as keyof object] < row['snapshot' as keyof object]
-            "
-          >
+              row['snapshot' as keyof object] && row['count' as keyof object] < row['snapshot' as keyof object]
+            ">
             <q-icon
               name="south"
               size="11px"
-              :color="row['name' as keyof object] === 'Open Tabs' ? 'positive' : 'negative'"
-            />
+              :color="row['name' as keyof object] === 'Open Tabs' ? 'positive' : 'negative'" />
           </td>
           <td v-else>
             <q-icon name="east" size="11px" />

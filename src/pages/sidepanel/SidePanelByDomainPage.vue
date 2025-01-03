@@ -5,11 +5,7 @@
         <q-toolbar-title>
           <div class="row">
             <div class="col-2">
-              <q-icon
-                name="chevron_left"
-                class="cursor-pointer"
-                @click="router.push('/sidepanel/byDomainList')"
-              >
+              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel/byDomainList')">
                 <q-tooltip>Back</q-tooltip>
               </q-icon>
             </div>

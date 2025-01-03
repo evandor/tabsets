@@ -46,9 +46,7 @@ class AppService {
     )
 
     if (this.initialized && !forceRestart) {
-      console.debug(
-        'stopping AppService initialization; already initialized and not forcing restart',
-      )
+      console.debug('stopping AppService initialization; already initialized and not forcing restart')
       return Promise.resolve()
     }
 

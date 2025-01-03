@@ -24,18 +24,11 @@ class AppEventDispatcher {
           useSearchStore().upsertObject(params)
           break
         case 'capture-screenshot':
-          useThumbnailsService().handleCaptureCallback(
-            params['tabId' as keyof object],
-            params['data' as keyof object],
-          )
+          useThumbnailsService().handleCaptureCallback(params['tabId' as keyof object], params['data' as keyof object])
           break
         case 'restore-tabset':
           useCommandExecutor().execute(
-            new RestoreTabsetCommand(
-              params['tabsetId' as keyof object],
-              params['label' as keyof object],
-              true,
-            ),
+            new RestoreTabsetCommand(params['tabsetId' as keyof object], params['label' as keyof object], true),
           )
           break
         default:

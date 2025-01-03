@@ -225,9 +225,7 @@ describe('BookmarksStore', () => {
       ChromeApi.createFolderNode('Lesezeichenleiste'),
       ChromeApi.createFolderNode('Andere Lesezeichen', [
         ChromeApi.createBmNode('bm1', 'url1'),
-        ChromeApi.createFolderNode('subfolder', [
-          ChromeApi.createBmNode('skysail', 'https://www.skysail.io'),
-        ]),
+        ChromeApi.createFolderNode('subfolder', [ChromeApi.createBmNode('skysail', 'https://www.skysail.io')]),
       ]),
     ])
     await setupMocks([rootFolder])
@@ -254,9 +252,7 @@ describe('BookmarksStore', () => {
 
   it('initializing nonLeafNodes correctly for more complex scenario II', async () => {
     const rootFolder = ChromeApi.createFolderNode('root', [
-      ChromeApi.createFolderNode('Lesezeichenleiste', [
-        ChromeApi.createFolderNode('empty testfolder'),
-      ]),
+      ChromeApi.createFolderNode('Lesezeichenleiste', [ChromeApi.createFolderNode('empty testfolder')]),
       ChromeApi.createFolderNode('Andere Lesezeichen', [
         ChromeApi.createBmNode('bm1', 'url1'),
         ChromeApi.createFolderNode('subfolder', [ChromeApi.createBmNode('bm2', 'url2')]),

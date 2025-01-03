@@ -10,12 +10,7 @@
     <q-tooltip class="tooltip-small">{{ suggestionsLabel() }}</q-tooltip>
   </q-btn>
 
-  <q-btn
-    v-if="showViewMenu()"
-    icon="o_view_list"
-    :size="props.size"
-    class="q-my-xs q-ml-xs q-mr-none q-px-xs"
-    flat>
+  <q-btn v-if="showViewMenu()" icon="o_view_list" :size="props.size" class="q-my-xs q-ml-xs q-mr-none q-px-xs" flat>
     <q-menu>
       <q-list dense>
         <!--        <q-item dense clickable v-close-popup>-->
@@ -131,10 +126,7 @@
 
   <span
     class="q-ma-none"
-    v-if="
-      useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) &&
-      useTabsetsStore().tabsets?.size > 0
-    ">
+    v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets?.size > 0">
     <OpenTabsThresholdWidget :showLabel="false" :in-side-panel="true">
       <q-tooltip>{{ useTabsStore2().browserTabs?.length }} open tabs</q-tooltip>
     </OpenTabsThresholdWidget>
@@ -175,13 +167,8 @@ watchEffect(() => {
 })
 
 const suggestionsLabel = () => {
-  const suggestions = useSuggestionsStore().getSuggestions([
-    SuggestionState.NEW,
-    SuggestionState.DECISION_DELAYED,
-  ])
-  return suggestions.length === 1
-    ? suggestions.length + ' New Suggestion'
-    : suggestions.length + ' New Suggestions'
+  const suggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
+  return suggestions.length === 1 ? suggestions.length + ' New Suggestion' : suggestions.length + ' New Suggestions'
 }
 
 const showViewMenu = () => {

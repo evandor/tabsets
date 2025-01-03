@@ -4,18 +4,10 @@
       <InfoMessageWidget
         :probability="1"
         ident="sidePanelNewestTabsPage_overview"
-        hint="Here you can check the 100 newest of your tabs sorted by creation date."
-      />
+        hint="Here you can check the 100 newest of your tabs sorted by creation date." />
     </div>
 
-    <q-tabs
-      v-model="tab"
-      dense
-      class="text-grey"
-      active-color="primary"
-      indicator-color="primary"
-      narrow-indicator
-    >
+    <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" narrow-indicator>
       <q-tab name="latest_by_access" label="Accessed" />
       <q-tab name="latest_by_creation" label="Created" />
     </q-tabs>
@@ -25,10 +17,7 @@
         <template v-for="range in dateRanges">
           <div
             class="text-subtitle2"
-            :class="
-              filterDate(byAccess, range.start, range.end).length > 0 ? 'text-black' : 'text-grey'
-            "
-          >
+            :class="filterDate(byAccess, range.start, range.end).length > 0 ? 'text-black' : 'text-grey'">
             {{ range.name }}
           </div>
           <q-list class="q-ma-none">
@@ -36,12 +25,8 @@
               v-for="tab in filterDate(byAccess, range.start, range.end)"
               clickable
               v-ripple
-              class="q-ma-none q-pa-sm"
-            >
-              <PanelTabListElementWidget
-                :header="'opened: ' + formatDate(tab.lastActive)"
-                :tab="tab"
-              />
+              class="q-ma-none q-pa-sm">
+              <PanelTabListElementWidget :header="'opened: ' + formatDate(tab.lastActive)" :tab="tab" />
             </q-item>
           </q-list>
         </template>
@@ -51,10 +36,7 @@
         <template v-for="range in dateRanges">
           <div
             class="text-subtitle2"
-            :class="
-              filterDate(byCreation, range.start, range.end).length > 0 ? 'text-black' : 'text-grey'
-            "
-          >
+            :class="filterDate(byCreation, range.start, range.end).length > 0 ? 'text-black' : 'text-grey'">
             {{ range.name }}
           </div>
           <q-list class="q-ma-none">
@@ -62,12 +44,8 @@
               v-for="tab in filterDate(byCreation, range.start, range.end)"
               clickable
               v-ripple
-              class="q-ma-none q-pa-sm"
-            >
-              <PanelTabListElementWidget
-                :header="'created: ' + formatDate(tab.created)"
-                :tab="tab"
-              />
+              class="q-ma-none q-pa-sm">
+              <PanelTabListElementWidget :header="'created: ' + formatDate(tab.created)" :tab="tab" />
             </q-item>
           </q-list>
         </template>
@@ -122,9 +100,7 @@ onMounted(() => {
 watchEffect(() => {
   byAccess.value = _.groupBy(
     _.orderBy(
-      _.flatMap([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) =>
-        _.flatMap(tabset.tabs),
-      ),
+      _.flatMap([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => _.flatMap(tabset.tabs)),
       (t: Tab) => t.lastActive,
       'desc',
     ),
@@ -138,9 +114,7 @@ watchEffect(() => {
 watchEffect(() => {
   byCreation.value = _.groupBy(
     _.orderBy(
-      _.flatMap([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) =>
-        _.flatMap(tabset.tabs),
-      ),
+      _.flatMap([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => _.flatMap(tabset.tabs)),
       (t: Tab) => t.created,
       'desc',
     ),
@@ -154,11 +128,7 @@ watchEffect(() => {
 const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), { addSuffix: true }) : '?'
 
-const filterDate = (
-  base: _.Dictionary<Tab[]> | undefined,
-  starting: number,
-  ending: number,
-): Tab[] => {
+const filterDate = (base: _.Dictionary<Tab[]> | undefined, starting: number, ending: number): Tab[] => {
   if (!base) {
     return []
   }

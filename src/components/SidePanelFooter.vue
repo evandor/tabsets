@@ -42,12 +42,7 @@
 
     <div class="row fit q-ma-none q-pa-none" v-if="!checkToasts() && useUiStore().progress">
       <div class="col-12">
-        <q-linear-progress
-          stripe
-          size="18px"
-          :value="progressValue"
-          color="grey-7"
-          track-color="grey-4">
+        <q-linear-progress stripe size="18px" :value="progressValue" color="grey-7" track-color="grey-4">
           <div class="absolute-full flex flex-center">
             <q-badge :label="progressLabel" color="grey" />
           </div>
@@ -94,16 +89,11 @@
         <span>
           <input
             class="q-ma-none q-pa-none"
-            v-if="
-              useFeaturesStore().hasFeature(FeatureIdent.HTML_SNIPPETS) &&
-              useContentStore().getCurrentTabUrl
-            "
+            v-if="useFeaturesStore().hasFeature(FeatureIdent.HTML_SNIPPETS) && useContentStore().getCurrentTabUrl"
             v-model="ignored"
             style="border: 1px dotted grey; border-radius: 3px; max-width: 30px; max-height: 20px"
             @drop="drop($event)" />
-          <q-tooltip class="tooltip_small"
-            >Drag and drop text or images from your current tab</q-tooltip
-          >
+          <q-tooltip class="tooltip_small">Drag and drop text or images from your current tab</q-tooltip>
         </span>
         <span>
           <q-btn
@@ -119,11 +109,7 @@
           </q-btn>
           <q-menu :offset="[-10, 0]">
             <q-list dense>
-              <ContextMenuItem
-                v-close-popup
-                @was-clicked="openOptionsPage()"
-                icon="o_settings"
-                label="Open Settings" />
+              <ContextMenuItem v-close-popup @was-clicked="openOptionsPage()" icon="o_settings" label="Open Settings" />
 
               <q-separator />
 
@@ -181,9 +167,7 @@
           flat
           :size="getButtonSize()"
           @click="toggleShowWindowTable()">
-          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left"
-            >Manage Windows</q-tooltip
-          >
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
         </q-btn>
 
         <q-btn
@@ -193,9 +177,7 @@
           flat
           :size="getButtonSize()"
           @click="toggleShowStatsTable()">
-          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left"
-            >Show Stats</q-tooltip
-          >
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Show Stats</q-tooltip>
         </q-btn>
 
         <!--        <span v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)">-->
@@ -227,9 +209,7 @@
           flat
           :size="getButtonSize()"
           @click="openExtensionTab()">
-          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left"
-            >Tabsets as full-page app</q-tooltip
-          >
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Tabsets as full-page app</q-tooltip>
         </q-btn>
       </div>
     </div>
@@ -254,7 +234,6 @@ import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { useAuthStore } from 'src/stores/authStore'
 import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
 import { Suggestion, SuggestionState } from 'src/suggestions/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
@@ -274,6 +253,7 @@ import WindowsMarkupTable from 'src/windows/components/WindowsMarkupTable.vue'
 import { Window } from 'src/windows/models/Window'
 import { WindowAction, WindowHolder } from 'src/windows/models/WindowHolder'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { useAuthStore } from 'stores/authStore'
 import { onMounted, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTabsetsUiStore } from '../tabsets/stores/tabsetsUiStore'
@@ -347,8 +327,7 @@ watchEffect(() => {
       _.findIndex(suggestions, (s: Suggestion) => {
         return (
           s.state === SuggestionState.NEW ||
-          (s.state === SuggestionState.NOTIFICATION &&
-            !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
+          (s.state === SuggestionState.NOTIFICATION && !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
         )
       }) >= 0)
 
@@ -386,13 +365,9 @@ watchEffect(() => {
 const getAdditionalActions = (windowName: string) => {
   const additionalActions: WindowAction[] = []
   if (!windowIsManaged(windowName)) {
-    additionalActions.push(
-      new WindowAction('o_bookmark_add', 'saveTabset', 'text-orange', 'Save as Tabset'),
-    )
+    additionalActions.push(new WindowAction('o_bookmark_add', 'saveTabset', 'text-orange', 'Save as Tabset'))
   } else {
-    additionalActions.push(
-      new WindowAction('o_bookmark_add', undefined, 'text-grey', 'already a tabset', true),
-    )
+    additionalActions.push(new WindowAction('o_bookmark_add', undefined, 'text-grey', 'already a tabset', true))
   }
   return additionalActions
 }
@@ -421,18 +396,16 @@ if (inBexMode()) {
       .catch((err) => handleError(err))
   })
 
-  chrome.tabs.onUpdated.addListener(
-    (tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-      if (changeInfo.status === 'complete') {
-        useWindowsStore()
-          .setup('on updated in SidePanelFooter')
-          .then(() => (windowHolderRows.value = calcWindowHolderRows()))
-          .catch((err) => {
-            console.log('could not yet calcWindowRows: ' + err)
-          })
-      }
-    },
-  )
+  chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+    if (changeInfo.status === 'complete') {
+      useWindowsStore()
+        .setup('on updated in SidePanelFooter')
+        .then(() => (windowHolderRows.value = calcWindowHolderRows()))
+        .catch((err) => {
+          console.log('could not yet calcWindowRows: ' + err)
+        })
+    }
+  })
 }
 
 watchEffect(() => {
@@ -442,10 +415,7 @@ watchEffect(() => {
   for (const ts of [...useTabsetsStore().tabsets.values()] as Tabset[]) {
     if (ts.window && ts.window !== 'current' && ts.window.trim() !== '') {
       tabsetsMangedWindows.value.push({ label: ts.window, value: ts.id })
-      const found = _.find(
-        windowHolderRows.value,
-        (r: object) => ts.window === r['name' as keyof object],
-      )
+      const found = _.find(windowHolderRows.value, (r: object) => ts.window === r['name' as keyof object])
       if (!found) {
         windowsToOpenOptions.value.push({ label: ts.window, value: ts.id })
       }
@@ -488,11 +458,7 @@ const suggestionDialog = () => {
     component: SuggestionDialog,
     componentProps: {
       suggestion: useSuggestionsStore()
-        .getSuggestions([
-          SuggestionState.NEW,
-          SuggestionState.DECISION_DELAYED,
-          SuggestionState.NOTIFICATION,
-        ])
+        .getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED, SuggestionState.NOTIFICATION])
         .at(0),
       fromPanel: true,
     },
@@ -504,9 +470,7 @@ const suggestionsLabel = () => {
     SuggestionState.DECISION_DELAYED,
     SuggestionState.NOTIFICATION,
   ])
-  return suggestions.length === 1
-    ? suggestions.length + ' New Suggestion'
-    : suggestions.length + ' New Suggestions'
+  return suggestions.length === 1 ? suggestions.length + ' New Suggestion' : suggestions.length + ' New Suggestions'
 }
 
 const checkToasts = () => {
@@ -577,13 +541,9 @@ const calcWindowHolderRows = (): WindowHolder[] => {
       const windowName = useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString()
       const additionalActions: WindowAction[] = []
       if (!windowIsManaged(windowName)) {
-        additionalActions.push(
-          new WindowAction('o_bookmark_add', 'saveTabset', 'text-orange', 'Save as Tabset'),
-        )
+        additionalActions.push(new WindowAction('o_bookmark_add', 'saveTabset', 'text-orange', 'Save as Tabset'))
       } else {
-        additionalActions.push(
-          new WindowAction('o_bookmark_add', undefined, 'text-grey', 'already a tabset', true),
-        )
+        additionalActions.push(new WindowAction('o_bookmark_add', undefined, 'text-grey', 'already a tabset', true))
       }
 
       if (windowFromStore) {
@@ -600,12 +560,7 @@ const calcWindowHolderRows = (): WindowHolder[] => {
 
 const windowIsManaged = (windowName: string) => {
   //console.log("managed?", tabsetsMangedWindows.value, windowName)
-  return (
-    _.find(
-      tabsetsMangedWindows.value,
-      (tmw: any) => tmw['label' as keyof object] === windowName,
-    ) !== undefined
-  )
+  return _.find(tabsetsMangedWindows.value, (tmw: any) => tmw['label' as keyof object] === windowName) !== undefined
 }
 
 const saveAsTabset = (windowId: number, name: string) => {
@@ -625,10 +580,8 @@ const additionalActionWasClicked = (event: any) => {
   }
 }
 
-const offsetBottom = () =>
-  $q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-bottom:20px;' : ''
-const showSettingsButton = () =>
-  route?.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated
+const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-bottom:20px;' : '')
+const showSettingsButton = () => route?.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated
 
 const drop = (evt: any) => {
   evt.preventDefault()
@@ -672,9 +625,7 @@ const startSession = () => {
         BrowserApi.closeAllTabs(false)
       })
       .then(() => {
-        useCommandExecutor().executeFromUi(
-          new CreateTabsetCommand(callback['sessionName' as keyof object], []),
-        )
+        useCommandExecutor().executeFromUi(new CreateTabsetCommand(callback['sessionName' as keyof object], []))
       })
   })
 }

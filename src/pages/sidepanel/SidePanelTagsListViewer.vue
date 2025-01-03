@@ -5,8 +5,7 @@
         :probability="1"
         ident="sidePanelTagsListViewer_overview"
         hint="Tabs you add are being tagged automatically (or you can tag them
-            yourself). This is a list of the most used tags."
-      />
+            yourself). This is a list of the most used tags." />
     </div>
 
     <div class="row q-ma-none q-pa-none">
@@ -18,8 +17,7 @@
           active-color="primary"
           indicator-color="primary"
           align="left"
-          narrow-indicator
-        >
+          narrow-indicator>
           <q-tab name="list" label="As List" />
           <q-tab name="cloud" label="As Word Cloud" />
         </q-tabs>

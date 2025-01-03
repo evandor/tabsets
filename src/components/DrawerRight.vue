@@ -17,8 +17,7 @@
           size="2em"
           id="closeRightDrawerIcon"
           name="chevron_right"
-          @click="closeRightDrawer()"
-        >
+          @click="closeRightDrawer()">
           <q-tooltip class="tooltip">Hide this view</q-tooltip>
         </q-icon>
 
@@ -31,8 +30,7 @@
               icon="o_filter_list"
               :color="filter ? 'secondary' : 'primary'"
               size="0.8em"
-              class="q-ml-md q-mr-none"
-            >
+              class="q-ml-md q-mr-none">
               <q-tooltip v-if="filter">Apply Filter: '{{ filter }}'</q-tooltip>
               <q-tooltip v-else>Apply Filter</q-tooltip>
             </q-btn>
@@ -44,17 +42,9 @@
                 v-model="scope.value"
                 @update:model-value="(val) => setFilter2(val ? val.toString() : '')"
                 hint="Filter open Tabs"
-                @keyup.enter="scope.set"
-              >
+                @keyup.enter="scope.set">
                 <template v-slot:after>
-                  <q-btn
-                    flat
-                    dense
-                    color="warning"
-                    icon="cancel"
-                    v-close-popup
-                    @click="cancelFilter()"
-                  />
+                  <q-btn flat dense color="warning" icon="cancel" v-close-popup @click="cancelFilter()" />
                 </template>
               </q-input>
             </q-popup-edit>
@@ -71,13 +61,10 @@
 
   <BookmarksTree
     v-else-if="tab === DrawerTabs.BOOKMARKS"
-    :nodes="
-      showOnlyFolders ? useBookmarksStore().nonLeafNodes : useBookmarksStore().bookmarksNodes2
-    "
+    :nodes="showOnlyFolders ? useBookmarksStore().nonLeafNodes : useBookmarksStore().bookmarksNodes2"
     :show-only-folders="showOnlyFolders"
     @toggle-show-only-folders="toggleShowOnlyFolders()"
-    :in-side-panel="true"
-  />
+    :in-side-panel="true" />
 
   <!--      <OpenTabs v-else-if="tab ===  DrawerTabs.OPEN_TABS" :filter="filter"/>-->
   <!--      <UnassignedTabs v-else-if="tab ===  DrawerTabs.UNASSIGNED_TABS" :filter="filter"/>-->

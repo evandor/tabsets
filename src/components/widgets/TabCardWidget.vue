@@ -1,11 +1,5 @@
 <template>
-  <q-card
-    class="my-card"
-    flat
-    bordered
-    :style="cardStyle(tab)"
-    @mouseover="setInfo(tab)"
-    @click="selectTab(tab)">
+  <q-card class="my-card" flat bordered :style="cardStyle(tab)" @mouseover="setInfo(tab)" @click="selectTab(tab)">
     {{ loadThumbnail(tab) }}
     <q-card-section
       :data-testid="useUtils().createDataTestIdentifier('tabcardwidget', tab.title || '')"
@@ -59,13 +53,7 @@
             style="border: 1px solid #efefef; border-right: 3px"></q-img>
         </div>
         <div class="col-8 text-right">
-          <q-btn
-            flat
-            round
-            color="red"
-            size="11px"
-            icon="delete_outline"
-            @click.stop="deleteTab(tab)">
+          <q-btn flat round color="red" size="11px" icon="delete_outline" @click.stop="deleteTab(tab)">
             <q-tooltip>Delete this tab from this list!</q-tooltip>
           </q-btn>
         </div>

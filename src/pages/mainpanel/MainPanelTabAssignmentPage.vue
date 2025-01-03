@@ -7,8 +7,8 @@
   <q-form @submit.prevent="setMatcher()" ref="theForm">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded>
-        Sometimes you want to open a page in an existing tab which does not have the exact same URL.
-        Here you can define an ant-style matcher to decide about the tab to open the page in.
+        Sometimes you want to open a page in an existing tab which does not have the exact same URL. Here you can define
+        an ant-style matcher to decide about the tab to open the page in.
       </q-banner>
 
       <div class="row items-baseline q-ma-md">
@@ -27,8 +27,7 @@
             :rules="[
               (val) => validUrl(val) || 'Please provide a valid URL',
               (val) => startsWithOriginalUrl(val) || originalHostWarning || 'xxx',
-            ]"
-          />
+            ]" />
         </div>
       </div>
 
@@ -53,17 +52,9 @@
             color="accent"
             @click="removeMatcher()"
             :disable="!tab?.matcher"
-            label="Remove Matcher"
-          />
+            label="Remove Matcher" />
 
-          <q-btn
-            type="submit"
-            class="q-mr-md"
-            size="sm"
-            color="warning"
-            :disable="!isValid"
-            label="Set Matcher"
-          />
+          <q-btn type="submit" class="q-mr-md" size="sm" color="warning" :disable="!isValid" label="Set Matcher" />
         </div>
       </div>
     </div>
@@ -154,9 +145,7 @@ const setMatcher = () => {
   console.log('matcher is ', matcher.value)
   if (tab.value && matcher.value) {
     useCommandExecutor()
-      .execute(
-        new TabAssignmentCommand(tab.value as Tab, tabsetId.value || '', 'sw|' + matcher.value),
-      )
+      .execute(new TabAssignmentCommand(tab.value as Tab, tabsetId.value || '', 'sw|' + matcher.value))
       .then((res) => {
         setTimeout(() => window.close(), 500)
       })

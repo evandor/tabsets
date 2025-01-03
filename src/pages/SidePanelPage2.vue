@@ -28,8 +28,7 @@
           <SidePanelPageTabList
             v-if="currentTabset"
             :tabsCount="useTabsetService().tabsToShow(currentTabset as Tabset)?.length"
-            :tabset="tabsetForTabList(currentTabset as Tabset)"
-          />
+            :tabset="tabsetForTabList(currentTabset as Tabset)" />
         </div>
       </template>
 
@@ -130,9 +129,7 @@ function determineTabsets() {
     _.filter(
       [...useTabsetsStore().tabsets.values()] as Tabset[],
       (ts: Tabset) =>
-        ts.status !== TabsetStatus.DELETED &&
-        ts.status !== TabsetStatus.HIDDEN &&
-        ts.status !== TabsetStatus.ARCHIVED,
+        ts.status !== TabsetStatus.DELETED && ts.status !== TabsetStatus.HIDDEN && ts.status !== TabsetStatus.ARCHIVED,
     ),
     getTabsetOrder,
     ['asc'],
@@ -150,9 +147,7 @@ watchEffect(() => {
           }
         }
         return (
-          ts.status !== TabsetStatus.DELETED &&
-          ts.status !== TabsetStatus.HIDDEN &&
-          ts.status !== TabsetStatus.ARCHIVED
+          ts.status !== TabsetStatus.DELETED && ts.status !== TabsetStatus.HIDDEN && ts.status !== TabsetStatus.ARCHIVED
         )
       }),
       getTabsetOrder,
@@ -166,8 +161,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  currentChromeTab.value =
-    useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
 function inIgnoredMessages(message: any) {
@@ -265,9 +259,7 @@ if (inBexMode()) {
       useSuggestionsStore().loadSuggestionsFromDb()
     } else if (message.name === 'reload-tabset') {
       console.log('reload-tabset message received')
-      const tabsetId = message.data.tabsetId
-        ? message.data.tabsetId
-        : useTabsetsStore().getCurrentTabset?.id
+      const tabsetId = message.data.tabsetId ? message.data.tabsetId : useTabsetsStore().getCurrentTabset?.id
       useTabsetService().reloadTabset(tabsetId)
     } else if (message.name === 'tabsets.app.change.currentTabset') {
       if (currentTabset.value) {

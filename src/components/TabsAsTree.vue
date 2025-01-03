@@ -95,23 +95,14 @@ function createNodes(tabs: object[], level = 0): TreeNode[] {
     const children: TreeNode[] = createNodes(filteredTabs, level + 1)
     // console.log("calculated children", children.length)
     const newNodeId = uid()
-    let url: string =
-      (t['protocol' as keyof object] as string) + '//' + (t['hostname' as keyof object] as string)
+    let url: string = (t['protocol' as keyof object] as string) + '//' + (t['hostname' as keyof object] as string)
     for (let i = 1; i <= level; i++) {
       url += '/' + (t['segments' as keyof object][i] as string)
     }
     children.length === 0
       ? nodesToUrl.value.set(newNodeId, t['url' as keyof object])
       : nodesToUrl.value.set(newNodeId, url)
-    const newNode = new TreeNode(
-      newNodeId,
-      name as string,
-      name as string,
-      url,
-      '',
-      children,
-      level,
-    )
+    const newNode = new TreeNode(newNodeId, name as string, name as string, url, '', children, level)
     nodes.push(newNode)
   }
   return nodes

@@ -16,8 +16,7 @@
         label="Title"
         autofocus
         required
-        autocomplete
-      />
+        autocomplete />
     </div>
 
     <div class="col-12 q-my-sm">
@@ -28,8 +27,7 @@
         v-model="currentSelectionRemark"
         label="Remark"
         placeholder="add a remark for this selection"
-        rows="3"
-      />
+        rows="3" />
       <!--      <q-btn label="clear" size="xs" @click="currentSelectionRemark = undefined"/>-->
     </div>
     <div class="col-12 q-my-sm">
@@ -45,8 +43,7 @@
         :label="props.selectionId ? 'update' : 'create Selection'"
         :disable="currentSelectionTitle ? currentSelectionTitle.trim().length === 0 : true"
         color="primary"
-        @click="createOrUpdateAnnotation()"
-      />
+        @click="createOrUpdateAnnotation()" />
     </div>
     <!--    <div>{{props}}</div>-->
   </div>
@@ -104,11 +101,7 @@ const createOrUpdateAnnotation = async () => {
       a.title = currentSelectionTitle.value!
       a.comment = currentSelectionRemark.value
       a!.color = currentSelectionColor.value || 'grey'
-      as = await useSnapshotsService().updateAnnotation(
-        props.sourceId,
-        a,
-        currentSelectionIndex.value,
-      )
+      as = await useSnapshotsService().updateAnnotation(props.sourceId, a, currentSelectionIndex.value)
     }
   }
   // setAnnotations(as)

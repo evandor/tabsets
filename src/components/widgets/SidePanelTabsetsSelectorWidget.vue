@@ -8,15 +8,8 @@
 
     <q-menu :offset="[0, 0]">
       <q-list dense>
-        <q-item
-          disable
-          v-if="tabsetsOptions.length > 0 && useFeaturesStore().hasFeature(FeatureIdent.SPACES)"
-        >
-          {{
-            useSpacesStore().space?.label
-              ? 'Tabsets of ' + useSpacesStore().space.label
-              : 'Tabsets w/o Space'
-          }}
+        <q-item disable v-if="tabsetsOptions.length > 0 && useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
+          {{ useSpacesStore().space?.label ? 'Tabsets of ' + useSpacesStore().space.label : 'Tabsets w/o Space' }}
         </q-item>
         <q-item disable v-else-if="!useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
           Switch to other Tabset:
@@ -33,8 +26,7 @@
             @filter="filterFn"
             @input-value="setModel"
             hint="Text autocomplete"
-            style="width: 250px; padding-bottom: 32px"
-          >
+            style="width: 250px; padding-bottom: 32px">
             <template v-slot:no-option>
               <q-item>
                 <q-item-section class="text-grey"> No results </q-item-section>
@@ -42,22 +34,13 @@
             </template>
           </q-select>
         </q-item>
-        <q-item
-          v-else
-          clickable
-          v-for="ts in allTabsetsButCurrent"
-          @click="switchToTabset(ts as Tabset)"
-        >
+        <q-item v-else clickable v-for="ts in allTabsetsButCurrent" @click="switchToTabset(ts as Tabset)">
           {{ ts.name }}
         </q-item>
 
-        <template
-          v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES) && !useAsTabsetsSwitcher"
-        >
+        <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES) && !useAsTabsetsSwitcher">
           <q-separator />
-          <q-item clickable @click.stop="router.push('/sidepanel/spaces')">
-            Switch Space...
-          </q-item>
+          <q-item clickable @click.stop="router.push('/sidepanel/spaces')"> Switch Space... </q-item>
         </template>
 
         <template v-if="!useAsTabsetsSwitcher">
@@ -85,23 +68,13 @@
         </template>
 
         <q-separator />
-        <q-item
-          v-if="useTabsetsStore().currentTabsetName"
-          clickable
-          v-close-popup
-          @click="openEditTabsetDialog()"
-        >
+        <q-item v-if="useTabsetsStore().currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
           <q-item-section>Edit Tabset Name</q-item-section>
         </q-item>
 
         <template v-if="!useAsTabsetsSwitcher">
           <q-separator />
-          <q-item
-            v-if="useTabsetsStore().currentTabsetName"
-            clickable
-            v-close-popup
-            @click="deleteTabsetDialog()"
-          >
+          <q-item v-if="useTabsetsStore().currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
             <q-item-section>Delete this Tabset...</q-item-section>
           </q-item>
         </template>
@@ -155,10 +128,9 @@ watchEffect(() => {
 const filterFn = (val: any, update: any, abort: any) => {
   update(() => {
     const needle = val.toLocaleLowerCase()
-    switchTabsetOptions.value = _.map(
-      allTabsetsButCurrent.value as Tabset[],
-      (ts: Tabset) => ts.name,
-    ).filter((v) => v.toLocaleLowerCase().indexOf(needle) > -1)
+    switchTabsetOptions.value = _.map(allTabsetsButCurrent.value as Tabset[], (ts: Tabset) => ts.name).filter(
+      (v) => v.toLocaleLowerCase().indexOf(needle) > -1,
+    )
   })
 }
 
@@ -174,24 +146,14 @@ const setModel = (val: any) => {
 
 watchEffect(() => {
   let tabsets = [...useTabsetsStore().tabsets.values()]
-  if (
-    useFeaturesStore().hasFeature(FeatureIdent.SPACES) &&
-    spacesStore.spaces &&
-    spacesStore.spaces.size > 0
-  ) {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(
         tabsets,
-        (ts) =>
-          ts.status !== TabsetStatus.ARCHIVED &&
-          ts.spaces &&
-          ts.spaces.indexOf(spacesStore.space.id) >= 0,
+        (ts) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0,
       )
     } else {
-      tabsets = _.filter(
-        tabsets,
-        (ts) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0,
-      )
+      tabsets = _.filter(tabsets, (ts) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0)
     }
   }
   tabsetsOptions.value = _.map(
@@ -199,9 +161,7 @@ watchEffect(() => {
       _.filter(
         tabsets,
         (ts: Tabset) =>
-          ts.type !== TabsetType.SPECIAL &&
-          ts.status !== TabsetStatus.ARCHIVED &&
-          ts.status !== TabsetStatus.DELETED,
+          ts.type !== TabsetType.SPECIAL && ts.status !== TabsetStatus.ARCHIVED && ts.status !== TabsetStatus.DELETED,
       ),
       [
         function (o: Tabset) {

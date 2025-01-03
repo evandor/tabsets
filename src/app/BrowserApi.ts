@@ -79,12 +79,6 @@ class BrowserApi {
       { urls: ['*://*/*'], types: ['main_frame'] },
       ['responseHeaders'],
     )
-    // chrome.webRequest?.onCompleted.addListener(
-    //   (details: any) => {
-    //     console.log('====>', details)
-    //   },
-    //   { urls: ['*://*/*'], types: ['main_frame'] },
-    // )
   }
 
   stopWebRequestListener() {

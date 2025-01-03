@@ -18,8 +18,7 @@ export default {
   individually_per_tabset: 'Individuell pro Tabset einstellen',
   keyboard_shortcuts: 'Tastaturkürzel',
   language: 'Sprache',
-  larger_thumbs_info:
-    'Größere Thumbnails sehen besser aus, benötigen aber mehr (lokalen) Speicherplatz.',
+  larger_thumbs_info: 'Größere Thumbnails sehen besser aus, benötigen aber mehr (lokalen) Speicherplatz.',
   no_space_selected: 'Kein Space gewählt',
   no_special_chars_and_length: 'Bitte nur Standardzeichen, max. Länge ist 32',
   one_line_about_tabsets1: 'Ändern Sie Ihre Links:',

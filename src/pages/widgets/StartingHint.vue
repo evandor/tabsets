@@ -1,9 +1,5 @@
 <template>
-  <transition
-    appear
-    enter-active-class="animated fadeIn slower delay-5s"
-    leave-active-class="animated fadeOut"
-  >
+  <transition appear enter-active-class="animated fadeIn slower delay-5s" leave-active-class="animated fadeOut">
     <div class="q-ma-lg q-mt-xl">
       <div class="row items-center text-grey-5">how to start?</div>
       <div style="min-width: 300px; border: 1px solid #efefef; border-radius: 5px">
@@ -50,35 +46,21 @@
               useUiStore().startButtonAnimation(
                 useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS) ? 'bookmarks' : 'settings',
               )
-            "
-          >
+            ">
             <q-item-section avatar>
               <SidePanelToolbarButton
                 icon="bookmark"
-                :color="
-                  useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS) ? 'primary' : 'grey-6'
-                "
-              />
+                :color="useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS) ? 'primary' : 'grey-6'" />
             </q-item-section>
 
             <q-item-section>
               <q-item-label
-                ><span
-                  :class="
-                    useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS)
-                      ? 'text-primary'
-                      : 'text-grey-6'
-                  "
+                ><span :class="useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS) ? 'text-primary' : 'text-grey-6'"
                   >Bookmarks Manager</span
                 >
               </q-item-label>
               <q-item-label caption
-                ><span
-                  :class="
-                    useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS)
-                      ? 'text-primary'
-                      : 'text-grey-6'
-                  "
+                ><span :class="useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS) ? 'text-primary' : 'text-grey-6'"
                   >Click to open the Bookmarks Manager. Available in the settings.</span
                 >
               </q-item-label>

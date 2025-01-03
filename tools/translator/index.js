@@ -42,10 +42,7 @@ async function writeTranslations(fromFile, language) {
     }, {})
   console.log('===>', typeof orderedTranslated)
 
-  fs.writeFileSync(
-    `../../src/i18n/${language}/${language}.json`,
-    JSON.stringify(orderedTranslated, null, 2),
-  )
+  fs.writeFileSync(`../../src/i18n/${language}/${language}.json`, JSON.stringify(orderedTranslated, null, 2))
 }
 
 await writeTranslations(de, 'de')

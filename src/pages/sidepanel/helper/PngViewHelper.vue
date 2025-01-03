@@ -33,11 +33,7 @@ const props = defineProps({
 const emits = defineEmits(['newSnapshotWasClicked', 'newClipWasClicked'])
 
 const openMhtml = () =>
-  window.open(
-    chrome.runtime.getURL(
-      `www/index.html#/mainpanel/${props.extension}/${props.tabId}/${props.index}`,
-    ),
-  )
+  window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/${props.extension}/${props.tabId}/${props.index}`))
 // const openMhtml = () => window.open(chrome.runtime.getURL(`www/mirror.html#/mainpanel/${props.extension}/${props.tabId}/${props.index}`));
 const deleteSnapshot = () => useSnapshotsService().deleteSnapshot(props.tabId)
 </script>

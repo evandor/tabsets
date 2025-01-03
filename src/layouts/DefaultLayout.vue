@@ -9,8 +9,7 @@
             @click="toggleLeftDrawer"
             src="favicon.ico"
             height="32px"
-            width="32px"
-          >
+            width="32px">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-img>
           <q-toolbar-title
@@ -18,8 +17,7 @@
             @click.stop="goHome()"
             class="cursor-pointer"
             style="min-width: 200px"
-            shrink
-          >
+            shrink>
             {{ title() }}
             <q-tooltip class="tooltip">Reload Tabsets Extension</q-tooltip>
           </q-toolbar-title>
@@ -28,12 +26,7 @@
           </q-toolbar-title>
         </template>
         <template v-else>
-          <q-icon
-            class="q-ml-xs q-mr-none cursor-pointer"
-            name="menu"
-            size="18px"
-            @click="toggleLeftDrawer"
-          >
+          <q-icon class="q-ml-xs q-mr-none cursor-pointer" name="menu" size="18px" @click="toggleLeftDrawer">
             <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
           </q-icon>
           <SpacesSelectorWidget class="q-mx-md" />
@@ -43,19 +36,11 @@
 
         <SearchWidget
           style="position: absolute; left: 300px; top: 5px; max-width: 500px"
-          v-if="
-            useTabsetsStore().tabsets.size > 1 ||
-            useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)
-          "
-        />
+          v-if="useTabsetsStore().tabsets.size > 1 || useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
 
         <Transition name="colorized-appear">
           <div
-            v-if="
-              useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) &&
-              useTabsetsStore().tabsets.size > 0
-            "
-          >
+            v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
             <OpenTabsThresholdWidget />
           </div>
         </Transition>
@@ -67,8 +52,7 @@
           size="12px"
           style="min-width: 24px"
           flat
-          @click="router.push('/stats')"
-        >
+          @click="router.push('/stats')">
           <q-tooltip>Check out stats (experimental)</q-tooltip>
         </q-btn>
 
@@ -89,24 +73,16 @@
 
         <span
           v-if="
-            useSuggestionsStore().getSuggestions([
-              SuggestionState.NEW,
-              SuggestionState.DECISION_DELAYED,
-            ]).length > 0
-          "
-        >
+            useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0
+          ">
           <q-btn flat :color="dependingOnStates()" name="rss" icon="o_assistant">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200"
               >You have suggestions
             </q-tooltip>
             <q-badge
               :label="
-                useSuggestionsStore().getSuggestions([
-                  SuggestionState.NEW,
-                  SuggestionState.DECISION_DELAYED,
-                ]).length
-              "
-            />
+                useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length
+              " />
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
@@ -118,8 +94,7 @@
                 v-for="s in useSuggestionsStore().getSuggestions([
                   SuggestionState.NEW,
                   SuggestionState.DECISION_DELAYED,
-                ])"
-              >
+                ])">
                 <q-item-section avatar>
                   <q-icon color="primary" :name="s.img ? s.img : 'rss_feed'" />
                 </q-item-section>
@@ -142,41 +117,31 @@
           :feature="FeatureIdent.GROUP_BY_DOMAIN"
           :drawer="DrawerTabs.GROUP_BY_HOST_TABS"
           icon="o_dns"
-          tooltip="Your tabs grouped by domain"
-        />
+          tooltip="Your tabs grouped by domain" />
 
         <ToolbarButton
           :feature="FeatureIdent.RSS"
           :drawer="DrawerTabs.RSS"
           icon="o_rss_feed"
-          tooltip="Access to your rss feed"
-        />
+          tooltip="Access to your rss feed" />
 
         <ToolbarButton
           :feature="FeatureIdent.BOOKMARKS"
           :drawer="DrawerTabs.BOOKMARKS"
           icon="o_bookmark"
-          tooltip="Access to your bookmarks"
-        />
+          tooltip="Access to your bookmarks" />
 
         <ToolbarButton
           :drawer="DrawerTabs.UNASSIGNED_TABS"
           icon="o_playlist_add"
           tooltip="Show add tabs view"
-          :restricted="false"
-        />
+          :restricted="false" />
 
         <div>
-          <q-btn @click="toggleSettings" flat size="12px" class="q-mr-md" icon="o_settings">
-          </q-btn>
+          <q-btn @click="toggleSettings" flat size="12px" class="q-mr-md" icon="o_settings"> </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
-              <q-item
-                v-if="!useAuthStore().isAuthenticated"
-                clickable
-                @click="router.push('/login')"
-                >Login</q-item
-              >
+              <q-item v-if="!useAuthStore().isAuthenticated" clickable @click="router.push('/login')">Login</q-item>
               <q-item v-else clickable @click="router.push('/logout')">Logout</q-item>
 
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
@@ -207,8 +172,7 @@
       v-model="useUiStore().rightDrawerOpen"
       side="right"
       bordered
-      content-class="column justify-between no-wrap bg-grey-1"
-    >
+      content-class="column justify-between no-wrap bg-grey-1">
       <DrawerRight />
     </q-drawer>
 
@@ -268,10 +232,7 @@ $q.loadingBar.setDefaults({
 const settingsClicked = ref(false)
 
 watchEffect(() => {
-  suggestions.value = useSuggestionsStore().getSuggestions([
-    SuggestionState.NEW,
-    SuggestionState.DECISION_DELAYED,
-  ])
+  suggestions.value = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
 })
 
 watchEffect(() => {
@@ -290,11 +251,7 @@ useMeta(() => {
 })
 
 const title = () => {
-  return inBexMode()
-    ? 'Tabsets'
-    : process.env.MODE === 'spa'
-      ? 'Tabsets Web'
-      : 'Tabsets (' + process.env.MODE + ')'
+  return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ? 'Tabsets Web' : 'Tabsets (' + process.env.MODE + ')'
 }
 
 const goHome = () => router.push('/')
@@ -312,8 +269,7 @@ const installNewVersion = (version: string) => {
   chrome.runtime.reload()
 }
 
-const tabsClicked = (tab: DrawerTabs, data: object = {}) =>
-  useUiStore().rightDrawerSetActiveTab(tab)
+const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab)
 
 const showExportDialog = () => $q.dialog({ component: ExportDialog })
 const showImportDialog = () => $q.dialog({ component: ImportDialog })

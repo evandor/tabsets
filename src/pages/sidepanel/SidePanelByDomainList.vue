@@ -4,8 +4,7 @@
       <InfoMessageWidget
         :probability="1"
         ident="groupByDomain_atLeastTwo"
-        hint="In this view, you will see your tabs grouped by Domain"
-      />
+        hint="In this view, you will see your tabs grouped by Domain" />
 
       <div class="q-ma-none">
         <div class="row q-ma-none q-pa-none">

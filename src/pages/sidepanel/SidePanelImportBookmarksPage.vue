@@ -21,9 +21,7 @@
             <q-icon name="upload_file" size="xs" />
             to add your bookmarks as a new collection.
           </div>
-          <div
-            class="col-12 q-mx-sm q-mt-md q-mb-none cursor-pointer text-center"
-            v-if="importedTabsetId">
+          <div class="col-12 q-mx-sm q-mt-md q-mb-none cursor-pointer text-center" v-if="importedTabsetId">
             <q-btn label="open Imported Tabset" outline @click="openImportedTabset()" />
           </div>
 
@@ -83,9 +81,7 @@ onMounted(() => {
 })
 
 const gotoSettingsPage = () =>
-  NavigationService.openOrCreateTab([
-    chrome.runtime.getURL('/www/index.html#/mainpanel/settings?tab=importExport'),
-  ])
+  NavigationService.openOrCreateTab([chrome.runtime.getURL('/www/index.html#/mainpanel/settings?tab=importExport')])
 
 // // TODO get rid of tabset-references here; use AppEventDispatcher
 // async function createTabsetFrom(name: string, bookmarkId: string): Promise<Tabset> {

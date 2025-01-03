@@ -19,9 +19,7 @@ function getMetaDataFor(doc: Document, ident: string, defaultValue = '') {
   // try first match
   const matchingMeta = [...doc.querySelectorAll('meta')].find((meta) => {
     console.log('meta', meta, meta.name, meta.getAttribute('property'), meta.name.indexOf(ident))
-    return (
-      meta.name.indexOf(ident) >= 0 || (meta.getAttribute('property')?.indexOf(ident) || -1) >= 0
-    )
+    return meta.name.indexOf(ident) >= 0 || (meta.getAttribute('property')?.indexOf(ident) || -1) >= 0
   })
   console.log('matchingMeta', matchingMeta)
   if (matchingMeta?.getAttribute('content')) {

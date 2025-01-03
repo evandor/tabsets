@@ -21,9 +21,7 @@ export class AssociateWindowWithTabsetCommand implements Command<string> {
         tabset.window = trustedWindowName
         await useTabsetService().saveTabset(tabset)
         useWindowsStore().addToWindowSet(trustedWindowName)
-        return Promise.resolve(
-          new ExecutionResult<any>(tabset.id, "Window set to '" + trustedWindowName + "'"),
-        )
+        return Promise.resolve(new ExecutionResult<any>(tabset.id, "Window set to '" + trustedWindowName + "'"))
       } else {
         return Promise.reject('could not find tabset')
       }

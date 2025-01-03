@@ -17,11 +17,7 @@ describe('FirstToolbarHelper2', () => {
     }),
   }))
 
-  const skysailChromeTab = ChromeApi.createChromeTabObject(
-    'title',
-    'https://www.skysail.io',
-    'favicon',
-  )
+  const skysailChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.skysail.io', 'favicon')
 
   beforeEach(async () => {
     setActivePinia(createPinia())

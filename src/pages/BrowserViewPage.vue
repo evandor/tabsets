@@ -10,22 +10,19 @@
                 @click="goBack()"
                 size="0.5em"
                 class="q-ma-xs q-pa-sm"
-                :disable="!canGoBack"
-              />
+                :disable="!canGoBack" />
               <q-btn
                 icon="arrow_forward_ios"
                 @click="goForward()"
                 size="0.5em"
                 class="q-ma-xs q-pa-sm"
-                :disable="!canGoForward"
-              />
+                :disable="!canGoForward" />
               <q-btn
                 icon="refresh"
                 @click="goForward()"
                 size="0.5em"
                 class="q-ma-xs q-pa-sm"
-                :disable="!canGoForward"
-              />
+                :disable="!canGoForward" />
             </div>
             <div class="col">
               <q-input type="url" dense rounded v-model="src" />
@@ -65,8 +62,7 @@
     plugins="plugins"
     id="foo"
     :src="src"
-    style="display: inline-flex; width: 100%; height: 480px"
-  ></webview>
+    style="display: inline-flex; width: 100%; height: 480px"></webview>
 </template>
 
 <script lang="ts" setup>
@@ -93,10 +89,7 @@ onMounted(() => {
   if (webview) {
     console.log('window.innerHeight', window.innerHeight)
     // @ts-expect-error TODO
-    webview.setAttribute(
-      'style',
-      'overflow:hidden;height:' + (window.innerHeight - 106) + 'px;width:100%;border:0px',
-    )
+    webview.setAttribute('style', 'overflow:hidden;height:' + (window.innerHeight - 106) + 'px;width:100%;border:0px')
 
     // @ts-expect-error TODO
     webview.addEventListener('did-start-loading', (a: any, b: any) => {

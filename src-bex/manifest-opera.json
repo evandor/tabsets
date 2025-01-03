@@ -6,26 +6,9 @@
       "48": "icons/icon-48x48.png",
       "128": "icons/icon-128x128.png"
     },
-    "permissions": [
-      "storage",
-      "tabs",
-      "activeTab",
-      "alarms",
-      "scripting",
-      "sidePanel",
-      "contextMenus",
-      "bookmarks"
-    ],
-    "optional_permissions": [
-      "pageCapture",
-      "notifications",
-      "webRequest",
-      "tabGroups"
-    ],
-    "host_permissions": [
-      "<all_urls>",
-      "*://*/*"
-    ],
+    "permissions": ["storage", "tabs", "activeTab", "alarms", "scripting", "sidePanel", "contextMenus", "bookmarks"],
+    "optional_permissions": ["pageCapture", "notifications", "webRequest", "tabGroups"],
+    "host_permissions": ["<all_urls>", "*://*/*"],
     "sidebar_action": {
       "default_icon": "icons/icon-48x48.png",
       "default_title": "tabsets.bet - Better Bookmarks",
@@ -36,12 +19,8 @@
     },
     "content_scripts": [
       {
-        "matches": [
-          "*://*/*"
-        ],
-        "js": [
-          "tabsets-content-script.ts"
-        ]
+        "matches": ["*://*/*"],
+        "js": ["tabsets-content-script.ts"]
       }
     ],
     "content_security_policy": {
@@ -49,12 +28,8 @@
     },
     "web_accessible_resources": [
       {
-        "resources": [
-          "*"
-        ],
-        "matches": [
-          "*://*/*"
-        ]
+        "resources": ["*"],
+        "matches": ["*://*/*"]
       }
     ],
     "omnibox": {

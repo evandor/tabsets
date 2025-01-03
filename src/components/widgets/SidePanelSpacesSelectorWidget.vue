@@ -8,8 +8,7 @@
       @update:modelValue="(val) => switchSpace(val)"
       v-model="spaces"
       :options="spacesOptions"
-      label="Select Space"
-    />
+      label="Select Space" />
   </div>
 </template>
 

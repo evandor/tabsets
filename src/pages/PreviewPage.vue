@@ -18,8 +18,7 @@
           color="primary"
           label="Open in new tab"
           class="q-mr-md"
-          @click="openInNewTab"
-        >
+          @click="openInNewTab">
           <q-tooltip>Open in new tab</q-tooltip>
         </q-btn>
 
@@ -30,8 +29,7 @@
           color="primary"
           label="Back to tabsets"
           class="q-mr-md"
-          @click="router.push('/tabsets/' + useTabsetsStore().currentTabsetId)"
-        >
+          @click="router.push('/tabsets/' + useTabsetsStore().currentTabsetId)">
           <q-tooltip>Back to tabsets</q-tooltip>
         </q-btn>
       </div>
@@ -42,8 +40,7 @@
     class="greyBorderTop"
     :probability="1"
     ident="iframePage_general"
-    hint="Be aware that many pages cannot be displayed here as they defined a policy not to be displayed in an iFrame."
-  />
+    hint="Be aware that many pages cannot be displayed here as they defined a policy not to be displayed in an iFrame." />
 
   <iframe ref="iFrameRef" id="tabIFrame" :src="src" frameBorder="0" class="greyBorderTop" />
 </template>
@@ -70,10 +67,7 @@ onMounted(() => {
   if (iFrame) {
     console.log('window.innerHeight', window.innerHeight)
     // @ts-expect-error TODO
-    iFrame.setAttribute(
-      'style',
-      'overflow:hidden;height:' + (window.innerHeight - 106) + 'px;width:100%;border:0px',
-    )
+    iFrame.setAttribute('style', 'overflow:hidden;height:' + (window.innerHeight - 106) + 'px;width:100%;border:0px')
   }
 })
 

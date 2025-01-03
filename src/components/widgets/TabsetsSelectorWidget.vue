@@ -2,23 +2,15 @@
   <div class="cursor-pointer">
     <div
       class="q-ma-none q-pa-none text-subtitle2 q-pl-sm cursor-pointer ellipsis"
-      :class="useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) ? '' : 'text-grey-5'"
-    >
+      :class="useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) ? '' : 'text-grey-5'">
       {{ tabsetLabel() }}
       <q-icon name="arrow_drop_down" class="q-mr-xs" size="xs" color="primary" />
     </div>
 
     <q-menu :offset="[0, 0]">
       <q-list dense>
-        <q-item
-          disable
-          v-if="tabsetsOptions.length > 0 && useFeaturesStore().hasFeature(FeatureIdent.SPACES)"
-        >
-          {{
-            useSpacesStore().space?.label
-              ? 'Tabsets of ' + useSpacesStore().space.label
-              : 'Tabsets w/o Space'
-          }}
+        <q-item disable v-if="tabsetsOptions.length > 0 && useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
+          {{ useSpacesStore().space?.label ? 'Tabsets of ' + useSpacesStore().space.label : 'Tabsets w/o Space' }}
         </q-item>
 
         <!--        <template-->
@@ -38,21 +30,11 @@
           <q-item-section>Add new Tabset</q-item-section>
         </q-item>
         <q-separator />
-        <q-item
-          v-if="useTabsetsStore().currentTabsetName"
-          clickable
-          v-close-popup
-          @click="openEditTabsetDialog()"
-        >
+        <q-item v-if="useTabsetsStore().currentTabsetName" clickable v-close-popup @click="openEditTabsetDialog()">
           <q-item-section>Edit Tabset Name</q-item-section>
         </q-item>
         <q-separator />
-        <q-item
-          v-if="useTabsetsStore().currentTabsetName"
-          clickable
-          v-close-popup
-          @click="deleteTabsetDialog()"
-        >
+        <q-item v-if="useTabsetsStore().currentTabsetName" clickable v-close-popup @click="deleteTabsetDialog()">
           <q-item-section>Delete this Tabset...</q-item-section>
         </q-item>
       </q-list>
@@ -86,18 +68,12 @@ const props = defineProps({
 
 watchEffect(() => {
   let tabsets = [...useTabsetsStore().tabsets.values()]
-  if (
-    useFeaturesStore().hasFeature(FeatureIdent.SPACES) &&
-    spacesStore.spaces &&
-    spacesStore.spaces.size > 0
-  ) {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES) && spacesStore.spaces && spacesStore.spaces.size > 0) {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(
         tabsets,
         (ts: Tabset) =>
-          ts.status !== TabsetStatus.ARCHIVED &&
-          ts.spaces &&
-          ts.spaces.indexOf(spacesStore.space.id) >= 0,
+          ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0,
       )
     } else {
       tabsets = _.filter(
@@ -111,9 +87,7 @@ watchEffect(() => {
       _.filter(
         tabsets,
         (ts: Tabset) =>
-          ts.type !== TabsetType.SPECIAL &&
-          ts.status !== TabsetStatus.ARCHIVED &&
-          ts.status !== TabsetStatus.DELETED,
+          ts.type !== TabsetType.SPECIAL && ts.status !== TabsetStatus.ARCHIVED && ts.status !== TabsetStatus.DELETED,
       ),
       [
         function (o: any) {

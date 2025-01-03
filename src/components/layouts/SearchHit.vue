@@ -4,15 +4,9 @@
       v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, undefined)"
       @click.stop="open(hit)"
       class="q-mr-sm text-right"
-      style="justify-content: start; width: 25px; max-width: 25px"
-    >
+      style="justify-content: start; width: 25px; max-width: 25px">
       <div class="bg-grey-3 q-pa-xs" style="border: 0 solid grey; border-radius: 3px">
-        <q-img
-          class="rounded-borders"
-          width="16px"
-          height="16px"
-          :src="getFaviconUrl(hit.id, hit.url, hit.favIconUrl)"
-        >
+        <q-img class="rounded-borders" width="16px" height="16px" :src="getFaviconUrl(hit.id, hit.url, hit.favIconUrl)">
         </q-img>
       </div>
     </q-item-section>
@@ -33,18 +27,13 @@
       </q-item-label>
 
       <!-- description -->
-      <q-item-label
-        class="ellipsis-2-lines text-grey-8"
-        v-if="isTabsetHit(hit)"
-        @click.stop="open(hit)"
-      >
+      <q-item-label class="ellipsis-2-lines text-grey-8" v-if="isTabsetHit(hit)" @click.stop="open(hit)">
         Tabset
       </q-item-label>
       <q-item-label
         class="ellipsis-2-lines text-grey-8"
         v-else
-        @click.stop="NavigationService.openOrCreateTab([hit.url || ''])"
-      >
+        @click.stop="NavigationService.openOrCreateTab([hit.url || ''])">
         {{ hit.description }}
       </q-item-label>
 
@@ -66,8 +55,7 @@
             clickable
             icon="o_bookmark"
             color="warning"
-            @click.stop="openBookmark(badge)"
-          >
+            @click.stop="openBookmark(badge)">
             {{ badge['label' as keyof object] }}
           </q-chip>
           <q-chip
@@ -76,10 +64,7 @@
             size="9px"
             clickable
             icon="tab"
-            @click="
-              openTabset(badge['tabsetId' as keyof object], badge['encodedUrl' as keyof object])
-            "
-          >
+            @click="openTabset(badge['tabsetId' as keyof object], badge['encodedUrl' as keyof object])">
             {{ badge['label' as keyof object] }}
           </q-chip>
         </template>
@@ -187,9 +172,7 @@ const getFaviconUrl = (hitId: string, url: string, favIconUrl: string | undefine
         } catch (err) {}
       }
     }
-    return theRealUrl
-      ? 'https://icons.duckduckgo.com/ip3/' + theRealUrl.hostname + '.ico'
-      : 'favicon-unknown-32x32.png'
+    return theRealUrl ? 'https://icons.duckduckgo.com/ip3/' + theRealUrl.hostname + '.ico' : 'favicon-unknown-32x32.png'
   }
   return 'favicon-unknown-32x32.png'
 }

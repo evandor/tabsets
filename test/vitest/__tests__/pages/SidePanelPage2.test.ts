@@ -21,11 +21,7 @@ describe('SidePanelPage2', () => {
     }),
   }))
 
-  const skysailChromeTab = ChromeApi.createChromeTabObject(
-    'title',
-    'https://www.skysail.io/some-subpage',
-    'favicon',
-  )
+  const skysailChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.skysail.io/some-subpage', 'favicon')
 
   let db = null as unknown as TabsetsPersistence
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper

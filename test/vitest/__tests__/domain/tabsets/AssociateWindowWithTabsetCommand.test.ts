@@ -34,18 +34,13 @@ describe('AssociateWindowWithTabsetCommand', () => {
 
   it('command has proper toString representation', async () => {
     const cmd = await new AssociateWindowWithTabsetCommand('tabsetName', 'windowName')
-    expect(cmd.toString()).toBe(
-      'AssociateWindowWithTabsetCommand: {tabsetId=tabsetName, windowName=windowName}',
-    )
+    expect(cmd.toString()).toBe('AssociateWindowWithTabsetCommand: {tabsetId=tabsetName, windowName=windowName}')
   })
 
   it('associates window name with existing tabset', async () => {
     const tsRes = await new CreateTabsetCommand('existingTabset', []).execute()
     const tabsetId = tsRes.result.tabset.id
-    const executionResult = await new AssociateWindowWithTabsetCommand(
-      tabsetId,
-      'newWindowName',
-    ).execute()
+    const executionResult = await new AssociateWindowWithTabsetCommand(tabsetId, 'newWindowName').execute()
     expect(executionResult.result).toBe(tabsetId)
     expect(executionResult.message).toBe("Window set to 'newWindowName'")
 

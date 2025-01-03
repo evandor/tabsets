@@ -5,11 +5,7 @@
         <q-toolbar-title>
           <div class="row">
             <div class="col-2">
-              <q-icon
-                name="chevron_left"
-                class="cursor-pointer"
-                @click="router.push('/sidepanel/rsslist')"
-              >
+              <q-icon name="chevron_left" class="cursor-pointer" @click="router.push('/sidepanel/rsslist')">
                 <q-tooltip>Back</q-tooltip>
               </q-icon>
             </div>
@@ -25,9 +21,7 @@
         <div class="row q-mb-lg">
           <div class="col">
             <div class="text-subtitle1">rss.description</div>
-            <div class="text-caption">
-              Created date.formatDate(rss.published, 'DD.MM.YYYY HH:mm')
-            </div>
+            <div class="text-caption">Created date.formatDate(rss.published, 'DD.MM.YYYY HH:mm')</div>
           </div>
         </div>
 

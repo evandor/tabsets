@@ -91,11 +91,7 @@ module.exports = configure(function (ctx) {
 
       // !== MIT
       extendViteConf(viteConf) {
-        if (
-          (ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) &&
-          viteConf &&
-          viteConf.mode === 'development'
-        ) {
+        if ((ctx.mode.spa || ctx.mode.pwa || ctx.mode.electron) && viteConf && viteConf.mode === 'development') {
           // https://dev.to/richardbray/how-to-fix-the-referenceerror-global-is-not-defined-error-in-sveltekitvite-2i49
           viteConf.define.global = {}
         }

@@ -13,11 +13,7 @@ vi.mock('vue-router')
 vi.mock('vue-i18n')
 
 describe('WelcomePage', () => {
-  const skysailChromeTab = ChromeApi.createChromeTabObject(
-    'title',
-    'https://www.skysail.io',
-    'favicon',
-  )
+  const skysailChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.skysail.io', 'favicon')
 
   // @ts-expect-error TODO
   useRouter.mockReturnValue({

@@ -19,8 +19,7 @@
           <SidePanelToolbarButton
             icon="close"
             tooltip="Close this view"
-            @click="useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)"
-          />
+            @click="useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)" />
         </template>
       </FirstToolbarHelper2>
     </q-page-sticky>

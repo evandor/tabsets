@@ -32,10 +32,7 @@ onMounted(() => {
   const iFrame = iFrameRef.value
   if (iFrame) {
     // @ts-expect-error TODO
-    iFrame.setAttribute(
-      'style',
-      'overflow:hidden;height:' + (window.innerHeight - 130) + 'px;width:100%;border:0px',
-    )
+    iFrame.setAttribute('style', 'overflow:hidden;height:' + (window.innerHeight - 130) + 'px;width:100%;border:0px')
   }
 })
 

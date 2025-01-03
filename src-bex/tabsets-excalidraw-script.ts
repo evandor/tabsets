@@ -49,11 +49,9 @@ bridge
           tabsetsTimestamp: LocalStorage.getItem('tabsets_ts'),
         },
       }
-      bridge
-        .send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage })
-        .catch((err: any) => {
-          console.log('[BEX-CT] Failed to send message to app', err)
-        })
+      bridge.send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage }).catch((err: any) => {
+        console.log('[BEX-CT] Failed to send message to app', err)
+      })
     }
   })
   .catch((err) => {

@@ -80,8 +80,7 @@ function runOnNotificationClick(notificationId: string, buttonIndex: number) {
   if (notification) {
     switch (buttonIndex) {
       case 0: // show
-        const url =
-          chrome.runtime.getURL('www/index.html') + '#/mainpanel/suggestions/' + notificationId
+        const url = chrome.runtime.getURL('www/index.html') + '#/mainpanel/suggestions/' + notificationId
         NavigationService.openOrCreateTab([url])
         useSuggestionsStore().updateSuggestionState(notificationId, SuggestionState.CHECKED)
         break
@@ -92,22 +91,14 @@ function runOnNotificationClick(notificationId: string, buttonIndex: number) {
 }
 
 class BrowserListeners {
-  private onUpdatedListener = (
-    number: number,
-    info: chrome.tabs.TabChangeInfo,
-    tab: chrome.tabs.Tab,
-  ) => this.onUpdated(number, info, tab)
-  private onMovedListener = (number: number, info: chrome.tabs.TabMoveInfo) =>
-    this.onMoved(number, info)
-  private onRemovedListener = (number: number, info: chrome.tabs.TabRemoveInfo) =>
-    this.onRemoved(number, info)
+  private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) =>
+    this.onUpdated(number, info, tab)
+  private onMovedListener = (number: number, info: chrome.tabs.TabMoveInfo) => this.onMoved(number, info)
+  private onRemovedListener = (number: number, info: chrome.tabs.TabRemoveInfo) => this.onRemoved(number, info)
   private onReplacedListener = (n1: number, n2: number) => this.onReplaced(n1, n2)
   private onActivatedListener = (info: chrome.tabs.TabActiveInfo) => this.onActivated(info)
-  private onMessageListener = (
-    request: any,
-    sender: chrome.runtime.MessageSender,
-    sendResponse: any,
-  ) => this.onMessage(request, sender, sendResponse)
+  private onMessageListener = (request: any, sender: chrome.runtime.MessageSender, sendResponse: any) =>
+    this.onMessage(request, sender, sendResponse)
   private onCommandListener = (command: string) => {
     switch (command) {
       case 'tabHistoryBack':
@@ -197,15 +188,9 @@ class BrowserListeners {
         for (const tabAndTabsetId of matchingTabs) {
           // we care only about actually setting a group, not about removal
           if (info.groupId && info.groupId >= 0) {
-            console.log(
-              ' --- updating existing tabs for url: ',
-              chromeTab.url,
-              tabAndTabsetId,
-              info,
-            )
+            console.log(' --- updating existing tabs for url: ', chromeTab.url, tabAndTabsetId, info)
             tabAndTabsetId.tab.groupId = info.groupId
-            tabAndTabsetId.tab.groupName =
-              useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
+            tabAndTabsetId.tab.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
             tabAndTabsetId.tab.updated = new Date().getTime()
             const tabset = useTabsetsStore().tabsetFor(tabAndTabsetId.tab.id)
             if (tabset) {
@@ -283,11 +268,7 @@ class BrowserListeners {
     return true
   }
 
-  private handleAddTabToTabset(
-    request: any,
-    sender: chrome.runtime.MessageSender,
-    sendResponse: any,
-  ) {
+  private handleAddTabToTabset(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     console.log('handleAddTabToTabset', request, sender)
     if (sender.tab) {
       this.addToTabset(request.tabsetId, new Tab(uid(), sender.tab))
@@ -346,11 +327,7 @@ class BrowserListeners {
     })
   }
 
-  private async handleCaptureClipping(
-    request: any,
-    sender: chrome.runtime.MessageSender,
-    sendResponse: any,
-  ) {
+  private async handleCaptureClipping(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {
     console.log('handleCaptureClipping', request, sender, request.tabsetId)
 
     const blob = await this.capture(request)

@@ -1,9 +1,8 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-banner rounded style="border: 1px solid orange"
-      >You can export your data in various formats and re-import them from json. Please note that it
-      is not guaranteed that older exports can be imported with newer versions of the tabsets
-      extension.
+      >You can export your data in various formats and re-import them from json. Please note that it is not guaranteed
+      that older exports can be imported with newer versions of the tabsets extension.
     </q-banner>
 
     <div class="row q-pa-md">
@@ -25,9 +24,7 @@
       <div class="col-3"><b>Import</b></div>
       <div class="col-3">
         from json or
-        <span class="cursor-pointer text-accent" @click="emits('showTab', 'backup')"
-          >github backup</span
-        ><br />
+        <span class="cursor-pointer text-accent" @click="emits('showTab', 'backup')">github backup</span><br />
         You might need to restart tabsets.
       </div>
       <div class="col-1"></div>
@@ -49,8 +46,6 @@ const $q = useQuasar()
 
 const emits = defineEmits(['showTab'])
 
-const showExportDialog = () =>
-  $q.dialog({ component: ExportDialog, componentProps: { inSidePanel: true } })
-const showImportDialog = () =>
-  $q.dialog({ component: ImportDialog, componentProps: { inSidePanel: true } })
+const showExportDialog = () => $q.dialog({ component: ExportDialog, componentProps: { inSidePanel: true } })
+const showImportDialog = () => $q.dialog({ component: ImportDialog, componentProps: { inSidePanel: true } })
 </script>
