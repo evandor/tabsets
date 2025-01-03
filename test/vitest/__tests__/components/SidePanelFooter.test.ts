@@ -1,5 +1,5 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { DOMWrapper, mount, shallowMount, VueWrapper } from '@vue/test-utils'
+import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { useQuasar } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
