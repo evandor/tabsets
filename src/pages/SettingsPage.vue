@@ -1,5 +1,5 @@
 <template>
-  <q-toolbar v-if="useTabsetsStore().tabsets.size > 0">
+  <q-toolbar>
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">

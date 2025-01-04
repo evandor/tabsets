@@ -52,9 +52,7 @@
 </template>
 
 <script lang="ts" setup>
-import _ from 'lodash'
 import { useQuasar } from 'quasar'
-import ChromeApi from 'src/app/BrowserApi'
 import BookmarksTree from 'src/bookmarks/components/BookmarksTree.vue'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'

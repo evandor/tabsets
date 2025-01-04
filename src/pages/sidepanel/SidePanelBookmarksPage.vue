@@ -51,7 +51,7 @@ import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const router = useRouter()

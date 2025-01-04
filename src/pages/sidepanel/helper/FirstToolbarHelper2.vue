@@ -199,9 +199,12 @@ const title = (): string => {
   } else {
     const currentTs = useTabsetsStore().getCurrentTabset
     if (currentTs) {
-      return currentTs.type !== TabsetType.SESSION
-        ? 'Collection'
-        : `Session (${currentTs.tabs.length} tab${currentTs.tabs.length > 1 ? 's' : ''})`
+      switch (currentTs.type) {
+        case TabsetType.SESSION:
+          return `Session (${currentTs.tabs.length} tab${currentTs.tabs.length > 1 ? 's' : ''})`
+        default:
+          return currentTs.sharedId ? 'Shared Collection' : 'Collection'
+      }
     }
     return 'Collection'
   }
