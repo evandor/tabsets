@@ -49,6 +49,10 @@ export class SidePanelViews {
     useFeaturesStore().hasFeature(FeatureIdent.TABS_AS_TREE),
   )
 
+  static readonly NOTES_VIEW = new SidePanelViews('notesView', '/sidepanel/notesView', () =>
+    useFeaturesStore().hasFeature(FeatureIdent.NOTES),
+  )
+
   private constructor(
     public readonly ident: string,
     public readonly path: any,

@@ -52,6 +52,13 @@
           :size="buttonSize"
           tooltip="Show a tree view of your tabs" />
 
+        <SidePanelFooterViewMenuItem
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.NOTES)"
+          :side-panel-view="SidePanelViews.NOTES_VIEW"
+          label="Notes for tabsets"
+          icon="o_note"
+          :size="buttonSize" />
+
         <!-- :disable="useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN)" -->
         <SidePanelFooterViewMenuItem
           :side-panel-view="SidePanelViews.MAIN"

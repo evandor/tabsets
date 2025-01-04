@@ -26,6 +26,9 @@
                 class="q-mx-sm" />
               <q-icon v-else name="o_folder" color="warning" class="q-mx-sm" />
               {{ node.text }} {{ node.id === currentTabset?.id ? ' (current)' : '' }}
+              <!--              <q-icon name="o_note" color="primary" size="12px" v-if="tabsetHasNotes(node.id)">-->
+              <!--                <q-tooltip class="tooltip-small">This tabset has associated note(s)</q-tooltip>-->
+              <!--              </q-icon>-->
             </span>
           </template>
         </Draggable>
@@ -276,6 +279,8 @@ const openIndicatorIcon = (stat: any) => {
 
 const topLevelSubfolderExist = () =>
   treeData.value ? treeData.value.findIndex((nto: NodeTreeObject) => nto.children.length > 0) >= 0 : false
+
+// const tabsetHasNotes = async (tabsetId: string) => (await useNotesStore().getNotesFor(tabsetId)).length > 0
 </script>
 
 <style lang="scss">

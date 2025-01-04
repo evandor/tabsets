@@ -120,6 +120,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTabsAsTreePage.vue') }],
   },
   {
+    path: '/sidepanel/notesView',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('pages/sidepanel/SidePanelNotesViewPage.vue') }],
+  },
+  {
     path: '/sidepanel/messages',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelMessagesPage.vue') }],
