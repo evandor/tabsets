@@ -1,4 +1,5 @@
 <template>
+  <!-- SidePanelSearchPage -->
   <q-page style="padding-top: 50px">
     <div class="row q-ma-none q-pa-none">
       <div class="col-12 q-ma-none q-pa-none">
@@ -38,7 +39,7 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
-import { uid, useQuasar } from 'quasar'
+import { uid } from 'quasar'
 import SearchHit from 'src/components/layouts/SearchHit.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import { Hit } from 'src/search/models/Hit'
@@ -127,6 +128,7 @@ const newSearch = (term: string) => {
     })
 
     const results = searchStore.search(term)
+    console.log('results', results)
     _.forEach(results, (h: any) => {
       //console.log("h", h.item.bookmarkId)
       const theHit = new Hit(
@@ -138,7 +140,7 @@ const newSearch = (term: string) => {
         0,
         0,
         Math.round(100 - 100 * (h?.score || 1)),
-        [], //h.item.tabsets,
+        h.item.tabsets,
         [],
         _.map(h['matches' as keyof object], (m: any) => {
           return {
