@@ -15,46 +15,11 @@
           <template v-else>
             <div class="col-12 text-subtitle1">
               <div class="q-ml-md q-mt-sm">
-                <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-                  <div
-                    v-if="route.path !== '/sidepanel/spaces'"
-                    class="text-caption cursor-pointer"
-                    @click.stop="router.push('/sidepanel/spaces')">
-                    <span
-                      >{{ title() }}
-                      <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />
-                      <q-tooltip class="tooltip-small" :delay="1000"
-                        >Select a different space or create a new one</q-tooltip
-                      >
-                    </span>
-                  </div>
-                  <div v-else class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel')">
-                    <span
-                      >&lt;&nbsp;back
-                      <q-tooltip class="tooltip-small" :delay="1000"
-                        >Click again to return or choose a new space</q-tooltip
-                      >
-                    </span>
-                  </div>
-                </template>
-                <template v-else>
-                  <div class="text-caption">
-                    {{ title() }}
-                  </div>
-                </template>
-                <div
-                  class="text-body1 text-bold cursor-pointer ellipsis"
-                  @click="router.push('/sidepanel/collections')">
-                  <template v-if="currentTabset">
-                    {{ currentTabset.name }}
-                    <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />
-                    <q-tooltip class="tooltip-small" :delay="1000"
-                      >Select a different collection or create a new one {{ currentTabset.size }}
-                    </q-tooltip>
-                  </template>
-                  <template v-else>
-                    <q-spinner color="primary" size="1em" />
-                  </template>
+                <div class="text-caption cursor-pointer" @click.stop="backToMainView()">
+                  <span>&lt;&nbsp;back </span>
+                </div>
+                <div class="text-body1 text-bold ellipsis">
+                  {{ props.title }}
                 </div>
               </div>
             </div>
@@ -65,32 +30,7 @@
           class="col-6 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none"
           v-if="!useUiStore().appLoading"
           style="border: 0 solid green">
-          <slot name="iconsRight">
-            <div class="q-mt-sm q-ma-none q-qa-none" style="border: 0 solid blue">
-              <template v-if="showSearchIcon()">
-                <SidePanelToolbarButton
-                  icon="search"
-                  class="q-mr-sm"
-                  id="toggleSearchBtn"
-                  size="11px"
-                  @click="toggleSearch" />
-              </template>
-
-              <SidePanelToolbarTabNavigationHelper />
-
-              <span>
-                <SpecialUrlAddToTabsetComponent
-                  v-if="currentChromeTab && currentTabset"
-                  @button-clicked="
-                    (args: ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)
-                  "
-                  :currentChromeTab="currentChromeTab"
-                  :tabset="currentTabset" />
-              </span>
-              <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer" />
-              <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset" />
-            </div>
-          </slot>
+          <slot name="iconsRight"> </slot>
         </div>
       </div>
       <div class="row q-ma-none q-pa-none" v-if="useUiStore().overlapIndicator">
@@ -106,16 +46,12 @@
 import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
 import FilterWithTransitionHelper from 'src/core/widget/FilterWithTransitionHelper.vue'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import SearchWithTransitionHelper from 'src/pages/sidepanel/helper/SearchWithTransitionHelper.vue'
-import SidePanelPageContextMenu from 'src/pages/sidepanel/SidePanelPageContextMenu.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
 import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder'
-import SpecialUrlAddToTabsetComponent from 'src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -125,7 +61,7 @@ import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n({ useScope: 'global' })
 
@@ -139,7 +75,6 @@ const props = defineProps({
 
 const $q = useQuasar()
 const router = useRouter()
-const route = useRoute()
 
 const searching = ref(false)
 const showFilter = ref(false)
@@ -235,6 +170,11 @@ const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClic
 }
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : '')
+
+const backToMainView = () => {
+  useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
+  router.push('/sidepanel')
+}
 </script>
 
 <style scoped>

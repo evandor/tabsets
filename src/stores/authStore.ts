@@ -2,12 +2,7 @@ import { defineStore } from 'pinia'
 import PersistenceService from 'src/services/PersistenceService'
 import { computed, ref } from 'vue'
 
-export enum AccessItem {
-  TABSETS = 'TABSETS',
-  SYNC = 'SYNC',
-  SHARE = 'SHARE',
-  FEATURE_TOGGLES = 'FEATURE_TOGGLES',
-}
+export type AccessItem = 'TABS' | 'TABSETS' | 'SPACES' | 'SYNC' | 'SHARE' | 'FEATURE_TOGGLES'
 
 /**
  * dummy store for submodules integration
@@ -36,11 +31,13 @@ export const useAuthStore = defineStore('auth', () => {
     console.log('noop: setting user id to ', u?.uid)
   }
 
-  const limitExceeded = computed(() => {
-    return (item: AccessItem, count: number): boolean => {
-      return false
-    }
-  })
+  const limitExceeded = computed(
+    (): ((item: AccessItem, count: number) => { exceeded: boolean; limit: number | undefined }) => {
+      return (item: AccessItem, count: number): { exceeded: boolean; limit: number | undefined } => {
+        return { exceeded: false, limit: undefined }
+      }
+    },
+  )
 
   return {
     initialize,

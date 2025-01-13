@@ -138,10 +138,10 @@ class BrowserListeners {
 
       // TODO removed listeners as well?
       if (useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS)) {
-        chrome.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
+        chrome.notifications?.onButtonClicked.addListener((notificationId, buttonIndex) => {
           runOnNotificationClick(notificationId, buttonIndex)
         })
-        chrome.notifications.onClicked.addListener((notificationId) => {
+        chrome.notifications?.onClicked.addListener((notificationId) => {
           runOnNotificationClick(notificationId, 0)
         })
       }

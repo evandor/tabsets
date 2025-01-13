@@ -21,31 +21,19 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper2 title="Bookmarks">
-        <template v-slot:iconsRight>
-          <SidePanelToolbarTabNavigationHelper />
-
-          <SidePanelToolbarButton
-            icon="close"
-            tooltip="Close this view"
-            @click="useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)" />
-        </template>
-      </FirstToolbarHelper2>
+      <ViewToolbarHelper title="Bookmarks" />
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import ViewToolbarHelper from 'pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { useQuasar } from 'quasar'
-import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import BookmarksTree from 'src/bookmarks/components/BookmarksTree.vue'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
-import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import Analytics from 'src/core/utils/google-analytics'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import { CreateTabsetFromBookmarksRecursive } from 'src/tabsets/commands/CreateTabsetFromBookmarksRecursive'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'

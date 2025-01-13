@@ -2,8 +2,7 @@
   <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
     <offline-info />
 
-    <!-- white main box -->
-    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md bg-white">
+    <div class="column fitpage q-pa-sm q-mx-sm q-mt-md">
       <div class="col" style="max-width: 100%">
         <div class="row q-ma-none q-pa-none items-start">
           <div class="col-6">
@@ -79,7 +78,6 @@
                 <q-btn-dropdown
                   :loading="snapshotLoading"
                   class="q-ma-none q-px-md"
-                  color="primary"
                   dense
                   no-caps
                   label="New Snapshot...">

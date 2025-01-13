@@ -17,22 +17,17 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper2 title="Domain List">
-        <template v-slot:iconsRight>
-          <SidePanelToolbarTabNavigationHelper />
-          <CloseSidePanelViewButton />
-        </template>
-      </FirstToolbarHelper2>
+      <ViewToolbarHelper title="Domain List">
+        <template v-slot:iconsRight> </template>
+      </ViewToolbarHelper>
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import ViewToolbarHelper from 'pages/sidepanel/helper/ViewToolbarHelper.vue'
 import Analytics from 'src/core/utils/google-analytics'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import ByDomainListWidget from 'src/tabsets/widgets/ByDomainListWidget.vue'
-import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
 import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'

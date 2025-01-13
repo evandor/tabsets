@@ -35,7 +35,7 @@
           tooltip="List of all tags sorted by prevalence" />
         <SidePanelFooterViewMenuItem
           :side-panel-view="SidePanelViews.NEWEST_TABS_LIST"
-          label="Newest Tabs"
+          label="Latest Tabs"
           icon="o_schedule"
           :size="buttonSize"
           tooltip="Latest Tabs List" />

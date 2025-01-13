@@ -40,12 +40,7 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper2 title="Tags List">
-        <template v-slot:iconsRight>
-          <SidePanelToolbarTabNavigationHelper />
-          <CloseSidePanelViewButton />
-        </template>
-      </FirstToolbarHelper2>
+      <ViewToolbarHelper title="Tags List" />
     </q-page-sticky>
   </q-page>
 </template>
@@ -54,14 +49,12 @@
 import { Chart, LinearScale } from 'chart.js'
 import { WordCloudController, WordElement } from 'chartjs-chart-wordcloud'
 import _ from 'lodash'
-import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import ViewToolbarHelper from 'pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import TagsListViewerWidget from 'src/tabsets/widgets/TagsListViewerWidget.vue'
-import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import { ref, watchEffect } from 'vue'

@@ -112,7 +112,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.RSS,
-      FeatureType.DISABLED,
+      FeatureType.EXPERIMENTAL,
       'RSS View',
       'The "RSS View" list all your RSS Pages. It is recommended to enable the "analyse Tabs" feature as well to automatically find linked rss feeds from your tabsets.',
       'o_rss_feed',

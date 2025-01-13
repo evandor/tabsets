@@ -28,13 +28,13 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper2 title="RSS Feeds" :show-back-button="true" />
+      <ViewToolbarHelper title="RSS Feeds" />
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import ViewToolbarHelper from 'pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { useQuasar } from 'quasar'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'

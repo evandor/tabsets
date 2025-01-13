@@ -1,5 +1,5 @@
 <template>
-  <q-menu :offset="[12, 8]">
+  <q-menu :offset="[22, 6]">
     <q-list dense style="min-width: 200px">
       <ContextMenuItem
         v-close-popup

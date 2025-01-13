@@ -39,29 +39,16 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper2 title="Notes View">
-        <template v-slot:iconsRight>
-          <SidePanelToolbarTabNavigationHelper />
-
-          <SidePanelToolbarButton
-            icon="close"
-            tooltip="Close this view"
-            @click="useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)" />
-        </template>
-      </FirstToolbarHelper2>
+      <ViewToolbarHelper title="Notes View" />
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
-import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
+import ViewToolbarHelper from 'pages/sidepanel/helper/ViewToolbarHelper.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import { useNotesStore } from 'src/notes/stores/NotesStore'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import NavigationService from 'src/services/NavigationService'
-import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, ref } from 'vue'
 
 const notes = ref<object[]>([])

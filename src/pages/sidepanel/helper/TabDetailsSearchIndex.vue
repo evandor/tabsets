@@ -21,16 +21,18 @@
 import _ from 'lodash'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { Tab } from 'src/tabsets/models/Tab'
-import { onMounted, PropType, ref, watchEffect } from 'vue'
+import { PropType, ref, watchEffect } from 'vue'
 
 const props = defineProps({
   tab: { type: Object as PropType<Tab>, required: true },
 })
 
-const tab = ref<Tab | undefined>(undefined)
+const emits = defineEmits(['count'])
+
 const searchIndex = ref<any>()
 
 watchEffect(() => {
+  let typesCount = 0
   const fuseIndex = useSearchStore().getIndex()
   if (fuseIndex) {
     const keyMaps = fuseIndex['_keysMap' as keyof object]
@@ -49,6 +51,7 @@ watchEffect(() => {
     if (res && res.length > 0) {
       Object.keys(res[0]['$' as keyof object]).forEach((k) => {
         const tmp = res[0]['$' as keyof object][k as keyof object]
+        typesCount++
         const v: any = keys.get(+k)
         v.n = tmp['n' as keyof object]
         const c = tmp['v' as keyof object]
@@ -58,5 +61,6 @@ watchEffect(() => {
       searchIndex.value = keys
     }
   }
+  emits('count', typesCount)
 })
 </script>

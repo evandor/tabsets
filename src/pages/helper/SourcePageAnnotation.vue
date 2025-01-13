@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-ma-none q-pa-sm bg-white" style="border: 0px solid #bfbfbf; border-radius: 5px">
+  <div class="row q-ma-none q-pa-sm" style="border: 0px solid #bfbfbf; border-radius: 5px">
     <div class="col-10 text-subtitle2">
       {{ currentSelectionId ? 'Update Annotation' : 'Add Annotation' }}
     </div>
@@ -42,7 +42,6 @@
         size="sm"
         :label="props.selectionId ? 'update' : 'create Selection'"
         :disable="currentSelectionTitle ? currentSelectionTitle.trim().length === 0 : true"
-        color="primary"
         @click="createOrUpdateAnnotation()" />
     </div>
     <!--    <div>{{props}}</div>-->

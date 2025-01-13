@@ -33,9 +33,10 @@
           @click.stop="NavigationService.openOrCreateTab([tab?.url || ''])">
           {{ tab?.url }}&nbsp;<q-icon name="launch" color="secondary" class="cursor-pointer"></q-icon>
         </div>
-        <div class="text-body2 ellipsis">
-          {{ tab?.id }}
+        <div class="text-body2 ellipsis q-mb-sm">
+          Size: {{ Math.round(JSON.stringify(tab || '').length / 1024) + ' kByte' }}
         </div>
+        <div class="text-body2 ellipsis">ID: {{ tab?.id }}</div>
       </div>
     </div>
 
@@ -125,7 +126,10 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Meta Data" group="somegroup" :default-opened="tab?.note === undefined">
+    <q-expansion-item
+      :label="'Meta Data (#' + (4 + metaRows.length) + ')'"
+      group="somegroup"
+      :default-opened="tab?.note === undefined">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
@@ -163,7 +167,7 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Http Status" group="somegroup">
+    <q-expansion-item :label="'Http Status: ' + tab?.httpStatus" group="somegroup">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
@@ -204,7 +208,10 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Tab References" group="tabrefgroup" v-if="tab && tab.tabReferences">
+    <q-expansion-item
+      :label="'Tab References (#' + tab.tabReferences.length + ')'"
+      group="tabrefgroup"
+      v-if="tab && tab.tabReferences">
       <div class="q-ma-sm q-ml-lg" v-for="ref in tab.tabReferences">
         <template v-if="ref.type === TabReferenceType.RSS">
           <div class="text-caption text-bold">found RSS ({{ ref.status }}):</div>
@@ -308,11 +315,11 @@
     <!--      </q-card>-->
     <!--    </q-expansion-item>-->
 
-    <q-expansion-item group="somegroup" label="Search Index">
+    <q-expansion-item group="somegroup" :label="'Search Index (' + indexTypesCount + ' categories)'">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm">
-            <TabDetailsSearchIndex v-if="tab" :tab="tab" />
+            <TabDetailsSearchIndex @count="(v: number) => (indexTypesCount = v)" v-if="tab" :tab="tab" />
           </div>
         </q-card-section>
       </q-card>
@@ -365,6 +372,7 @@ const htmls = ref<BlobMetadata[]>([])
 const request = ref<RequestInfo | undefined>(undefined)
 const tabId = ref<string | undefined>(undefined)
 const opensearchterm = ref<string | undefined>(undefined)
+const indexTypesCount = ref(0)
 
 const tags = ref<string[]>([])
 
@@ -524,11 +532,28 @@ const openInJsonCrackEditor = (data: string) => {
 }
 
 const linkingHeading = (data: object | undefined) => {
-  //console.log('data', data)
   if (!data) {
     return '---'
   }
-  return data['@type' as keyof object] || 'unknown'
+  if (data['@type' as keyof object] === 'ItemList') {
+    console.log('data', typeof data, data)
+    const items: object[] = (data['itemListElement' as keyof object] as object[]) || []
+    console.log('items', typeof items, items)
+    if (items.map) {
+      return items.map((o: object) => {
+        const item = o['item' as keyof object]
+        if (item['headline']) {
+          return item['headline']
+        }
+        return item
+      })
+    } else {
+      return '---'
+    }
+  }
+  const part1: string = data['@type' as keyof object] || 'unknown'
+  const part2: string = data['description' as keyof object] || ''
+  return part1 + ', ' + part2
 }
 
 const openSearch = () => {
