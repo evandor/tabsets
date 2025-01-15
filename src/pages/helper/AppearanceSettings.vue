@@ -65,10 +65,6 @@
           label="The last couple of tabsets you opened will be displayed for quick access" />
       </InfoLine>
 
-      <InfoLine label="Hide Indicator Icon" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
-        <q-checkbox v-model="hideIndicatorIcon" label="Hide Icon on websites (upper right) when tracked by tabsets" />
-      </InfoLine>
-
       <InfoLine label="Switch off content script logging" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
         <q-checkbox v-model="contentScriptLoggingOff" label="No tabset related logging in content scripts" />
       </InfoLine>
@@ -205,7 +201,6 @@ const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') 
 const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const overlapIndicator = ref(LocalStorage.getItem('ui.overlapIndicator') || false)
-const hideIndicatorIcon = ref(LocalStorage.getItem('ui.hideIndicatorIcon') || false)
 const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))
 const contentScriptLoggingOff = ref(LocalStorage.getItem('ui.contentScriptLoggingOff') || false)
 const oldLayout = ref(LocalStorage.getItem('ui.sidepanel.oldLayout') || false)
@@ -295,17 +290,6 @@ watch(
     sendMsg('settings-changed', {
       identifier: 'ui.overlapIndicator',
       value: overlapIndicator.value,
-    })
-  },
-)
-
-watch(
-  () => hideIndicatorIcon.value,
-  (a: any, b: any) => {
-    LocalStorage.set('ui.hideIndicatorIcon', hideIndicatorIcon.value)
-    sendMsg('settings-changed', {
-      identifier: 'ui.hideIndicatorIcon',
-      value: hideIndicatorIcon.value,
     })
   },
 )

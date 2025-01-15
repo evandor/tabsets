@@ -236,9 +236,6 @@ if (inBexMode()) {
     } else if (message.name === 'settings-changed') {
       console.log(`setting ${message.data.identifier} to ${message.data.value}`)
       switch (message.data.identifier) {
-        case 'ui.hideIndicatorIcon':
-          useUiStore().setHideIndicatorIcon(message.data.value)
-          break
         case 'ui.fullUrls':
           useUiStore().setShowFullUrls(message.data.value)
           break

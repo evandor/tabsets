@@ -383,8 +383,11 @@ watchEffect(() => {
   const tabObject = useTabsetsStore().getTabAndTabsetId(tabId.value)
   if (tabObject) {
     tab.value = tabObject.tab
+    // console.log('tab.tags.value', tab.value.tags)
     if (tab.value.tags.constructor === Array) {
-      tags.value = tab.value.tags
+      tags.value = [...new Set(tab.value.tags)]
+      // remove duplicates if any
+      tab.value.setTags(tags.value)
     } else {
       tags.value = []
     }
@@ -536,9 +539,9 @@ const linkingHeading = (data: object | undefined) => {
     return '---'
   }
   if (data['@type' as keyof object] === 'ItemList') {
-    console.log('data', typeof data, data)
+    //console.log('data', typeof data, data)
     const items: object[] = (data['itemListElement' as keyof object] as object[]) || []
-    console.log('items', typeof items, items)
+    //console.log('items', typeof items, items)
     if (items.map) {
       return items.map((o: object) => {
         const item = o['item' as keyof object]

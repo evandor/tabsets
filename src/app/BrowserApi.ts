@@ -7,10 +7,10 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useRequestsService } from 'src/requests/services/RequestsService'
 import { useRequestsStore } from 'src/requests/stores/requestsStore'
 import NavigationService from 'src/services/NavigationService'
+import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { GithubBackupCommand } from 'src/tabsets/commands/github/GithubBackupCommand'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { Router } from 'vue-router'
@@ -206,7 +206,7 @@ class BrowserApi {
       })
       chrome.contextMenus.onClicked.addListener(
         (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
-          //console.log("listening to", e, tab)
+          console.log('contextMenus.OnClickData to', e, tab)
           if (e.menuItemId === 'open_tabsets_page') {
             chrome.tabs.query({ title: `Tabsets Extension` }, (result: chrome.tabs.Tab[]) => {
               if (result && result[0]) {
@@ -236,8 +236,8 @@ class BrowserApi {
           } else if (e.menuItemId === 'save_to_currentTS') {
             const tabId = tab?.id || 0
             const currentTsId = useTabsetsStore().currentTabsetId
-            if (currentTsId) {
-              this.executeAddToTS(tabId, currentTsId)
+            if (currentTsId && tab) {
+              this.executeAddToTS(currentTsId, tab)
             }
           } else if (e.menuItemId === 'annotate_website') {
             console.log('creating annotation JS', tab)
@@ -249,7 +249,7 @@ class BrowserApi {
             const tabId = tab?.id || 0
             const tabsetId = e.menuItemId.toString().split('|')[1]
             console.log('got tabsetId', tabsetId, e.menuItemId)
-            this.executeAddToTS(tabId, tabsetId!)
+            this.executeAddToTS(tabsetId!, tab!)
           } else if (e.menuItemId.toString().startsWith('move_to|')) {
             console.log('got', e, e.menuItemId.toString().split('|'))
             const tabId = tab?.id || 0
@@ -446,83 +446,80 @@ class BrowserApi {
     }
   }
 
-  executeAddToTS(tabId: number, tabsetId: string) {
-    chrome.scripting.executeScript({
-      target: { tabId: tabId, allFrames: true },
-      args: [tabId, tabsetId],
-      func: (tabId: number, tabsetId: string) => {
-        if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
-          const msg = {
-            msg: 'addTabToTabset',
-            tabId: tabId,
-            tabsetId: tabsetId,
-          }
-          console.log('sending message', msg)
-          chrome.runtime.sendMessage(msg, function (response) {
-            console.log('created new tab in current tabset:', response)
-            if (chrome.runtime.lastError) {
-              console.warn('got runtime error', chrome.runtime.lastError)
-            }
+  executeAddToTS(tabsetId: string, tab: chrome.tabs.Tab) {
+    const tabset = useTabsetsStore().getTabset(tabsetId)
+    if (tabset && tab.url) {
+      useCommandExecutor()
+        .execute(new AddTabToTabsetCommand(new Tab(uid(), tab)))
+        .then(() => {
+          chrome.notifications?.create({
+            title: 'Tabset Extension Message',
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('icons/favicon-64x64.png'),
+            message: `tab ${tab.url} has been created successfully`,
           })
-        }
-      },
-    })
-  }
-
-  tabsetIndication = (color: string, tooltip: string) => {
-    const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-
-    const iconTitle = document.createElementNS('http://www.w3.org/2000/svg', 'title')
-    iconTitle.textContent = tooltip
-
-    const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-
-    iconSvg.setAttribute('fill', 'none')
-    iconSvg.setAttribute('viewBox', '0 0 24 24')
-    iconSvg.setAttribute('stroke', color)
-    iconSvg.setAttribute('width', '20')
-    iconSvg.setAttribute('height', '20')
-    iconSvg.setAttribute('style', 'position:fixed;top:3;right:3;z-index:2147483647')
-    iconSvg.classList.add('post-icon')
-
-    iconPath.setAttribute(
-      'd',
-      'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
-    )
-    iconPath.setAttribute('stroke-linecap', 'round')
-    iconPath.setAttribute('stroke-linejoin', 'round')
-    iconPath.setAttribute('stroke-width', '2')
-
-    iconSvg.appendChild(iconTitle)
-    iconSvg.appendChild(iconPath)
-    document.body.appendChild(iconSvg)
-  }
-
-  addIndicatorIcon(
-    tabId: number,
-    tabUrl: string | undefined,
-    color: string = 'orange',
-    tooltip: string = 'managed by tabsets',
-  ) {
-    if (tabUrl && chrome && chrome.scripting) {
-      const tabsetIds = useTabsetService().tabsetsFor(tabUrl)
-      if (tabsetIds.length > 0 && tabId) {
-        const currentTabsetId = useTabsetsStore().currentTabsetId
-        if (currentTabsetId && tabsetIds.indexOf(currentTabsetId) >= 0) {
-          color = 'green'
-        }
-        console.log('adding indicator icon', tabId, tabUrl)
-        chrome.scripting
-          .executeScript({
-            target: { tabId: tabId },
-            func: this.tabsetIndication,
-            args: [color, tooltip],
+        })
+        .catch((err: any) => {
+          console.log('catching rejection', err)
+          chrome.notifications?.create({
+            title: 'Tabset Extension Message',
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('icons/favicon-64x64.png'),
+            message: 'tab could not be added: ' + err,
           })
-          //.then(() => console.log("injected script file tabsetIndication"))
-          .catch((res) => console.log('err', res))
-      }
+        })
     }
+
+    // chrome.scripting.executeScript({
+    //   target: { tabId: tabId, allFrames: true },
+    //   args: [tabId, tabsetId],
+    //   func: (tabId: number, tabsetId: string) => {
+    //     if (window.getSelection()?.anchorNode && window.getSelection()?.anchorNode !== null) {
+    //       const msg = {
+    //         msg: 'addTabToTabset',
+    //         tabId: tabId,
+    //         tabsetId: tabsetId,
+    //       }
+    //       console.log('sending message', msg)
+    //       chrome.runtime.sendMessage(msg, function (response) {
+    //         console.log('created new tab in current tabset:', response)
+    //         if (chrome.runtime.lastError) {
+    //           console.warn('got runtime error', chrome.runtime.lastError)
+    //         }
+    //       })
+    //     }
+    //   },
+    // })
   }
+
+  // tabsetIndication = (color: string, tooltip: string) => {
+  //   const iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  //
+  //   const iconTitle = document.createElementNS('http://www.w3.org/2000/svg', 'title')
+  //   iconTitle.textContent = tooltip
+  //
+  //   const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  //
+  //   iconSvg.setAttribute('fill', 'none')
+  //   iconSvg.setAttribute('viewBox', '0 0 24 24')
+  //   iconSvg.setAttribute('stroke', color)
+  //   iconSvg.setAttribute('width', '20')
+  //   iconSvg.setAttribute('height', '20')
+  //   iconSvg.setAttribute('style', 'position:fixed;top:3;right:3;z-index:2147483647')
+  //   iconSvg.classList.add('post-icon')
+  //
+  //   iconPath.setAttribute(
+  //     'd',
+  //     'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
+  //   )
+  //   iconPath.setAttribute('stroke-linecap', 'round')
+  //   iconPath.setAttribute('stroke-linejoin', 'round')
+  //   iconPath.setAttribute('stroke-width', '2')
+  //
+  //   iconSvg.appendChild(iconTitle)
+  //   iconSvg.appendChild(iconPath)
+  //   document.body.appendChild(iconSvg)
+  // }
 
   async closeAllTabs(includingPinnedOnes: boolean = true) {
     const tabIds = (await chrome.tabs.query({}))

@@ -222,9 +222,9 @@ export class AppFeatures {
       'o_notifications',
       '',
       ['all'],
-    ),
-    // .setActivateCommands([new GrantPermissionCommand('notifications')])
-    // .setDeactivateCommands([ne0w RevokePermissionCommand('notifications')]),
+    )
+      .setActivateCommands([new GrantPermissionCommand('notifications')])
+      .setDeactivateCommands([new RevokePermissionCommand('notifications')]),
 
     new Feature(
       FeatureIdent.ANNOTATIONS,

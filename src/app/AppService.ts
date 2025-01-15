@@ -203,6 +203,9 @@ class AppService {
       await router.push('/sidepanel/welcome')
     }
 
+    // set badge, text and color
+    useTabsetsUiStore().updateExtensionIcon()
+
     ChromeApi.buildContextMenu('AppService')
   }
 }
