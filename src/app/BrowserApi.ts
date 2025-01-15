@@ -35,7 +35,7 @@ class BrowserApi {
       return
     }
 
-    console.debug(' ...initializing ChromeApi')
+    // console.debug(' ...initializing ChromeApi')
 
     chrome.alarms.create('housekeeping', { periodInMinutes: CLEANUP_PERIOD_IN_MINUTES })
 
@@ -93,10 +93,10 @@ class BrowserApi {
       return
     }
 
-    console.log(' building context menu', caller)
+    // console.log(' building context menu', caller)
     if (chrome && chrome.contextMenus) {
       chrome.contextMenus.removeAll(() => {
-        console.debug(' ...creating contextmenu for tabset_extension')
+        //console.debug(' ...creating contextmenu for tabset_extension')
         chrome.contextMenus.create(
           {
             id: 'tabset_extension',
@@ -206,7 +206,7 @@ class BrowserApi {
       })
       chrome.contextMenus.onClicked.addListener(
         (e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
-          console.log('contextMenus.OnClickData to', e, tab)
+          //console.log("listening to", e, tab)
           if (e.menuItemId === 'open_tabsets_page') {
             chrome.tabs.query({ title: `Tabsets Extension` }, (result: chrome.tabs.Tab[]) => {
               if (result && result[0]) {

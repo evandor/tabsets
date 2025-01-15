@@ -1,5 +1,5 @@
 <template>
-  <q-card class="my-card" flat bordered>
+  <q-card class="my-card" flat bordered :style="active ? 'border:2px dotted darkblue' : ''">
     <q-card-section horizontal>
       <q-card-section class="q-pt-xs">
         <div class="text-overline">
@@ -33,7 +33,9 @@
   </q-card>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const props = defineProps<{ active?: boolean }>()
+</script>
 
 <style lang="sass" scoped>
 .my-card

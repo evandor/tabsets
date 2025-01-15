@@ -13,8 +13,7 @@ class ChromeBookmarkListeners {
     if (process.env.MODE === 'bex') {
       chrome.permissions.contains({ permissions: ['bookmarks'] }, (res: boolean) => {
         if (res) {
-          console.debug(' ...init chrome bookmark listeners (async)')
-          console.debug('')
+          // console.debug(' ...init chrome bookmark listeners (async)')
           chrome.bookmarks.onCreated.addListener(this.onCreatedListener)
           chrome.bookmarks.onMoved.addListener(this.onMovedListener)
           chrome.bookmarks.onRemoved.addListener(this.onRemovedListener)

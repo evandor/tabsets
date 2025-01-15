@@ -116,7 +116,7 @@ class BrowserListeners {
 
   async initListeners() {
     if (process.env.MODE === 'bex') {
-      console.debug(' ...initializing chrome tab listeners')
+      // console.debug(' ...initializing chrome tab listeners')
 
       chrome.runtime.setUninstallURL('https://tabsets.web.app/#/uninstall')
 
@@ -153,16 +153,18 @@ class BrowserListeners {
   }
 
   async resetListeners() {
-    console.log(' ...resetting listeners (after re-initialization)')
-    //chrome.tabs.onCreated.removeListener(this.onCreatedListener)
-    chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
-    chrome.tabs.onMoved.removeListener(this.onMovedListener)
-    chrome.tabs.onRemoved.removeListener(this.onRemovedListener)
-    chrome.tabs.onReplaced.removeListener(this.onReplacedListener)
-    chrome.tabs.onActivated.removeListener(this.onActivatedListener)
-    chrome.runtime.onMessage.removeListener(this.onMessageListener)
-    if (chrome.commands) {
-      chrome.commands.onCommand.removeListener(this.onCommandListener)
+    if (inBexMode()) {
+      console.log(' ...resetting listeners (after re-initialization)')
+      //chrome.tabs.onCreated.removeListener(this.onCreatedListener)
+      chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
+      chrome.tabs.onMoved.removeListener(this.onMovedListener)
+      chrome.tabs.onRemoved.removeListener(this.onRemovedListener)
+      chrome.tabs.onReplaced.removeListener(this.onReplacedListener)
+      chrome.tabs.onActivated.removeListener(this.onActivatedListener)
+      chrome.runtime.onMessage.removeListener(this.onMessageListener)
+      if (chrome.commands) {
+        chrome.commands.onCommand.removeListener(this.onCommandListener)
+      }
     }
   }
 

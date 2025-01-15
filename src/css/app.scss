@@ -1,4 +1,20 @@
 // app global css in SCSS form
+
+.firebase-emulator-warning {
+  display: none;
+}
+
+#watermark
+{
+  position:fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity:0.2;
+  z-index:99;
+  color:$blue-10;
+}
+
 .constrained-width {
   max-width: 1200px;
   margin: 0 auto;

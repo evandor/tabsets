@@ -20,10 +20,8 @@ const router = useRouter()
 
 const settingsStore = useSettingsStore()
 settingsStore.initialize($q.localStorage)
-console.debug('')
 
 usePermissionsStore().initialize()
-console.debug('')
 
 useAppStore().init()
 

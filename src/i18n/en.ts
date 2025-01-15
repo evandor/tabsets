@@ -5,7 +5,7 @@ export default {
   activate_browser_notifications: 'Activate Browser Notifications',
   activate_fullpage_application: 'Activate Full-Page App',
   add_new_tabset: 'Add new Tabset',
-  add_tabset: 'Add Tabset',
+  add_tabset: 'Create',
   appearance: 'Appearance',
   Auto: 'Auto',
   auto: 'Auto',

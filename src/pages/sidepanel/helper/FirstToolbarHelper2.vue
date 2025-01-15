@@ -2,6 +2,8 @@
   <!-- FirstToolbarHelper2 -->
   <q-toolbar class="q-pa-none q-pl-none q-pr-none q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
+      <div v-if="showWatermark" id="watermark">{{ watermark }}</div>
+
       <div class="row q-ma-none q-pa-none">
         <div class="col-6 q-ma-none q-pa-none" style="border: 0 solid red">
           <!-- no spaces && searching -->

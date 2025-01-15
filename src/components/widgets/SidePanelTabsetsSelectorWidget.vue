@@ -97,8 +97,6 @@ import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
 import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
 import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
-import { useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -129,7 +127,7 @@ const filterFn = (val: any, update: any, abort: any) => {
   update(() => {
     const needle = val.toLocaleLowerCase()
     switchTabsetOptions.value = _.map(allTabsetsButCurrent.value as Tabset[], (ts: Tabset) => ts.name).filter(
-      (v) => v.toLocaleLowerCase().indexOf(needle) > -1,
+      (v: any) => v.toLocaleLowerCase().indexOf(needle) > -1,
     )
   })
 }
@@ -150,10 +148,14 @@ watchEffect(() => {
     if (spacesStore.space && spacesStore.space.id && spacesStore.space.id.length > 0) {
       tabsets = _.filter(
         tabsets,
-        (ts) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0,
+        (ts: Tabset) =>
+          ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.indexOf(spacesStore.space.id) >= 0,
       )
     } else {
-      tabsets = _.filter(tabsets, (ts) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0)
+      tabsets = _.filter(
+        tabsets,
+        (ts: Tabset) => ts.status !== TabsetStatus.ARCHIVED && ts.spaces && ts.spaces.length === 0,
+      )
     }
   }
   tabsetsOptions.value = _.map(

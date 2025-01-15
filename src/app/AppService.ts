@@ -64,34 +64,27 @@ class AppService {
     useAppStore().init()
 
     await ChromeListeners.initListeners()
-    console.debug('')
 
     // Bookmarks
     ChromeBookmarkListeners.initListeners()
 
     useBookmarksStore().init()
     await BookmarksService.init()
-    console.debug('')
 
     // Snapshots
     await useSnapshotsStore().initialize(useDB().snapshotsDb)
     await useSnapshotsService().init()
-    console.debug('')
 
     // should be initialized before search submodule
     await useThumbnailsService().init(useDB().thumbnailsDb)
-    console.debug('')
 
     await useContentService().init(IndexedDbContentPersistence)
-    console.debug('')
 
     await useRequestsService().init(IndexedDbRequestPersistence)
-    console.debug('')
 
     await useSearchStore()
       .init()
       .catch((err: any) => console.error(err))
-    console.debug('')
 
     // init db
     await IndexedDbPersistenceService.init('db')
@@ -99,7 +92,6 @@ class AppService {
 
     // init services
     await useSuggestionsStore().init()
-    console.debug('')
 
     tabsetService.setLocalStorage(localStorage)
 
@@ -127,10 +119,7 @@ class AppService {
     console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
 
     await useWindowsStore().initialize()
-    console.debug('')
-
     useWindowsStore().initListeners()
-    console.debug('')
 
     /**
      * features store: passing storage for better testing.
@@ -138,14 +127,11 @@ class AppService {
      */
     const featuresStorage = useDB(quasar).featuresDb
     await useFeaturesStore().initialize(featuresStorage)
-    console.debug('')
 
     const localStorageTabsetsDb = useDB().localStorageTabsetsDb
     await useTabsetsUiStore().initialize(localStorageTabsetsDb)
-    console.debug('')
 
     await useNotesStore().initialize(useDB().notesDb)
-    console.debug('')
 
     /**
      * Pattern: TODO
@@ -159,7 +145,6 @@ class AppService {
       useEntityRegistryStore().spacesRegistry = spacesInfo
     })
     await useSpacesStore().initialize(useDB().spacesDb)
-    console.debug('')
 
     const tabsetsStore = useTabsetsStore()
     watch(tabsetsStore.tabsets, (newTabsets: Map<string, any>) => {
@@ -171,15 +156,12 @@ class AppService {
     })
     await tabsetsStore.initialize(useDB().tabsetsIndexedDb)
     await useTabsetService().init(false)
-    console.debug('')
 
     await useTabsStore2().initialize()
-    console.debug('')
 
     const existingUrls = useTabsetsStore().getAllUrls()
     await useContentService().populateSearch(existingUrls)
     await useTabsetService().populateSearch()
-    console.debug('')
 
     ChromeApi.init(router)
 
