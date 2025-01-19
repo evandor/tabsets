@@ -30,7 +30,7 @@
       <!-- https://michaelnthiessen.com/force-re-render -->
 
       <!-- all windows related logic here: -->
-      <WindowsMarkupTable2 />
+      <WindowsMarkupTable />
 
       <!--      <WindowsMarkupTable-->
       <!--        :rows="windowHolderRows"-->
@@ -216,7 +216,7 @@ import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
-import WindowsMarkupTable2 from 'src/windows/components/WindowsMarkupTable2.vue'
+import WindowsMarkupTable from 'src/windows/components/WindowsMarkupTable.vue'
 import { Window } from 'src/windows/models/Window'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { ref, watch, watchEffect } from 'vue'

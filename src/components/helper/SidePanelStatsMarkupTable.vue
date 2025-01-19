@@ -108,8 +108,8 @@ watch(
 
 watchEffect(() => {
   const res =
-    useWindowsStore().currentBrowserWindow && useWindowsStore().currentBrowserWindow.id
-      ? useWindowsStore().windowNameFor(useWindowsStore().currentBrowserWindow.id || 0) || 'n/a'
+    useWindowsStore().currentBrowserWindow && useWindowsStore().currentBrowserWindow?.id
+      ? useWindowsStore().windowNameFor(useWindowsStore().currentBrowserWindow!.id || 0) || 'n/a'
       : 'n/a'
   currentWindowName.value = res
 })
