@@ -21,12 +21,32 @@ let onCreatedListener = null as unknown as (window: chrome.windows.Window) => Pr
 let onRemovedListener = null as unknown as (windowId: number) => Promise<void>
 let onFocusChangedListener = null as unknown as (windowId: number) => Promise<void>
 
+let onTabUpdatedListener = null as unknown as (
+  tabId: number,
+  changeInfo: chrome.tabs.TabChangeInfo,
+  tab: chrome.tabs.Tab,
+) => Promise<void>
+
+let onTabRemovedListener = null as unknown as (tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => Promise<void>
+
 let currentWindows: any[]
 
 async function setupMocks(currentWindow: any) {
   //console.log("setupMocks with current windows", currentWindows)
   // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/hssoAlvluW8
   const chromeMock = {
+    tabs: {
+      onUpdated: {
+        addListener: vi.fn((listener) => {
+          onTabUpdatedListener = listener
+        }),
+      },
+      onRemoved: {
+        addListener: vi.fn((listener) => {
+          onTabRemovedListener = listener
+        }),
+      },
+    },
     windows: {
       getAll: vi.fn((options, callback) => {
         console.log('mocking chrome.windows.getAll', currentWindows.length)

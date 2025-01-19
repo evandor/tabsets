@@ -305,7 +305,7 @@ class BrowserApi {
               dbWindow.title = windowName
               useWindowsStore().upsertTabsetWindow(dbWindow)
             }
-          }, 5000)
+          }, 1000)
         })
       // NavigationService.openOrCreateTab(
       //   _.map(urlAndGroupArray, (a: any) => a['url' as keyof object]),
