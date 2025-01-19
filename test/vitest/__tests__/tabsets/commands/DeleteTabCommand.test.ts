@@ -52,6 +52,7 @@ describe('DeleteTabCommand', () => {
             metas: { description: 'Description' },
           })
         }),
+        captureVisibleTab: vi.fn(() => {}),
       },
       runtime: {
         sendMessage: vi.fn(() => {}),

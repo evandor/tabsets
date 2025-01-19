@@ -33,6 +33,9 @@ class AppEventDispatcher {
             )
             .catch((err: any) => console.warn('error in RestoreTabsetCommand', err))
           return Promise.resolve({})
+        case 'remove-captured-screenshot':
+          // no-op TODO
+          return Promise.resolve({})
         default:
           return Promise.reject(`unknown event ${name}`)
       }
