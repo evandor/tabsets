@@ -29,11 +29,14 @@
     <div class="row fit q-mb-sm" v-if="showWindowTable">
       <!-- https://michaelnthiessen.com/force-re-render -->
 
-      <WindowsMarkupTable
-        :rows="useWindowsStore().getWindowsForMarkupTable(getAdditionalActions)"
-        @was-clicked="(e) => additionalActionWasClicked(e)"
-        @recalculate-windows="windowHolderRows = calcWindowHolderRows()"
-        :key="randomKey" />
+      <!-- all windows related logic here: -->
+      <WindowsMarkupTable2 />
+
+      <!--      <WindowsMarkupTable-->
+      <!--        :rows="windowHolderRows"-->
+      <!--        @was-clicked="(e) => additionalActionWasClicked(e)"-->
+      <!--        @recalculate-windows="recalcWindows()"-->
+      <!--        :key="randomKey" />-->
     </div>
 
     <div class="row fit q-mb-sm" v-if="showStatsTable">
@@ -52,20 +55,6 @@
 
     <div class="row fit q-ma-none q-pa-none">
       <div class="col-6">
-        <!--        <Transition name="fade" appear>-->
-        <!--          <q-banner-->
-        <!--            v-if="checkToasts()"-->
-        <!--            inline-actions dense rounded-->
-        <!--            style="font-size: smaller;text-align: center"-->
-        <!--            :class="toastBannerClass()">-->
-        <!--            {{ useUiStore().toasts[0]?.msg }}-->
-        <!--            <template v-slot:action v-if="useUiStore().toasts[0]?.actions[0]">-->
-        <!--              <q-btn flat :label="useUiStore().toasts[0].actions[0].label"-->
-        <!--                     @click="useUiStore().callUndoActionFromCurrentToast()"/>-->
-        <!--            </template>-->
-        <!--          </q-banner>-->
-        <!--        </Transition>-->
-
         <q-btn
           v-if="!transitionGraceTime && showSuggestionButton"
           outline
@@ -179,28 +168,6 @@
           <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Show Stats</q-tooltip>
         </q-btn>
 
-        <!--        <span v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)">-->
-        <!--          <q-icon-->
-        <!--            name="o_open_in_new"-->
-        <!--            @click="openExtensionTab()"-->
-        <!--            :class="rightButtonClass()"-->
-        <!--            class="cursor-pointer"-->
-        <!--            flat-->
-        <!--            size="20px">-->
-        <!--            <q-tooltip :delay="2000" anchor="center left" self="center right"-->
-        <!--                       class="tooltip-small">Tabsets as full-page app</q-tooltip>-->
-        <!--          </q-icon>-->
-        <!--          &lt;!&ndash;          <q-menu :offset="[0, 7]" fit>&ndash;&gt;-->
-        <!--          &lt;!&ndash;            <q-list dense style="min-width: 200px;min-height:50px">&ndash;&gt;-->
-        <!--          &lt;!&ndash;              <q-item clickable v-close-popup>&ndash;&gt;-->
-        <!--          &lt;!&ndash;                <q-item-section @click="openExtensionTab()">Tabsets as full-page app</q-item-section>&ndash;&gt;-->
-        <!--          &lt;!&ndash;              </q-item>&ndash;&gt;-->
-        <!--          &lt;!&ndash;              <q-item clickable v-close-popup>&ndash;&gt;-->
-        <!--          &lt;!&ndash;                <q-item-section @click="openPwaUrl()">Tabsets Online Access</q-item-section>&ndash;&gt;-->
-        <!--          &lt;!&ndash;              </q-item>&ndash;&gt;-->
-        <!--          &lt;!&ndash;            </q-list>&ndash;&gt;-->
-        <!--          &lt;!&ndash;          </q-menu>&ndash;&gt;-->
-        <!--        </span>-->
         <q-btn
           v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)"
           icon="o_open_in_new"
@@ -228,7 +195,6 @@ import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { ToastType } from 'src/core/models/Toast'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
@@ -241,31 +207,26 @@ import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetComman
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import { RestoreTabsetCommand } from 'src/tabsets/commands/RestoreTabset'
 import SidePanelTabsetListMarkup from 'src/tabsets/components/helper/SidePanelTabsetListMarkup.vue'
-import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
 import StartSessionDialog from 'src/tabsets/dialogues/StartSessionDialog.vue'
 import { SaveOrReplaceResult } from 'src/tabsets/models/SaveOrReplaceResult'
 import { Tab, TabSnippet } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
-import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import { TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
-import WindowsMarkupTable from 'src/windows/components/WindowsMarkupTable.vue'
+import WindowsMarkupTable2 from 'src/windows/components/WindowsMarkupTable2.vue'
 import { Window } from 'src/windows/models/Window'
-import { WindowAction, WindowHolder } from 'src/windows/models/WindowHolder'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { onMounted, ref, watch, watchEffect } from 'vue'
+import { ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTabsetsUiStore } from '../tabsets/stores/tabsetsUiStore'
-
-const { handleError } = useNotificationHandler()
 
 const { inBexMode } = useUtils()
 
 const $q = useQuasar()
 const route = useRoute()
-
 const router = useRouter()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
@@ -283,13 +244,6 @@ const randomKey = ref<string>(uid())
 const progressValue = ref<number>(0.0)
 const progressLabel = ref<string>('')
 const animateSettingsButton = ref<boolean>(false)
-const windowHolderRows = ref<WindowHolder[]>([])
-const windowsToOpenOptions = ref<object[]>([])
-const tabsetsMangedWindows = ref<object[]>([])
-
-onMounted(() => {
-  windowHolderRows.value = calcWindowHolderRows()
-})
 
 watch(
   () => useSpacesStore().space,
@@ -300,10 +254,11 @@ watch(
 )
 
 watchEffect(() => {
-  const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  if (useWindowsStore().windowForId(windowId)?.open) {
-    //console.log("setting showWindowTable to ", useWindowsStore().windowForId(windowId)?.open)
-    showWindowTable.value = useWindowsStore().windowForId(windowId)?.open || false
+  const windowId = useWindowsStore().currentBrowserWindow?.id
+  if (windowId) {
+    if (useWindowsStore().windowForId(windowId, 'SidePanelFooter1')?.open) {
+      showWindowTable.value = useWindowsStore().windowForId(windowId, 'SidePanelFooter2')?.open || false
+    }
   }
 })
 
@@ -350,7 +305,7 @@ watchEffect(() => {
   if (!inBexMode()) {
     return
   }
-  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  const windowId = useWindowsStore().currentBrowserWindow?.id || 0
   currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) //|| useTabsStore2().currentChromeTab
 })
 
@@ -361,68 +316,6 @@ watchEffect(() => {
     progressLabel.value = uiProgress['label' as keyof object] || ''
     //console.log("we are here", progressValue.value)
   }
-})
-
-const getAdditionalActions = (windowName: string) => {
-  const additionalActions: WindowAction[] = []
-  if (!windowIsManaged(windowName)) {
-    additionalActions.push(new WindowAction('o_bookmark_add', 'saveTabset', 'text-orange', 'Save as Tabset'))
-  } else {
-    additionalActions.push(new WindowAction('o_bookmark_add', undefined, 'text-grey', 'already a tabset', true))
-  }
-  return additionalActions
-}
-
-const updateWindows = () => {
-  useWindowsStore()
-    .setup('window-updated', true)
-    .then(() => (windowHolderRows.value = calcWindowHolderRows()))
-}
-
-watch(
-  () => useWindowsStore().currentChromeWindows,
-  (newWindows, oldWindows) => {
-    windowHolderRows.value = calcWindowHolderRows()
-  },
-)
-
-if (inBexMode()) {
-  chrome.windows.onCreated.addListener((w: chrome.windows.Window) => updateWindows())
-  chrome.windows.onRemoved.addListener((wId: number) => updateWindows())
-
-  chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
-    useWindowsStore()
-      .setup('on removed in SidePanelFooter')
-      .then(() => (windowHolderRows.value = calcWindowHolderRows()))
-      .catch((err) => handleError(err))
-  })
-
-  chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-    if (changeInfo.status === 'complete') {
-      useWindowsStore()
-        .setup('on updated in SidePanelFooter')
-        .then(() => (windowHolderRows.value = calcWindowHolderRows()))
-        .catch((err) => {
-          console.log('could not yet calcWindowRows: ' + err)
-        })
-    }
-  })
-}
-
-watchEffect(() => {
-  // adding potentially new windows from 'open in window' logic
-  windowsToOpenOptions.value = []
-  tabsetsMangedWindows.value = []
-  for (const ts of [...useTabsetsStore().tabsets.values()] as Tabset[]) {
-    if (ts.window && ts.window !== 'current' && ts.window.trim() !== '') {
-      tabsetsMangedWindows.value.push({ label: ts.window, value: ts.id })
-      const found = _.find(windowHolderRows.value, (r: object) => ts.window === r['name' as keyof object])
-      if (!found) {
-        windowsToOpenOptions.value.push({ label: ts.window, value: ts.id })
-      }
-    }
-  }
-  windowsToOpenOptions.value = _.sortBy(windowsToOpenOptions.value, ['label'])
 })
 
 const openOptionsPage = () => {
@@ -513,17 +406,21 @@ const toastBannerClass = () => {
   }
 }
 
-const toggleShowWindowTable = () => {
+const toggleShowWindowTable = async () => {
   showWindowTable.value = !showWindowTable.value
   if (showWindowTable.value) {
     randomKey.value = uid()
     showStatsTable.value = false
+    await useWindowsStore().setup('showWindowTable-called')
   }
-  const windowId = useWindowsStore().currentChromeWindow?.id || 0
-  const currentWindow: Window | undefined = useWindowsStore().windowForId(windowId)
-  if (currentWindow) {
-    currentWindow.open = showWindowTable.value
-    useWindowsStore().upsertTabsetWindow(currentWindow)
+  const windowId = useWindowsStore().currentBrowserWindow?.id
+  if (windowId) {
+    console.log('got windowId', windowId)
+    const currentWindow: Window | undefined = useWindowsStore().windowForId(windowId, 'SidePanelFooter3')
+    if (currentWindow) {
+      currentWindow.open = showWindowTable.value
+      await useWindowsStore().upsertTabsetWindow(currentWindow)
+    }
   }
 }
 
@@ -531,53 +428,6 @@ const toggleShowStatsTable = () => {
   showStatsTable.value = !showStatsTable.value
   if (showWindowTable.value) {
     showWindowTable.value = false
-  }
-}
-
-const calcWindowHolderRows = (): WindowHolder[] => {
-  const result = _.map(
-    useWindowsStore().currentChromeWindows as chrome.windows.Window[],
-    (cw: chrome.windows.Window) => {
-      const windowFromStore: Window | undefined = useWindowsStore().windowForId(cw.id || -2)
-      const windowName = useWindowsStore().windowNameFor(cw.id || 0) || cw.id!.toString()
-      const additionalActions: WindowAction[] = []
-      if (!windowIsManaged(windowName)) {
-        additionalActions.push(new WindowAction('o_bookmark_add', 'saveTabset', 'text-orange', 'Save as Tabset'))
-      } else {
-        additionalActions.push(new WindowAction('o_bookmark_add', undefined, 'text-grey', 'already a tabset', true))
-      }
-
-      if (windowFromStore) {
-        windowFromStore.title = windowName
-        return WindowHolder.of(windowFromStore, cw, cw.id || -6, additionalActions)
-      } else {
-        return WindowHolder.of(null as unknown as Window, cw, cw.id || -7, additionalActions)
-      }
-    },
-  )
-
-  return _.sortBy(result, 'index')
-}
-
-const windowIsManaged = (windowName: string) => {
-  //console.log("managed?", tabsetsMangedWindows.value, windowName)
-  return _.find(tabsetsMangedWindows.value, (tmw: any) => tmw['label' as keyof object] === windowName) !== undefined
-}
-
-const saveAsTabset = (windowId: number, name: string) => {
-  $q.dialog({
-    component: NewTabsetDialog,
-    componentProps: {
-      windowId: windowId,
-      spaceId: useSpacesStore().space?.id,
-      name: name,
-      fromPanel: true,
-    },
-  })
-}
-const additionalActionWasClicked = (event: any) => {
-  if (event.action === 'saveTabset') {
-    saveAsTabset(event.window.id, event.window.name)
   }
 }
 

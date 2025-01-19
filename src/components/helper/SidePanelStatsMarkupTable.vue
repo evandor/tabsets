@@ -93,7 +93,7 @@ onMounted(() => {
 })
 
 watch(
-  () => useWindowsStore().currentChromeWindows,
+  () => useWindowsStore().currentBrowserWindows,
   (newWindows, oldWindows) => {
     rows.value = calcStatsRows()
   },
@@ -108,8 +108,8 @@ watch(
 
 watchEffect(() => {
   const res =
-    useWindowsStore().currentChromeWindow && useWindowsStore().currentChromeWindow.id
-      ? useWindowsStore().windowNameFor(useWindowsStore().currentChromeWindow.id || 0) || 'n/a'
+    useWindowsStore().currentBrowserWindow && useWindowsStore().currentBrowserWindow.id
+      ? useWindowsStore().windowNameFor(useWindowsStore().currentBrowserWindow.id || 0) || 'n/a'
       : 'n/a'
   currentWindowName.value = res
 })
@@ -122,7 +122,7 @@ watch(
 )
 
 watch(
-  () => useWindowsStore().currentChromeWindows,
+  () => useWindowsStore().currentBrowserWindows,
   (a, b) => {
     rows.value = calcStatsRows()
   },
@@ -150,7 +150,7 @@ const calcStatsRows = () => {
     },
     {
       name: 'Open Windows',
-      count: useWindowsStore().currentChromeWindows.length,
+      count: useWindowsStore().currentBrowserWindows.length,
       snapshot: getFromSnapshot('Open Windows'),
       link: 'https://docs.tabsets.net/windows-management',
     },

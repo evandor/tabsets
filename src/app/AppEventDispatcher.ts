@@ -13,29 +13,32 @@ import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
  * This class has to be implemented once-per-application if this kind of dispatch is needed.
  */
 class AppEventDispatcher {
-  dispatchEvent(name: string, params: object) {
+  dispatchEvent(name: string, params: object): Promise<object> {
     //console.debug(" >>> dispatching event", name, params)
     try {
       switch (name) {
         case 'add-to-search':
           useSearchStore().addObjectToIndex(params)
-          break
+          return Promise.resolve({})
         case 'upsert-in-search':
           useSearchStore().upsertObject(params)
-          break
+          return Promise.resolve({})
         case 'capture-screenshot':
           useThumbnailsService().handleCaptureCallback(params['tabId' as keyof object], params['data' as keyof object])
-          break
+          return Promise.resolve({})
         case 'restore-tabset':
-          useCommandExecutor().execute(
-            new RestoreTabsetCommand(params['tabsetId' as keyof object], params['label' as keyof object], true),
-          )
-          break
+          useCommandExecutor()
+            .execute(
+              new RestoreTabsetCommand(params['tabsetId' as keyof object], params['label' as keyof object], true),
+            )
+            .catch((err: any) => console.warn('error in RestoreTabsetCommand', err))
+          return Promise.resolve({})
         default:
-          console.log(`unknown event ${name}`)
+          return Promise.reject(`unknown event ${name}`)
       }
-    } catch (err) {
+    } catch (err: any) {
       console.warn('problem dispatching event: ', err)
+      return Promise.reject('problem dispatching event: ' + err.toString())
     }
   }
 }

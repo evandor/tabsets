@@ -10,7 +10,7 @@ class TabService {
     if (!inBexMode() || !tab.url) {
       return false
     }
-    const windowId = useWindowsStore().currentChromeWindow?.id || 0
+    const windowId = useWindowsStore().currentBrowserWindow?.id || 0
     const currentChromeTab: chrome.tabs.Tab | undefined =
       useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
     // console.log("checking current tab", currentChromeTab, tab.url, currentChromeTab.url === tab.url)

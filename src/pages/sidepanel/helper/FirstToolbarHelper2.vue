@@ -151,6 +151,8 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
 const overlap = ref(0.5)
 const overlapTooltip = ref('')
+const showWatermark = ref(false)
+const watermark = ref('')
 
 const toggleSearch = () => {
   searching.value = !searching.value
@@ -180,7 +182,7 @@ watchEffect(() => {
 const thresholdStyle = () => 'color: hsl(' + Math.round(120 * overlap.value) + ' 80% 50%)'
 
 watchEffect(() => {
-  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  const windowId = useWindowsStore().currentBrowserWindow?.id || 0
   currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
@@ -196,6 +198,11 @@ watchEffect(() => {
 
 watchEffect(() => {
   showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelViews.TABS_LIST) && useUiStore().toolbarFilter
+})
+
+watchEffect(() => {
+  showWatermark.value = useUiStore().getWatermark().length > 0
+  watermark.value = useUiStore().getWatermark()
 })
 
 if ($q.platform.is.chrome && $q.platform.is.bex) {

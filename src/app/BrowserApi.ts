@@ -3,6 +3,7 @@ import { LocalStorage, uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { CLEANUP_PERIOD_IN_MINUTES, GITHUB_AUTO_BACKUP, MONITORING_PERIOD_IN_MINUTES } from 'src/boot/constants'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useNavigationService } from 'src/core/services/NavigationService'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useRequestsService } from 'src/requests/services/RequestsService'
 import { useRequestsStore } from 'src/requests/stores/requestsStore'
@@ -139,8 +140,8 @@ class BrowserApi {
               contexts: ['all'],
             })
 
-            //console.log("context menu", useWindowsStore().currentChromeWindows)
-            const currentWindows = useWindowsStore().currentChromeWindows
+            //console.log("context menu", useWindowsStore().currentBrowserWindows)
+            const currentWindows = useWindowsStore().currentBrowserWindows
             if (currentWindows.length > 1) {
               chrome.contextMenus.create({
                 id: 'move_to_window',
@@ -278,7 +279,7 @@ class BrowserApi {
     const urlAndGroupArray: object[] = _.map(tabset.tabs, (t: Tab) => {
       return { url: t.url || '', group: t.groupName || undefined } //|| {url: '', group: undefined}
     })
-    console.log('restoring urls and groups:', urlAndGroupArray)
+    // console.log('restoring urls and groups:', urlAndGroupArray)
     if (inNewWindow && !windowName) {
       console.log('creating new window with urls', urlAndGroupArray)
       chrome.windows.create({
@@ -288,20 +289,29 @@ class BrowserApi {
         url: _.map(urlAndGroupArray, (a: any) => a['url' as keyof object]),
       })
     } else if (windowName) {
-      // open in named window
+      console.log('creating new window with name', windowName)
       useTabsetsStore().selectCurrentTabset(tabset.id)
-      NavigationService.openOrCreateTab(
-        _.map(urlAndGroupArray, (a: any) => a['url' as keyof object]),
-        undefined,
-        _.map(urlAndGroupArray, (a: any) => a['group' as keyof object]),
-      )
-      // TODO deactivate listeners - needed?
-      // useTabsStore().deactivateListeners()
-      // this.getCurrentTab()
-      //     ...
-      //     Promise.all(promisedTabs)
-      //       .then(() => useTabsStore().activateListeners())
-      //   })
+      useNavigationService()
+        .openTabsInNewWindow(
+          _.map(urlAndGroupArray, (a: any) => a['url' as keyof object]),
+          windowName,
+        )
+        .then((window: chrome.windows.Window) => {
+          setTimeout(() => {
+            // update name
+            const dbWindow = useWindowsStore().windowForId(window.id!, 'browserApi')
+            console.log('updating name, got', dbWindow, window.id)
+            if (dbWindow) {
+              dbWindow.title = windowName
+              useWindowsStore().upsertTabsetWindow(dbWindow)
+            }
+          }, 5000)
+        })
+      // NavigationService.openOrCreateTab(
+      //   _.map(urlAndGroupArray, (a: any) => a['url' as keyof object]),
+      //   undefined,
+      //   _.map(urlAndGroupArray, (a: any) => a['group' as keyof object]),
+      //)
     } else {
       console.log('opening urls', urlAndGroupArray)
       NavigationService.openOrCreateTab(

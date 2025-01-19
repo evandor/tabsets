@@ -14,7 +14,6 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
-import { useWindowsStore } from 'src/windows/stores/windowsStore'
 
 const { saveText, addToTabsetId } = useTabsetService()
 
@@ -127,6 +126,9 @@ class BrowserListeners {
       chrome.tabs.onMoved.addListener(this.onMovedListener)
       chrome.tabs.onRemoved.addListener(this.onRemovedListener)
       chrome.tabs.onReplaced.addListener(this.onReplacedListener)
+      if (chrome.tabs.onActivated.hasListeners()) {
+        console.error('onActivatedListeners ', chrome.tabs.onActivated.hasListeners())
+      }
       chrome.tabs.onActivated.addListener(this.onActivatedListener)
 
       chrome.runtime.onMessage.addListener(this.onMessageListener)
@@ -154,7 +156,7 @@ class BrowserListeners {
 
   async resetListeners() {
     if (inBexMode()) {
-      console.log(' ...resetting listeners (after re-initialization)')
+      console.warn(' ...resetting listeners (after re-initialization)')
       //chrome.tabs.onCreated.removeListener(this.onCreatedListener)
       chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
       chrome.tabs.onMoved.removeListener(this.onMovedListener)
@@ -174,12 +176,12 @@ class BrowserListeners {
 
     const selfUrl = chrome.runtime.getURL('')
     if (chromeTab.url?.startsWith(selfUrl)) {
-      console.debug(`onUpdated:   tab ${number}: >>> .url starts with '${selfUrl}'`)
+      console.debug(`onTabUpdated:   tab ${number}: >>> .url starts with '${selfUrl}'`)
       return
     }
 
     if (info.status === 'complete') {
-      console.debug(`onUpdated:   tab ${number}: >>> ${JSON.stringify(info)}`)
+      console.debug(`onTabUpdated:   tab ${number}: >>> ${JSON.stringify(info)}`)
 
       // matching tabs for url
       if (chromeTab.url) {
@@ -187,7 +189,7 @@ class BrowserListeners {
       }
 
       // set badge, text and color
-      useTabsetsUiStore().updateExtensionIcon()
+      useTabsetsUiStore().updateExtensionIcon(chromeTab.id)
 
       // handle existing tabs
       if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
@@ -210,21 +212,26 @@ class BrowserListeners {
   }
 
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
-    console.debug('onRemoved tab event: ', number, info)
-    useWindowsStore().refreshTabsetWindow(info.windowId)
+    if (info.isWindowClosing) {
+      // ignore single closing of tab if the whole window is about to be closed.
+      return
+    }
+    console.debug('onTabRemoved tab event: ', number, info)
+    // useWindowsStore().refreshTabsetWindow(info.windowId)
+    //useWindowsStore().setLastUpdate()
   }
 
   onReplaced(n1: number, n2: number) {
-    console.log(`onReplaced: tab ${n1} replaced with ${n2}`)
+    console.log(`onTabReplaced: tab ${n1} replaced with ${n2}`)
     useTabsStore2().loadTabs('onReplaced')
   }
 
   async onActivated(info: chrome.tabs.TabActiveInfo) {
-    console.debug(`onActivated: tab ${info.tabId}: >>> ${JSON.stringify(info)}`)
+    console.debug(`onTabActivated: tab ${info.tabId}: >>> ${JSON.stringify(info)}`)
     await setCurrentTab()
 
     // set badge, text and color
-    useTabsetsUiStore().updateExtensionIcon()
+    useTabsetsUiStore().updateExtensionIcon(info.tabId)
 
     chrome.tabs.get(info.tabId, (tab) => {
       if (chrome.runtime.lastError) {
@@ -243,7 +250,7 @@ class BrowserListeners {
   }
 
   onMoved(number: number, info: chrome.tabs.TabMoveInfo) {
-    console.debug(`onMoved: tab ${number} moved: ${JSON.stringify(info)}`)
+    console.debug(`onTabMoved: tab ${number} moved: ${JSON.stringify(info)}`)
     useTabsStore2().loadTabs('onMoved')
   }
 

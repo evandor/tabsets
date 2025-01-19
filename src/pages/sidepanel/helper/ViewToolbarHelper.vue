@@ -113,7 +113,7 @@ watchEffect(() => {
 const thresholdStyle = () => 'color: hsl(' + Math.round(120 * overlap.value) + ' 80% 50%)'
 
 watchEffect(() => {
-  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  const windowId = useWindowsStore().currentBrowserWindow?.id || 0
   currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 

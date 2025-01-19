@@ -52,7 +52,7 @@ class AppService {
 
     if (this.initialized) {
       await ChromeListeners.resetListeners()
-      await useWindowsStore().resetListeners()
+      useWindowsStore().resetListeners()
     }
 
     this.initialized = true
@@ -88,7 +88,6 @@ class AppService {
 
     // init db
     await IndexedDbPersistenceService.init('db')
-    console.log('')
 
     // init services
     await useSuggestionsStore().init()
@@ -99,7 +98,7 @@ class AppService {
   }
 
   restart(ar: string) {
-    console.log('%crestarting tabsets', 'font-weight:bold', window.location.href, ar)
+    console.error('%crestarting tabsets', 'font-weight:bold', window.location.href, ar)
     const baseLocation = window.location.href.split('?')[0]
     console.log('%cbaseLocation', 'font-weight:bold', baseLocation)
     console.log('%cwindow.location.href', 'font-weight:bold', window.location.href)

@@ -109,7 +109,7 @@ describe('WindowsStore', () => {
 
   afterEach(async () => {
     db.clear('tabsets')
-    db.clear('windows')
+    windowsDb.clear('windows')
   })
 
   it('initializing correctly with multiple windows and indices differing', async () => {
@@ -126,7 +126,7 @@ describe('WindowsStore', () => {
     expect(window?.id).toBe(100)
     expect(window?.index).toBe(0)
     expect(window?.hostList).toStrictEqual(['https://www.skysail.io', 'https://www.tabsets.net'])
-    expect(useWindowsStore().currentChromeWindow.id).toBe(100)
+    expect(useWindowsStore().currentBrowserWindow!.id).toBe(100)
 
     const w200 = await windowsDb.getWindow(200)
     expect(w200?.id).toBe(200)

@@ -160,7 +160,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const windowId = useWindowsStore().currentChromeWindow?.id || 0
+  const windowId = useWindowsStore().currentBrowserWindow?.id || 0
   currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
 })
 
@@ -269,6 +269,8 @@ if (inBexMode()) {
       }
     } else if (message.name === 'reload-application') {
       AppService.restart('restarted=true')
+    } else if (message.name === 'window-updated') {
+      useWindowsStore().setup('window-updated event')
     } else {
       console.log('got unmatched message', message)
     }
