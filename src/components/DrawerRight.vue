@@ -133,6 +133,8 @@ const drawerLabel = () => {
       return 'Bookmarks'
     case DrawerTabs.OPEN_TABS:
       return 'Open Tabs'
+    case DrawerTabs.SESSIONS:
+      return 'Sessions'
     case DrawerTabs.UNASSIGNED_TABS:
       return 'Tabs to add'
     case DrawerTabs.GROUP_BY_HOST_TABS:

@@ -126,7 +126,7 @@ class BrowserListeners {
       chrome.tabs.onMoved.addListener(this.onMovedListener)
       chrome.tabs.onRemoved.addListener(this.onRemovedListener)
       chrome.tabs.onReplaced.addListener(this.onReplacedListener)
-      if (chrome.tabs.onActivated.hasListeners()) {
+      if (chrome.tabs.onActivated.hasListeners && chrome.tabs.onActivated.hasListeners()) {
         console.error('onActivatedListeners ', chrome.tabs.onActivated.hasListeners())
       }
       chrome.tabs.onActivated.addListener(this.onActivatedListener)

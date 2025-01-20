@@ -86,7 +86,7 @@ onMounted(() => {
   window.addEventListener('offline', (e) => updateOnlineStatus(e))
   window.addEventListener('online', (e) => updateOnlineStatus(e))
 
-  Analytics.firePageViewEvent('SidePanelPage', document.location.href)
+  Analytics.firePageViewEvent('SidePanelCollectionsPage', document.location.href)
 })
 
 onUnmounted(() => {

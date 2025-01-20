@@ -53,6 +53,10 @@ export class SidePanelViews {
     useFeaturesStore().hasFeature(FeatureIdent.NOTES),
   )
 
+  static readonly SESSIONS = new SidePanelViews('sessions', '/sidepanel/sessions', () =>
+    useFeaturesStore().hasFeature(FeatureIdent.SESSIONS),
+  )
+
   private constructor(
     public readonly ident: string,
     public readonly path: any,

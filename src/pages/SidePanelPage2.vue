@@ -97,7 +97,7 @@ onMounted(() => {
   if (!useAuthStore().isAuthenticated) {
     //router.push("/authenticate")
   } else {
-    Analytics.firePageViewEvent('SidePanelPage', document.location.href)
+    Analytics.firePageViewEvent('SidePanelPage2', document.location.href)
   }
 })
 

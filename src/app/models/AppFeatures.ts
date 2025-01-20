@@ -128,7 +128,9 @@ export class AppFeatures {
       'sym_o_new_window',
       '',
       ['all'],
-    ),
+    )
+      .setActivateCommands([new GrantPermissionCommand('sessions')])
+      .setDeactivateCommands([new RevokePermissionCommand('sessions')]),
 
     new Feature(
       FeatureIdent.SPACES,

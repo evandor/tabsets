@@ -84,6 +84,38 @@
             @drop="drop($event)" />
           <q-tooltip class="tooltip_small">Drag and drop text or images from your current tab</q-tooltip>
         </span>
+
+        <q-btn
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)"
+          icon="o_grid_view"
+          data-testid="buttonManageWindows"
+          :class="rightButtonClass()"
+          flat
+          :size="getButtonSize()"
+          @click="toggleShowWindowTable()">
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
+        </q-btn>
+
+        <q-btn
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.STATS)"
+          icon="show_chart"
+          :class="rightButtonClass()"
+          flat
+          :size="getButtonSize()"
+          @click="toggleShowStatsTable()">
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Show Stats</q-tooltip>
+        </q-btn>
+
+        <q-btn
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)"
+          icon="o_open_in_new"
+          :class="rightButtonClass()"
+          flat
+          :size="getButtonSize()"
+          @click="openExtensionTab()">
+          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Tabsets as full-page app</q-tooltip>
+        </q-btn>
+
         <span>
           <q-btn
             icon="o_settings"
@@ -129,7 +161,7 @@
 
                 <ContextMenuItem
                   v-close-popup
-                  @was-clicked="startSession()"
+                  @was-clicked="useUiStore().sidePanelSetActiveView(SidePanelViews.SESSIONS)"
                   color="warning"
                   icon="sym_o_new_window"
                   label="Sessions..." />
@@ -146,37 +178,6 @@
             </q-list>
           </q-menu>
         </span>
-
-        <q-btn
-          v-if="useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT)"
-          icon="o_grid_view"
-          data-testid="buttonManageWindows"
-          :class="rightButtonClass()"
-          flat
-          :size="getButtonSize()"
-          @click="toggleShowWindowTable()">
-          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Manage Windows</q-tooltip>
-        </q-btn>
-
-        <q-btn
-          v-if="useFeaturesStore().hasFeature(FeatureIdent.STATS)"
-          icon="show_chart"
-          :class="rightButtonClass()"
-          flat
-          :size="getButtonSize()"
-          @click="toggleShowStatsTable()">
-          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Show Stats</q-tooltip>
-        </q-btn>
-
-        <q-btn
-          v-if="useFeaturesStore().hasFeature(FeatureIdent.STANDALONE_APP)"
-          icon="o_open_in_new"
-          :class="rightButtonClass()"
-          flat
-          :size="getButtonSize()"
-          @click="openExtensionTab()">
-          <q-tooltip class="tooltip_small" anchor="top left" self="bottom left">Tabsets as full-page app</q-tooltip>
-        </q-btn>
       </div>
     </div>
   </q-footer>
@@ -192,7 +193,6 @@ import SidePanelFooterLeftButtons from 'src/components/helper/SidePanelFooterLef
 import SidePanelStatsMarkupTable from 'src/components/helper/SidePanelStatsMarkupTable.vue'
 import { useContentStore } from 'src/content/stores/contentStore'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
-import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { ToastType } from 'src/core/models/Toast'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
@@ -204,15 +204,9 @@ import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
 import { Suggestion, SuggestionState } from 'src/suggestions/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
-import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
-import { RestoreTabsetCommand } from 'src/tabsets/commands/RestoreTabset'
 import SidePanelTabsetListMarkup from 'src/tabsets/components/helper/SidePanelTabsetListMarkup.vue'
-import StartSessionDialog from 'src/tabsets/dialogues/StartSessionDialog.vue'
-import { SaveOrReplaceResult } from 'src/tabsets/models/SaveOrReplaceResult'
 import { Tab, TabSnippet } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
-import { TabsetType } from 'src/tabsets/models/Tabset'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
@@ -459,32 +453,6 @@ const drop = (evt: any) => {
 }
 
 const reload = () => window.location.reload()
-
-const startSession = () => {
-  $q.dialog({
-    component: StartSessionDialog,
-  }).onOk((callback: { oldSessionName: string; collection: string }) => {
-    console.log('callback', callback)
-    const tabsToUse = useTabsStore2().browserTabs
-    useCommandExecutor()
-      .execute(new CreateTabsetCommand(callback.oldSessionName, tabsToUse))
-      .then((res: ExecutionResult<SaveOrReplaceResult>) => {
-        console.log('res', res.result.tabset)
-        const ts = res.result.tabset
-        ts.type = TabsetType.SESSION
-        useTabsetsStore().saveTabset(ts)
-        BrowserApi.closeAllTabs(false)
-      })
-      .then(() => {
-        const tabsetId = callback.collection['value' as keyof object]
-        //useCommandExecutor().executeFromUi(new CreateTabsetCommand(callback['sessionName' as keyof object], []))
-        if (tabsetId) {
-          useTabsetService().selectTabset(tabsetId)
-          useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, undefined, false))
-        }
-      })
-  })
-}
 </script>
 
 <style>

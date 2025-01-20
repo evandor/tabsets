@@ -80,6 +80,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/opentabs/pages/SidePanelOpenTabsPage.vue') }],
   },
   {
+    path: '/sidepanel/sessions',
+    component: () => import('layouts/SidePanelLayout.vue'),
+    children: [{ path: '', component: () => import('src/tabsets/pages/SidePanelSessionsPage.vue') }],
+  },
+  {
     path: '/sidepanel/tagslist',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/SidePanelTagsListViewer.vue') }],
