@@ -8,7 +8,7 @@ export type AccessItem = 'TABS' | 'TABSETS' | 'SPACES' | 'SYNC' | 'SHARE' | 'FEA
  * dummy store for submodules integration
  */
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<any>(null)
+  const user = ref<{ uid: string; email: string }>({ uid: '', email: '' })
 
   // --- init ---
   async function initialize(ps: PersistenceService) {}

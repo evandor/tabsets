@@ -14,6 +14,7 @@ export const useMessagesStore = defineStore('messages', () => {
 
   function setUpSnapshotListener() {}
 
+  // eslint-disable-next-line vue/return-in-computed-property
   const getUnreadMessages = computed(() => {})
 
   return {

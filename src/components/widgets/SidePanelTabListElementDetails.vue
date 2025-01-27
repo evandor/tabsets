@@ -76,6 +76,7 @@ onMounted(() => {
         reader.onloadend = function () {
           let base64data = reader.result
           if (base64data) {
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
             imgFromBlob.value = base64data.toString()
           }
         }

@@ -21,6 +21,7 @@ const { sanitize, inBexMode } = useUtils()
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
   if (chrome.runtime.lastError) {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     console.warn('got runtime error:' + chrome.runtime.lastError.toString())
   }
   //console.debug("setting current tab", tabs)
@@ -30,6 +31,7 @@ async function setCurrentTab() {
     // Seems to be necessary when creating a new chrome group
     const tabs2 = await chrome.tabs.query({ active: true })
     if (chrome.runtime.lastError) {
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       console.warn('got runtime error:' + chrome.runtime.lastError.toString())
     }
     //console.log("setting current tab II", tabs2)
@@ -234,6 +236,7 @@ class BrowserListeners {
 
     chrome.tabs.get(info.tabId, (tab) => {
       if (chrome.runtime.lastError) {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         console.warn('got runtime error:' + chrome.runtime.lastError.toString())
       }
       const url = tab.url
