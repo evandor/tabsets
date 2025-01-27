@@ -71,18 +71,12 @@
         <!--          </q-menu>-->
         <!--        </div>-->
 
-        <span
-          v-if="
-            useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length > 0
-          ">
+        <span v-if="useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED']).length > 0">
           <q-btn flat :color="dependingOnStates()" name="rss" icon="o_assistant">
             <q-tooltip class="tooltip" anchor="center right" self="center left" :delay="200"
               >You have suggestions
             </q-tooltip>
-            <q-badge
-              :label="
-                useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]).length
-              " />
+            <q-badge :label="useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED']).length" />
           </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
@@ -91,10 +85,7 @@
                 v-close-popup
                 v-ripple
                 @click="suggestionDialog(s)"
-                v-for="s in useSuggestionsStore().getSuggestions([
-                  SuggestionState.NEW,
-                  SuggestionState.DECISION_DELAYED,
-                ])">
+                v-for="s in useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED'])">
                 <q-item-section avatar>
                   <q-icon color="primary" :name="s.img ? s.img : 'rss_feed'" />
                 </q-item-section>
@@ -199,7 +190,7 @@ import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import { useAuthStore } from 'src/stores/authStore'
 import { useSettingsStore } from 'src/stores/settingsStore'
 import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
-import { Suggestion, SuggestionState } from 'src/suggestions/models/Suggestion'
+import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import ExportDialog from 'src/tabsets/dialogues/ExportDialog.vue'
 import ImportDialog from 'src/tabsets/dialogues/ImportDialog.vue'
@@ -217,9 +208,7 @@ const settingsStore = useSettingsStore()
 const spacesStore = useSpacesStore()
 
 const spacesOptions = ref<object[]>([])
-const suggestions = ref<Suggestion[]>(
-  useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]),
-)
+const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED']))
 
 const { inBexMode } = useUtils()
 
@@ -232,7 +221,7 @@ $q.loadingBar.setDefaults({
 const settingsClicked = ref(false)
 
 watchEffect(() => {
-  suggestions.value = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
+  suggestions.value = useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED'])
 })
 
 watchEffect(() => {
@@ -283,10 +272,7 @@ const suggestionDialog = (s: Suggestion) =>
   })
 
 const dependingOnStates = () =>
-  _.find(
-    useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED]),
-    (s: Suggestion) => s.state === SuggestionState.NEW,
-  )
+  _.find(useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED']), (s: Suggestion) => s.state === 'NEW')
     ? 'warning'
     : 'white'
 

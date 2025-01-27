@@ -145,10 +145,9 @@ import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import OpenTabsThresholdWidget from 'src/opentabs/widgets/OpenTabsThresholdWidget.vue'
-import { SuggestionState } from 'src/suggestions/models/Suggestion'
+import { SuggestionState } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import SidePanelFooterLeftButton from 'src/ui/components/SidePanelFooterLeftButton.vue'
 import SidePanelFooterViewMenuItem from 'src/ui/components/SidePanelFooterViewMenuItem.vue'
 import { useUiStore } from 'src/ui/stores/uiStore'
@@ -174,7 +173,7 @@ watchEffect(() => {
 })
 
 const suggestionsLabel = () => {
-  const suggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW, SuggestionState.DECISION_DELAYED])
+  const suggestions = useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED'])
   return suggestions.length === 1 ? suggestions.length + ' New Suggestion' : suggestions.length + ' New Suggestions'
 }
 

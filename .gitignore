@@ -57,3 +57,7 @@ docs/.vitepress/cache
 /playwright-report/data/5d4853c068e16f8f2bfce4a4c55e11ce76176f22.zip
 /coverage/
 /.env.opera
+/envs/env.local
+/envs/env.prd
+/envs/env.dev
+/envs/env.emulator

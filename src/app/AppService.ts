@@ -22,6 +22,7 @@ import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAppStore } from 'src/stores/appStore'
+import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import tabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -90,7 +91,7 @@ class AppService {
     await IndexedDbPersistenceService.init('db')
 
     // init services
-    await useSuggestionsStore().init()
+    await useSuggestionsStore().init(IndexedDbSuggestionsPersistence)
 
     tabsetService.setLocalStorage(localStorage)
 

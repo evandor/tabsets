@@ -12,28 +12,6 @@ addEventListener('unhandledrejection', async (event) => {
   //Analytics.fireErrorEvent(event.reason);
 })
 
-// chrome.runtime.onInstalled.addListener((callback) => {
-//   console.log("[BEX] ga: fire event install", callback.reason, callback.previousVersion)
-//   // getting error: "Service worker registration failed. Status code: 15"
-//   // Analytics.fireEvent('install-' + callback.reason);
-//   console.log("[BEX] callback:::", callback)
-//   if (callback.reason !== OnInstalledReason.CHROME_UPDATE) {
-//     chrome.tabs.create({
-//       active: false,
-//       url: callback.previousVersion ?
-//         "https://docs.tabsets.net/release-notes" :
-//         "https://tabsets.web.app/#/installed/"
-//     }).then((newTab: chrome.tabs.Tab) => {
-//       setTimeout(() => {
-//         chrome.tabs.update(newTab.id || 0, {active: true})
-//       }, 2000)
-//     })
-//   }
-//   if (chrome.runtime.lastError) {
-//     console.warn("got runtime error", chrome.runtime.lastError)
-//   }
-// });
-
 chrome.omnibox.onInputEntered.addListener((text) => {
   const newURL = chrome.runtime.getURL('/www/index.html#/searchresult?t=' + encodeURIComponent(text))
   chrome.tabs.create({ url: newURL }).catch((err) => console.log('[BEX] background.js error', err))

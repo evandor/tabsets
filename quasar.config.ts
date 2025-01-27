@@ -40,7 +40,7 @@ export default defineConfig((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
       // https://github.com/quasarframework/quasar/issues/14589
-      // sourcemap: 'true',
+      sourcemap: 'true' as unknown as boolean,
 
       target: {
         browser: ['es2022', 'edge88', 'firefox115', 'chrome115'],

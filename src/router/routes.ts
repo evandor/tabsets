@@ -230,16 +230,16 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/TabPage.vue') }],
   },
-  {
-    path: '/mainpanel/suggestions/:suggestionId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [
-      {
-        path: '',
-        component: () => import('src/suggestions/pages/MainPanelCheckSuggestionPage.vue'),
-      },
-    ],
-  },
+  // {
+  //   path: '/mainpanel/suggestions/:suggestionId',
+  //   component: () => import('layouts/PlainLayout.vue'),
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: () => import('src/suggestions/pages/MainPanelCheckSuggestionPage.vue'),
+  //     },
+  //   ],
+  // },
   {
     path: '/mainpanel/spaces', // TODO combine with Spaces page
     component: () => import('layouts/PlainLayout.vue'),

@@ -4,10 +4,9 @@ import ChromeApi from 'src/app/BrowserApi'
 import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
 import PersistenceService from 'src/services/PersistenceService'
 import { useDB } from 'src/services/usePersistenceService'
-import { StaticSuggestionIdent, Suggestion, SuggestionState, SuggestionType } from 'src/suggestions/models/Suggestion'
+import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
@@ -82,7 +81,7 @@ describe('SuggestionsStore', () => {
 
     vi.stubGlobal('chrome', chromeMock)
 
-    await useSuggestionsStore().init()
+    await useSuggestionsStore().init(IndexedDbSuggestionsPersistence)
     //useWindowsStore().initListeners()
   })
 
@@ -91,7 +90,7 @@ describe('SuggestionsStore', () => {
   })
 
   it('initializes correctly', async () => {
-    const newSuggestions = useSuggestionsStore().getSuggestions([SuggestionState.NEW])
+    const newSuggestions = useSuggestionsStore().getSuggestions(['NEW'])
     // useSu
     // const windows = await  db.getWindows()
     // expect(windows.length).toBe(1)
@@ -104,14 +103,14 @@ describe('SuggestionsStore', () => {
   })
 
   it('adds static suggestion', async () => {
-    var staticSuggestion = Suggestion.getStaticSuggestion(StaticSuggestionIdent.TRY_SPACES_FEATURE)
+    var staticSuggestion = Suggestion.getStaticSuggestion('TRY_SPACES_FEATURE')
     await useSuggestionsStore().addSuggestion(staticSuggestion)
-    expect(useSuggestionsStore().getSuggestions([SuggestionState.NEW]).length).toBe(1)
+    expect(useSuggestionsStore().getSuggestions(['NEW']).length).toBe(1)
   })
 
   it.skip('adds suggestion for URL', async () => {
-    var s = new Suggestion('', 'title', 'msg', 'https://www.skysail.io', SuggestionType.CONTENT_CHANGE)
+    var s = new Suggestion('', 'title', 'msg', 'https://www.skysail.io', 'CONTENT_CHANGE')
     await useSuggestionsStore().addSuggestion(s)
-    expect(useSuggestionsStore().getSuggestions([SuggestionState.NEW]).length).toBe(1)
+    expect(useSuggestionsStore().getSuggestions(['NEW']).length).toBe(1)
   })
 })

@@ -5,7 +5,6 @@ import { useContentStore } from 'src/content/stores/contentStore'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
-import { SuggestionState } from 'src/suggestions/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -80,10 +79,10 @@ function runOnNotificationClick(notificationId: string, buttonIndex: number) {
       case 0: // show
         const url = chrome.runtime.getURL('www/index.html') + '#/mainpanel/suggestions/' + notificationId
         NavigationService.openOrCreateTab([url])
-        useSuggestionsStore().updateSuggestionState(notificationId, SuggestionState.CHECKED)
+        useSuggestionsStore().updateSuggestionState(notificationId, 'CHECKED')
         break
       default: // ignore
-        useSuggestionsStore().updateSuggestionState(notificationId, SuggestionState.IGNORED)
+        useSuggestionsStore().updateSuggestionState(notificationId, 'IGNORED')
     }
   }
 }
@@ -156,7 +155,7 @@ class BrowserListeners {
 
   async resetListeners() {
     if (inBexMode()) {
-      console.warn(' ...resetting listeners (after re-initialization)')
+      console.log(' ...resetting listeners (after re-initialization)')
       //chrome.tabs.onCreated.removeListener(this.onCreatedListener)
       chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
       chrome.tabs.onMoved.removeListener(this.onMovedListener)
