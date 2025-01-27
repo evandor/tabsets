@@ -17,17 +17,17 @@ import IndexedDbThumbnailsPersistence from 'src/thumbnails/persistence/IndexedDb
 import ThumbnailsPersistence from 'src/thumbnails/persistence/ThumbnailsPersistence'
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
+  const spacesDb: SpacesPersistence = IndexedDbSpacesStorage
+  const tabsetsDb: TabsetsPersistence = IndexedDbTabsetsPersistence
   const db: PersistenceService = IndexedDbPersistenceService
 
-  const spacesDb: SpacesPersistence = IndexedDbSpacesStorage
-
-  const tabsetsIndexedDb: TabsetsPersistence = IndexedDbTabsetsPersistence
-  const groupsIndexedDb: TabsetsGroupsPersistence = IndexedDbTabsetsGroupsPersistence
 
   const snapshotsDb: SnapshotsPersistence = IndexedDbSnapshotPersistence
   const notesDb = IndexedDbNotesPersistence
-
   const thumbnailsDb: ThumbnailsPersistence = IndexedDbThumbnailsPersistence
+  const groupsIndexedDb: TabsetsGroupsPersistence = IndexedDbTabsetsGroupsPersistence
+
+
 
   let localStorageTabsetsDb: LocalStorageTabsetsPersistence = new LocalStorageTabsetsPersistence()
 
@@ -39,7 +39,7 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   return {
     db,
     spacesDb,
-    tabsetsIndexedDb,
+    tabsetsDb,
     localStorageTabsetsDb,
     featuresDb,
     snapshotsDb,

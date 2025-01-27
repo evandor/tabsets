@@ -152,7 +152,7 @@ const title = (): string => {
         case TabsetType.SESSION:
           return `Session (${currentTs.tabs.length} tab${currentTs.tabs.length > 1 ? 's' : ''})`
         default:
-          return currentTs.sharedId ? 'Shared Collection' : 'Collection'
+          return currentTs.sharing?.sharedId ? 'Shared Collection' : 'Collection'
       }
     }
     return 'Collection'

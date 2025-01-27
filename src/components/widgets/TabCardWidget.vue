@@ -92,7 +92,7 @@ const thumbnailFor = (tab: Tab): string => {
 
 const loadThumbnail = (tab: Tab) => {
   useThumbnailsService()
-    .getThumbnailFor(tab.url)
+    .getThumbnailFor(tab.url, '')
     .then((data) => {
       //console.log("loading tn for ", tab.url)
       const key = btoa(tab.url || '')

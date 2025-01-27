@@ -1,8 +1,6 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { AssociateWindowWithTabsetCommand } from 'src/domain/tabsets/AssociateWindowWithTabsetCommand'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
-import PersistenceService from 'src/services/PersistenceService'
 import { useDB } from 'src/services/usePersistenceService'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
@@ -22,7 +20,7 @@ describe('AssociateWindowWithTabsetCommand', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbTabsetsPersistence.init()
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()
     await useTabsetsStore().initialize(db)
@@ -44,7 +42,7 @@ describe('AssociateWindowWithTabsetCommand', () => {
     expect(executionResult.result).toBe(tabsetId)
     expect(executionResult.message).toBe("Window set to 'newWindowName'")
 
-    const db = useDB(undefined).tabsetsIndexedDb
+    const db = useDB(undefined).tabsetsDb
     await db.loadTabsets()
     const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(1)

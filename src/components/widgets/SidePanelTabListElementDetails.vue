@@ -93,7 +93,7 @@ const itemStyle = () => {
 const nameOrTitle = (tab: Tab) => (tab.name ? tab.name : tab.title)
 
 const thumbnailFor = async (tab: Tab): Promise<string> => {
-  return await useThumbnailsService().getThumbnailFor(tab.url)
+  return await useThumbnailsService().getThumbnailFor(tab.url, '')
 }
 
 watchEffect(() => {

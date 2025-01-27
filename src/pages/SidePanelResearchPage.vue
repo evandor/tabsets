@@ -236,6 +236,7 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import PanelTabListElementWidget from 'src/tabsets/widgets/PanelTabListElementWidget.vue'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
+import { useAuthStore } from 'stores/authStore'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -346,7 +347,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (source.value) {
     useThumbnailsService()
-      .getThumbnailFor(source.value.id)
+      .getThumbnailFor(source.value.id, useAuthStore().user.uid)
       .then((data) => {
         if (data) {
           thumbnail.value = data

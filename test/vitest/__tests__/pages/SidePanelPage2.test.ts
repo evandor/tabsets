@@ -37,7 +37,7 @@ describe('SidePanelPage2', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbTabsetsPersistence.init()
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))
     await useTabsetService().init()

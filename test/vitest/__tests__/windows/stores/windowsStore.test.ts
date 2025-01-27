@@ -122,7 +122,7 @@ describe('WindowsStore', () => {
     useFeaturesStore().activateFeature(FeatureIdent.WINDOWS_MANAGEMENT)
     await IndexedDbTabsetsPersistence.init()
     await IndexedDbWindowsPersistence.init()
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()
   })

@@ -37,14 +37,14 @@ describe('SidePanelFooter', () => {
     // @ts-expect-error TODO - needed as 'chrome' is undefined in vitest
     global.chrome = undefined
     // global.browser = browser
-    db = useDB(useQuasar()).tabsetsIndexedDb
+    db = useDB(useQuasar()).tabsetsDb
   })
 
   beforeEach(async () => {
     setActivePinia(createPinia())
     //await IndexedDbPersistenceService.init("db")
     //await IndexedDbTabsetsPersistence.init()
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()

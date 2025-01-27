@@ -1,6 +1,5 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import { uid } from 'quasar'
 import BrowserApi from 'src/app/BrowserApi'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
 import { useContentService } from 'src/content/services/ContentService'
@@ -27,7 +26,7 @@ describe('DefaultAddUrlToTabsetHandler', () => {
   let db = null as unknown as TabsetsPersistence
 
   beforeEach(async () => {
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()
     await useSearchStore().init()

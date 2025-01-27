@@ -22,7 +22,7 @@ describe('CreateFolderCommand', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     // await useTabsetService().init()
   })

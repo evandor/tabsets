@@ -13,6 +13,7 @@ import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import JsUtils from 'src/utils/JsUtils'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { useAuthStore } from 'stores/authStore'
 
 /**
  * refactoring remark: uses many other modules, needs to be one-per-application
@@ -147,11 +148,11 @@ class NavigationService {
 
                 tabsForUrl.forEach((t) => {
                   useThumbnailsService()
-                    .getThumbnailFor(t.tab.id)
+                    .getThumbnailFor(t.tab.id, useAuthStore().user.uid)
                     .then((optionalThumbnail: any) => {
                       if (!optionalThumbnail) {
                         // saving thumbnail
-                        useThumbnailsService().captureVisibleTab(t.tab.id)
+                        useThumbnailsService().captureVisibleTab(t.tab.id, '???')
                       }
                     })
                 })

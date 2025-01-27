@@ -24,7 +24,6 @@ import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAppStore } from 'src/stores/appStore'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import tabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useGroupsStore } from 'src/tabsets/stores/groupsStore'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -93,7 +92,7 @@ class AppService {
     // init services
     await useSuggestionsStore().init(IndexedDbSuggestionsPersistence)
 
-    tabsetService.setLocalStorage(localStorage)
+    //tabsetService.setLocalStorage(localStorage)
 
     await this.initCoreSerivces(quasar, this.router)
   }
@@ -154,7 +153,7 @@ class AppService {
       )
       useEntityRegistryStore().tabsetRegistry = tsInfo
     })
-    await tabsetsStore.initialize(useDB().tabsetsIndexedDb)
+    await tabsetsStore.initialize(useDB().tabsetsDb)
     await useTabsetService().init(false)
 
     await useTabsStore2().initialize()

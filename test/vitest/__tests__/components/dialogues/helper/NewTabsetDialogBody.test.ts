@@ -31,7 +31,7 @@ describe('NewTabsetDialogBody', () => {
     useRouter().push.mockReset()
     await IndexedDbPersistenceService.init('db')
     await IndexedDbTabsetsPersistence.init()
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()
     wrapper = mount(NewTabsetDialogBody, { props: {} })

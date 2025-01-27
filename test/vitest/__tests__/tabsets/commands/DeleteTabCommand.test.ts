@@ -38,7 +38,7 @@ describe('DeleteTabCommand', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     // await IndexedDbPersistenceService.init("db")
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()
     await useSearchStore().init()

@@ -286,7 +286,7 @@ const setCustomTitle = (tab: Tab, newValue: string) =>
 const copyToClipboard = (text: string) => useCommandExecutor().executeFromUi(new CopyToClipboardCommand(text))
 
 const thumbnailFor = async (tab: Tab): Promise<string> => {
-  return await useThumbnailsService().getThumbnailFor(tab.url)
+  return await useThumbnailsService().getThumbnailFor(tab.url, '')
 }
 
 watchEffect(() => {

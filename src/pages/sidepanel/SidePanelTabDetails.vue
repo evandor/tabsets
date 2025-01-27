@@ -87,7 +87,6 @@
           @click="showTabDetails"
           round
           size="11px"
-          color="primary"
           flat
           icon="o_more_horiz">
           <q-tooltip>Show additional information about this tab (developer mode)</q-tooltip>
@@ -100,7 +99,7 @@
   <q-separator />
 
   <q-list>
-    <q-expansion-item label="Quick Access Shortcut" :default-opened="true">
+    <q-expansion-item group="detailsGroup" label="Quick Access Shortcut" :default-opened="false">
       <q-card>
         <q-card-section>
           <q-input filled dense v-model="quickaccess" />
@@ -108,7 +107,7 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item label="Tags" :default-opened="true">
+    <q-expansion-item group="detailsGroup" label="Tags" :default-opened="false">
       <q-card>
         <q-card-section>
           <q-select
@@ -128,7 +127,7 @@
 
     <q-expansion-item
       :label="'Meta Data (#' + (4 + metaRows.length) + ')'"
-      group="somegroup"
+      group="detailsGroup"
       :default-opened="tab?.note === undefined">
       <q-card>
         <q-card-section>
@@ -167,7 +166,7 @@
       </q-card>
     </q-expansion-item>
 
-    <q-expansion-item :label="'Http Status: ' + tab?.httpStatus" group="somegroup">
+    <q-expansion-item :label="'Http Status: ' + tab?.httpStatus" group="detailsGroup">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm q-mt-none">
@@ -300,26 +299,21 @@
       </div>
     </q-expansion-item>
 
-    <!--    <q-expansion-item label="Selections" v-if="tab?.selections?.length > 0"-->
-    <!--                      group="somegroup">-->
-    <!--      <q-card>-->
-    <!--        <q-card-section>-->
-    <!--          <div class="row q-mx-sm q-mt-none">-->
-    <!--            <div class="col-5 text-caption text-bold">Selections</div>-->
-    <!--            <div class="col-7 text-right text-caption">{{ tab?.selections?.length }}</div>-->
-    <!--          </div>-->
-    <!--          <div class="row q-mx-sm q-mt-none" v-for="selection in tab?.selections">-->
-    <!--            <div class="col-12 text-caption">{{ selection.text }}</div>-->
-    <!--          </div>-->
-    <!--        </q-card-section>-->
-    <!--      </q-card>-->
-    <!--    </q-expansion-item>-->
-
-    <q-expansion-item group="somegroup" :label="'Search Index (' + indexTypesCount + ' categories)'">
+    <q-expansion-item group="detailsGroup" :label="'Search Index (' + indexTypesCount + ' categories)'">
       <q-card>
         <q-card-section>
           <div class="row q-mx-sm">
             <TabDetailsSearchIndex @count="(v: number) => (indexTypesCount = v)" v-if="tab" :tab="tab" />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-expansion-item>
+
+    <q-expansion-item v-if="tab?.comments" group="detailsGroup" :label="'Comments (' + tab.comments.length + ')'">
+      <q-card>
+        <q-card-section>
+          <div v-for="c of tab.comments">
+            <pre class="text-body2">{{ c }}</pre>
           </div>
         </q-card-section>
       </q-card>
@@ -387,7 +381,8 @@ watchEffect(() => {
     if (tab.value.tags.constructor === Array) {
       tags.value = [...new Set(tab.value.tags)]
       // remove duplicates if any
-      tab.value.setTags(tags.value)
+      // tab.value.setTags(tags.value)
+      Tab.setTags(tab.value, tags.value)
     } else {
       tags.value = []
     }
@@ -415,7 +410,7 @@ watchEffect(() => {
 watchEffect(() => {
   if (tab.value) {
     useThumbnailsService()
-      .getThumbnailFor(tab.value.id)
+      .getThumbnailFor(tab.value.id, '')
       .then((data) => {
         if (data) {
           thumbnail.value = data

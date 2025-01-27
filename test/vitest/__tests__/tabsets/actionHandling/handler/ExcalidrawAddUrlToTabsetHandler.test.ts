@@ -29,7 +29,7 @@ describe('ExcalidrawAddUrlToTabsetHandler', () => {
   let db = null as unknown as TabsetsPersistence
 
   beforeEach(async () => {
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()
     await useSearchStore().init()

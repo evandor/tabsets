@@ -29,7 +29,7 @@ describe('tabsetsUiStore', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     await useTabsetsUiStore().initialize(storage)
-    db = useDB(undefined).tabsetsIndexedDb
+    db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()
     spacesDb = useDB(undefined).spacesDb

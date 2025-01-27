@@ -13,8 +13,9 @@
             :search-hits="props.searchHits!" />
 
           <FilterWithTransitionHelper v-else-if="showFilter" />
-          <!-- not searching -->
+          <!-- no spaces && not searching -->
           <template v-else>
+            <!-- no spaces && not searching -->
             <div class="col-12 text-subtitle1">
               <div class="q-ml-md q-mt-sm">
                 <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
@@ -119,7 +120,7 @@ import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
 import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder'
 import SpecialUrlAddToTabsetComponent from 'src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue'
 import { Tab } from 'src/tabsets/models/Tab'
-import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
@@ -226,7 +227,18 @@ const title = (): string => {
         case TabsetType.SESSION:
           return `Session (${currentTs.tabs.length} tab${currentTs.tabs.length > 1 ? 's' : ''})`
         default:
-          return currentTs.sharedId ? 'Shared Collection' : 'Collection'
+          switch (currentTs.sharing.sharing) {
+            case TabsetSharing.UNSHARED:
+              return 'Collection'
+            case TabsetSharing.PUBLIC_LINK:
+              return 'Shared Collection'
+            case TabsetSharing.PUBLIC_LINK_OUTDATED:
+              return 'Shared Collection'
+            case TabsetSharing.USER:
+              return currentTs.sharing.shareReference ? 'Shared Collection' : 'Sharing Collection'
+            default:
+              return 'Collection'
+          }
       }
     }
     return 'Collection'
@@ -239,7 +251,7 @@ function getActiveFolder(tabset: Tabset) {
 
 const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClickedHolder, folder?: Tabset) => {
   const useFolder: Tabset | undefined = folder ? folder : getActiveFolder(tabset)
-  console.log(`button clicked: tsId=${tabset.id}, folderId=${useFolder?.id}, args=...`)
+  //console.log(`button clicked: tsId=${tabset.id}, folderId=${useFolder?.id}, args=...`)
   await useActionHandlers(undefined).handleClick(tabset, currentChromeTab.value!, args, useFolder)
 }
 

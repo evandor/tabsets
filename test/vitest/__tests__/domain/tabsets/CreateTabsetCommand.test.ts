@@ -5,7 +5,6 @@ import { useDB } from 'src/services/usePersistenceService'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
-import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -21,9 +20,9 @@ describe('CreateTabsetCommand', () => {
   beforeEach(async () => {
     setActivePinia(createPinia())
     await IndexedDbPersistenceService.init('db')
-    db = useDB().tabsetsIndexedDb
+    db = useDB().tabsetsDb
     await useTabsetsStore().initialize(db)
-    await useSuggestionsStore().init()
+    await useSuggestionsStore().init(suggestionsDB)
   })
 
   afterEach(async () => {
@@ -44,7 +43,7 @@ describe('CreateTabsetCommand', () => {
     expect(executionResult.result.tabset.name).toBe('tabsetName')
     expect(executionResult.message).toBe('Tabset created')
 
-    const db = useDB(undefined).tabsetsIndexedDb
+    const db = useDB(undefined).tabsetsDb
     await db.loadTabsets()
     const tabsets = useTabsetsStore().tabsets
     expect(tabsets.size).toBe(1)
