@@ -16,7 +16,6 @@ import IndexedDbRequestPersistence from 'src/requests/persistence/IndexedDbReque
 import { useRequestsService } from 'src/requests/services/RequestsService'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import ChromeBookmarkListeners from 'src/services/ChromeBookmarkListeners'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
 import { useDB } from 'src/services/usePersistenceService'
 import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
@@ -87,7 +86,7 @@ class AppService {
       .catch((err: any) => console.error(err))
 
     // init db
-    await IndexedDbPersistenceService.init('db')
+    // await IndexedDbPersistenceService.init('db')
 
     // init services
     await useSuggestionsStore().init(IndexedDbSuggestionsPersistence)

@@ -21,18 +21,6 @@ class IndexedDbPersistenceService implements PersistenceService {
     return Promise.reject('not implemented C')
   }
 
-  async cleanUpMetaLinks(): Promise<void> {
-    return Promise.reject('not implemented D')
-  }
-
-  async cleanUpLinks(): Promise<void> {
-    return Promise.reject('not implemented E')
-  }
-
-  async cleanUpExpired(tableName: string): Promise<void> {
-    return Promise.reject('not implemented F')
-  }
-
   /** messages **/
 
   private async initDatabase(dbName: string): Promise<IDBPDatabase> {

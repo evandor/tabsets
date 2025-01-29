@@ -2,8 +2,6 @@ import { QVueGlobals } from 'quasar'
 import FeaturesPersistence from 'src/features/persistence/FeaturesPersistence'
 import { LocalStorageFeaturesPersistence } from 'src/features/persistence/LocalStorageFeaturesPersistence'
 import IndexedDbNotesPersistence from 'src/notes/persistence/IndexedDbNotesPersistence'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
-import PersistenceService from 'src/services/PersistenceService'
 import IndexedDbSnapshotPersistence from 'src/snapshots/persistence/IndexedDbSnapshotPersistence'
 import SnapshotsPersistence from 'src/snapshots/persistence/SnapshotsPersistence'
 import IndexedDbSpacesStorage from 'src/spaces/persistence/IndexedDbSpacesPersistence'
@@ -19,15 +17,11 @@ import ThumbnailsPersistence from 'src/thumbnails/persistence/ThumbnailsPersiste
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
   const spacesDb: SpacesPersistence = IndexedDbSpacesStorage
   const tabsetsDb: TabsetsPersistence = IndexedDbTabsetsPersistence
-  const db: PersistenceService = IndexedDbPersistenceService
-
 
   const snapshotsDb: SnapshotsPersistence = IndexedDbSnapshotPersistence
   const notesDb = IndexedDbNotesPersistence
   const thumbnailsDb: ThumbnailsPersistence = IndexedDbThumbnailsPersistence
   const groupsIndexedDb: TabsetsGroupsPersistence = IndexedDbTabsetsGroupsPersistence
-
-
 
   let localStorageTabsetsDb: LocalStorageTabsetsPersistence = new LocalStorageTabsetsPersistence()
 
@@ -37,7 +31,6 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
   }
 
   return {
-    db,
     spacesDb,
     tabsetsDb,
     localStorageTabsetsDb,

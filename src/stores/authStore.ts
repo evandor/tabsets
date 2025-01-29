@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import PersistenceService from 'src/services/PersistenceService'
 import { computed, ref } from 'vue'
 
 export type AccessItem = 'TABS' | 'TABSETS' | 'SPACES' | 'SYNC' | 'SHARE' | 'FEATURE_TOGGLES'
@@ -11,7 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<{ uid: string; email: string }>({ uid: '', email: '' })
 
   // --- init ---
-  async function initialize(ps: PersistenceService) {}
+  async function initialize() {}
 
   // --- getters ---
   const isAuthenticated = computed(() => {

@@ -1,9 +1,6 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import ChromeApi from 'src/app/BrowserApi'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
-import PersistenceService from 'src/services/PersistenceService'
-import { useDB } from 'src/services/usePersistenceService'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
@@ -14,7 +11,7 @@ installQuasarPlugin()
 vi.mock('vue-router')
 
 describe('SuggestionsStore', () => {
-  let db = null as unknown as PersistenceService
+  // let db = null as unknown as PersistenceService
   let suggestionsDB = IndexedDbSuggestionsPersistence
 
   let onCreatedListener = null as unknown as (window: chrome.windows.Window) => Promise<void>
@@ -23,8 +20,8 @@ describe('SuggestionsStore', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbPersistenceService.init('db')
-    db = useDB(undefined).db
+    // await IndexedDbPersistenceService.init('db')
+    // db = useDB(undefined).db
     //await useTabsetService().init(db)
 
     const window100 = ChromeApi.createChromeWindowObject(100, 17, 28)
@@ -86,7 +83,7 @@ describe('SuggestionsStore', () => {
   })
 
   afterEach(async () => {
-    db.clear('suggestions')
+    //db.clear('suggestions')
   })
 
   it('initializes correctly', async () => {

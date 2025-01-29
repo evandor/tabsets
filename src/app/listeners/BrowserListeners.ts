@@ -123,17 +123,24 @@ class BrowserListeners {
       await setCurrentTab()
 
       //chrome.tabs.onCreated.addListener(this.onCreatedListener)
-      chrome.tabs.onUpdated.addListener(this.onUpdatedListener)
-      chrome.tabs.onMoved.addListener(this.onMovedListener)
-      chrome.tabs.onRemoved.addListener(this.onRemovedListener)
-      chrome.tabs.onReplaced.addListener(this.onReplacedListener)
-      if (chrome.tabs.onActivated.hasListeners && chrome.tabs.onActivated.hasListeners()) {
-        console.error('onActivatedListeners ', chrome.tabs.onActivated.hasListeners())
+      if (!chrome.tabs.onUpdated.hasListener(this.onUpdatedListener)) {
+        chrome.tabs.onUpdated.addListener(this.onUpdatedListener)
       }
-      chrome.tabs.onActivated.addListener(this.onActivatedListener)
-
-      chrome.runtime.onMessage.addListener(this.onMessageListener)
-
+      if (!chrome.tabs.onMoved.hasListener(this.onMovedListener)) {
+        chrome.tabs.onMoved.addListener(this.onMovedListener)
+      }
+      if (!chrome.tabs.onRemoved.hasListener(this.onRemovedListener)) {
+        chrome.tabs.onRemoved.addListener(this.onRemovedListener)
+      }
+      if (!chrome.tabs.onReplaced.hasListener(this.onReplacedListener)) {
+        chrome.tabs.onReplaced.addListener(this.onReplacedListener)
+      }
+      if (!chrome.tabs.onActivated.hasListener(this.onActivatedListener)) {
+        chrome.tabs.onActivated.addListener(this.onActivatedListener)
+      }
+      if (!chrome.runtime.onMessage.hasListener(this.onMessageListener)) {
+        chrome.runtime.onMessage.addListener(this.onMessageListener)
+      }
       if (chrome.commands) {
         chrome.commands.onCommand.addListener(this.onCommandListener)
       }
@@ -187,6 +194,7 @@ class BrowserListeners {
       // matching tabs for url
       if (chromeTab.url) {
         useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
+        useTabsetService().urlWasActivated(chromeTab.url)
       }
 
       // set badge, text and color

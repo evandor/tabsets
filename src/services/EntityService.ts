@@ -1,12 +1,5 @@
-import PersistenceService from 'src/services/PersistenceService'
-
-let db: PersistenceService = null as unknown as PersistenceService
-
 export function useEntitiesService() {
-  const init = async (providedDb: PersistenceService) => {
-    console.debug(' ...initializing entitiesService as', providedDb.getServiceName())
-    db = providedDb
-
+  const init = async () => {
     //await db.loadTabsets()
   }
 

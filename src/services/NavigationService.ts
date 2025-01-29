@@ -4,6 +4,7 @@ import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { useAuthStore } from 'src/stores/authStore'
 import { RefreshTabCommand } from 'src/tabsets/commands/RefreshTabCommand'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -13,7 +14,6 @@ import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import JsUtils from 'src/utils/JsUtils'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { useAuthStore } from 'stores/authStore'
 
 /**
  * refactoring remark: uses many other modules, needs to be one-per-application

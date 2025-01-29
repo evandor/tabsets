@@ -1,6 +1,5 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createPinia, setActivePinia } from 'pinia'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
 import { useDB } from 'src/services/usePersistenceService'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
@@ -19,7 +18,6 @@ describe('CreateTabsetCommand', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbPersistenceService.init('db')
     db = useDB().tabsetsDb
     await useTabsetsStore().initialize(db)
     await useSuggestionsStore().init(suggestionsDB)
@@ -32,6 +30,7 @@ describe('CreateTabsetCommand', () => {
 
   it('command has proper toString representation', async () => {
     const cmd = await new CreateTabsetCommand('tabsetName', [])
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     expect(cmd.toString()).toBe(
       'CreateTabsetCommand: {merge=true, tabsetName=tabsetName, tabs#=0, windowToOpen#=current}',
     )

@@ -6,8 +6,7 @@ import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCom
 import { Feature } from 'src/features/models/Feature'
 import InMemoryFeaturesPersistence from 'src/features/persistence/InMemoryFeaturesPersistence'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 
@@ -30,6 +29,7 @@ describe('ActivateFeatureCommand', () => {
   it('command has proper toString representation', async () => {
     const feature = new AppFeatures().features.find((f: Feature) => f.ident === FeatureIdent.TOP10)
     const cmd = new ActivateFeatureCommand(feature!.ident)
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     expect(cmd.toString()).toBe('ActivateFeatureCommand: {feature=TOP10}')
   })
 })

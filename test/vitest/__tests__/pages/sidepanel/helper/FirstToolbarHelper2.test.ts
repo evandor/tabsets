@@ -3,7 +3,6 @@ import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import ChromeApi from 'src/app/BrowserApi'
 import FirstToolbarHelper2 from 'src/pages/sidepanel/helper/FirstToolbarHelper2.vue'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -42,7 +41,6 @@ describe('FirstToolbarHelper2', () => {
   })
 
   it('should be mounted', async () => {
-    await IndexedDbPersistenceService.init('db')
     await IndexedDbTabsetsPersistence.init()
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     const wrapper = mount(FirstToolbarHelper2)

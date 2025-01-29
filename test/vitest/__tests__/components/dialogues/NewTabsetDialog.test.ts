@@ -1,11 +1,9 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils'
-import AddBookmarkFolderDialog from 'components/dialogues/AddBookmarkFolderDialog.vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { Dialog } from 'quasar'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
 import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, it } from 'vitest'
 
 installQuasarPlugin({ plugins: { Dialog } })
 
@@ -17,7 +15,6 @@ describe('NewTabsetDialog', () => {
   it('should be mounted', async () => {
     let wrapper: VueWrapper<InstanceType<typeof NewTabsetDialog>>
 
-    await IndexedDbPersistenceService.init('db')
     wrapper = mount(NewTabsetDialog, {
       props: {},
     })

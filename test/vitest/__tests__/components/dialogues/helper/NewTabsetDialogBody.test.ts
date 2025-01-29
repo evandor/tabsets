@@ -2,7 +2,6 @@ import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-v
 import { DOMWrapper, mount, VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { Dialog, Notify } from 'quasar'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
 import { useDB } from 'src/services/usePersistenceService'
 import NewTabsetDialogBody from 'src/tabsets/dialogues/helper/NewTabsetDialogBody.vue'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
@@ -29,7 +28,6 @@ describe('NewTabsetDialogBody', () => {
     setActivePinia(createPinia())
     // @ts-expect-error TODO
     useRouter().push.mockReset()
-    await IndexedDbPersistenceService.init('db')
     await IndexedDbTabsetsPersistence.init()
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)

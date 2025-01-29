@@ -3,22 +3,15 @@ import { createPinia, setActivePinia } from 'pinia'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import InMemoryFeaturesPersistence from 'src/features/persistence/InMemoryFeaturesPersistence'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import IndexedDbPersistenceService from 'src/services/IndexedDbPersistenceService'
-import PersistenceService from 'src/services/PersistenceService'
-import { useDB } from 'src/services/usePersistenceService'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 
 vi.mock('vue-router')
 
 describe('FeaturesStore', () => {
-  let db = null as unknown as PersistenceService
-
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbPersistenceService.init('db')
-    db = useDB(undefined).db
 
     // https://groups.google.com/a/chromium.org/g/chromium-extensions/c/hssoAlvluW8
     const chromeMock = {
