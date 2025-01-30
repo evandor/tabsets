@@ -32,7 +32,7 @@ jobs:
         name: "Upload and release"
         with:
           product-id: "d5d382d8-4033-4559-a15a-c12e8a9f64e0"
-          zip-path: dist/bex-edge/Packaged.tabsets.net.zip
+          zip-path: dist/bex-chrome/Packaged.tabsets.net.zip
           api-key: ${{ secrets.EDGE_API_KEY }}
           client-id: ${{ secrets.EDGE_CLIENT_ID }}
           upload-only: true
