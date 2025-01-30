@@ -365,19 +365,19 @@ const getPublicTabsetLink = (ts: Tabset) => {
   // https://shared.tabsets.net/#/pwa/imp/2f0f2171-27a6-4d03-a2dd-157ab6ef42ae?n=TXVzaWM=&a=Q2Fyc3Rlbg==
   // http://localhost:9200/#/pwa/imp/2f0f2171-27a6-4d03-a2dd-157ab6ef42ae?n=TXVzaWM=&a=Q2Fyc3Rlbg==
   let image = 'https://tabsets.web.app/favicon.ico'
-  if (ts && ts.sharing?.sharedId) {
-    //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharing?.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharing?.sharedBy || 'n/a') + "&d=" + ts.sharedAt
-    return (
-      // 'https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/' +
-      process.env.PWA_BACKEND_URL +
-      '/#/pwa/imp/' +
-      ts.sharing?.sharedId +
-      '?n=' +
-      btoa(ts.name) +
-      '&a=' +
-      btoa(ts.sharing?.sharedBy || 'n/a')
-    )
-  }
+  // if (ts && ts.sharing?.sharedId) {
+  //   //return PUBLIC_SHARE_URL + "#/pwa/imp/" + ts.sharing?.sharedId + "?n=" + btoa(ts.name) + "&a=" + btoa(ts.sharing?.sharedBy || 'n/a') + "&d=" + ts.sharedAt
+  //   return (
+  //     // 'https://us-central1-tabsets-backend-prd.cloudfunctions.net/app/share/preview/' +
+  //     process.env.PWA_BACKEND_URL +
+  //     '/#/pwa/imp/' +
+  //     ts.sharing?.sharedId +
+  //     '?n=' +
+  //     btoa(ts.name) +
+  //     '&a=' +
+  //     btoa(ts.sharing?.sharedBy || 'n/a')
+  //   )
+  // }
   return image
 }
 
