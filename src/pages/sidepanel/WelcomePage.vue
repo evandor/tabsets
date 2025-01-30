@@ -113,7 +113,7 @@ watchEffect(() => {
   // we might have been redirected here too early, redirecting
   // back as soon we know we actually do have some tabsets
   if (useTabsetsStore().tabsets.size > 0) {
-    console.log('routing back! We have tabsets!')
+    //console.log('routing back! We have tabsets!')
     router.back()
   }
 })

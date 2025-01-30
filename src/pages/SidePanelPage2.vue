@@ -45,7 +45,6 @@
 <script lang="ts" setup>
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
-import AppService from 'src/app/AppService'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { useUtils } from 'src/core/services/Utils'
@@ -265,11 +264,12 @@ if (inBexMode()) {
           .reloadTabset(currentTabset.value.id)
           .then((ts: Tabset) => {
             currentTabset.value = ts
-            console.log('reloading tabset: ', ts)
+            //console.log('reloading tabset: ', ts)
           })
       }
     } else if (message.name === 'reload-application') {
-      AppService.restart('restarted=true')
+      //AppService.restart('restarted=true')
+      console.error('!!!!')
     } else if (message.name === 'window-updated') {
       useWindowsStore().setup('window-updated event')
     } else {

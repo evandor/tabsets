@@ -29,7 +29,7 @@ export const useSettingsStore = defineStore('settings', () => {
     // console.debug(' ...initializing settingsStore', '✅')
     const fts: string | undefined = localStorage.getItem('settings')
     if (fts) {
-      console.debug(` ...determining activeToggles from '${fts}'`)
+      //console.debug(` ...determining activeToggles from '${fts}'`)
       activeToggles.value = _.map(fts.split(','), (e: any) => e.trim())
     }
     const ths = localStorage.getItem('thresholds')

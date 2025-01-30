@@ -15,7 +15,7 @@ hero:
       link: /docs/setup
     - theme: alt
       text: Concepts
-      link: /concepts
+      link: /docs/concepts
     - theme: alt
       text: Submodules Documentation
       link: /docs/submodules/

@@ -56,17 +56,12 @@ if (useDarkMode === 'true') {
   setCssVar('info', '#31CCEC')
   setCssVar('separator', '#AA0099')
   // setCssVar('warning', 'green');
-
-  // $body-font-size   : var(--q-theme-font-size, 20px);
-  // $body-line-height : var(--q-theme-line-height, 1.2);
-  // $typography-font-family: var(--q-theme-font-family, "'Roboto', '-apple-system', 'Helvetica Neue', Helvetica, Arial, sans-serif");
-  // $button-font-size: var(--q-theme-btn-font-size, 16px);
 }
 
 const fontsize = useUiStore().fontsize
 useUiStore().setFontsize(fontsize)
 
-AppService.init($q, router, false)
+AppService.init($q, router)
 
 info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
 

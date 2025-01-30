@@ -8,15 +8,14 @@ import NavigationService from 'src/services/NavigationService'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useGroupsStore } from 'src/tabsets/stores/groupsStore'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 
-const { saveText, addToTabsetId } = useTabsetService()
+const { addToTabsetId } = useTabsetService()
 
-const { sanitize, inBexMode } = useUtils()
+const { inBexMode, addListenerOnce } = useUtils()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
@@ -123,24 +122,16 @@ class BrowserListeners {
       await setCurrentTab()
 
       //chrome.tabs.onCreated.addListener(this.onCreatedListener)
-      if (!chrome.tabs.onUpdated.hasListener(this.onUpdatedListener)) {
-        chrome.tabs.onUpdated.addListener(this.onUpdatedListener)
-      }
-      if (!chrome.tabs.onMoved.hasListener(this.onMovedListener)) {
-        chrome.tabs.onMoved.addListener(this.onMovedListener)
-      }
-      if (!chrome.tabs.onRemoved.hasListener(this.onRemovedListener)) {
-        chrome.tabs.onRemoved.addListener(this.onRemovedListener)
-      }
-      if (!chrome.tabs.onReplaced.hasListener(this.onReplacedListener)) {
-        chrome.tabs.onReplaced.addListener(this.onReplacedListener)
-      }
-      if (!chrome.tabs.onActivated.hasListener(this.onActivatedListener)) {
-        chrome.tabs.onActivated.addListener(this.onActivatedListener)
-      }
-      if (!chrome.runtime.onMessage.hasListener(this.onMessageListener)) {
-        chrome.runtime.onMessage.addListener(this.onMessageListener)
-      }
+      addListenerOnce(chrome.tabs.onUpdated, this.onUpdatedListener)
+      addListenerOnce(chrome.tabs.onActivated, this.onActivatedListener)
+      addListenerOnce(chrome.tabs.onMoved, this.onMovedListener)
+      addListenerOnce(chrome.tabs.onRemoved, this.onRemovedListener)
+      addListenerOnce(chrome.tabs.onReplaced, this.onReplacedListener)
+      addListenerOnce(chrome.runtime.onMessage, this.onMessageListener)
+
+      // if (!chrome.runtime.onMessage.hasListener(this.onMessageListener)) {
+      //   chrome.runtime.onMessage.addListener(this.onMessageListener)
+      // }
       if (chrome.commands) {
         chrome.commands.onCommand.addListener(this.onCommandListener)
       }
@@ -162,70 +153,44 @@ class BrowserListeners {
     }
   }
 
-  async resetListeners() {
-    if (inBexMode()) {
-      console.log(' ...resetting listeners (after re-initialization)')
-      //chrome.tabs.onCreated.removeListener(this.onCreatedListener)
-      chrome.tabs.onUpdated.removeListener(this.onUpdatedListener)
-      chrome.tabs.onMoved.removeListener(this.onMovedListener)
-      chrome.tabs.onRemoved.removeListener(this.onRemovedListener)
-      chrome.tabs.onReplaced.removeListener(this.onReplacedListener)
-      chrome.tabs.onActivated.removeListener(this.onActivatedListener)
-      chrome.runtime.onMessage.removeListener(this.onMessageListener)
-      if (chrome.commands) {
-        chrome.commands.onCommand.removeListener(this.onCommandListener)
-      }
-    }
-  }
-
+  // #region snippet
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
-    // set current browser tab in tabsStore
     await setCurrentTab()
-
-    const selfUrl = chrome.runtime.getURL('')
-    if (chromeTab.url?.startsWith(selfUrl)) {
-      console.debug(`onTabUpdated:   tab ${number}: >>> .url starts with '${selfUrl}'`)
+    if (this.ignoreUrl(chromeTab.url) || info.status !== 'complete') {
       return
     }
-
-    if (info.status === 'complete') {
-      console.debug(`onTabUpdated:   tab ${number}: >>> ${JSON.stringify(info)}`)
-
-      // matching tabs for url
-      if (chromeTab.url) {
-        useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
-        useTabsetService().urlWasActivated(chromeTab.url)
-      }
-
-      // set badge, text and color
-      useTabsetsUiStore().updateExtensionIcon(chromeTab.id)
-
-      // handle existing tabs
-      if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-        const matchingTabs = useTabsetsStore().tabsForUrl(chromeTab.url || '')
-        for (const tabAndTabsetId of matchingTabs) {
-          // we care only about actually setting a group, not about removal
-          if (info.groupId && info.groupId >= 0) {
-            console.log(' --- updating existing tabs for url: ', chromeTab.url, tabAndTabsetId, info)
-            tabAndTabsetId.tab.groupId = info.groupId
-            tabAndTabsetId.tab.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
-            tabAndTabsetId.tab.updated = new Date().getTime()
-            const tabset = useTabsetsStore().tabsetFor(tabAndTabsetId.tab.id)
-            if (tabset) {
-              await useTabsetService().saveTabset(tabset)
-            }
-          }
-        }
-      }
-    }
+    console.debug(`==> tabUpdate: ${chromeTab.url?.substring(0, 30)}`)
+    useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
+    useTabsetService().urlWasActivated(chromeTab.url)
+    useTabsetsUiStore().updateExtensionIcon(chromeTab.id)
   }
+
+  // #endregion snippet
+
+  // handle existing tabs - contained in onTabUpdate before
+  // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+  //   const matchingTabs = useTabsetsStore().tabsForUrl(chromeTab.url || '')
+  //   for (const tabAndTabsetId of matchingTabs) {
+  //     // we care only about actually setting a group, not about removal
+  //     if (info.groupId && info.groupId >= 0) {
+  //       console.log(' --- updating existing tabs for url: ', chromeTab.url, tabAndTabsetId, info)
+  //       tabAndTabsetId.tab.groupId = info.groupId
+  //       tabAndTabsetId.tab.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
+  //       tabAndTabsetId.tab.updated = new Date().getTime()
+  //       const tabset = useTabsetsStore().tabsetFor(tabAndTabsetId.tab.id)
+  //       if (tabset) {
+  //         await useTabsetService().saveTabset(tabset)
+  //       }
+  //     }
+  //   }
+  // }
 
   onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
     if (info.isWindowClosing) {
       // ignore single closing of tab if the whole window is about to be closed.
       return
     }
-    console.debug('onTabRemoved tab event: ', number, info)
+    console.debug(`==> tabRemoved: window ${info.windowId}`)
     // useWindowsStore().refreshTabsetWindow(info.windowId)
     //useWindowsStore().setLastUpdate()
   }
@@ -235,29 +200,22 @@ class BrowserListeners {
     useTabsStore2().loadTabs('onReplaced')
   }
 
+  // #region snippet2
   async onActivated(info: chrome.tabs.TabActiveInfo) {
-    console.debug(`onTabActivated: tab ${info.tabId}: >>> ${JSON.stringify(info)}`)
+    console.debug(`==> tabActivated: ${JSON.stringify(info)}`)
     await setCurrentTab()
-
-    // set badge, text and color
     useTabsetsUiStore().updateExtensionIcon(info.tabId)
-
     chrome.tabs.get(info.tabId, (tab) => {
       if (chrome.runtime.lastError) {
-        // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        console.warn('got runtime error:' + chrome.runtime.lastError.toString())
+        console.warn('got runtime error:', chrome.runtime.lastError)
       }
-      const url = tab.url
-      if (url) {
-        useContentStore().setCurrentTabUrl(tab.url)
-
-        useTabsetService().urlWasActivated(url)
-
-        // matching tabs for url
-        useTabsetsUiStore().setMatchingTabsFor(url)
-      }
+      useContentStore().setCurrentTabUrl(tab.url)
+      useTabsetService().urlWasActivated(tab.url)
+      useTabsetsUiStore().setMatchingTabsFor(tab.url)
     })
   }
+
+  // #endregion snippet2
 
   onMoved(number: number, info: chrome.tabs.TabMoveInfo) {
     console.debug(`onTabMoved: tab ${number} moved: ${JSON.stringify(info)}`)
@@ -387,6 +345,14 @@ class BrowserListeners {
           message: 'tab could not be added: ' + err,
         })
       })
+  }
+
+  private ignoreUrl(url: string | undefined) {
+    const selfUrl = chrome.runtime.getURL('')
+    if (url?.startsWith(selfUrl)) {
+      console.debug(`onTabUpdated: >>> .url starts with '${selfUrl}'`)
+      return true
+    }
   }
 }
 

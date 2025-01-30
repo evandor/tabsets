@@ -36,25 +36,22 @@ import { Router } from 'vue-router'
 
 class AppService {
   router: Router = null as unknown as Router
-  initialized = false
+  //initialized = false
 
-  async init(quasar: QVueGlobals, router: Router, forceRestart = false) {
-    console.log(
-      `%cinitializing AppService: first start=${!this.initialized}, forceRestart=${forceRestart}, router set=${router !== undefined}`,
-      'font-weight:bold',
-    )
+  async init(quasar: QVueGlobals, router: Router) {
+    console.log(`%cinitializing AppService`, 'font-weight:bold')
 
-    if (this.initialized && !forceRestart) {
-      console.debug('stopping AppService initialization; already initialized and not forcing restart')
-      return Promise.resolve()
-    }
-
-    if (this.initialized) {
-      await ChromeListeners.resetListeners()
-      useWindowsStore().resetListeners()
-    }
-
-    this.initialized = true
+    // if (this.initialized && !forceRestart) {
+    //   console.debug('stopping AppService initialization; already initialized and not forcing restart')
+    //   return Promise.resolve()
+    // }
+    //
+    // if (this.initialized) {
+    //   await ChromeListeners.resetListeners()
+    //   useWindowsStore().resetListeners()
+    // }
+    //
+    // this.initialized = true
 
     this.router = router
 
@@ -96,25 +93,25 @@ class AppService {
     await this.initCoreSerivces(quasar, this.router)
   }
 
-  restart(ar: string) {
-    console.error('%crestarting tabsets', 'font-weight:bold', window.location.href, ar)
-    const baseLocation = window.location.href.split('?')[0]
-    console.log('%cbaseLocation', 'font-weight:bold', baseLocation)
-    console.log('%cwindow.location.href', 'font-weight:bold', window.location.href)
-    if (window.location.href.indexOf('?') < 0) {
-      const tsIframe = window.parent.frames[0]
-      //log("iframe", tsIframe)
-      if (tsIframe) {
-        console.debug('%cnew window.location.href', 'font-weight:bold', baseLocation + '?' + ar)
-        tsIframe.location.href = baseLocation + '?' + ar
-        //tsIframe.location.href = "https://www.skysail.io"
-        tsIframe.location.reload()
-      }
-    }
-  }
+  // restart(ar: string) {
+  //   console.error('%crestarting tabsets', 'font-weight:bold', window.location.href, ar)
+  //   const baseLocation = window.location.href.split('?')[0]
+  //   console.log('%cbaseLocation', 'font-weight:bold', baseLocation)
+  //   console.log('%cwindow.location.href', 'font-weight:bold', window.location.href)
+  //   if (window.location.href.indexOf('?') < 0) {
+  //     const tsIframe = window.parent.frames[0]
+  //     //log("iframe", tsIframe)
+  //     if (tsIframe) {
+  //       console.debug('%cnew window.location.href', 'font-weight:bold', baseLocation + '?' + ar)
+  //       tsIframe.location.href = baseLocation + '?' + ar
+  //       //tsIframe.location.href = "https://www.skysail.io"
+  //       tsIframe.location.reload()
+  //     }
+  //   }
+  // }
 
   private async initCoreSerivces(quasar: QVueGlobals, router: Router) {
-    console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
+    //console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
 
     await useWindowsStore().initialize()
     useWindowsStore().initListeners()
