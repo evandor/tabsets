@@ -37,11 +37,17 @@ async function setupMocks(currentWindow: any) {
   const chromeMock = {
     tabs: {
       onUpdated: {
+        hasListener(callback: T): boolean {
+          return false
+        },
         addListener: vi.fn((listener) => {
           onTabUpdatedListener = listener
         }),
       },
       onRemoved: {
+        hasListener(callback: T): boolean {
+          return false
+        },
         addListener: vi.fn((listener) => {
           onTabRemovedListener = listener
         }),
