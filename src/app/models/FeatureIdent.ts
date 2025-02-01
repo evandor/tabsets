@@ -45,6 +45,7 @@ export enum FeatureIdent {
   READING_MODE = 'READING_MODE',
   HTML_SNIPPETS = 'HTML_SNIPPETS',
   TABSET_LIST = 'TABSET_LIST',
+  REMINDER = 'REMINDER',
 }
 
 export enum FeatureType {

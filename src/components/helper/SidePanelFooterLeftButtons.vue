@@ -72,6 +72,13 @@
 
   <template v-if="!showViewMenu()">
     <SidePanelFooterLeftButton
+      :side-panel-view="SidePanelViews.REMINDERS"
+      :size="props.size"
+      default-color="warning"
+      icon="o_alarm"
+      tooltip="Active Reminders!" />
+
+    <SidePanelFooterLeftButton
       :side-panel-view="SidePanelViews.BY_DOMAIN_LIST"
       :size="props.size"
       icon="o_dns"

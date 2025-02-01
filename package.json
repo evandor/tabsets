@@ -1,6 +1,6 @@
 {
   "name": "tabsets.net",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Use tabsets.net to safely keep track of all your tabs and links in the Side Panel, stored locally on your browser",
   "productName": "Tabsets.net",
   "author": "evandor <evandor@gmail.com>",
@@ -37,7 +37,7 @@
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org skysail-dk --project tabsets ./dist && sentry-cli sourcemaps upload --org skysail-dk --project tabsets ./dist"
   },
   "resolutions": {
-    "vite": "^6.0.5"
+    "vite": "6.0.8"
   },
   "dependencies": {
     "@calumk/editorjs-columns": "^0.3.2",

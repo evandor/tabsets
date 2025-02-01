@@ -57,6 +57,10 @@ export class SidePanelViews {
     useFeaturesStore().hasFeature(FeatureIdent.SESSIONS),
   )
 
+  static readonly REMINDERS = new SidePanelViews('reminders', '/sidepanel/reminders', () =>
+    useFeaturesStore().hasFeature(FeatureIdent.REMINDER),
+  )
+
   private constructor(
     public readonly ident: string,
     public readonly path: any,

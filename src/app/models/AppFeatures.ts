@@ -366,6 +366,16 @@ export class AppFeatures {
       '',
       ['bex'],
     ),
+
+    new Feature(
+      FeatureIdent.REMINDER,
+      FeatureType.EXPERIMENTAL,
+      'Tab Reminder',
+      'Get a reminder to revisit a tab',
+      'alarm',
+      '',
+      ['all'],
+    ),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {
