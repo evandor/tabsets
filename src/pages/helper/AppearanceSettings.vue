@@ -184,7 +184,7 @@ import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatur
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
 import { useSettingsStore } from 'src/stores/settingsStore'
-import { StaticSuggestionIdent, Suggestion } from 'src/suggestions/domain/models/Suggestion'
+import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { FontSize, ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watch, watchEffect } from 'vue'
@@ -333,6 +333,7 @@ const simulateStaticSuggestion = () => {
   const suggestions: [Suggestion] = [
     // @ts-expect-error TODO
     Suggestion.getStaticSuggestion('TRY_SPACES_FEATURE'),
+    Suggestion.getStaticSuggestion('TRY_OPENTABS_FEATURE'),
     Suggestion.getStaticSuggestion('TRY_BOOKMARKS_FEATURE'),
   ]
   useSuggestionsStore().addSuggestion(suggestions[suggestionsCounter++ % 2])
