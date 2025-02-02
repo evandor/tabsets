@@ -142,7 +142,7 @@
 
 import _ from 'lodash'
 import FeatureToggleSettings from 'pages/helper/FeatureToggleSettings.vue'
-import { LocalStorage, useQuasar } from 'quasar'
+import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
@@ -155,7 +155,7 @@ import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
 import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { DrawerTabs, useUiStore } from 'src/ui/stores/uiStore'
-import { onMounted, reactive, ref, watch, watchEffect } from 'vue'
+import { onMounted, reactive, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VueJsonPretty from 'vue-json-pretty'
 import { useRoute } from 'vue-router'
@@ -163,10 +163,8 @@ import 'vue-json-pretty/lib/styles.css'
 import AppearanceSettings from 'pages/helper/AppearanceSettings.vue'
 import ImportExportSettings from 'pages/helper/ImportExportSettings.vue'
 import InternalSettings from 'pages/helper/InternalSettings.vue'
-import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
 import BackupSettings from 'src/tabsets/pages/settings/BackupSettings.vue'
 import OpenRightDrawerWidget from 'src/ui/widgets/OpenRightDrawerWidget.vue'
-import { useGroupsStore } from '../tabsets/stores/groupsStore'
 
 const { t } = useI18n()
 
@@ -196,6 +194,7 @@ const tab = ref<string>(route.query['tab'] ? (route.query['tab'] as string) : 'a
 
 onMounted(() => {
   Analytics.firePageViewEvent('SettingsPage', document.location.href)
+  console.log('****')
 })
 
 watchEffect(() => {

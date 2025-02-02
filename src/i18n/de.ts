@@ -4,6 +4,7 @@ export default {
   activate_bookmarks_integration: 'Bookmark Integration aktivieren',
   activate_browser_notifications: 'Browser Notifications aktivieren',
   activate_fullpage_application: "Aktiviere 'Full-Page' App",
+  add_current_tabs: 'Offene Tabs hinzufügen',
   add_new_tabset: 'Neues Tabset erstellen',
   add_tabset: 'Tabset hinzufügen',
   appearance: 'Erscheinungsbild',

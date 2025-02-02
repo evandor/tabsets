@@ -13,7 +13,8 @@ Many browser events will trigger code execution in tabsets:
 Implemented in 
 
 - BrowserListeners
-- SidePanelOpenTabsListViewer
+- <del>SidePanelOpenTabsListViewer</del>
+- tabsStore2
 - windowsStore
 
 #### BrowserListeners

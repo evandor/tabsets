@@ -177,6 +177,7 @@ class AppService {
       !router.currentRoute.value.path.startsWith('/fullpage') &&
       !router.currentRoute.value.path.startsWith('/mainpanel')
     ) {
+      console.log('redirecting', router.currentRoute.value.path)
       await router.push('/sidepanel/welcome')
     }
 

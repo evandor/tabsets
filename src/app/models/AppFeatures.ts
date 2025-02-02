@@ -22,7 +22,7 @@ export class AppFeatures {
       'Bookmarks Manager',
       'Activate a Bookmark Manager in the Side Panel',
       'o_bookmark',
-      'bookmarks.png',
+      '/bookmarks.png',
       ['all'],
       [],
       false,
@@ -31,11 +31,11 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.GALLERY,
-      FeatureType.RECOMMENDED,
+      FeatureType.OPTIONAL,
       'Gallery View',
       'View and organize your tabs in a Tabset Gallery',
       'calendar_view_month',
-      'gallery.png',
+      '/gallery.png',
       ['all'],
       [],
       false,
@@ -48,7 +48,7 @@ export class AppFeatures {
       'Stats Widget',
       'Activate a little Widget to display some statistics (tabs count etc)',
       'show_chart',
-      'stats.png',
+      '/stats.png',
       ['bex'],
     ),
 
@@ -58,7 +58,7 @@ export class AppFeatures {
       'Top 10 Tabs',
       'Activate a view to list all tabs by how often they have been accessed',
       'o_workspace_premium',
-      'top10.png',
+      '/top10.png',
       ['all'],
     ),
 
@@ -79,7 +79,7 @@ export class AppFeatures {
       'Quick access to all your open tabs of the current browsers window<br><br>' +
         'Adds quick navigation to jump back and forth to recently opened tabs.',
       'o_playlist_add',
-      'opentabs.png',
+      '/opentabs.png',
       ['bex'],
     ),
 
@@ -89,7 +89,7 @@ export class AppFeatures {
       'Group By Domain View',
       'The "Grouped By Domain" Feature provides a view where you can see all your tabs grouped by Domains. All Domains with at least two matching tabs will be considered.',
       'o_dns',
-      'groupedByDomain.png',
+      '/groupedByDomain.png',
       ['all'],
     ),
 
@@ -101,7 +101,7 @@ export class AppFeatures {
         ' can help you by tracking your open tabs count and alert you when it gets too big. Furthermore, it offers you ways to reduce your tab count on the fly. This ' +
         'feature is customizable in the settings.',
       'o_tab',
-      'open_tabs_warning.png',
+      '/open_tabs_warning.png',
       ['bex'],
     ),
 
@@ -116,7 +116,7 @@ export class AppFeatures {
       'RSS View',
       'The "RSS View" list all your RSS Pages. It is recommended to enable the "analyse Tabs" feature as well to automatically find linked rss feeds from your tabsets.',
       'o_rss_feed',
-      'rss.png',
+      '/rss.png',
       ['bex', 'spa'],
     ),
 
@@ -277,7 +277,7 @@ export class AppFeatures {
         'its links and the received http headers are taken into account. ' +
         'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
       'o_tab',
-      'analyse.png',
+      '/analyse.png',
       ['bex'],
     )
       .setActivateCommands([new GrantPermissionCommand('webRequest')])
@@ -322,7 +322,7 @@ export class AppFeatures {
         'You need to restart tabsets if you activate or deactivate this feature.<br>' +
         'The Tabsets Helper Icon will appear on all pages you open once activated.',
       'o_article',
-      'tabhelper.png',
+      '/tabhelper.png',
       ['bex'],
     ),
 

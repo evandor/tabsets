@@ -197,7 +197,7 @@ class BrowserListeners {
 
   onReplaced(n1: number, n2: number) {
     console.log(`onTabReplaced: tab ${n1} replaced with ${n2}`)
-    useTabsStore2().loadTabs('onReplaced')
+    // useTabsStore2().loadTabs('onReplaced')
   }
 
   // #region snippet2
@@ -219,7 +219,7 @@ class BrowserListeners {
 
   onMoved(number: number, info: chrome.tabs.TabMoveInfo) {
     console.debug(`onTabMoved: tab ${number} moved: ${JSON.stringify(info)}`)
-    useTabsStore2().loadTabs('onMoved')
+    // useTabsStore2().loadTabs('onMoved')
   }
 
   onMessage(request: any, sender: chrome.runtime.MessageSender, sendResponse: any) {

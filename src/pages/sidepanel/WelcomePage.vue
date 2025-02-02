@@ -2,23 +2,17 @@
   <q-page-container>
     <q-page>
       <div class="q-ma-none q-pa-md fit">
-        <div class="row q-mt-lg">
+        <div class="row q-mt-lg q-ml-sm">
           <div class="row">
             <div class="col-12 text-caption">The Art Of Linking</div>
           </div>
-          <div class="col-12 text-h6 q-mb-md">
-            {{ $t('welcome_to_tabsets') }}
-          </div>
+          <div class="col-12 text-h6 q-mb-md">{{ $t('welcome_to_tabsets') }}</div>
         </div>
 
         <div class="q-pa-sm q-mb-none row items-start q-gutter-md" @click.stop="selected()">
           <q-card class="my-card fit">
-            <q-card-section>
-              <span class="text-subtitle2">{{ $t('create_your_first_ts') }}</span>
-              <!--              <br>-->
-              <!--              {{ t('provide_name_add_later')}}-->
-            </q-card-section>
             <q-card-section class="q-pb-none">
+              <div class="text-subtitle2 q-mb-sm">{{ $t('create_your_first_ts') }}</div>
               <q-input
                 v-model="tabsetName"
                 id="addTabsetSubmitBtn"
@@ -32,6 +26,9 @@
                 hint="e.g. Music, Holidays, News..."
                 :label="$t('tabset_name')" />
             </q-card-section>
+            <q-card-section class="q-ml-sm q-pl-none text-grey-8">
+              <q-checkbox v-model="addCurrentTabs" :label="$t('add_current_tabs')" size="xs" color="text-grey-8" />
+            </q-card-section>
             <q-card-actions align="right" class="q-pr-md q-pb-xs q-ma-none q-mt-md">
               <DialogButton
                 :label="$t('add_tabset')"
@@ -43,7 +40,7 @@
                 class="text-right q-ma-none q-pa-none text-accent cursor-pointer"
                 style="font-size: smaller"
                 @click="importFromBookmarks()">
-                or import from...
+                or import from bookmarks...
               </div>
             </q-card-actions>
           </q-card>
@@ -88,6 +85,7 @@ import Analytics from 'src/core/utils/google-analytics'
 import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCommand'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
@@ -98,6 +96,7 @@ const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
 const login = ref(false)
+const addCurrentTabs = ref(false)
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href)
@@ -120,7 +119,7 @@ watchEffect(() => {
 
 const addFirstTabset = () => {
   useCommandExecutor()
-    .executeFromUi(new CreateTabsetCommand(tabsetName.value, []))
+    .executeFromUi(new CreateTabsetCommand(tabsetName.value, addCurrentTabs ? useTabsStore2().browserTabs : []))
     .then((res: any) => {
       useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
       router.push('/sidepanel?first=true')
