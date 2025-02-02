@@ -41,9 +41,7 @@
                   </div>
                 </template>
                 <template v-else>
-                  <div class="text-caption">
-                    {{ title() }}
-                  </div>
+                  <div class="text-caption">{{ title() }}</div>
                 </template>
                 <div
                   class="text-body1 text-bold cursor-pointer ellipsis"
@@ -165,6 +163,13 @@ const toggleSearch = () => {
 }
 
 windowLocation.value = window.location.href
+
+setTimeout(() => {
+  // redirect to welcome page if there are not tabsets
+  if (useTabsetsStore().tabsets.size === 0) {
+    router.push('/sidepanel/welcome')
+  }
+}, 1000)
 
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset

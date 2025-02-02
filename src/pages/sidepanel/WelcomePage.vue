@@ -42,6 +42,12 @@
                 @click="importFromBookmarks()">
                 or import from bookmarks...
               </div>
+              <div
+                class="text-right q-ma-none q-pa-none text-accent cursor-pointer"
+                style="font-size: smaller"
+                @click="opentabsView()">
+                or start from your open tabs...
+              </div>
             </q-card-actions>
           </q-card>
         </div>
@@ -83,6 +89,7 @@ import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import Analytics from 'src/core/utils/google-analytics'
 import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCommand'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
@@ -129,11 +136,16 @@ const addFirstTabset = () => {
 const newTabsetNameIsValid = () => tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
 
 //https://groups.google.com/a/chromium.org/g/chromium-extensions/c/nb058-YrrWc
-const selected = () => tabsetNameRef.value.focus()
+const selected = () => tabsetNameRef.value?.focus()
 
 const stageIdentifier = () => (process.env.TABSETS_STAGE !== 'PRD' ? ' (' + process.env.TABSETS_STAGE + ')' : '')
 
 const clicked = (url: string) => openURL(url)
+
+const opentabsView = () => {
+  useFeaturesStore().activateFeature(FeatureIdent.OPEN_TABS)
+  useUiStore().sidePanelSetActiveView(SidePanelViews.TABS_LIST)
+}
 
 const importFromBookmarks = () => {
   useCommandExecutor()
