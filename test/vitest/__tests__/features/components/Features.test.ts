@@ -1,11 +1,11 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
-import { DOMWrapper, mount, shallowMount, VueWrapper } from '@vue/test-utils'
+import { mount, VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import Features from 'src/features/components/Features.vue'
 import InMemoryFeaturesPersistence from 'src/features/persistence/InMemoryFeaturesPersistence'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 installQuasarPlugin()
 
@@ -32,7 +32,7 @@ describe('Features', () => {
     expect(firstFeature).toContain('text-warning')
 
     const secondFeature = wrapper.find('div.q-list > div:nth-child(2)').html()
-    expect(secondFeature).toContain('Gallery View')
+    expect(secondFeature).toContain('Stats Widget')
     expect(secondFeature).toContain('text-grey')
   })
 })

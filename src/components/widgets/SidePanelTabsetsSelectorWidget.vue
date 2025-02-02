@@ -34,7 +34,7 @@
             </template>
           </q-select>
         </q-item>
-        <q-item v-else clickable v-for="ts in allTabsetsButCurrent" @click="switchToTabset(ts as Tabset)">
+        <q-item v-else clickable v-for="ts in allTabsetsButCurrent" @click="switchToTabset(ts as Tabset)" v-close-popup>
           {{ ts.name }}
         </q-item>
 
@@ -104,6 +104,9 @@ const props = defineProps({
   fromPanel: { type: Boolean, default: true },
   useAsTabsetsSwitcher: { type: Boolean, default: false },
 })
+
+const emits = defineEmits(['tabsetSwitched'])
+
 const spacesStore = useSpacesStore()
 const router = useRouter()
 const $q = useQuasar()
@@ -219,6 +222,7 @@ const switchToTabset = (ts: Tabset) => {
   useCommandExecutor()
     .execute(new SelectTabsetCommand(ts.id))
     .then((res: ExecutionResult<Tabset | undefined>) => {
+      emits('tabsetSwitched')
       //useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
       if (!props.useAsTabsetsSwitcher) {
         router.push('/sidepanel/tabsets/' + ts.id)
