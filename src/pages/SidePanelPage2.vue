@@ -269,7 +269,7 @@ if (inBexMode()) {
       }
     } else if (message.name === 'reload-application') {
       //AppService.restart('restarted=true')
-      console.error('!!!!')
+      console.error('message reload-applictation was called, no-op')
     } else if (message.name === 'window-updated') {
       useWindowsStore().setup('window-updated event')
     } else {

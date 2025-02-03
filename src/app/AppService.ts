@@ -82,13 +82,10 @@ class AppService {
       .init()
       .catch((err: any) => console.error(err))
 
-    // init db
-    // await IndexedDbPersistenceService.init('db')
-
     // init services
     await useSuggestionsStore().init(IndexedDbSuggestionsPersistence)
 
-    //tabsetService.setLocalStorage(localStorage)
+    // tabsetService.setLocalStorage(localStorage)
 
     await this.initCoreSerivces(quasar, this.router)
   }
@@ -177,7 +174,6 @@ class AppService {
       !router.currentRoute.value.path.startsWith('/fullpage') &&
       !router.currentRoute.value.path.startsWith('/mainpanel')
     ) {
-      console.log('redirecting', router.currentRoute.value.path)
       await router.push('/sidepanel/welcome')
     }
 

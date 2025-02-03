@@ -35,7 +35,7 @@ export class SidePanelViews {
 
   static readonly BOOKMARKS = new SidePanelViews('bookmarks', '/sidepanel/bookmarks', () =>
     useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS),
-  ) //&& useRoute()?.path !== "/sidepanel/welcome");
+  )
 
   static readonly PUBLIC_TABSETS = new SidePanelViews('categorized_tabsets', '/sidepanel/byCategory', () => true)
 

@@ -38,7 +38,9 @@ class AppEventDispatcher {
             .catch((err: any) => console.warn('error in RestoreTabsetCommand', err))
           return Promise.resolve({})
         case 'remove-captured-screenshot':
-          // no-op TODO
+          useThumbnailsService()
+            .removeThumbnailsFor(params['tabId' as keyof object])
+            .catch((err: any) => console.warn('error deleting thumbnail', params, err))
           return Promise.resolve({})
         default:
           return Promise.reject(`unknown event ${name}`)

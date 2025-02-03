@@ -1,6 +1,8 @@
 <template>
   <q-page-container>
     <q-page>
+      <div v-if="showWatermark" id="watermark">{{ watermark }}</div>
+
       <div class="q-ma-none q-pa-md fit">
         <div class="row q-mt-lg q-ml-sm">
           <div class="row">
@@ -104,6 +106,8 @@ const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
 const login = ref(false)
 const addCurrentTabs = ref(false)
+const showWatermark = ref(false)
+const watermark = ref('')
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href)
@@ -122,6 +126,11 @@ watchEffect(() => {
     //console.log('routing back! We have tabsets!')
     router.back()
   }
+})
+
+watchEffect(() => {
+  showWatermark.value = useUiStore().getWatermark().length > 0
+  watermark.value = useUiStore().getWatermark()
 })
 
 const addFirstTabset = () => {
