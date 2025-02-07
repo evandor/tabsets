@@ -61,9 +61,14 @@ const $q = useQuasar()
 const spacesStore = useSpacesStore()
 
 const tabsetsOptions = ref<object[]>([])
+const currentTabsetId = ref<string | undefined>(undefined)
 
 const props = defineProps({
   fromPanel: { type: Boolean, default: false },
+})
+
+watchEffect(async () => {
+  currentTabsetId.value = await useTabsetsStore().getCurrentTabsetId()
 })
 
 watchEffect(() => {
@@ -111,7 +116,7 @@ const openNewTabsetDialog = () => {
   $q.dialog({
     component: NewTabsetDialog,
     componentProps: {
-      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetId: currentTabsetId.value,
       fromPanel: props.fromPanel,
     },
   })
@@ -121,7 +126,7 @@ const deleteTabsetDialog = () => {
   $q.dialog({
     component: DeleteTabsetDialog,
     componentProps: {
-      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetId: currentTabsetId.value,
       tabsetName: useTabsetsStore().currentTabsetName,
     },
   })
@@ -131,7 +136,7 @@ const openEditTabsetDialog = () => {
   $q.dialog({
     component: EditTabsetDialog,
     componentProps: {
-      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetId: currentTabsetId.value,
       tabsetName: useTabsetsStore().currentTabsetName,
       fromPanel: props.fromPanel,
     },

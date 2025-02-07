@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import InMemoryMessagesPersistence from 'src/messages/stores/InMemoryMessagesPersistence'
+import { Message } from 'src/tabsets/models/Message'
 import { computed, ref } from 'vue'
 
 /**
@@ -6,20 +8,27 @@ import { computed, ref } from 'vue'
  */
 export const useMessagesStore = defineStore('messages', () => {
   const lastUpdate = ref<number>(new Date().getTime())
+  const messages = ref<Message[]>([])
 
   function initialize() {
-    // console.debug(` ...initializing messagesStore`)
-    setUpSnapshotListener()
+    messages.value = InMemoryMessagesPersistence.getMessages()
   }
 
-  function setUpSnapshotListener() {}
+  function addMessage(msg: Message) {
+    messages.value.push(msg)
+  }
 
-  // eslint-disable-next-line vue/return-in-computed-property
-  const getUnreadMessages = computed(() => {})
+  function deleteMessage(msgId: string) {
+    console.log('deleting msg', msgId)
+    messages.value = messages.value.filter((m: Message) => m.id !== msgId)
+  }
+
+  const getUnreadMessages = computed(() => messages.value.sort((a: Message, b: Message) => b.created - a.created))
 
   return {
     initialize,
-    lastUpdate,
+    addMessage,
+    deleteMessage,
     getUnreadMessages,
   }
 })

@@ -26,17 +26,13 @@
       <SidePanelTabsetListMarkup />
     </template>
 
+    <SidePanelMessagesMarkup />
+
     <div class="row fit q-mb-sm" v-if="showWindowTable">
       <!-- https://michaelnthiessen.com/force-re-render -->
 
       <!-- all windows related logic here: -->
       <WindowsMarkupTable />
-
-      <!--      <WindowsMarkupTable-->
-      <!--        :rows="windowHolderRows"-->
-      <!--        @was-clicked="(e) => additionalActionWasClicked(e)"-->
-      <!--        @recalculate-windows="recalcWindows()"-->
-      <!--        :key="randomKey" />-->
     </div>
 
     <div class="row fit q-mb-sm" v-if="showStatsTable">
@@ -201,9 +197,10 @@ import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAuthStore } from 'src/stores/authStore'
 import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
-import { Suggestion, SuggestionState } from 'src/suggestions/domain/models/Suggestion'
+import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
+import SidePanelMessagesMarkup from 'src/tabsets/components/helper/SidePanelMessagesMarkup.vue'
 import SidePanelTabsetListMarkup from 'src/tabsets/components/helper/SidePanelTabsetListMarkup.vue'
 import { Tab, TabSnippet } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
@@ -309,15 +306,17 @@ watchEffect(() => {
 })
 
 const openOptionsPage = () => {
-  $q.platform.is.cordova || $q.platform.is.capacitor || !$q.platform.is.bex
-    ? router.push('/settings')
-    : NavigationService.openOrCreateTab(
-        [chrome.runtime.getURL('www/index.html#/mainpanel/settings')],
-        undefined,
-        [],
-        true,
-        true,
-      )
+  if ($q.platform.is.cordova || $q.platform.is.capacitor || !$q.platform.is.bex) {
+    router.push('/settings')
+  } else {
+    NavigationService.openOrCreateTab(
+      [chrome.runtime.getURL('www/index.html#/mainpanel/settings')],
+      undefined,
+      [],
+      true,
+      true,
+    )
+  }
 }
 
 const openExtensionTab = () => openURL(chrome.runtime.getURL('www/index.html#/fullpage'))

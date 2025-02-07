@@ -135,7 +135,7 @@ watchEffect(() => {
 
 const addFirstTabset = () => {
   useCommandExecutor()
-    .executeFromUi(new CreateTabsetCommand(tabsetName.value, addCurrentTabs ? useTabsStore2().browserTabs : []))
+    .executeFromUi(new CreateTabsetCommand(tabsetName.value, addCurrentTabs.value ? useTabsStore2().browserTabs : []))
     .then((res: any) => {
       useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
       router.push('/sidepanel?first=true')

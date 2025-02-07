@@ -8,6 +8,7 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
+import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useRouter } from 'vue-router'
 
@@ -19,11 +20,11 @@ let timer
 $q.loading.show({
   message: 'Initializing tabsets. Please hang on...',
 })
-timer = setTimeout(() => {
+timer = setTimeout(async () => {
   if (useTabsetsStore().tabsets.size === 0) {
     router.push('/')
   } else {
-    const selectedTS = localStorage.getItem('selectedTabset')
+    const selectedTS = await useSelectedTabsetService().getFromStorage()
     if (selectedTS) {
       console.log('setting selected tabset from storage', selectedTS)
       useTabsetsStore().selectCurrentTabset(selectedTS)

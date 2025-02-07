@@ -120,12 +120,17 @@ const tabsetsOptions = ref<object[]>([])
 const allTabsetsButCurrent = ref<Tabset[]>([])
 const switchTabsetModel = ref(null)
 const switchTabsetOptions = ref<string[]>([])
+const currentTabsetId = ref<string | undefined>(undefined)
+
+watchEffect(async () => {
+  currentTabsetId.value = await useTabsetsStore().getCurrentTabsetId()
+})
 
 watchEffect(() => {
   allTabsetsButCurrent.value = _.sortBy(
     _.filter(
       [...useTabsetsStore().tabsets.values()] as Tabset[],
-      (tabset: Tabset) => tabset.id !== useTabsetsStore().currentTabsetId,
+      (tabset: Tabset) => tabset.id !== currentTabsetId.value,
     ),
     'name',
   )
@@ -195,7 +200,7 @@ const openNewTabsetDialog = () => {
   $q.dialog({
     component: NewTabsetDialog,
     componentProps: {
-      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetId: currentTabsetId.value,
       fromPanel: props.fromPanel,
     },
   })
@@ -205,7 +210,7 @@ const deleteTabsetDialog = () => {
   $q.dialog({
     component: DeleteTabsetDialog,
     componentProps: {
-      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetId: currentTabsetId.value,
       tabsetName: useTabsetsStore().currentTabsetName,
     },
   })
@@ -215,7 +220,7 @@ const openEditTabsetDialog = () => {
   $q.dialog({
     component: EditTabsetDialog,
     componentProps: {
-      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetId: currentTabsetId.value,
       tabsetName: useTabsetsStore().currentTabsetName,
       fromPanel: props.fromPanel,
     },

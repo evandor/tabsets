@@ -7,6 +7,8 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Tab } from 'src/tabsets/models/Tab'
+import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
+import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
@@ -16,6 +18,43 @@ import { useUiStore } from 'src/ui/stores/uiStore'
 const { addToTabsetId } = useTabsetService()
 
 const { inBexMode, addListenerOnce } = useUtils()
+
+let timer: { time: number; start: number; url: string } = { time: 0, start: new Date().getTime(), url: '' }
+
+async function stopTimer(url: string) {
+  const duration = new Date().getTime() - timer.start
+  //console.log(`stopping timer for ${url}: ${timer.time} + ${duration}`)
+  const tabsForUrl: TabAndTabsetId[] = useTabsetsStore().tabsForUrl(url)
+  for (const tabWithTsId of tabsForUrl) {
+    //console.log('found', tabWithTsId)
+    tabWithTsId.tab.readingTime += Math.min(duration, 60000)
+    const ts = useTabsetsStore().getTabset(tabWithTsId.tabsetId)
+    if (ts) {
+      //console.log('saving', ts)
+      await useTabsetService().saveTabset(ts)
+    }
+  }
+  if (tabsForUrl.length === 0) {
+    timers.set(url, timer.time + duration)
+  }
+  //console.log('timers', timers)
+}
+
+function startTimer(url: string | undefined) {
+  if (url) {
+    if (timer.url !== url) {
+      stopTimer(timer.url) // stop 'old' timer
+    }
+    timer = { start: new Date().getTime(), url: url, time: timers.get(url) || 0 }
+    //console.log('started timer', timer)
+  }
+}
+
+function stopTimers() {
+  timer = { time: 0, start: new Date().getTime(), url: '' }
+}
+
+const timers = new Map<string, number>()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
@@ -95,6 +134,9 @@ class BrowserListeners {
   private onActivatedListener = (info: chrome.tabs.TabActiveInfo) => this.onActivated(info)
   private onMessageListener = (request: any, sender: chrome.runtime.MessageSender, sendResponse: any) =>
     this.onMessage(request, sender, sendResponse)
+
+  private onWindowFocusChangedListener = (windowId: number) => this.onWindowFocusChanged(windowId)
+
   private onCommandListener = (command: string) => {
     switch (command) {
       case 'tabHistoryBack':
@@ -125,6 +167,9 @@ class BrowserListeners {
       addListenerOnce(chrome.tabs.onMoved, this.onMovedListener)
       addListenerOnce(chrome.tabs.onRemoved, this.onRemovedListener)
       addListenerOnce(chrome.tabs.onReplaced, this.onReplacedListener)
+
+      addListenerOnce(chrome.windows.onFocusChanged, this.onWindowFocusChangedListener)
+
       addListenerOnce(chrome.runtime.onMessage, this.onMessageListener)
 
       // if (!chrome.runtime.onMessage.hasListener(this.onMessageListener)) {
@@ -161,6 +206,21 @@ class BrowserListeners {
     useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
     useTabsetService().urlWasActivated(chromeTab.url)
     useTabsetsUiStore().updateExtensionIcon(chromeTab.id)
+
+    const tabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
+    let maxOverlap = 0
+    let maxOverlapTs: Tabset | undefined = undefined
+    tabsets.forEach((ts: Tabset) => {
+      const overlap = useTabsStore2().getOverlap(ts)
+      if (overlap > maxOverlap) {
+        console.log('overlap!!!', overlap, ts.name)
+        maxOverlap = overlap
+        maxOverlapTs = ts
+      }
+    })
+    if (maxOverlap > 0.8 && maxOverlapTs!.id !== (await useTabsetsStore().getCurrentTabsetId())) {
+      console.log('should switch to', maxOverlapTs!.name)
+    }
   }
 
   // #endregion snippet
@@ -210,7 +270,15 @@ class BrowserListeners {
       useContentStore().setCurrentTabUrl(tab.url)
       useTabsetService().urlWasActivated(tab.url)
       useTabsetsUiStore().setMatchingTabsFor(tab.url)
+
+      startTimer(tab.url)
     })
+  }
+
+  onWindowFocusChanged(windowId: number) {
+    if (windowId === chrome.windows.WINDOW_ID_NONE) {
+      stopTimers()
+    }
   }
 
   // #endregion snippet2

@@ -42,11 +42,12 @@ const props = defineProps({
 const spacesStore = useSpacesStore()
 const hoveredSpace = ref<string | undefined>(undefined)
 
-const openNewTabsetDialog = (spaceId: string) => {
+const openNewTabsetDialog = async (spaceId: string) => {
+  const currentTabsetId = await useTabsetsStore().getCurrentTabsetId()
   $q.dialog({
     component: NewTabsetDialog,
     componentProps: {
-      tabsetId: useTabsetsStore().currentTabsetId,
+      tabsetId: currentTabsetId,
       spaceId: spaceId,
       fromPanel: true,
     },

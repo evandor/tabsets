@@ -64,7 +64,7 @@ describe('ExcalidrawAddUrlToTabsetHandler', () => {
 
   it('has specific actions', async () => {
     await useCommandExecutor().execute(new CreateTabsetCommand('tabsetName'))
-    const identifier = handler.actions().map((ac: ActionContext) => ac.identifier.toString())
+    const identifier = handler.actions('17').map((ac: ActionContext) => ac.identifier.toString())
     expect(identifier).toContain('SaveAs')
   })
 

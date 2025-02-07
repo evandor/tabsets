@@ -25,6 +25,11 @@ const $q = useQuasar()
 
 const spaces = ref<object>(null as unknown as object)
 const spacesOptions = ref<object[]>([])
+const currentTabsetId = ref<string | undefined>(undefined)
+
+watchEffect(async () => {
+  currentTabsetId.value = await useTabsetsStore().getCurrentTabsetId()
+})
 
 watchEffect(() => {
   if (useTabsetsStore().tabsets) {
@@ -69,7 +74,7 @@ const switchSpace = (s: any) => {
     $q.dialog({
       component: NewSpaceDialog,
       componentProps: {
-        tabsetId: useTabsetsStore().currentTabsetId,
+        tabsetId: currentTabsetId.value,
         fromPanel: true,
       },
     })

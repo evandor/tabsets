@@ -9,6 +9,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
 import Analytics from 'src/core/utils/google-analytics'
+import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -25,7 +26,8 @@ onMounted(() => {
 $q.loading.show({
   message: 'Initializing tabsets. The Fullpage View will deactivate the SidePanel for this tab. Please hang on...',
 })
-timer = setTimeout(() => {
+
+timer = setTimeout(async () => {
   chrome.tabs.getCurrent((t?: chrome.tabs.Tab) => {
     //console.log("got tab", t)
     const options = {
@@ -39,7 +41,7 @@ timer = setTimeout(() => {
   if (useTabsetsStore().tabsets.size === 0) {
     router.push('/')
   } else {
-    const selectedTS = localStorage.getItem('selectedTabset')
+    const selectedTS = await useSelectedTabsetService().getFromStorage()
     if (selectedTS) {
       console.log('setting selected tabset from storage', selectedTS)
       useTabsetsStore().selectCurrentTabset(selectedTS)

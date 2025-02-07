@@ -1,7 +1,18 @@
+import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { RestoreTabsetCommand } from 'src/tabsets/commands/RestoreTabset'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
+
+export type DispatcherEvents =
+  | 'add-to-search'
+  | 'upsert-in-search'
+  | 'capture-screenshot'
+  | 'add-to-index'
+  | 'restore-tabset'
+  | 'remove-captured-screenshot'
+  | 'tab-deleted'
+  | 'delete-bookmark-by-url'
 
 /**
  * meant for inter-submodule communication.
@@ -13,7 +24,7 @@ import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
  * This class has to be implemented once-per-application if this kind of dispatch is needed.
  */
 class AppEventDispatcher {
-  dispatchEvent(name: string, params: object): Promise<object> {
+  async dispatchEvent(name: DispatcherEvents, params: object): Promise<object> {
     //console.debug(" >>> dispatching event", name, params)
     try {
       switch (name) {
@@ -22,6 +33,16 @@ class AppEventDispatcher {
           return Promise.resolve({})
         case 'upsert-in-search':
           useSearchStore().upsertObject(params)
+          return Promise.resolve({})
+        case 'delete-bookmark-by-url':
+          useBookmarksStore()
+            .deleteByUrl(params['url' as keyof object])
+            .then((count: number) => {
+              // TODO cannot call handle success here (problem in tests)
+              // handleSuccess(new ExecutionResult('', count + ' bookmark(s) deleted'))
+            })
+          //.catch(() => handleError('problem encountered'))
+
           return Promise.resolve({})
         case 'capture-screenshot':
           useThumbnailsService().handleCaptureCallback(
@@ -42,6 +63,10 @@ class AppEventDispatcher {
             .removeThumbnailsFor(params['tabId' as keyof object])
             .catch((err: any) => console.warn('error deleting thumbnail', params, err))
           return Promise.resolve({})
+        case 'tab-deleted':
+          const bookmarks = await useBookmarksStore().findBookmarksForUrl(params['url' as keyof object])
+          console.log('bookmarks', bookmarks)
+          return Promise.resolve({ name: 'bookmarks-found', bookmarks: bookmarks.length })
         default:
           return Promise.reject(`unknown event ${name}`)
       }

@@ -34,17 +34,21 @@ describe('DefaultAddUrlToTabsetHandler', () => {
   })
 
   it('matches only non-special url', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(handler.urlMatcher().test(url)).toBeTruthy
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(handler.urlMatcher().test('https://excalidraw.com/')).toBeFalsy
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(handler.urlMatcher().test('http://some.url.with/ending.rss')).toBeFalsy
   })
 
   it('matches any content', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(handler.contentMatcher(content)).toBeTruthy
   })
 
   it('has specific actions', () => {
-    const identifier = handler.actions().map((ac: ActionContext) => ac.identifier.toString())
+    const identifier = handler.actions('17').map((ac: ActionContext) => ac.identifier.toString())
     expect(identifier).toContain('AddTab')
     expect(identifier).toContainEqual('AddTab')
   })

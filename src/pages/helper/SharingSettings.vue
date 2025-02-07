@@ -52,9 +52,11 @@ const nickname = ref<string>(LocalStorage.getItem(SHARING_AUTHOR_IDENT) || '')
 const avatar = ref<string>((LocalStorage.getItem(SHARING_AVATAR_IDENT) as string) || '')
 
 watchEffect(() => {
-  nickname.value && nickname.value.trim().length > 0
-    ? LocalStorage.set(SHARING_AUTHOR_IDENT, nickname.value.replace(STRIP_CHARS_IN_USER_INPUT, ''))
-    : LocalStorage.remove(SHARING_AUTHOR_IDENT)
+  if (nickname.value && nickname.value.trim().length > 0) {
+    LocalStorage.set(SHARING_AUTHOR_IDENT, nickname.value.replace(STRIP_CHARS_IN_USER_INPUT, ''))
+  } else {
+    LocalStorage.remove(SHARING_AUTHOR_IDENT)
+  }
 })
 
 watchEffect(() => {

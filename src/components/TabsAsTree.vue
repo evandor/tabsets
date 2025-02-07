@@ -99,9 +99,11 @@ function createNodes(tabs: object[], level = 0): TreeNode[] {
     for (let i = 1; i <= level; i++) {
       url += '/' + (t['segments' as keyof object][i] as string)
     }
-    children.length === 0
-      ? nodesToUrl.value.set(newNodeId, t['url' as keyof object])
-      : nodesToUrl.value.set(newNodeId, url)
+    if (children.length === 0) {
+      nodesToUrl.value.set(newNodeId, t['url' as keyof object])
+    } else {
+      nodesToUrl.value.set(newNodeId, url)
+    }
     const newNode = new TreeNode(newNodeId, name as string, name as string, url, '', children, level)
     nodes.push(newNode)
   }

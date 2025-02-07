@@ -45,7 +45,7 @@ describe('ImportFromChromeBookmarksManagerAddUrlToTabsetHandler', () => {
   })
 
   it('has specific actions', () => {
-    const identifier = handler.actions().map((ac: ActionContext) => ac.identifier.toString())
+    const identifier = handler.actions('17').map((ac: ActionContext) => ac.identifier.toString())
     expect(identifier).toEqual(['ImportChromeBookmarks', 'AddTab'])
   })
 

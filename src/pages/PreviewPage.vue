@@ -29,7 +29,7 @@
           color="primary"
           label="Back to tabsets"
           class="q-mr-md"
-          @click="router.push('/tabsets/' + useTabsetsStore().currentTabsetId)">
+          @click="router.push('/tabsets/' + currentTabsetId)">
           <q-tooltip>Back to tabsets</q-tooltip>
         </q-btn>
       </div>
@@ -61,6 +61,7 @@ const title = ref('')
 const data = ref<string[]>([])
 const src = ref('data:text/html,<p>loading...</p>')
 const iFrameRef = ref(null)
+const currentTabsetId = ref<string | undefined>(undefined)
 
 onMounted(() => {
   const iFrame = iFrameRef.value
@@ -69,6 +70,10 @@ onMounted(() => {
     // @ts-expect-error TODO
     iFrame.setAttribute('style', 'overflow:hidden;height:' + (window.innerHeight - 106) + 'px;width:100%;border:0px')
   }
+})
+
+watchEffect(async () => {
+  currentTabsetId.value = await useTabsetsStore().getCurrentTabsetId()
 })
 
 watchEffect(async () => {

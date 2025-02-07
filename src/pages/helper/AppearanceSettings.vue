@@ -230,9 +230,11 @@ const autoSwitcherOptions = [
 ]
 
 watchEffect(() => {
-  installationTitle.value && installationTitle.value.trim().length > 0
-    ? LocalStorage.set(TITLE_IDENT, installationTitle.value.replace(STRIP_CHARS_IN_USER_INPUT, ''))
-    : LocalStorage.remove(TITLE_IDENT)
+  if (installationTitle.value && installationTitle.value.trim().length > 0) {
+    LocalStorage.set(TITLE_IDENT, installationTitle.value.replace(STRIP_CHARS_IN_USER_INPUT, ''))
+  } else {
+    LocalStorage.remove(TITLE_IDENT)
+  }
 })
 
 watchEffect(() => {
@@ -297,9 +299,11 @@ watch(
 watch(
   () => showRecentTabsetsList.value,
   (now: boolean, before: boolean) => {
-    now
-      ? useCommandExecutor().execute(new ActivateFeatureCommand(FeatureIdent.TABSET_LIST.toString()))
-      : useCommandExecutor().execute(new DeactivateFeatureCommand(FeatureIdent.TABSET_LIST.toString()))
+    if (now) {
+      useCommandExecutor().execute(new ActivateFeatureCommand(FeatureIdent.TABSET_LIST.toString()))
+    } else {
+      useCommandExecutor().execute(new DeactivateFeatureCommand(FeatureIdent.TABSET_LIST.toString()))
+    }
   },
 )
 
