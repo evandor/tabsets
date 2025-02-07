@@ -15,7 +15,7 @@ import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 
@@ -35,6 +35,16 @@ describe('tabsetsUiStore', () => {
     spacesDb = useDB(undefined).spacesDb
     await useSpacesStore().initialize(spacesDb)
     startTime = useTabsetsUiStore().lastUpdate
+
+    const chromeMock = {
+      windows: {
+        getCurrent: async () => window,
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {}),
+      },
+    }
+    vi.stubGlobal('chrome', chromeMock)
   })
 
   afterEach(async () => {

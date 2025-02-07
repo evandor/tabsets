@@ -21,6 +21,15 @@ describe('CreateTabsetCommand', () => {
     db = useDB().tabsetsDb
     await useTabsetsStore().initialize(db)
     await useSuggestionsStore().init(suggestionsDB)
+    const chromeMock = {
+      windows: {
+        getCurrent: async () => window,
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {}),
+      },
+    }
+    vi.stubGlobal('chrome', chromeMock)
   })
 
   afterEach(async () => {

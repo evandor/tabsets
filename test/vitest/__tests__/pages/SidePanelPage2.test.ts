@@ -43,6 +43,9 @@ describe('SidePanelPage2', () => {
     await useTabsetService().init()
 
     const chromeMock = {
+      windows: {
+        getCurrent: async () => window,
+      },
       commands: {
         onCommand: {
           addListener: vi.fn(() => {

@@ -36,6 +36,16 @@ describe('NewTabsetDialogBody', () => {
 
     input = wrapper.find('[data-testid=newTabsetName]')
     submitButton = wrapper.find('[data-testid=newTabsetNameSubmit]')
+
+    const chromeMock = {
+      windows: {
+        getCurrent: async () => window,
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {}),
+      },
+    }
+    vi.stubGlobal('chrome', chromeMock)
   })
 
   afterEach(async () => {

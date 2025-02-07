@@ -36,6 +36,9 @@ describe('ExcalidrawAddUrlToTabsetHandler', () => {
     await useContentService().init(IndexedDbContentPersistence)
 
     const chromeMock = {
+      windows: {
+        getCurrent: async () => window,
+      },
       scripting: {
         executeScript: vi.fn(() => {
           return [

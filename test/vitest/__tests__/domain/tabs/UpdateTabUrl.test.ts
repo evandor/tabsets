@@ -33,6 +33,15 @@ describe('UpdateTabUrl', () => {
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()
     await useSearchStore().init()
+    const chromeMock = {
+      windows: {
+        getCurrent: async () => window,
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {}),
+      },
+    }
+    vi.stubGlobal('chrome', chromeMock)
   })
 
   afterEach(async () => {

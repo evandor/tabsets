@@ -24,6 +24,15 @@ describe('AssociateWindowWithTabsetCommand', () => {
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()
     await useTabsetsStore().initialize(db)
+    const chromeMock = {
+      windows: {
+        getCurrent: async () => window,
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {}),
+      },
+    }
+    vi.stubGlobal('chrome', chromeMock)
   })
 
   afterEach(async () => {

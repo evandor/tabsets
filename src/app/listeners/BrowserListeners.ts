@@ -9,6 +9,7 @@ import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
 import { Tabset } from 'src/tabsets/models/Tabset'
+import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
@@ -136,6 +137,7 @@ class BrowserListeners {
     this.onMessage(request, sender, sendResponse)
 
   private onWindowFocusChangedListener = (windowId: number) => this.onWindowFocusChanged(windowId)
+  private onWindowRemovedListener = (windowId: number) => this.onWindowRemoved(windowId)
 
   private onCommandListener = (command: string) => {
     switch (command) {
@@ -161,6 +163,7 @@ class BrowserListeners {
 
       await setCurrentTab()
 
+      // --- tab listeners ---
       //chrome.tabs.onCreated.addListener(this.onCreatedListener)
       addListenerOnce(chrome.tabs.onUpdated, this.onUpdatedListener)
       addListenerOnce(chrome.tabs.onActivated, this.onActivatedListener)
@@ -168,13 +171,13 @@ class BrowserListeners {
       addListenerOnce(chrome.tabs.onRemoved, this.onRemovedListener)
       addListenerOnce(chrome.tabs.onReplaced, this.onReplacedListener)
 
+      // --- window listeners ---
       addListenerOnce(chrome.windows.onFocusChanged, this.onWindowFocusChangedListener)
+      addListenerOnce(chrome.windows.onRemoved, this.onWindowRemovedListener)
 
+      // --- other listeners ---
       addListenerOnce(chrome.runtime.onMessage, this.onMessageListener)
 
-      // if (!chrome.runtime.onMessage.hasListener(this.onMessageListener)) {
-      //   chrome.runtime.onMessage.addListener(this.onMessageListener)
-      // }
       if (chrome.commands) {
         chrome.commands.onCommand.addListener(this.onCommandListener)
       }
@@ -279,6 +282,10 @@ class BrowserListeners {
     if (windowId === chrome.windows.WINDOW_ID_NONE) {
       stopTimers()
     }
+  }
+
+  onWindowRemoved(windowId: number) {
+    useSelectedTabsetService().clearWindow(windowId)
   }
 
   // #endregion snippet2

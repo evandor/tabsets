@@ -25,6 +25,16 @@ describe('CreateFolderCommand', () => {
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     // await useTabsetService().init()
+
+    const chromeMock = {
+      windows: {
+        getCurrent: async () => window,
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {}),
+      },
+    }
+    vi.stubGlobal('chrome', chromeMock)
   })
 
   afterEach(async () => {

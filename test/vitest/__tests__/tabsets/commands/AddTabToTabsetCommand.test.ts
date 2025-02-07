@@ -56,6 +56,15 @@ describe('AddTabToTabsetCommand', () => {
         metas: { description: 'Description' },
       },
     })
+    const chromeMock = {
+      windows: {
+        getCurrent: async () => window,
+      },
+      runtime: {
+        sendMessage: vi.fn(() => {}),
+      },
+    }
+    vi.stubGlobal('chrome', chromeMock)
   })
 
   afterEach(async () => {

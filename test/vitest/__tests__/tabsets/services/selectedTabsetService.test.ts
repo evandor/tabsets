@@ -98,11 +98,18 @@ describe('selectTabsetServices', () => {
     await useSelectedTabsetService().setCurrentTabsetId('tabsetId1')
     mockBrowserWindowsToReturn(window200)
     await useSelectedTabsetService().setCurrentTabsetId('tabsetId2')
-    const selectedTabset = await useSelectedTabsetService().getSelectedTabsetId()
-    expect(selectedTabset).toBe('tabsetId2')
+    expect(await useSelectedTabsetService().getSelectedTabsetId()).toBe('tabsetId2')
 
     await useSelectedTabsetService().clearCurrentTabsetId('tabsetId2')
-    const selectedTabset2 = await useSelectedTabsetService().getSelectedTabsetId()
-    expect(selectedTabset2).toBe(undefined)
+    expect(await useSelectedTabsetService().getSelectedTabsetId()).toBe(undefined)
+  })
+
+  it('clears a window by id', async () => {
+    mockBrowserWindowsToReturn(window100)
+    await useSelectedTabsetService().setCurrentTabsetId('tabsetId1')
+    expect(await useSelectedTabsetService().getSelectedTabsetId()).toBe('tabsetId1')
+
+    await useSelectedTabsetService().clearWindow(100)
+    expect(await useSelectedTabsetService().getSelectedTabsetId()).toBe(undefined)
   })
 })
