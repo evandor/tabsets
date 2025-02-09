@@ -111,7 +111,7 @@ const imported = async (a: { bmId: number; recursive: boolean; tsName: string })
   // const tabset = await createTabsetFrom(a.tsName, "" + a.bmId)
 
   useCommandExecutor()
-    .execute(new CreateTabsetFromBookmarksRecursive(a.tsName, '' + a.bmId))
+    .execute(new CreateTabsetFromBookmarksRecursive(a.tsName, '' + a.bmId, true))
     .then(async (res: ExecutionResult<Tabset>) => {
       const tabset = res.result
       await useTabsetService().saveTabset(tabset)

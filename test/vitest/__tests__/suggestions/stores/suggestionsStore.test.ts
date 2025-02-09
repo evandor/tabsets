@@ -106,7 +106,7 @@ describe('SuggestionsStore', () => {
   })
 
   it.skip('adds suggestion for URL', async () => {
-    var s = new Suggestion('', 'title', 'msg', 'https://www.skysail.io', 'CONTENT_CHANGE')
+    var s = new Suggestion('', 'title', 'msg', 'https://www.skysail.io', 'URL')
     await useSuggestionsStore().addSuggestion(s)
     expect(useSuggestionsStore().getSuggestions(['NEW']).length).toBe(1)
   })

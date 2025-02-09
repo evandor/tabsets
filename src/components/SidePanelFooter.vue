@@ -261,8 +261,9 @@ watchEffect(() => {
   animateSettingsButton.value = useUiStore().animateSettingsButton
 })
 
-watchEffect(() => {
+watchEffect(async () => {
   const suggestions = useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED', 'NOTIFICATION'])
+  const currentWindow = await chrome.windows.getCurrent()
   //console.log("watcheffect for", suggestions)
   showSuggestionButton.value =
     doShowSuggestionButton.value ||
@@ -270,6 +271,7 @@ watchEffect(() => {
       _.findIndex(suggestions, (s: Suggestion) => {
         return (
           s.state === 'NEW' ||
+          (s.type === 'SWITCH_TABSET' && s.windowId === currentWindow.id) ||
           (s.state === 'NOTIFICATION' && !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
         )
       }) >= 0)

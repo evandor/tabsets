@@ -61,7 +61,7 @@ const imported = async (a: { bmId: number; recursive: boolean; tsName: string })
   $q.loadingBar?.start()
 
   useCommandExecutor()
-    .execute(new CreateTabsetFromBookmarksRecursive(a.tsName, '' + a.bmId))
+    .execute(new CreateTabsetFromBookmarksRecursive(a.tsName, '' + a.bmId, a.recursive))
     .then(async (res: ExecutionResult<Tabset>) => {
       const tabset = res.result
       await useTabsetService().saveTabset(tabset)

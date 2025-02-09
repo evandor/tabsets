@@ -5,10 +5,10 @@ import { useContentStore } from 'src/content/stores/contentStore'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
+import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
-import { Tabset } from 'src/tabsets/models/Tabset'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -126,6 +126,28 @@ function runOnNotificationClick(notificationId: string, buttonIndex: number) {
   }
 }
 
+async function checkSwitchTabsetSuggestion(windowId: number) {
+  const suggestedTabsetAndFolder = await useTabsStore2().suggestTabsetAndFolder(0.6)
+  if (suggestedTabsetAndFolder) {
+    console.log('suggestedTabsetAndFolder', suggestedTabsetAndFolder)
+    const suggestion = new Suggestion(
+      uid(), //'SWITCH_TABSET',
+      'Switch Tabset?',
+      'Your currently open tabs match a different tabset: ' +
+        suggestedTabsetAndFolder?.tabsetName +
+        '. Do you want to switch to this tabset?',
+      'tabset://' + suggestedTabsetAndFolder?.tabsetId + '/' + suggestedTabsetAndFolder?.folder,
+      'SWITCH_TABSET',
+    )
+    //  .setImage('o_tab')
+    // .setState('PRIO')
+    //  .setWindowId(windowId)
+    suggestion.applyLabel = 'switch'
+    suggestion.windowId = windowId
+    await useSuggestionsStore().addSuggestion(suggestion)
+  }
+}
+
 class BrowserListeners {
   private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) =>
     this.onUpdated(number, info, tab)
@@ -210,20 +232,7 @@ class BrowserListeners {
     useTabsetService().urlWasActivated(chromeTab.url)
     useTabsetsUiStore().updateExtensionIcon(chromeTab.id)
 
-    const tabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
-    let maxOverlap = 0
-    let maxOverlapTs: Tabset | undefined = undefined
-    tabsets.forEach((ts: Tabset) => {
-      const overlap = useTabsStore2().getOverlap(ts)
-      if (overlap > maxOverlap) {
-        console.log('overlap!!!', overlap, ts.name)
-        maxOverlap = overlap
-        maxOverlapTs = ts
-      }
-    })
-    if (maxOverlap > 0.8 && maxOverlapTs!.id !== (await useTabsetsStore().getCurrentTabsetId())) {
-      console.log('should switch to', maxOverlapTs!.name)
-    }
+    await checkSwitchTabsetSuggestion(chromeTab.windowId)
   }
 
   // #endregion snippet
@@ -246,14 +255,13 @@ class BrowserListeners {
   //   }
   // }
 
-  onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
+  async onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
     if (info.isWindowClosing) {
       // ignore single closing of tab if the whole window is about to be closed.
       return
     }
     console.debug(`==> tabRemoved: window ${info.windowId}`)
-    // useWindowsStore().refreshTabsetWindow(info.windowId)
-    //useWindowsStore().setLastUpdate()
+    // await checkSwitchTabsetSuggestion(info.windowId)
   }
 
   onReplaced(n1: number, n2: number) {
