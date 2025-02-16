@@ -49,7 +49,7 @@ export class RestApiDefinitions {
           'https://website-categorization-api-now-with-ai.p.rapidapi.com/website-categorization/heise.de',
           {
             headers: {
-              'x-rapidapi-key': 'a5a5f0a978mshbe5240fb915e8f6p117f54jsn88b440fb1ec1',
+              'x-rapidapi-key': 'xxx',
               'x-rapidapi-host': 'website-categorization-api-now-with-ai.p.rapidapi.com',
             },
           },
@@ -87,7 +87,7 @@ export class RestApiDefinitions {
         const url = 'https://website-categorization-api-now-with-ai.p.rapidapi.com/website-categorization/' // + params[0].val
         const res = await fetch(url, {
           headers: {
-            'x-rapidapi-key': 'a5a5f0a978mshbe5240fb915e8f6p117f54jsn88b440fb1ec1',
+            'x-rapidapi-key': 'xxx',
             'x-rapidapi-host': 'website-categorization-api-now-with-ai.p.rapidapi.com',
           },
         })
