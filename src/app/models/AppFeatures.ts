@@ -379,7 +379,7 @@ export class AppFeatures {
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {
-    const found = _.filter(this.features, (feature: Feature) => feature.ident === f)
+    const found = _.filter(this.features, (feature: Feature) => feature.ident === f.toString())
     if (found && found.length > 0) {
       return found[0]
     }

@@ -13,6 +13,10 @@
         "js": ["tabsets-content-script.ts"]
       },
       {
+        "matches": ["*://rapidapi.com/*"],
+        "js": ["tabsets-request-interceptor-inject.js","tabsets-request-interceptor.js"]
+      },
+      {
         "matches": ["*://*/www/index.html#/mainpanel/MHTML---disabled---*"],
         "js": ["my-content-script.ts"]
       }

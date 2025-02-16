@@ -345,6 +345,17 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/HelpPage.vue') }],
   },
+  // --- testing
+  {
+    path: '/mainpanel/obsidian/files/:file',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/ObsidianPage.vue') }],
+  },
+  {
+    path: '/mainpanel/restapi/:api/:domain',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/RestCallResultPage.vue') }],
+  },
   {
     path: '/:catchAll(.*)*',
     component: () => import('src/app/pages/ErrorNotFound.vue'),

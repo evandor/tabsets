@@ -80,6 +80,16 @@ class BrowserApi {
       { urls: ['*://*/*'], types: ['main_frame'] },
       ['responseHeaders'],
     )
+    chrome.webRequest?.onCompleted.addListener(
+      (details: any) => {
+        console.log('details!', details)
+      },
+      {
+        urls: ['*://*/*/graphql'],
+        types: ['xmlhttprequest'],
+      },
+      ['responseHeaders'],
+    )
   }
 
   stopWebRequestListener() {
