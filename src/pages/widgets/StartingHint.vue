@@ -4,28 +4,16 @@
       <div class="row items-center text-grey-5">how to start?</div>
       <div style="min-width: 300px; border: 1px solid #efefef; border-radius: 5px">
         <q-list>
-          <!--          <q-item clickable @click="useUiStore().startButtonAnimation('newTabset')">-->
-          <!--            <q-item-section avatar>-->
-          <!--              <q-btn outline label="+" color="primary" size="sm"/>-->
-          <!--            </q-item-section>-->
-
-          <!--            <q-item-section>-->
-          <!--              <q-item-label>Add Collection</q-item-label>-->
-          <!--              <q-item-label caption>Click to create a new tabset collection</q-item-label>-->
-          <!--            </q-item-section>-->
-          <!--          </q-item>-->
-
           <q-item clickable @click="useUiStore().startButtonAnimation('addtab')">
             <q-item-section avatar>
-              <!--              <SidePanelToolbarButton-->
-              <!--                icon="tab"-->
-              <!--                color="warning"/>-->
               <q-btn outline label="..." color="primary" size="sm" />
             </q-item-section>
 
             <q-item-section>
-              <q-item-label>Add Tab</q-item-label>
-              <q-item-label caption>Add the current tab to your tabsets collection.</q-item-label>
+              <q-item-label>Add Tab (or other action)</q-item-label>
+              <q-item-label caption
+                >Context sensitive menu, e.g. to add the current tab to your tabsets collection.
+              </q-item-label>
             </q-item-section>
           </q-item>
 
@@ -39,6 +27,19 @@
               <q-item-label caption>Click here to activate more features</q-item-label>
             </q-item-section>
           </q-item>
+
+          <template v-if="useTabsStore2().browserTabs.length > 4">
+            <q-item clickable @click="useUiStore().startButtonAnimation('tabsList')">
+              <q-item-section avatar>
+                <SidePanelToolbarButton icon="playlist_add" color="primary" />
+              </q-item-section>
+
+              <q-item-section>
+                <q-item-label><span>Open Tabs View</span></q-item-label>
+                <q-item-label caption><span>Click to show the tabs currently open in your browser</span></q-item-label>
+              </q-item-section>
+            </q-item>
+          </template>
 
           <q-item
             clickable
@@ -76,5 +77,6 @@
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 </script>

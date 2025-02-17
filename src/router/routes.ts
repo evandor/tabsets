@@ -39,11 +39,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/SidePanelNoFooterLayout.vue'),
     children: [{ path: '', component: () => import('pages/sidepanel/WelcomePage.vue') }],
   },
-  {
-    path: '/sidepanel/tabsets/:tabsetId',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/SidePanelTabsetPage.vue') }],
-  },
+  // {
+  //   path: '/sidepanel/tabsets/:tabsetId',
+  //   component: () => import('layouts/SidePanelLayout.vue'),
+  //   children: [{ path: '', component: () => import('src/tabsets/pages/SidePanelTabsetPage.vue') }],
+  // },
   {
     path: '/sidepanel/spaces',
     component: () => import('layouts/SidePanelLayout.vue'),

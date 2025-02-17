@@ -38,40 +38,6 @@
         icon="o_description"
         label="Create Note" />
 
-      <template v-if="tabset.tabs.length > 0 && inBexMode() && (!tabset.window || tabset.window === 'current')">
-        <ContextMenuItem icon="open_in_new" label="Open all in...">
-          <q-item-section side>
-            <q-icon name="keyboard_arrow_right" />
-          </q-item-section>
-          <q-menu anchor="top end" self="top start">
-            <q-list>
-              <q-item
-                v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)"
-                dense
-                clickable
-                v-close-popup
-                @click="startAutoSwitchingTab(tabset.id)">
-                <q-item-section>switching tab</q-item-section>
-              </q-item>
-              <q-item dense clickable v-close-popup @click="restoreInNewWindow(tabset.id)">
-                <q-item-section>new window</q-item-section>
-              </q-item>
-              <q-item dense clickable v-close-popup @click="restoreInGroup(tabset.id)">
-                <q-item-section>this window</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </ContextMenuItem>
-      </template>
-
-      <template v-if="tabset.tabs.length > 0 && inBexMode() && tabset.window && tabset.window !== 'current'">
-        <ContextMenuItem
-          v-close-popup
-          @was-clicked="restoreInGroup(tabset.id, tabset.window)"
-          icon="open_in_new"
-          label="Open in window..." />
-      </template>
-
       <template v-if="tabset.tabs.length > 0 && inBexMode() && useFeaturesStore().hasFeature(FeatureIdent.GALLERY)">
         <ContextMenuItem
           v-close-popup
@@ -194,7 +160,7 @@
 </template>
 
 <script lang="ts" setup>
-import { LocalStorage, openURL, useQuasar } from 'quasar'
+import { openURL, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
 import { CopyToClipboardCommand } from 'src/core/domain/commands/CopyToClipboard'
@@ -205,7 +171,6 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
 import { DeleteTabsetCommand } from 'src/tabsets/commands/DeleteTabsetCommand'
 import { MarkTabsetAsArchivedCommand } from 'src/tabsets/commands/MarkTabsetAsArchived'
-import { RestoreTabsetCommand } from 'src/tabsets/commands/RestoreTabset'
 import { UnShareTabsetCommand } from 'src/tabsets/commands/UnShareTabsetCommand'
 import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
 import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
@@ -262,45 +227,8 @@ const openEditTabsetDialog = (tabset: Tabset) => {
   })
 }
 
-const restoreInNewWindow = (tabsetId: string, windowName: string | undefined = undefined) =>
-  useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName))
-
-const startAutoSwitchingTab = (tabsetId: string) => {
-  const tabset = useTabsetsStore().getTabset(tabsetId)
-  if (tabset && tabset.tabs?.length > 1 && tabset.tabs[0]!.url) {
-    const tabs = tabset.tabs
-    let tabIndex = 0
-    NavigationService.openSingleTab(tabset.tabs[tabIndex]!.url || '').then((tab) => {
-      console.log('tabId', tab)
-      let interval = setInterval(
-        () => {
-          try {
-            const nextTab = tabs[++tabIndex % tabs.length]
-            console.log('updating ', nextTab!.url)
-            chrome.tabs.update(tab.id || 0, { url: nextTab!.url }, (cb) => {
-              if (chrome.runtime.lastError) {
-                console.warn('got runtime error', chrome.runtime.lastError)
-                clearInterval(interval)
-              }
-            })
-          } catch (err) {
-            console.log('got error', err, interval)
-            clearInterval(interval)
-          }
-        },
-        (LocalStorage.getItem('ui.tabSwitcher') as number) || 5000,
-      )
-    })
-  }
-}
-
-const restoreInGroup = (tabsetId: string, windowName: string | undefined = undefined) =>
-  useCommandExecutor().execute(new RestoreTabsetCommand(tabsetId, windowName, false))
-
 const openOverviewPage = (tabsetId: string) =>
   NavigationService.openOrCreateTab([chrome.runtime.getURL(`www/index.html#/mainpanel/tabsets/overview/${tabsetId}`)])
-
-const focus = (tabset: Tabset) => router.push('/sidepanel/tabsets/' + tabset.id)
 
 const showCreateNoteItem = () => useFeaturesStore().hasFeature(FeatureIdent.NOTES)
 

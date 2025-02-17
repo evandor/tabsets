@@ -115,6 +115,7 @@
   <SidePanelFooterLeftButton
     :side-panel-view="SidePanelViews.TABS_LIST"
     :size="props.size"
+    :class="{ shake: animateTabsListButton }"
     icon="o_playlist_add"
     tooltip="All your browser's open tabs" />
 
@@ -173,6 +174,7 @@ const emits = defineEmits(['wasClicked'])
 const buttonSize = ref('15px')
 const unreadMessagesCount = ref(0)
 const animateBookmarksButton = ref(false)
+const animateTabsListButton = ref(false)
 
 watchEffect(() => {
   buttonSize.value = useUiStore().getButtonSize('sidePanelFooter')
@@ -180,6 +182,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   animateBookmarksButton.value = useUiStore().animateBookmarksButton
+})
+
+watchEffect(() => {
+  animateTabsListButton.value = useUiStore().animateTabsListButton
 })
 
 const suggestionsLabel = () => {

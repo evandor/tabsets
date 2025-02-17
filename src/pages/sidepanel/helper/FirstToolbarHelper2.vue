@@ -89,6 +89,7 @@
                   :tabset="currentTabset" />
               </span>
               <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer" />
+
               <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset" />
             </div>
           </slot>

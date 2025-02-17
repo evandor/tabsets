@@ -5,9 +5,7 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 export class SidePanelViews {
   static readonly MAIN = new SidePanelViews('main', '/sidepanel')
 
-  static readonly TABS_LIST = new SidePanelViews('tabsList', '/sidepanel/tabslist', () =>
-    useFeaturesStore().hasFeature(FeatureIdent.OPEN_TABS),
-  )
+  static readonly TABS_LIST = new SidePanelViews('tabsList', '/sidepanel/tabslist', () => true)
 
   static readonly TAGS_LIST = new SidePanelViews(
     'tagsList',

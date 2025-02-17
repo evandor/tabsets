@@ -128,7 +128,6 @@
           tooltip="Access to your bookmarks" />
 
         <ToolbarButton
-          v-if="useFeaturesStore().hasFeature(FeatureIdent.OPEN_TABS)"
           :drawer="DrawerTabs.OPEN_TABS"
           icon="o_playlist_add"
           tooltip="Show Open Tabs View"
@@ -197,7 +196,7 @@ import SearchWidget from 'src/search/widgets/SearchWidget.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
-import { Suggestion, SuggestionState } from 'src/suggestions/domain/models/Suggestion'
+import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import ExportDialog from 'src/tabsets/dialogues/ExportDialog.vue'
 import ImportDialog from 'src/tabsets/dialogues/ImportDialog.vue'
