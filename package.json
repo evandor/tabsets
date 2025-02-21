@@ -69,7 +69,7 @@
     "html-to-text": "^9.0.5",
     "idb": "^8.0.0",
     "js-sha256": "^0.11.0",
-    "jsonpath-plus": "^10.2.0",
+    "jsonpath-plus": "^10.3.0",
     "keytar": "^7.9.0",
     "lodash": "^4.17.21",
     "mathjs": "^14.0.1",
