@@ -352,7 +352,7 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/ObsidianPage.vue') }],
   },
   {
-    path: '/mainpanel/restapi/:api/:domain',
+    path: '/mainpanel/restapi/:api',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/RestCallResultPage.vue') }],
   },

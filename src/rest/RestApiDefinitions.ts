@@ -64,9 +64,17 @@ export class RestApiDefinitions {
         const tabset = executionResult.result.tabset
         tabset.type = TabsetType.REST
         tabset.restDefinition = 'OBSIDIAN'
-        const tab = new RestTab(uid(), 'Rest API Call', 'http://www.test.de', 'RAPID_API_WEBSITE_CATEGORIZATION', [
-          { name: 'domain', type: 'TEXT', val: '' },
-        ])
+        const tab = new RestTab(
+          uid(),
+          'Rest API Call',
+          'http://www.test.de',
+          'RAPID_API_WEBSITE_CATEGORIZATION',
+          '',
+          '',
+          'GET',
+          [],
+          [{ name: 'domain', type: 'TEXT', val: '' }],
+        )
         tab.description = context.browserTab!.url || 'unkonwn'
         tabset.tabs.push(tab)
         await useTabsetsStore().saveTabset(tabset)

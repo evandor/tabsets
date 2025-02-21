@@ -431,7 +431,7 @@ class BrowserListeners {
   private ignoreUrl(url: string | undefined) {
     const selfUrl = chrome.runtime.getURL('')
     if (url?.startsWith(selfUrl)) {
-      console.debug(`onTabUpdated: >>> .url starts with '${selfUrl}'`)
+      //console.debug(`onTabUpdated: >>> .url starts with '${selfUrl}'`)
       return true
     }
   }

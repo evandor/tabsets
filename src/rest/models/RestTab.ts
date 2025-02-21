@@ -4,7 +4,8 @@ import { Tab } from 'src/tabsets/models/Tab'
 
 export interface RestParam {
   name: string
-  type: 'TEXT'
+  type: string
+  condition?: string
   val: any
 }
 
@@ -14,6 +15,10 @@ export class RestTab extends Tab {
     override title: string,
     override url: string,
     public api: RestApiIdent,
+    public host: string,
+    public route: string,
+    public method: string,
+    public headers: [string, string][] = [],
     public params: RestParam[] = [],
   ) {
     super(id, BrowserApi.createChromeTabObject(title, url))
