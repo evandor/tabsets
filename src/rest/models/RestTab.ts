@@ -9,7 +9,15 @@ export interface RestParam {
   val: any
 }
 
+export type ParamTemplateKeyValue = [string, string | number | boolean]
+
 export class RestTab extends Tab {
+  // paramsTemplates: [string, ParamTemplateKeyValue[]][] = []
+  // paramsTemplates: Record<string, ParamTemplateKeyValue[]> = {}
+  paramsTemplates: { [k: string]: ParamTemplateKeyValue[] } = {}
+
+  layout: object = {}
+
   constructor(
     override id: string,
     override title: string,
@@ -22,5 +30,14 @@ export class RestTab extends Tab {
     public params: RestParam[] = [],
   ) {
     super(id, BrowserApi.createChromeTabObject(title, url))
+  }
+
+  addParamsTemplate(key: string, val: ParamTemplateKeyValue[]) {
+    // if (!this.paramsTemplates) {
+    //   this.paramsTemplates = []
+    // }
+    console.log('---', this.paramsTemplates)
+    // this.paramsTemplates.push([key, val])
+    this.paramsTemplates[key] = val
   }
 }
