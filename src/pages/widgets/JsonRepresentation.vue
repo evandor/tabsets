@@ -1,6 +1,6 @@
 <template>
   <div v-if="layout && layout['type' as keyof object] === 'object' && layout['properties' as keyof object]">
-    <div v-for="e in Object.keys(layout['properties' as keyof object] || {})">
+    <div v-for="e in propertyKeys()">
       <!--      <div class="text-h6">{{ e }} ({{ schema.properties[e as keyof object] }})</div>-->
       <div class="row">
         <template v-if="typeMatch(e, ['string', 'number', 'integer'])">
@@ -139,4 +139,12 @@ const isUrl = (s: any) => typeof s === 'string' && (s.startsWith('http://') || s
 
 const isImage = (identifier: string, s: any) =>
   isUrl(s) && ['thumbnail', 'favicon'].find((m: string) => identifier.toLowerCase() === m)
+
+const propertyKeys = (): string[] => {
+  const keys = Object.keys(props.layout['properties' as keyof object] || {})
+  return keys.filter((k: string) => {
+    const val = props.layout['properties' as keyof object][k]
+    return !val['hide' as keyof object]
+  })
+}
 </script>

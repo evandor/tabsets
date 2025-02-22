@@ -1,18 +1,33 @@
 <template>
   <div v-if="schema['type' as keyof object] === 'object'">
-    <div v-for="(e, index) in Object.keys(schema['properties' as keyof object] || {})">
+    <div v-for="(e, index) in propertyKeys()">
       <!--      <div class="text-h6">{{ e }} ({{ schema.properties[e as keyof object] }})</div>-->
       <div class="row">
         <div class="col-2 text-body1 ellipsis text-capitalize">
-          {{ e }} {{ index }} {{ Object.keys(schema['properties' as keyof object] || {}).length - 1 }}
           <q-btn
             icon="south"
             flat
+            dense
             size="xs"
-            :disable="index === Object.keys(schema['properties' as keyof object] || {}).length - 1"
-            class="cursor-pointer"
-            @click="indexUpFor(index)" />
-          <q-icon name="north" />
+            :disable="index === propertyKeys().length - 1"
+            class="cursor-pointer q-mx-none"
+            @click="indexUpdate(index, propertyKeys().length, true)" />
+          <q-btn
+            icon="north"
+            flat
+            dense
+            size="xs"
+            :disable="index === 0"
+            class="cursor-pointer q-mx-none"
+            @click="indexUpdate(index, propertyKeys().length, false)" />
+          <q-btn
+            :icon="isVisible(index) ? 'disabled_visible' : 'sym_o_visibility'"
+            flat
+            dense
+            size="xs"
+            class="cursor-pointer q-mx-none"
+            @click="toggleHide(index)" />
+          <span class="q-ml-sm">{{ e }}</span>
         </div>
         <div class="col text-body2">
           1*
@@ -95,9 +110,51 @@ const updateLayout = (a: { jsonPath: string; schema: object }) => {
   emits('layoutChanged', { schema: props.schema })
 }
 
-const indexUpFor = (i: number) => {
-  console.log('indexupFor', i, props.schema)
+const isVisible = (i: number) => {
+  const keys = Object.keys(props.schema['properties' as keyof object])
+  const value = props.schema['properties' as keyof object][keys[i] as keyof object]
+  return !value['hide' as keyof object]
+}
+
+const toggleHide = (i: number) => {
+  var keys = Object.keys(props.schema['properties' as keyof object])
+  console.log('keys', i, keys)
+  let value = props.schema['properties' as keyof object][keys[i] as keyof object]
+  console.log('value', value)
+  if (value['hide' as keyof object]) {
+    value = Object.assign(value, { hide: false })
+  } else {
+    value = Object.assign(value, { hide: true })
+  }
+  props.schema['properties' as keyof object][keys[i] as keyof object] = Object.assign(
+    props.schema['properties' as keyof object][keys[i] as keyof object],
+    value,
+  )
+  console.log('result', props.schema)
+}
+
+const indexUpdate = (i: number, length: number, up: boolean) => {
+  // console.log('indexupFor', i, props.schema)
   var keys = Object.keys(props.schema['properties' as keyof object])
   console.log('keys', keys)
+  if (up && i + 1 < length) {
+    const valAtIndex = keys[i]
+    const valAtNextIndex = keys[i + 1]
+    keys[i] = valAtNextIndex!
+    keys[i + 1] = valAtIndex!
+  } else if (i > 0) {
+    const valAtIndex = keys[i]
+    const valAtIndexBefore = keys[i - 1]
+    keys[i] = valAtIndexBefore!
+    keys[i - 1] = valAtIndex!
+  }
+  let o: { [k: string]: any } = {}
+  Array.from(keys).forEach((k: string) => {
+    o[k as keyof object] = null
+  })
+  props.schema['properties' as keyof object] = Object.assign(o, props.schema['properties' as keyof object])
+  // console.log('result', props.schema)
 }
+
+const propertyKeys = () => Object.keys(props.schema['properties' as keyof object] || {})
 </script>
