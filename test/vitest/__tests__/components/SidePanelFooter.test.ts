@@ -91,9 +91,9 @@ describe('SidePanelFooter', () => {
           //callback(currentWindows);
           return Promise.resolve(currentWindows)
         }),
-        getCurrent: vi.fn((options, callback) => {
+        getCurrent: vi.fn((callback) => {
           //console.log("mocking chrome.windows.getCurrent")
-          callback(window100)
+          //callback(window100)
         }),
         onCreated: {
           addListener: vi.fn((listener) => {

@@ -61,14 +61,6 @@ import { useRouter } from 'vue-router'
 
 const { t } = useI18n({ useScope: 'global' })
 
-const props = defineProps({
-  title: { type: String, default: 'My Tabsets' },
-  forceTitle: { type: Boolean, default: false },
-  showSearchBox: { type: Boolean, default: false },
-  searchTerm: { type: String, default: '' },
-  searchHits: { type: Number, required: false },
-})
-
 const $q = useQuasar()
 const router = useRouter()
 
@@ -101,12 +93,6 @@ watchEffect(() => {
 
 watchEffect(() => {
   annimateNewTabsetButton.value = useUiStore().animateNewTabsetButton
-})
-
-watchEffect(() => {
-  if (props.showSearchBox && !searching.value) {
-    searching.value = true
-  }
 })
 
 watchEffect(() => {

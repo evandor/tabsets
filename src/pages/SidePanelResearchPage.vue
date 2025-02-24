@@ -210,8 +210,6 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import FirstToolbarHelper2 from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
-import SnapshotViewHelper from 'pages/sidepanel/helper/SnapshotViewHelper.vue'
 import { uid } from 'quasar'
 import { ContentItem } from 'src/content/models/ContentItem'
 import { useContentService } from 'src/content/services/ContentService'
@@ -220,6 +218,8 @@ import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import Analytics from 'src/core/utils/google-analytics'
 import SourcePageAnnotation from 'src/pages/helper/SourcePageAnnotation.vue'
+import FirstToolbarHelper2 from 'src/pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import SnapshotViewHelper from 'src/pages/sidepanel/helper/SnapshotViewHelper.vue'
 import { SaveHtmlCommand } from 'src/snapshots/commands/SaveHtmlCommand'
 import { SaveMHtmlCommand } from 'src/snapshots/commands/SaveMHtmlCommand'
 import { SavePdfCommand } from 'src/snapshots/commands/SavePdfCommand'

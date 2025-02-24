@@ -24,11 +24,11 @@
 
 <script setup lang="ts">
 import _ from 'lodash'
-import FirstToolbarHelper from 'pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import { uid, useQuasar } from 'quasar'
 import SearchHit from 'src/components/layouts/SearchHit.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
+import FirstToolbarHelper from 'src/pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import { Hit } from 'src/search/models/Hit'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'

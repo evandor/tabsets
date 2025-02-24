@@ -75,7 +75,7 @@ describe('ExcalidrawAddUrlToTabsetHandler', () => {
   it('clicking saveAs Button results ...', async () => {
     const ts = new Tabset('tsId', 'tsName')
     await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
-      data: { filename: 'excalitest' },
+      dialog: { filename: 'excalitest' },
     })
     expect(ts.tabs.length).toBe(1)
     expect(ts.tabs[0]!.storage?.excalidraw).toBe('{"a":"A"}')

@@ -1,7 +1,7 @@
 <template>
   <q-item v-ripple class="q-mb-lg">
     <q-item-section
-      v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, undefined)"
+      v-if="useUiStore().listDetailLevelGreaterEqual('SOME', undefined)"
       @click.stop="open(hit)"
       class="q-mr-sm text-right"
       style="justify-content: start; width: 25px; max-width: 25px">
@@ -88,7 +88,7 @@ import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
+import { useUiStore } from 'src/ui/stores/uiStore'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({

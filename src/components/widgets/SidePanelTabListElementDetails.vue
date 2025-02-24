@@ -1,6 +1,6 @@
 <template>
   <q-item-section
-    v-if="useUiStore().listDetailLevelGreaterEqual(ListDetailLevel.SOME, undefined)"
+    v-if="useUiStore().listDetailLevelGreaterEqual('SOME', undefined)"
     @mouseover="hoveredTab = tab.id"
     @mouseleave="hoveredTab = undefined"
     class="q-mr-sm text-right"
@@ -54,7 +54,7 @@ import { Tab } from 'src/tabsets/models/Tab'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import TabFaviconWidget from 'src/tabsets/widgets/TabFaviconWidget.vue'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
-import { ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
+import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, PropType, ref, watchEffect } from 'vue'
 
 const props = defineProps({

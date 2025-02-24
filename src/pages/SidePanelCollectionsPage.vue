@@ -34,7 +34,8 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <SidePanelCollectionsPageToolbar :show-search-box="false" />
+      <SidePanelCollectionsPageToolbar />
+      <SearchToolbarHelper />
     </q-page-sticky>
   </q-page>
 </template>
@@ -42,12 +43,12 @@
 <script lang="ts" setup>
 import { dragContext, Draggable } from '@he-tree/vue'
 import _ from 'lodash'
-import SidePanelCollectionsPageToolbar from 'pages/sidepanel/helper/SidePanelCollectionsPageToolbar.vue'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import Analytics from 'src/core/utils/google-analytics'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import SidePanelCollectionsPageToolbar from 'src/pages/sidepanel/helper/SidePanelCollectionsPageToolbar.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
@@ -56,6 +57,7 @@ import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import '@he-tree/vue/style/default.css'
+import SearchToolbarHelper from 'src/pages/sidepanel/helper/SearchToolbarHelper.vue'
 import { DeleteTabsetFolderCommand } from 'src/tabsets/commands/DeleteTabsetFolderCommand'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 

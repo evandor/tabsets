@@ -34,11 +34,11 @@
 </template>
 
 <script lang="ts" setup>
-import ViewToolbarHelper from 'pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { useQuasar } from 'quasar'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'
 import Analytics from 'src/core/utils/google-analytics'
+import ViewToolbarHelper from 'src/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { Tab } from 'src/tabsets/models/Tab'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import TabFaviconWidget from 'src/tabsets/widgets/TabFaviconWidget.vue'

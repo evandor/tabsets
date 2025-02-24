@@ -45,7 +45,6 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import SearchToolbarHelper from 'pages/sidepanel/helper/SearchToolbarHelper.vue'
 import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
@@ -54,13 +53,13 @@ import Analytics from 'src/core/utils/google-analytics'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import SidePanelNotesView from 'src/notes/views/sidepanel/SidePanelNotesView.vue'
 import FirstToolbarHelper2 from 'src/pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import SearchToolbarHelper from 'src/pages/sidepanel/helper/SearchToolbarHelper.vue'
 import StartingHint from 'src/pages/widgets/StartingHint.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAuthStore } from 'src/stores/authStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import SidePanelPageTabList from 'src/tabsets/layouts/SidePanelPageTabList.vue'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
@@ -218,7 +217,7 @@ if (inBexMode()) {
       // } else if (message.name === "mark-tabset-deleted") {
       //   TabsetService.markAsDeleted(message.data.tabsetId)
     } else if (message.name === 'tabset-renamed') {
-      TabsetService.rename(message.data.tabsetId, message.data.newName, message.data.newColor)
+      useTabsetService().rename(message.data.tabsetId, message.data.newName, message.data.newColor)
     } else if (message.name === 'progress-indicator') {
       if (message.percent) {
         uiStore.setProgress(message.percent)

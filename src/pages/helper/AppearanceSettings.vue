@@ -46,9 +46,9 @@
             detailLevelPerTabset: detailLevelPerTabset ? ' (Default)' : '',
           })
         ">
-        <q-radio v-model="detailLevel" :val="ListDetailLevel.MINIMAL" label="Minimal Details" />
-        <q-radio v-model="detailLevel" :val="ListDetailLevel.SOME" label="Some Details" />
-        <q-radio v-model="detailLevel" :val="ListDetailLevel.MAXIMAL" label="All Details" />
+        <q-radio v-model="detailLevel" :val="'MINIMAL'" label="Minimal Details" />
+        <q-radio v-model="detailLevel" :val="'SOME'" label="Some Details" />
+        <q-radio v-model="detailLevel" :val="'MAXIMAL'" label="All Details" />
       </InfoLine>
 
       <InfoLine label="">
@@ -173,7 +173,6 @@
 </template>
 
 <script lang="ts" setup>
-import InfoLine from 'pages/helper/InfoLine.vue'
 import { LocalStorage, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT } from 'src/boot/constants'
@@ -182,6 +181,7 @@ import { useUtils } from 'src/core/services/Utils'
 import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCommand'
 import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatureCommand'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import InfoLine from 'src/pages/helper/InfoLine.vue'
 import NavigationService from 'src/services/NavigationService'
 import { useSettingsStore } from 'src/stores/settingsStore'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
@@ -197,7 +197,7 @@ const settingsStore = useSettingsStore()
 const darkMode = ref<string>(LocalStorage.getItem('darkMode') || 'auto')
 const installationTitle = ref<string>((LocalStorage.getItem(TITLE_IDENT) as string) || 'My Tabsets')
 const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
-const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || ListDetailLevel.MAXIMAL)
+const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || 'MAXIMAL')
 const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const overlapIndicator = ref(LocalStorage.getItem('ui.overlapIndicator') || false)

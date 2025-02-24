@@ -45,9 +45,9 @@
 </template>
 
 <script lang="ts" setup>
-import ViewToolbarHelper from 'pages/sidepanel/helper/ViewToolbarHelper.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import { useNotesStore } from 'src/notes/stores/NotesStore'
+import ViewToolbarHelper from 'src/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import NavigationService from 'src/services/NavigationService'
 import { onMounted, ref } from 'vue'
 
