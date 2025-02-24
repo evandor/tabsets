@@ -1,6 +1,6 @@
 <template>
   <!-- SidePanelPage2 -->
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 50px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 83px">
     <offline-info />
 
     <div class="wrap" v-if="useUiStore().appLoading">
@@ -38,12 +38,14 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
       <FirstToolbarHelper2 :showSearchBox="showSearchBox"></FirstToolbarHelper2>
+      <SearchToolbarHelper class="bg-grey-1" v-if="useTabsetsStore().allTabsCount > 0" />
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import _ from 'lodash'
+import SearchToolbarHelper from 'pages/sidepanel/helper/SearchToolbarHelper.vue'
 import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'

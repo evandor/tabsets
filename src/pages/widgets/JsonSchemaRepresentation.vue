@@ -9,6 +9,7 @@
             flat
             dense
             size="xs"
+            color="accent"
             :disable="index === propertyKeys().length - 1"
             class="cursor-pointer q-mx-none"
             @click="indexUpdate(index, propertyKeys().length, true)" />
@@ -17,6 +18,7 @@
             flat
             dense
             size="xs"
+            color="accent"
             :disable="index === 0"
             class="cursor-pointer q-mx-none"
             @click="indexUpdate(index, propertyKeys().length, false)" />
@@ -25,6 +27,7 @@
             flat
             dense
             size="xs"
+            color="accent"
             class="cursor-pointer q-mx-none"
             @click="toggleHide(index)" />
           <span class="q-ml-sm">{{ e }}</span>
@@ -78,12 +81,19 @@
             @update:model-value="(val: any) => updatedSchema(val)" />
         </div>
       </div>
-      <hr />
-      **
+
       <json-schema-representation
+        v-if="schema['items' as keyof object]['properties']"
         :schema="schema['items' as keyof object]"
         :payload="props.payload['data' as keyof object][0]"
         @layout-changed="(i: any) => updateLayout(i)" />
+      <div v-else>
+        Schema: {{ schema['items' as keyof object] }}
+        <hr />
+        {{ props.payload['data' as keyof object][0] }}
+        **
+        {{ columnsFromObjects(props.payload['data' as keyof object]) }}
+      </div>
     </div>
   </div>
   <div v-else>
@@ -154,7 +164,31 @@ const indexUpdate = (i: number, length: number, up: boolean) => {
   })
   props.schema['properties' as keyof object] = Object.assign(o, props.schema['properties' as keyof object])
   // console.log('result', props.schema)
+  emits('layoutChanged', { schema: props.schema })
 }
 
 const propertyKeys = () => Object.keys(props.schema['properties' as keyof object] || {})
+
+const columnsFromObjects = (a: any) => {
+  console.log('a', a)
+  const fields: Set<string> = new Set()
+  if (a && Array.isArray(a)) {
+    for (const l of a as object[]) {
+      // console.log('l', Object.keys(l))
+      Object.keys(l).forEach((k) => fields.add(k))
+    }
+  }
+  console.log('fields', fields)
+  const properties: { [k: string]: object } = {}
+  fields.forEach((f: string) => {
+    properties[f] = { type: 'string' }
+  })
+  console.log('properties', properties)
+  console.log('schema', props.schema)
+  props.schema['items' as keyof object] = Object.assign(props.schema['items' as keyof object], {
+    properties: properties,
+  })
+  console.log('schema', props.schema)
+  emits('layoutChanged', { schema: props.schema })
+}
 </script>

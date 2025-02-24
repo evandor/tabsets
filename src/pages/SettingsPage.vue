@@ -194,7 +194,6 @@ const tab = ref<string>(route.query['tab'] ? (route.query['tab'] as string) : 'a
 
 onMounted(() => {
   Analytics.firePageViewEvent('SettingsPage', document.location.href)
-  console.log('****')
 })
 
 watchEffect(() => {

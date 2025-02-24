@@ -1,62 +1,62 @@
 <template>
   <q-menu :offset="[22, 6]">
     <q-list dense style="min-width: 200px">
-      <ContextMenuItem
-        v-close-popup
-        @was-clicked="openEditTabsetDialog(tabset)"
-        icon="o_note"
-        :label="tabset.type === TabsetType.SESSION ? 'Edit Session' : 'Edit Tabset'" />
+      <!--      <ContextMenuItem-->
+      <!--        v-close-popup-->
+      <!--        @was-clicked="openEditTabsetDialog(tabset)"-->
+      <!--        icon="o_note"-->
+      <!--        :label="tabset.type === TabsetType.SESSION ? 'Edit Session' : 'Edit Tabset'" />-->
 
-      <template v-if="tabset.type === TabsetType.SESSION">
-        <q-separator inset />
+      <!--      <template v-if="tabset.type === TabsetType.SESSION">-->
+      <!--        <q-separator inset />-->
 
-        <ContextMenuItem
-          v-close-popup
-          @was-clicked="convertToCollection(tabset)"
-          color="warning"
-          icon="o_folder"
-          label="Convert to Collection" />
-      </template>
+      <!--        <ContextMenuItem-->
+      <!--          v-close-popup-->
+      <!--          @was-clicked="convertToCollection(tabset)"-->
+      <!--          color="warning"-->
+      <!--          icon="o_folder"-->
+      <!--          label="Convert to Collection" />-->
+      <!--      </template>-->
 
-      <template v-if="tabset.type === TabsetType.DEFAULT">
-        <q-separator inset />
+      <!--      <template v-if="tabset.type === TabsetType.DEFAULT">-->
+      <!--        <q-separator inset />-->
 
-        <ContextMenuItem
-          v-close-popup
-          @was-clicked="createSubfolder(tabset)"
-          color="warning"
-          icon="o_folder"
-          label="Create Subfolder" />
-      </template>
+      <!--        <ContextMenuItem-->
+      <!--          v-close-popup-->
+      <!--          @was-clicked="createSubfolder(tabset)"-->
+      <!--          color="warning"-->
+      <!--          icon="o_folder"-->
+      <!--          label="Create Subfolder" />-->
+      <!--      </template>-->
 
       <q-separator inset v-if="useTabsetsStore().tabsets.size > 1" />
 
-      <ContextMenuItem
-        v-close-popup
-        v-if="showCreateNoteItem()"
-        @was-clicked="startTabsetNote(tabset)"
-        icon="o_description"
-        label="Create Note" />
+      <!--      <ContextMenuItem-->
+      <!--        v-close-popup-->
+      <!--        v-if="showCreateNoteItem()"-->
+      <!--        @was-clicked="startTabsetNote(tabset)"-->
+      <!--        icon="o_description"-->
+      <!--        label="Create Note" />-->
 
-      <template v-if="tabset.tabs.length > 0 && inBexMode() && useFeaturesStore().hasFeature(FeatureIdent.GALLERY)">
-        <ContextMenuItem
-          v-close-popup
-          @was-clicked="openOverviewPage(tabset.id)"
-          icon="calendar_view_month"
-          label="Show Gallery" />
-      </template>
+      <!--      <template v-if="tabset.tabs.length > 0 && inBexMode() && useFeaturesStore().hasFeature(FeatureIdent.GALLERY)">-->
+      <!--        <ContextMenuItem-->
+      <!--          v-close-popup-->
+      <!--          @was-clicked="openOverviewPage(tabset.id)"-->
+      <!--          icon="calendar_view_month"-->
+      <!--          label="Show Gallery" />-->
+      <!--      </template>-->
 
-      <template
-        v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) && tabset.status === TabsetStatus.DEFAULT">
-        <ContextMenuItem
-          v-close-popup
-          @was-clicked="archiveTabset(tabset)"
-          icon="o_inventory_2"
-          color="warning"
-          label="Archive" />
-      </template>
+      <!--      <template-->
+      <!--        v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) && tabset.status === TabsetStatus.DEFAULT">-->
+      <!--        <ContextMenuItem-->
+      <!--          v-close-popup-->
+      <!--          @was-clicked="archiveTabset(tabset)"-->
+      <!--          icon="o_inventory_2"-->
+      <!--          color="warning"-->
+      <!--          label="Archive" />-->
+      <!--      </template>-->
 
-      <q-separator inset />
+      <!--      <q-separator inset />-->
 
       <template v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSETS_SHARING)">
         <ContextMenuItem label="Sharing..." icon="ios_share">
@@ -135,26 +135,17 @@
         <q-separator inset />
       </template>
 
-      <!--      <template v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">-->
-      <!--        <ContextMenuItem v-close-popup-->
-      <!--                         @was-clicked="useSearchStore().reindexTabset(tabset.id)"-->
-      <!--                         icon="o_note"-->
-      <!--                         label="Re-Index Search (dev)"/>-->
-
-      <!--        <q-separator inset/>-->
-      <!--      </template>-->
-
-      <ContextMenuItem
-        v-close-popup
-        @was-clicked="deleteTabsetDialog(tabset as Tabset)"
-        icon="o_delete"
-        color="negative"
-        :disable="tabset.sharing?.sharedId !== undefined"
-        :label="tabset.type === TabsetType.SESSION ? 'Delete Session' : 'Delete Tabset'">
-        <q-tooltip class="tooltip-small" v-if="tabset.sharing?.sharedId !== undefined">
-          Stop sharing first if you want to delete this tabset
-        </q-tooltip>
-      </ContextMenuItem>
+      <!--      <ContextMenuItem-->
+      <!--        v-close-popup-->
+      <!--        @was-clicked="deleteTabsetDialog(tabset as Tabset)"-->
+      <!--        icon="o_delete"-->
+      <!--        color="negative"-->
+      <!--        :disable="tabset.sharing?.sharedId !== undefined"-->
+      <!--        :label="tabset.type === TabsetType.SESSION ? 'Delete Session' : 'Delete Tabset'">-->
+      <!--        <q-tooltip class="tooltip-small" v-if="tabset.sharing?.sharedId !== undefined">-->
+      <!--          Stop sharing first if you want to delete this tabset-->
+      <!--        </q-tooltip>-->
+      <!--      </ContextMenuItem>-->
     </q-list>
   </q-menu>
 </template>
@@ -177,7 +168,7 @@ import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
 import NewSubfolderDialog from 'src/tabsets/dialogues/NewSubfolderDialog.vue'
 import ShareTabsetDialog from 'src/tabsets/dialogues/ShareTabsetDialog.vue'
 import ShareTabsetPubliclyDialog from 'src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue'
-import { Tabset, TabsetSharing, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { PropType } from 'vue'

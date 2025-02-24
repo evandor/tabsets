@@ -1,7 +1,7 @@
 <template>
   <div v-if="layout && layout['type' as keyof object] === 'object' && layout['properties' as keyof object]">
     <div v-for="e in propertyKeys()">
-      <!--      <div class="text-h6">{{ e }} ({{ schema.properties[e as keyof object] }})</div>-->
+      <!--      <div class="text-h6">!{{ e }} ({{ layout.properties[e as keyof object] }})</div>-->
       <div class="row">
         <template v-if="typeMatch(e, ['string', 'number', 'integer'])">
           <div class="col-2 text-caption ellipsis text-capitalize">{{ e }}</div>
@@ -26,27 +26,18 @@
         </template>
         <template v-if="typeMatch(e, ['array']) && hasData(payload[e as keyof object])">
           <div class="col-12 q-mt-md">
-            <!--            <div>-->
-            <!--              -{{ e }}-->
-            <!--              <hr />-->
-            <!--              {{ payload[e as keyof object] }}-->
-            <!--              <hr />-->
-            <!--              {{ toJsonSchema(payload[e as keyof object]) }}-->
-            <!--              <hr />-->
-            <!--              #{{ props.layout['properties' as keyof object][e as keyof object] }}-->
-            <!--            </div>-->
             <json-representation
+              :identifier="e"
               :payload="payload[e as keyof object]"
               :layout="props.layout['properties' as keyof object][e as keyof object]" />
-            <!--            <json-representation-->
-            <!--              :payload="payload[e as keyof object]"-->
-            <!--              :layout="toJsonSchema(payload[e as keyof object])" />-->
           </div>
         </template>
         <template v-if="typeMatch(e, ['object'])">
           <div class="col-12 q-mt-md">
-            <div class="text-body1">{{ e }}</div>
-            <json-representation :payload="payload[e as keyof object]" :layout="props.layout[e as keyof object]" />
+            <div class="text-caption">{{ e }}**</div>
+            <json-representation
+              :payload="payload[e as keyof object]"
+              :layout="props.layout['properties' as keyof object][e as keyof object]" />
           </div>
         </template>
         <!--        <div v-else>e*: {{ e }}</div>-->
@@ -54,14 +45,16 @@
     </div>
   </div>
   <div v-else-if="layout && layout['type' as keyof object] === 'array'">
-    <!--    <div>+{{ layout['rowsPerPage' as keyof object] }}+</div>-->
+    <div class="col-2 text-caption ellipsis text-capitalize">{{ props.identifier }}*</div>
     <q-table
       :rows="props.payload as any[]"
       :columns="columns()"
       row-key="name"
       dense
       flat
-      :pagination="{ rowsPerPage: layout['rowsPerPage' as keyof object]['value'] || 10 }">
+      :pagination="{
+        rowsPerPage: layout['rowsPerPage' as keyof object] ? layout['rowsPerPage' as keyof object]['value'] || 5 : 10,
+      }">
       <template v-slot:body-cell="props">
         <q-td
           :props="props"
@@ -77,7 +70,7 @@
       </template>
     </q-table>
   </div>
-  <div v-else>---{{ layout }} {{ payload }}</div>
+  <div v-else>---hier---{{ layout['type' as keyof object] }}/Payload: {{ payload }}</div>
 </template>
 <script lang="ts" setup>
 import { useNavigationService } from 'src/core/services/NavigationService'
@@ -86,6 +79,7 @@ import { onMounted } from 'vue'
 const props = defineProps<{
   payload: object
   layout: object
+  identifier?: string
 }>()
 
 //const schema = ref<toJsonSchema.JSONSchema3or4 | undefined>(undefined)

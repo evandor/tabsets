@@ -37,6 +37,14 @@
                 @was-clicked="addFirstTabset"
                 :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()" />
             </q-card-actions>
+            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none q-mt-none">
+              <div
+                class="text-right q-ma-none q-pa-none text-accent cursor-pointer"
+                style="font-size: smaller"
+                @click="importFromBackup()">
+                or import from backup...
+              </div>
+            </q-card-actions>
             <!--            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none q-mt-none">-->
             <!--              <div-->
             <!--                class="text-right q-ma-none q-pa-none text-accent cursor-pointer"-->
@@ -89,6 +97,7 @@ import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import { STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT } from 'src/boot/constants'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useNavigationService } from 'src/core/services/NavigationService'
 import Analytics from 'src/core/utils/google-analytics'
 import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCommand'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
@@ -161,6 +170,11 @@ const importFromBookmarks = () => {
     .then(() => {
       router.push('/sidepanel/bookmarks/import')
     })
+}
+
+const importFromBackup = () => {
+  const url = chrome.runtime.getURL('/www/index.html#/mainpanel/settings?tab=importExport')
+  useNavigationService().browserTabFor(url)
 }
 </script>
 
