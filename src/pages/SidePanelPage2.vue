@@ -226,8 +226,7 @@ if (inBexMode()) {
       if (message.status === 'done') {
         uiStore.stopProgress()
       }
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      sendResponse('ui store progress set to ' + uiStore.progress)
+      sendResponse('ui store progress set to ' + JSON.stringify(uiStore.progress))
     } else if (message.name === 'detail-level-changed') {
       console.log('setting list detail level to ', message.data.level)
       useUiStore().setListDetailLevel(message.data.level)

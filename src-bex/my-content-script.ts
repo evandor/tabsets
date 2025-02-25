@@ -8,7 +8,7 @@
 import { createBridge } from '#q-app/bex/content'
 
 // The use of the bridge is optional.
-const bridge = createBridge({ debug: true })
+const bridge = createBridge({ debug: false })
 /**
  * bridge.portName is 'content@<path>-<number>'
  *   where <path> is the relative path of this content script

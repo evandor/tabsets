@@ -1,5 +1,5 @@
 <template>
-  <q-toolbar class="text-primary">
+  <q-toolbar>
     <div class="row fit">
       <div class="col-xs-12 col-md-9">
         <q-toolbar-title>

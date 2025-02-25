@@ -42,11 +42,4 @@ export enum FeatureIdent {
   REMINDER = 'REMINDER',
 }
 
-export enum FeatureType {
-  RECOMMENDED = 'RECOMMENDED',
-  OPTIONAL = 'OPTIONAL',
-  EXPERIMENTAL = 'EXPERIMENTAL',
-  PLANNED = 'PLANNED',
-  DISABLED = 'DISABLED',
-  INTERNAL = 'INTERNAL',
-}
+export type FeatureType = 'RECOMMENDED' | 'OPTIONAL' | 'EXPERIMENTAL' | 'PLANNED' | 'DISABLED' | 'INTERNAL'
