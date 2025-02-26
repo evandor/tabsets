@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-export type AccessItem = 'TABS' | 'TABSETS' | 'SPACES' | 'SYNC' | 'SHARE' | 'FEATURE_TOGGLES'
+export type AccessItem = 'TABS' | 'TABSETS' | 'SPACES' | 'SYNC' | 'SHARE' | 'FEATURE_TOGGLES' | 'THUMBNAILS'
 
 /**
  * dummy store for submodules integration
@@ -30,10 +30,22 @@ export const useAuthStore = defineStore('auth', () => {
     console.log('noop: setting user id to ', u?.uid)
   }
 
+  const getUserData = computed(() => {
+    return (): { thumbnails: number } => {
+      return { thumbnails: 0 }
+    }
+  })
+
   const limitExceeded = computed(
-    (): ((item: AccessItem, count: number) => { exceeded: boolean; limit: number | undefined }) => {
-      return (item: AccessItem, count: number): { exceeded: boolean; limit: number | undefined } => {
-        return { exceeded: false, limit: undefined }
+    (): ((
+      item: AccessItem,
+      count: number,
+    ) => { exceeded: boolean; limit: number | undefined; quota: number | undefined }) => {
+      return (
+        item: AccessItem,
+        count: number,
+      ): { exceeded: boolean; limit: number | undefined; quota: number | undefined } => {
+        return { exceeded: false, limit: undefined, quota: undefined }
       }
     },
   )
@@ -45,6 +57,7 @@ export const useAuthStore = defineStore('auth', () => {
     getUsername,
     setUser,
     getAccount,
+    getUserData,
     limitExceeded,
   }
 })

@@ -27,40 +27,29 @@
           <td class="text-left">
             <span :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
               {{ row['name' as keyof object] }}
+              {{ row.quota ? '(' + row.quota + '%)' : '' }}
             </span>
           </td>
           <td>
-            {{ row['count' as keyof object] }}
+            {{ row.count }}
           </td>
           <td v-if="row['snapshot' as keyof object]">
-            {{ row['count' as keyof object] - row['snapshot' as keyof object] }}
+            {{ row.count - row.snapshot }}
           </td>
           <td v-else>-</td>
-          <td v-if="row['link' as keyof object] && row['count' as keyof object] === 0">
+          <td v-if="row.link && row.count === 0">
             <q-icon
               name="help"
               size="11px"
               color="warning"
               class="cursor-pointer"
-              @click="NavigationService.openSingleTab(row['link' as keyof object])" />
+              @click="NavigationService.openSingleTab(row.link)" />
           </td>
-          <td
-            v-else-if="
-              row['snapshot' as keyof object] && row['count' as keyof object] > row['snapshot' as keyof object]
-            ">
-            <q-icon
-              name="north"
-              size="11px"
-              :color="row['name' as keyof object] === 'Open Tabs' ? 'negative' : 'positive'" />
+          <td v-else-if="row.snapshot && row.count > row.snapshot">
+            <q-icon name="north" size="11px" :color="row.name === 'Open Tabs' ? 'negative' : 'positive'" />
           </td>
-          <td
-            v-else-if="
-              row['snapshot' as keyof object] && row['count' as keyof object] < row['snapshot' as keyof object]
-            ">
-            <q-icon
-              name="south"
-              size="11px"
-              :color="row['name' as keyof object] === 'Open Tabs' ? 'positive' : 'negative'" />
+          <td v-else-if="row['snapshot' as keyof object] && row.count < row.snapshot">
+            <q-icon name="south" size="11px" :color="row.name === 'Open Tabs' ? 'positive' : 'negative'" />
           </td>
           <td v-else>
             <q-icon name="east" size="11px" />
@@ -79,11 +68,20 @@ import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { useAuthStore } from 'stores/authStore'
 import { onMounted, ref, watch, watchEffect } from 'vue'
+
+interface StatRow {
+  name: string
+  count: number
+  snapshot: any
+  link?: string
+  quota: number | undefined
+}
 
 const localstorage = useQuasar().localStorage
 
-const rows = ref<object[]>([])
+const rows = ref<StatRow[]>([])
 const currentWindowName = ref('---')
 const statsSnapshot = ref<object | undefined>(undefined)
 
@@ -128,33 +126,58 @@ watch(
   },
 )
 
-const calcStatsRows = () => {
+const calcStatsRows = (): StatRow[] => {
+  console.log(
+    '===',
+    useTabsetsStore().allTabsCount,
+    useAuthStore().limitExceeded('TABS', useTabsetsStore().allTabsCount),
+  )
   return [
-    { name: 'Tabs', count: useTabsetsStore().allTabsCount, snapshot: getFromSnapshot('Tabs') },
+    {
+      name: 'Tabs',
+      count: useTabsetsStore().allTabsCount,
+      snapshot: getFromSnapshot('Tabs'),
+      quota: useAuthStore().limitExceeded('TABS', useTabsetsStore().allTabsCount).quota,
+    },
     {
       name: 'Tabsets',
       count: useTabsetsStore().tabsets.size,
       snapshot: getFromSnapshot('Tabsets'),
+      quota: useAuthStore().limitExceeded('TABSETS', useTabsetsStore().tabsets.size).quota,
     },
-    { name: 'Spaces', count: useSpacesStore().spaces.size, snapshot: getFromSnapshot('Spaces') },
+    {
+      name: 'Spaces',
+      count: useSpacesStore().spaces.size,
+      snapshot: getFromSnapshot('Spaces'),
+      quota: useAuthStore().limitExceeded('SPACES', useSpacesStore().spaces.size).quota,
+    },
+    {
+      name: 'Thumbnails (MByte)',
+      count: useAuthStore().getUserData().thumbnails,
+      snapshot: getFromSnapshot('Thumbnails'),
+      quota: useAuthStore().limitExceeded('THUMBNAILS', useAuthStore().getUserData().thumbnails).quota,
+    },
     {
       name: 'Bookmarks',
       count: useBookmarksStore().bookmarksCount,
       snapshot: getFromSnapshot('Bookmarks'),
       link: 'https://docs.tabsets.net/bookmarks',
+      quota: undefined,
     },
     {
       name: 'Bookmark Folders',
       count: useBookmarksStore().foldersCount,
       snapshot: getFromSnapshot('Bookmark Folders'),
+      quota: undefined,
     },
     {
       name: 'Open Windows',
       count: useWindowsStore().currentBrowserWindows.length,
       snapshot: getFromSnapshot('Open Windows'),
       link: 'https://docs.tabsets.net/windows-management',
+      quota: undefined,
     },
-    { name: 'Open Tabs', count: useTabsStore2().tabsCount, snapshot: getFromSnapshot('Open Tabs') },
+    { name: 'Open Tabs', count: useTabsStore2().tabsCount, snapshot: getFromSnapshot('Open Tabs'), quota: undefined },
   ]
 }
 
@@ -168,7 +191,7 @@ const saveStatsSnapshot = () => {
   rows.value = calcStatsRows()
 }
 
-const getFromSnapshot = (ident: string) => {
+const getFromSnapshot = (ident: string): number | undefined => {
   if (!statsSnapshot.value) {
     return undefined
   }
