@@ -49,7 +49,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  spacesOptions.value = _.map([...spacesStore.spaces.keys()], (key) => {
+  spacesOptions.value = _.map([...spacesStore.spaces.keys()], (key: string) => {
     const label = spacesStore.spaces.get(key)?.label || 'undef'
     return { id: key, label: label }
   })

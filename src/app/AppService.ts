@@ -2,7 +2,6 @@ import _ from 'lodash'
 import { QVueGlobals } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
 import ChromeListeners from 'src/app/listeners/BrowserListeners'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import BookmarksService from 'src/bookmarks/services/BookmarksService'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
@@ -10,7 +9,9 @@ import { useContentService } from 'src/content/services/ContentService'
 import { SpaceInfo } from 'src/core/models/SpaceInfo'
 import { TabsetInfo } from 'src/core/models/TabsetInfo'
 import { useEntityRegistryStore } from 'src/core/stores/entityRegistryStore'
+import { useEventsStore } from 'src/events/stores/eventsStore'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { useMessagesStore } from 'src/messages/stores/messagesStore'
 import { useNotesStore } from 'src/notes/stores/NotesStore'
 import IndexedDbRequestPersistence from 'src/requests/persistence/IndexedDbRequestPersistence'
 import { useRequestsService } from 'src/requests/services/RequestsService'
@@ -24,7 +25,6 @@ import { useAppStore } from 'src/stores/appStore'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useGroupsStore } from 'src/tabsets/stores/groupsStore'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
@@ -155,12 +155,15 @@ class AppService {
     await useContentService().populateSearch(existingUrls)
     await useTabsetService().populateSearch()
 
+    useMessagesStore().initialize()
+    useEventsStore().initialize()
+
     ChromeApi.init(router)
 
-    if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-      await useGroupsStore().initialize(useDB().groupsIndexedDb)
-      useGroupsStore().initListeners()
-    }
+    // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
+    //   // await groupsStore.initialize(useDB(undefined).db)
+    //   groupsStore.initListeners()
+    // }
 
     useUiStore().appLoading = undefined
 
@@ -171,6 +174,7 @@ class AppService {
     if (
       useTabsetsStore().tabsets.size === 0 &&
       quasar.platform.is.bex &&
+      //useAuthStore().isAuthenticated() &&
       !router.currentRoute.value.path.startsWith('/fullpage') &&
       !router.currentRoute.value.path.startsWith('/mainpanel')
     ) {

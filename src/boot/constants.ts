@@ -18,12 +18,20 @@ const APP_INSTALLATION_ID = 'app.installation.id'
 const SHARING_AUTHOR_IDENT = 'sharing.author'
 const SHARING_AVATAR_IDENT = 'sharing.avatar'
 
+const CURRENT_USER_ID = 'current.user.id' // pro only
+const CURRENT_USER_EMAIL = 'current.user.email' // pro only
+
 const GITHUB_USERNAME = 'github.username'
 const GITHUB_REPONAME = 'github.reponame'
 const GITHUB_TOKEN = 'github.token'
 const GITHUB_AUTO_BACKUP = 'github.autobackup'
 const GITHUB_LOG = 'github.log'
 const GITHUB_PATH = 'github.path'
+
+const SPACES_LIMIT_NO_SUBSCRIPTION = 2 // pro only
+const TABS_LIMIT_NO_SUBSCRIPTION = 100 // pro only
+const TABSETS_LIMIT_NO_SUBSCRIPTION = 5 // pro only
+const THUMBNAILS_LIMIT_NO_SUBSCRIPTION = 1 // pro only
 
 export default boot(({}) => {})
 
@@ -38,10 +46,16 @@ export {
   SHARING_AVATAR_IDENT,
   APP_INSTALLATION_ID,
   TITLE_IDENT,
+  CURRENT_USER_ID,
+  CURRENT_USER_EMAIL,
   GITHUB_USERNAME,
   GITHUB_REPONAME,
   GITHUB_TOKEN,
   GITHUB_AUTO_BACKUP,
   GITHUB_LOG,
   GITHUB_PATH,
+  SPACES_LIMIT_NO_SUBSCRIPTION,
+  TABSETS_LIMIT_NO_SUBSCRIPTION,
+  TABS_LIMIT_NO_SUBSCRIPTION,
+  THUMBNAILS_LIMIT_NO_SUBSCRIPTION,
 }

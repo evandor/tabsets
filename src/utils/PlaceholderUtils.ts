@@ -45,10 +45,11 @@ class PlaceholderUtils {
       config[p] = placeholderValues.get(p)
     }
     console.log('got config', config, Object.keys(config))
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    Object.keys(config).length > 0
-      ? (tab.placeholders = new Placeholders(PlaceholdersType.URL_SUBSTITUTION, tab.id, config))
-      : (tab.placeholders = undefined)
+    if (Object.keys(config).length > 0) {
+      tab.placeholders = new Placeholders(PlaceholdersType.URL_SUBSTITUTION, tab.id, config)
+    } else {
+      tab.placeholders = undefined
+    }
     return tab
   }
 }
