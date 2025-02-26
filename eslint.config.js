@@ -75,7 +75,7 @@ export default [
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       'prefer-promise-reject-errors': 'off',
-      //   '@typescript-eslint/no-base-to-string': 'off',
+      //'@typescript-eslint/no-base-to-string': 'off',
       '@typescript-eslint/no-this-alias': 'off',
       //'@typescript-eslint/no-unused-expressions': 'off',
       //'@typescript-eslint/no-unsafe-enum-comparison': 'off',
