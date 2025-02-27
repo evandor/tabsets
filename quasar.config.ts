@@ -18,7 +18,7 @@ export default defineConfig((ctx) => {
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: ['i18n', 'axios', 'errorhandling', 'constants'],
 
-    // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
+    // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
@@ -37,13 +37,13 @@ export default defineConfig((ctx) => {
       'material-symbols-outlined',
     ],
 
-    // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
+    // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
     build: {
       // https://github.com/quasarframework/quasar/issues/14589
       sourcemap: 'true' as unknown as boolean,
 
       target: {
-        browser: ['es2022', 'edge88', 'firefox115', 'chrome115'],
+        browser: ['es2022', 'edge88', 'firefox115', 'chrome115', 'safari14'],
         node: 'node20',
       },
 
@@ -129,13 +129,13 @@ export default defineConfig((ctx) => {
       ],
     },
 
-    // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
+    // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
       // https: true,
       open: true, // opens browser window automatically
     },
 
-    // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
+    // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
     framework: {
       config: {},
 
@@ -157,7 +157,7 @@ export default defineConfig((ctx) => {
     // https://v2.quasar.dev/options/animations
     animations: 'all',
 
-    // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#sourcefiles
+    // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#sourcefiles
     // sourceFiles: {
     //   rootComponent: 'src/App.vue',
     //   router: 'src/router/index',

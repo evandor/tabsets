@@ -42,12 +42,12 @@ export default defineConfig({
     },
   },
   plugins: [
-    tsconfigPaths(),
     vue({
       template: { transformAssetUrls },
     }),
     quasar({
       sassVariables: 'src/quasar-variables.scss',
     }),
+    tsconfigPaths(),
   ],
 })

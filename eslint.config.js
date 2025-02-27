@@ -9,7 +9,7 @@ export default [
   {
     /**
      * Ignore the following files.
-     * Please note that pluginQuasar.configs.recommended already ignores
+     * Please note that pluginQuasar.configs.recommended() already ignores
      * the "node_modules" folder for you (and all other Quasar project
      * relevant folders and files).
      *
