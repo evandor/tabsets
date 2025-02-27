@@ -55,7 +55,7 @@ describe('RssAddUrlToTabsetHandler', () => {
   it('clicking addTab Button results in tab being added', async () => {
     const ts = new Tabset('tsId', 'tsName')
     await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
-      data: {
+      dialog: {
         more: {},
       },
     })

@@ -52,6 +52,9 @@ describe('SidePanelPage2', () => {
             return []
           }),
         },
+        getAll: vi.fn(() => {
+          return Promise.resolve([])
+        }),
       },
       tabs: {
         query: vi.fn(() => {}),
