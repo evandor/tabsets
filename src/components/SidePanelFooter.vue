@@ -39,20 +39,20 @@
       <SidePanelStatsMarkupTable :key="randomKey" />
     </div>
 
-    <div class="row fit q-ma-none q-pa-none" v-if="!checkToasts() && useUiStore().progress">
-      <div class="col-12">
-        <q-linear-progress stripe size="18px" :value="progressValue" color="grey-7" track-color="grey-4">
-          <div class="absolute-full flex flex-center">
-            <q-badge :label="progressLabel" color="grey" />
-          </div>
-        </q-linear-progress>
-      </div>
-    </div>
+    <!--    <div class="row fit q-ma-none q-pa-none" v-if="useUiStore().progress">-->
+    <!--      <div class="col-12">-->
+    <!--        <q-linear-progress stripe size="18px" :value="progressValue" color="grey-7" track-color="grey-4">-->
+    <!--          <div class="absolute-full flex flex-center">-->
+    <!--            <q-badge :label="progressLabel" color="grey" />-->
+    <!--          </div>-->
+    <!--        </q-linear-progress>-->
+    <!--      </div>-->
+    <!--    </div>-->
 
     <div class="row fit q-ma-none q-pa-none">
       <div class="col-6">
         <q-btn
-          v-if="!transitionGraceTime && showSuggestionButton"
+          v-if="showSuggestionButton"
           outline
           icon="o_lightbulb"
           :label="suggestionsLabel()"
@@ -62,7 +62,7 @@
           class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer">
         </q-btn>
 
-        <template v-if="!transitionGraceTime && !showSuggestionButton">
+        <template v-else>
           <SidePanelFooterLeftButtons
             @was-clicked="doShowSuggestionButton = true"
             :size="getButtonSize()"

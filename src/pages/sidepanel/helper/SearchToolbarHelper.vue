@@ -1,8 +1,13 @@
 <template>
-  <div class="row fit greyBorderBottom">
+  <!-- SearchToolbarHelper -->
+  <div class="row fit">
     <div class="col-8 q-ma-none q-pa-none q-ml-none">
       <!--          <SearchWithTransitionHelper :search-term="props.searchTerm" :search-hits="props.searchHits!" />-->
-      <SearchWidget2 :search-term="props.searchTerm" :search-hits="props.searchHits!" />
+      <SearchWidget2
+        :search-term="props.searchTerm"
+        :search-hits="props.searchHits!"
+        @on-enter="toggleSearch"
+        :placeholder="props.placeholder || undefined" />
     </div>
 
     <div
@@ -33,8 +38,6 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import SearchWidget2 from 'src/search/widgets/SearchWidget2.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
-import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder'
 import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -43,7 +46,7 @@ import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n({ useScope: 'global' })
 
@@ -53,11 +56,11 @@ const props = defineProps({
   showSearchBox: { type: Boolean, default: false },
   searchTerm: { type: String, default: '' },
   searchHits: { type: Number, required: false },
+  placeholder: { type: String, required: false },
 })
 
 const $q = useQuasar()
 const router = useRouter()
-const route = useRoute()
 
 const searching = ref(false)
 const showFilter = ref(false)
@@ -164,14 +167,6 @@ const title = (): string => {
 function getActiveFolder(tabset: Tabset) {
   return tabset.folderActive ? useTabsetService().findFolder([tabset], tabset.folderActive) : undefined
 }
-
-const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClickedHolder, folder?: Tabset) => {
-  const useFolder: Tabset | undefined = folder ? folder : getActiveFolder(tabset)
-  //console.log(`button clicked: tsId=${tabset.id}, folderId=${useFolder?.id}, args=...`)
-  await useActionHandlers(undefined).handleClick(tabset, currentChromeTab.value!, args, useFolder)
-}
-
-const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : '')
 </script>
 
 <style scoped>

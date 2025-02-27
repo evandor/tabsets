@@ -179,7 +179,7 @@ class AppService {
       !router.currentRoute.value.path.startsWith('/mainpanel') &&
       router.currentRoute.value.path !== '/'
     ) {
-      console.log('pushing to welcome page', router.currentRoute.value.path)
+      // console.log('pushing to welcome page', router.currentRoute.value.path)
       await router.push('/sidepanel/welcome')
     }
 

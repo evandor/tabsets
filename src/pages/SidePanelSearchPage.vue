@@ -23,33 +23,33 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper2
-        :show-search-box="true"
-        :search-term="searchStore.term"
-        :search-hits="tabsetHits.length"
-        :title="'Found ' + searchStore.term + ' ' + tabsetHits.length + ' time(s)'">
-        <template v-slot:iconsRight>
-          <CloseSidePanelViewButton />
-        </template>
-      </FirstToolbarHelper2>
-      <SearchToolbarHelper class="bg-grey-1" />
+      <!--      <FirstToolbarHelper2-->
+      <!--        :show-search-box="true"-->
+      <!--        :search-term="searchStore.term"-->
+      <!--        :search-hits="tabsetHits.length"-->
+      <!--        :title="'Found ' + searchStore.term + ' ' + tabsetHits.length + ' time(s)'">-->
+      <!--        <template v-slot:iconsRight>-->
+      <!--          <CloseSidePanelViewButton />-->
+      <!--        </template>-->
+      <!--      </FirstToolbarHelper2>-->
+      <ViewToolbarHelper title="Search Results" />
+      <SearchToolbarHelper :search-term="searchStore.term" :search-hits="tabsetHits.length" />
     </q-page-sticky>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import _ from 'lodash'
+import ViewToolbarHelper from 'pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { uid } from 'quasar'
 import SearchHit from 'src/components/layouts/SearchHit.vue'
 import Analytics from 'src/core/utils/google-analytics'
-import FirstToolbarHelper2 from 'src/pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import SearchToolbarHelper from 'src/pages/sidepanel/helper/SearchToolbarHelper.vue'
 import { Hit } from 'src/search/models/Hit'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import CloseSidePanelViewButton from 'src/ui/components/CloseSidePanelViewButton.vue'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 

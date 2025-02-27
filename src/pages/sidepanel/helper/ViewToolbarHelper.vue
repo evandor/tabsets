@@ -2,6 +2,11 @@
   <!-- FirstToolbarHelper2 -->
   <q-toolbar class="q-pa-none q-pl-none q-pr-none q-pb-none greyBorderBottom" :style="offsetTop()">
     <q-toolbar-title>
+      <div class="row q-ma-none q-pa-none" v-if="useUiStore().overlapIndicator">
+        <q-linear-progress :value="overlap" size="2px" :style="thresholdStyle()">
+          <q-tooltip class="tooltip-small">{{ overlapTooltip }}</q-tooltip>
+        </q-linear-progress>
+      </div>
       <div class="row q-ma-none q-pa-none">
         <div class="col-6 q-ma-none q-pa-none" style="border: 0 solid red">
           <!-- no spaces && searching -->
@@ -32,11 +37,6 @@
           style="border: 0 solid green">
           <slot name="iconsRight"> </slot>
         </div>
-      </div>
-      <div class="row q-ma-none q-pa-none" v-if="useUiStore().overlapIndicator">
-        <q-linear-progress :value="overlap" size="2px" :style="thresholdStyle()">
-          <q-tooltip class="tooltip-small">{{ overlapTooltip }}</q-tooltip>
-        </q-linear-progress>
       </div>
     </q-toolbar-title>
   </q-toolbar>

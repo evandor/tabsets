@@ -65,7 +65,6 @@ class AppEventDispatcher {
           return Promise.resolve({})
         case 'tab-deleted':
           const bookmarks = await useBookmarksStore().findBookmarksForUrl(params['url' as keyof object])
-          console.log('bookmarks', bookmarks)
           return Promise.resolve({ name: 'bookmarks-found', bookmarks: bookmarks.length })
         default:
           return Promise.reject(`unknown event ${name}`)

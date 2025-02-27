@@ -38,14 +38,14 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
       <FirstToolbarHelper2 :showSearchBox="showSearchBox"></FirstToolbarHelper2>
-      <SearchToolbarHelper class="bg-grey-1" v-if="useTabsetsStore().allTabsCount > 0" />
+      <SearchToolbarHelper v-if="useTabsetsStore().allTabsCount > 0" :placeholder="searchPlaceholder" />
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import { LocalStorage } from 'quasar'
+import { LocalStorage, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { useUtils } from 'src/core/services/Utils'
@@ -71,6 +71,7 @@ import { useRouter } from 'vue-router'
 
 const { inBexMode } = useUtils()
 
+const $q = useQuasar()
 const router = useRouter()
 const uiStore = useUiStore()
 
@@ -78,6 +79,7 @@ const showSearchBox = ref(false)
 const tabsets = ref<Tabset[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
+const searchPlaceholder = ref('search')
 
 function updateOnlineStatus(e: any) {
   const { type } = e
@@ -99,6 +101,15 @@ onMounted(() => {
   } else {
     Analytics.firePageViewEvent('SidePanelPage2', document.location.href)
   }
+
+  chrome.commands.getAll().then((cs: chrome.commands.Command[]) => {
+    const searchCommand = cs.filter((c: chrome.commands.Command) => c.name === 'search').shift()
+    if (searchCommand) {
+      searchPlaceholder.value = 'Search... (' + searchCommand.shortcut + ')'
+    } else {
+      searchPlaceholder.value = 'Search...'
+    }
+  })
 })
 
 onUnmounted(() => {
