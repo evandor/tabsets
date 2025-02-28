@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import { FeatureIdent, FeatureType } from 'src/app/models/FeatureIdent'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { GrantPermissionCommand } from 'src/core/domain/commands/GrantPermissionCommand'
 import { RevokePermissionCommand } from 'src/core/domain/commands/RevokePermissionCommand'
 import { Feature } from 'src/features/models/Feature'
@@ -198,7 +198,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.NOTES,
-      'OPTIONAL',
+      'EXPERIMENTAL',
       'Notes Feature',
       'CreateCreate notes and treat them like tabs',
       'o_note',

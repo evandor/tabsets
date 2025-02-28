@@ -1,5 +1,7 @@
 import { boot } from 'quasar/wrappers'
 
+const EXTENSION_NAME = 'tabsets'
+
 const INDEX_DB_VERSION = 23
 
 const CLEANUP_PERIOD_IN_MINUTES = 10 // in prod: 10
@@ -36,6 +38,7 @@ const THUMBNAILS_LIMIT_NO_SUBSCRIPTION = 1 // pro only
 export default boot(({}) => {})
 
 export {
+  EXTENSION_NAME,
   INDEX_DB_VERSION,
   CLEANUP_PERIOD_IN_MINUTES,
   STRIP_CHARS_IN_USER_INPUT,

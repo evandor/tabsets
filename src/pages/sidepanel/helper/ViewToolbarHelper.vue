@@ -10,25 +10,25 @@
       <div class="row q-ma-none q-pa-none">
         <div class="col-6 q-ma-none q-pa-none" style="border: 0 solid red">
           <!-- no spaces && searching -->
-          <SearchWithTransitionHelper
-            v-if="searching"
-            :search-term="props.searchTerm"
-            :search-hits="props.searchHits!" />
+          <!--          <SearchWithTransitionHelper-->
+          <!--            v-if="searching"-->
+          <!--            :search-term="props.searchTerm"-->
+          <!--            :search-hits="props.searchHits!" />-->
 
-          <FilterWithTransitionHelper v-else-if="showFilter" />
-          <!-- not searching -->
-          <template v-else>
-            <div class="col-12 text-subtitle1">
-              <div class="q-ml-md q-mt-sm">
-                <div class="text-caption cursor-pointer" @click.stop="backToMainView()">
-                  <span>&lt;&nbsp;back </span>
-                </div>
-                <div class="text-body1 text-bold ellipsis">
-                  {{ props.title }}
-                </div>
+          <!--          <FilterWithTransitionHelper v-else-if="showFilter" />-->
+          <!--          &lt;!&ndash; not searching &ndash;&gt;-->
+          <!--          <template v-else>-->
+          <div class="col-12 text-subtitle1">
+            <div class="q-ml-md q-mt-sm">
+              <div class="text-caption cursor-pointer" @click.stop="backToMainView()">
+                <span>&lt;&nbsp;back </span>
+              </div>
+              <div class="text-body1 text-bold ellipsis">
+                {{ props.title }}
               </div>
             </div>
-          </template>
+          </div>
+          <!--          </template>-->
         </div>
 
         <div
@@ -46,9 +46,7 @@
 import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import FilterWithTransitionHelper from 'src/core/widget/FilterWithTransitionHelper.vue'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import SearchWithTransitionHelper from 'src/pages/sidepanel/helper/SearchWithTransitionHelper.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
 import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder'

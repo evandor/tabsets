@@ -3,20 +3,26 @@
 </template>
 
 <script setup lang="ts">
-import { EventEmitter } from 'events'
+import { EXTENSION_NAME } from 'boot/constants'
 import { setCssVar, useQuasar } from 'quasar'
 import AppService from 'src/app/AppService'
 import BexFunctions from 'src/core/communication/BexFunctions'
+import { useNotificationHandler } from 'src/core/services/ErrorHandler'
+import { useUtils } from 'src/core/services/Utils'
 import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
 import { useLogger } from 'src/services/Logger'
 import { useAppStore } from 'src/stores/appStore'
 import { useSettingsStore } from 'src/stores/settingsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const router = useRouter()
+const route = useRoute()
+const { inBexMode } = useUtils()
+
+const { handleError } = useNotificationHandler()
 
 const settingsStore = useSettingsStore()
 settingsStore.initialize($q.localStorage)
@@ -27,9 +33,9 @@ useAppStore().init()
 
 const { info } = useLogger()
 
-// https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
-const emitter = new EventEmitter()
-emitter.setMaxListeners(12)
+// // https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
+// const emitter = new EventEmitter()
+// emitter.setMaxListeners(12)
 
 let useDarkMode: string = $q.localStorage.getItem('darkMode') || ('auto' as string)
 
@@ -63,10 +69,12 @@ useUiStore().setFontsize(fontsize)
 
 AppService.init($q, router)
 
-info(`tabsets started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
+info(`${EXTENSION_NAME} started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
 
-$q.bex.on('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
-onBeforeUnmount(() => {
-  $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
-})
+if (inBexMode()) {
+  $q.bex.on('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
+  onBeforeUnmount(() => {
+    $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
+  })
+}
 </script>

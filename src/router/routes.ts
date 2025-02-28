@@ -10,16 +10,6 @@ const routes: RouteRecordRaw[] = [
           '/sidepanel',
   },
   {
-    path: '/refresh/:redirect',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('pages/RefreshPage.vue') }],
-  },
-  {
-    path: '/start',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/StartPage.vue') }],
-  },
-  {
     path: '/fullpage',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('pages/FullpageStart.vue') }],
@@ -330,22 +320,21 @@ const routes: RouteRecordRaw[] = [
   //   component: () => import('layouts/DefaultLayout.vue'),
   //   children: [{path: '', component: () => import('pages/IFramePage.vue')}],
   // },
-  {
-    path: '/preview/:tabId',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/PreviewPage.vue') }],
-  },
+  // {
+  //   path: '/preview/:tabId',
+  //   component: () => import('layouts/DefaultLayout.vue'),
+  //   children: [{ path: '', component: () => import('pages/PreviewPage.vue') }],
+  // },
   {
     path: '/browser/:tabId',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('pages/BrowserViewPage.vue') }],
   },
-  {
-    path: '/help/:ident',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('pages/HelpPage.vue') }],
-  },
-  // --- testing
+  // {
+  //   path: '/help/:ident',
+  //   component: () => import('layouts/DefaultLayout.vue'),
+  //   children: [{ path: '', component: () => import('pages/HelpPage.vue') }],
+  // },
   {
     path: '/mainpanel/obsidian/files/:file',
     component: () => import('layouts/PlainLayout.vue'),
