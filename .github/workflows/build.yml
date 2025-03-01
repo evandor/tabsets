@@ -38,6 +38,10 @@ jobs:
           echo LOCALE="en" >> .env
       - name: 'Install Deps'
         run: yarn install
+      - name: 'build info'
+        run: |
+          yarn list 
+          quasar info
       - name: 'Test'
         run: npx vitest --coverage
       - name: 'Report Coverage'

@@ -1,5 +1,5 @@
 
-Operating System - Darwin(24.0.0) - darwin/arm64
+Operating System - Darwin(24.3.0) - darwin/arm64
 NodeJs - 18.20.4
 
 Global packages
@@ -19,7 +19,7 @@ Important local packages
   vue - 3.5.13 -- The progressive JavaScript framework for building modern web UI.
   vue-router - 4.5.0
   pinia - 3.0.1 -- Intuitive, type safe and flexible Store for Vue
-  vite - 5.4.14 -- Native-ESM powered web dev build tool
+  vite - 6.2.0 -- Native-ESM powered web dev build tool
   vite-plugin-checker - Not installed
   eslint - 9.21.0 -- An AST-based pattern checker for JavaScript.
   esbuild - 0.25.0 -- An extremely fast JavaScript and CSS bundler and minifier.
@@ -38,6 +38,6 @@ Quasar App Extensions
   @quasar/quasar-app-extension-testing-unit-vitest - 1.1.0 -- A Quasar App Extension for running tests with Vitest
 
 Networking
-  Host - Carstens-MacBook-Pro.fritz.box
+  Host - 51d0e467-e795-4253-8c9a-f811858d54d5.fritz.box
   en0 - 192.168.178.157
 
