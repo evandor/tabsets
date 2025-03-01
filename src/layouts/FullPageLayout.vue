@@ -43,7 +43,11 @@
 
         <Transition name="colorized-appear">
           <div
-            v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) && useTabsetsStore().tabsets.size > 0">
+            v-if="
+              inBexMode() &&
+              useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD) &&
+              useTabsetsStore().tabsets.size > 0
+            ">
             <OpenTabsThresholdWidget />
           </div>
         </Transition>
@@ -164,16 +168,16 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" side="left" behavior="desktop" bordered>
-      <Navigation></Navigation>
+      <Navigation2></Navigation2>
     </q-drawer>
 
-    <q-drawer
-      v-model="useUiStore().rightDrawerOpen"
-      side="right"
-      bordered
-      content-class="column justify-between no-wrap bg-grey-1">
-      <DrawerRight />
-    </q-drawer>
+    <!--    <q-drawer-->
+    <!--      v-model="useUiStore().rightDrawerOpen"-->
+    <!--      side="right"-->
+    <!--      bordered-->
+    <!--      content-class="column justify-between no-wrap bg-grey-1">-->
+    <!--      <DrawerRight />-->
+    <!--    </q-drawer>-->
 
     <q-page-container>
       <router-view />
@@ -183,11 +187,10 @@
 </template>
 
 <script setup lang="ts">
-import DrawerRight from 'components/DrawerRight.vue'
+import { EXTENSION_NAME } from 'boot/constants'
 import _ from 'lodash'
 import { useMeta, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import Navigation from 'src/components/Navigation.vue'
 import ToolbarButton from 'src/components/widgets/ToolbarButton.vue'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
@@ -197,6 +200,7 @@ import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
+import { useSuggestionsService } from 'src/suggestions/domain/SuggestionsServices'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import ExportDialog from 'src/tabsets/dialogues/ExportDialog.vue'
 import ImportDialog from 'src/tabsets/dialogues/ImportDialog.vue'
@@ -208,12 +212,12 @@ import { useRouter } from 'vue-router'
 const $q = useQuasar()
 const router = useRouter()
 
-const leftDrawerOpen = ref($q.screen.gt.md)
+const leftDrawerOpen = ref($q.screen.gt.sm)
 
 const spacesStore = useSpacesStore()
 
 const spacesOptions = ref<object[]>([])
-const suggestions = ref<Suggestion[]>(useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED']))
+const relevantSuggestions = ref<Suggestion[]>([])
 
 const { inBexMode } = useUtils()
 
@@ -226,7 +230,7 @@ $q.loadingBar.setDefaults({
 const settingsClicked = ref(false)
 
 watchEffect(() => {
-  suggestions.value = useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED'])
+  relevantSuggestions.value = useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED'])
 })
 
 watchEffect(() => {
@@ -248,7 +252,8 @@ useMeta(() => {
 })
 
 const title = () => {
-  return inBexMode() ? 'Tabsets' : process.env.MODE === 'spa' ? 'Tabsets Web' : 'Tabsets'
+  const extensionName = EXTENSION_NAME
+  return inBexMode() ? extensionName : process.env.MODE === 'spa' ? extensionName + ' Web' : extensionName + ' Pro'
 }
 
 const goHome = () => router.push('/')
@@ -256,14 +261,6 @@ const goHome = () => router.push('/')
 const toggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value
   useUiStore().toggleLeftDrawer()
-}
-
-const installNewVersion = (version: string) => {
-  chrome.tabs.create({
-    active: true,
-    url: 'https://tabsets.web.app/#/updatedTo/' + version,
-  })
-  chrome.runtime.reload()
 }
 
 const tabsClicked = (tab: DrawerTabs, data: object = {}) => useUiStore().rightDrawerSetActiveTab(tab)
@@ -280,9 +277,13 @@ const suggestionDialog = (s: Suggestion) =>
   })
 
 const dependingOnStates = () =>
-  _.find(useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED']), (s: any) => s.state === 'NEW')
-    ? 'warning'
-    : 'white'
+  useSuggestionsService().hasSuggestionsInState(relevantSuggestions.value, ['NEW']) ? 'warning' : 'white'
+
+const suggestionsLabel = () => {
+  return useSuggestionsService().suggestionsInsState(relevantSuggestions.value, ['NEW']).length > 0
+    ? 'New Suggestions'
+    : ''
+}
 
 const toggleSettings = () => (settingsClicked.value = !settingsClicked.value)
 </script>

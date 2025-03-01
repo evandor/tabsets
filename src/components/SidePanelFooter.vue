@@ -219,6 +219,7 @@ const { inBexMode } = useUtils()
 const $q = useQuasar()
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
 
 const currentChromeTabs = ref<chrome.tabs.Tab[]>([])
 const currentTabs = ref<TabAndTabsetId[]>([])
