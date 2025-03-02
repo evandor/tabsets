@@ -43,7 +43,7 @@ export default defineConfig((ctx) => {
       sourcemap: 'true' as unknown as boolean,
 
       target: {
-        browser: ['es2022', 'edge88', 'firefox115', 'chrome115', 'safari14'],
+        browser: ['es2022', 'edge88', 'firefox115', 'chrome115'],
         node: 'node20',
       },
 

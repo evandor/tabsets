@@ -12,7 +12,7 @@ Global packages
   cordova - 12.0.0 (cordova-lib@12.0.1)
 
 Important local packages
-  quasar - 2.17.7 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
+  quasar - 2.18.0 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
   @quasar/app-vite - 2.1.1 -- Quasar Framework App CLI with Vite
   @quasar/extras - 1.16.17 -- Quasar Framework fonts, icons and animations
   eslint-plugin-quasar - Not installed
@@ -38,6 +38,6 @@ Quasar App Extensions
   @quasar/quasar-app-extension-testing-unit-vitest - 1.1.0 -- A Quasar App Extension for running tests with Vitest
 
 Networking
-  Host - 51d0e467-e795-4253-8c9a-f811858d54d5.fritz.box
+  Host - Carstens-MacBook-Pro.fritz.box
   en0 - 192.168.178.157
 

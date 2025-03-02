@@ -1,11 +1,11 @@
 import js from '@eslint/js'
 import pluginQuasar from '@quasar/app-vite/eslint'
 import prettierSkipFormatting from '@vue/eslint-config-prettier/skip-formatting'
-import vueTsEslintConfig from '@vue/eslint-config-typescript'
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
 import pluginVue from 'eslint-plugin-vue'
 import globals from 'globals'
 
-export default [
+export default defineConfigWithVueTs(
   {
     /**
      * Ignore the following files.
@@ -18,7 +18,7 @@ export default [
     // ignores: []
   },
 
-  ...pluginQuasar.configs.recommended(),
+  pluginQuasar.configs.recommended(),
   js.configs.recommended,
 
   /**
@@ -33,23 +33,16 @@ export default [
    * pluginVue.configs["flat/recommended"]
    *   -> Above, plus rules to enforce subjective community defaults to ensure consistency.
    */
-  ...pluginVue.configs['flat/essential'],
+  pluginVue.configs['flat/essential'],
 
+  {
+    files: ['**/*.ts', '**/*.vue'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+    },
+  },
   // https://github.com/vuejs/eslint-config-typescript
-  ...vueTsEslintConfig({
-    // Optional: extend additional configurations from typescript-eslint'.
-    // Supports all the configurations in
-    // https://typescript-eslint.io/users/configs#recommended-configurations
-    extends: [
-      // By default, only the recommended rules are enabled.
-      'recommendedTypeChecked',
-      // You can also manually enable the stylistic rules.
-      // "stylistic",
-
-      // Other utility configurations, such as 'eslintRecommended', (note that it's in camelCase)
-      // are also extendable here. But we don't recommend using them directly.
-    ],
-  }),
+  vueTsConfigs.recommendedTypeChecked,
 
   {
     languageOptions: {
@@ -125,4 +118,4 @@ export default [
   },
 
   prettierSkipFormatting,
-]
+)
