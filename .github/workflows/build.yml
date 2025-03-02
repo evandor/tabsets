@@ -39,9 +39,7 @@ jobs:
       - name: 'Install Deps'
         run: yarn install
       - name: 'build info'
-        run: |
-          yarn list 
-          quasar info
+        run: quasar info
       - name: 'Test'
         run: npx vitest --coverage
       - name: 'Report Coverage'
