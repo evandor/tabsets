@@ -129,7 +129,7 @@
     "vitepress": "^1.5.0",
     "vitepress-plugin-mermaid": "^2.0.17",
     "vitest": "^3.0.7",
-    "vue-tsc": "2.2.24",
+    "vue-tsc": "2.2.4",
     "workbox-build": "^7.3.0",
     "workbox-cacheable-response": "^7.3.0",
     "workbox-core": "^7.3.0",
