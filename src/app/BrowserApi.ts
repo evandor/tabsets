@@ -2,18 +2,25 @@ import _ from 'lodash'
 import { LocalStorage, uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { CLEANUP_PERIOD_IN_MINUTES, GITHUB_AUTO_BACKUP, MONITORING_PERIOD_IN_MINUTES } from 'src/boot/constants'
+import { ContentItem } from 'src/content/models/ContentItem'
+import { useContentService } from 'src/content/services/ContentService'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
+import ContentUtils from 'src/core/utils/ContentUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { useMessagesStore } from 'src/messages/stores/messagesStore'
 import { useRequestsService } from 'src/requests/services/RequestsService'
 import { useRequestsStore } from 'src/requests/stores/requestsStore'
 import NavigationService from 'src/services/NavigationService'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { GithubBackupCommand } from 'src/tabsets/commands/github/GithubBackupCommand'
+import { Message } from 'src/tabsets/models/Message'
 import { Tab } from 'src/tabsets/models/Tab'
-import { Tabset } from 'src/tabsets/models/Tabset'
+import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
+import { MonitoredTab, Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { v5 as uuidv5 } from 'uuid'
 import { Router } from 'vue-router'
 
 function runHousekeeping() {
@@ -38,11 +45,17 @@ class BrowserApi {
 
     // console.debug(' ...initializing ChromeApi')
 
-    chrome.alarms.create('housekeeping', { periodInMinutes: CLEANUP_PERIOD_IN_MINUTES })
+    chrome.alarms
+      .create('housekeeping', { periodInMinutes: CLEANUP_PERIOD_IN_MINUTES })
+      .catch((err: any) => console.warn('could not start housekeeping alarm due to ', err))
 
-    chrome.alarms.create('hourlyTasks', { periodInMinutes: 30 })
+    chrome.alarms
+      .create('hourlyTasks', { periodInMinutes: 60 })
+      .catch((err: any) => console.warn('could not start hourlyTasks alarm due to ', err))
 
-    chrome.alarms.create('monitoring', { periodInMinutes: MONITORING_PERIOD_IN_MINUTES })
+    chrome.alarms
+      .create('monitoring', { periodInMinutes: MONITORING_PERIOD_IN_MINUTES })
+      .catch((err: any) => console.warn('could not start monitoring alarm due to ', err))
 
     chrome.alarms.onAlarm.addListener((alarm: chrome.alarms.Alarm) => {
       if (alarm.name === 'housekeeping') {
@@ -50,9 +63,9 @@ class BrowserApi {
         //runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
         //runContentHousekeeping(useTabsetService().urlExistsInATabset)
       } else if (alarm.name === 'monitoring') {
-        // if (useFeaturesStore().hasFeature(FeatureIdent.MONITORING)) {
-        //   checkMonitors(router)
-        // }
+        if (useFeaturesStore().hasFeature(FeatureIdent.MONITOR)) {
+          this.checkMonitors()
+        }
       } else if (alarm.name === 'hourlyTasks') {
         if (LocalStorage.getItem(GITHUB_AUTO_BACKUP) as boolean) {
           useCommandExecutor().execute(new GithubBackupCommand())
@@ -466,6 +479,73 @@ class BrowserApi {
       await chrome.tabs.remove(tab.id)
     } catch (err) {
       console.log('error', err)
+    }
+  }
+
+  async checkMonitors() {
+    const allTabsets: Tabset[] = [...useTabsetsStore().tabsets.values()] as Tabset[]
+    const checkedTabs: { url: string; newHash: string; tabId: string; tabsetId: string }[] = []
+    for (const ts of allTabsets) {
+      for (const monitoredTab of ts.monitoredTabs) {
+        const tabAndTabsetId: TabAndTabsetId | undefined = useTabsetsStore().getTabAndTabsetId(monitoredTab.tabId)
+        if (tabAndTabsetId) {
+          const url = tabAndTabsetId.tab.url
+          if (url) {
+            // console.log('monitoring for tabAndTabsetId', tabAndTabsetId, url)
+            const res = await fetch(url)
+            const html = await res.text()
+            const tokens = ContentUtils.html2tokens(html)
+            const hash = uuidv5([...tokens].join(' '), 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
+            console.log(`got hash ${hash} for ${url}`)
+            checkedTabs.push({
+              url: url,
+              newHash: hash,
+              tabId: tabAndTabsetId.tab.id,
+              tabsetId: tabAndTabsetId.tabsetId,
+            })
+          }
+        } else {
+          // delete non-existing tab from monitors
+          ts.monitoredTabs = ts.monitoredTabs.filter((mt: MonitoredTab) => mt.tabId !== monitoredTab.tabId)
+          await useTabsetsStore().saveTabset(ts)
+        }
+      }
+    }
+    console.log('checkedTabs', checkedTabs)
+    for (const changedTab of checkedTabs) {
+      const existingContent = await useContentService().getContentFor(changedTab.url)
+      if (existingContent && existingContent.contentHash && existingContent.contentHash !== changedTab.newHash) {
+        console.log('found change!!!', existingContent.contentHash, changedTab.newHash)
+        useMessagesStore().addMessage(
+          new Message(
+            uid(),
+            new Date().getTime(),
+            new Date().getTime(),
+            'new',
+            'Monitor: Tab Change...',
+            'tab://' + changedTab.tabId,
+          ),
+          true,
+        )
+        useContentService()
+          .getContent(changedTab.tabId)
+          .then((c: ContentItem | undefined) => {
+            if (c) {
+              c.contentHash = changedTab.newHash
+              useContentService().updateContent(changedTab.tabId, c)
+            }
+          })
+        const ts = useTabsetsStore().getTabset(changedTab.tabsetId)
+        const monitoredTabs = ts?.monitoredTabs
+        if (monitoredTabs) {
+          monitoredTabs.forEach((mt: MonitoredTab) => {
+            if (mt.tabId === changedTab.tabId) {
+              mt.changed = new Date().getTime()
+            }
+          })
+          await useTabsetsStore().saveTabset(ts)
+        }
+      }
     }
   }
 

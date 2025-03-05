@@ -128,7 +128,7 @@ watchEffect(() => {
 
 const getTabsetOrder = [
   function (o: Tabset) {
-    return o.status === TabsetStatus.FAVORITE ? 0 : 1
+    return !o || o.status === TabsetStatus.FAVORITE ? 0 : 1
   },
   function (o: Tabset) {
     return o.name?.toLowerCase()

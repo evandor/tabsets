@@ -1,6 +1,6 @@
 {
   "name": "tabsets.net",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "Use tabsets.net to safely keep track of all your tabs and links in the Side Panel, stored locally on your browser",
   "productName": "Tabsets.net",
   "author": "evandor <evandor@gmail.com>",
@@ -11,8 +11,7 @@
     "dev firefox": "quasar dev -m bex -T firefox",
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
-    "build": "quasar build -m bex -T chrome",
-    "build bex (publish)": "quasar build -m bex -T chrome",
+    "build bex chrome": "quasar build -m bex -T chrome",
     "build bex firefox": "quasar build -m bex -T firefox",
     "build bex edge": "scripts/build.sh edge",
     "build bex opera": "scripts/build.sh opera",

@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: |
           yarn install
-          npm run "build bex (publish)"
+          npm run "build bex chrome"
       - name: Output
         run:
           ls -la /home/runner/work/tabsets/tabsets/dist/bex-chrome

@@ -1,5 +1,5 @@
 <template>
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 85px">
     <offline-info />
 
     <div class="column fitpage q-pa-sm q-mx-sm q-mt-md">

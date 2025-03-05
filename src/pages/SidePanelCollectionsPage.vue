@@ -1,5 +1,5 @@
 <template>
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 60px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 85px">
     <div class="row q-ma-none q-pa-none items-start" :class="topLevelSubfolderExist() ? 'q-ml-md' : ''">
       <div>
         <Draggable

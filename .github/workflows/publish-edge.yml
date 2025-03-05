@@ -27,7 +27,7 @@ jobs:
       - name: Build
         run: |
           yarn install
-          npm run "build bex (publish)"
+          npm run "build bex chrome"
       - uses: wdzeng/edge-addon@v2
         name: "Upload and release"
         with:

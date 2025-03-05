@@ -370,6 +370,16 @@ export class AppFeatures {
     new Feature(FeatureIdent.REMINDER, 'EXPERIMENTAL', 'Tab Reminder', 'Get a reminder to revisit a tab', 'alarm', '', [
       'all',
     ]),
+
+    new Feature(
+      FeatureIdent.MONITOR,
+      'EXPERIMENTAL',
+      'Tab Monitor',
+      'Periodically check for changes',
+      'notifications',
+      '',
+      ['all'],
+    ),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {

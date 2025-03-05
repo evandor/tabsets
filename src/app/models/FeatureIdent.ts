@@ -40,6 +40,7 @@ export enum FeatureIdent {
   HTML_SNIPPETS = 'HTML_SNIPPETS',
   TABSET_LIST = 'TABSET_LIST',
   REMINDER = 'REMINDER',
+  MONITOR = 'MONITOR',
 }
 
 export type FeatureType = 'RECOMMENDED' | 'OPTIONAL' | 'EXPERIMENTAL' | 'PLANNED' | 'DISABLED' | 'INTERNAL'
