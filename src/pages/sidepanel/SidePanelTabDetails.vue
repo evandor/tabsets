@@ -459,7 +459,7 @@ const tabsetChips = (): object[] => {
   if (url) {
     _.forEach(useTabsetService().tabsetsFor(url), (ts: string) =>
       badges.push({
-        label: TabsetService.nameForTabsetId(ts),
+        label: useTabsetService().nameForTabsetId(ts),
         tabsetId: ts,
         encodedUrl: btoa(url || ''),
       }),

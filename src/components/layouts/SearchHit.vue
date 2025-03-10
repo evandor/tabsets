@@ -85,7 +85,6 @@ import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useSettingsStore } from 'src/stores/settingsStore'
 import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
@@ -107,7 +106,7 @@ const tabsetBadges = (hit: Hit): object[] => {
   const badges: object[] = []
   _.forEach(hit.tabsets, (ts: string) =>
     badges.push({
-      label: TabsetService.nameForTabsetId(ts),
+      label: useTabsetService().nameForTabsetId(ts),
       tabsetId: ts,
       encodedUrl: btoa(hit.url || ''),
     }),
