@@ -49,6 +49,17 @@
         <q-btn label="User Feedback" no-caps @click="collectUserFeedback()" />
       </div>
     </div>
+    <div class="row q-pa-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+      <div class="col-3"><b>Create a (dummy) suggestion</b></div>
+      <div class="col-3">Suggestions are shown to the user to let her decide if they are applicable</div>
+      <div class="col-1"></div>
+      <div class="col-5">
+        <!--        <q-btn label="Tabset Shared" no-caps @click="createSuggestion('TABSET_SHARED')" />-->
+        <!--        <q-btn label="Use Extension" no-caps @click="createSuggestion('USE_EXTENSION')" v-if="!inBexMode()" />-->
+        <!--        <q-btn label="Spaces Feature" no-caps @click="createSuggestion('FEATURE')" />-->
+        <!--        <q-btn label="Clear all" no-caps @click="clearSuggestions()" />-->
+      </div>
+    </div>
     <!--    </template>-->
   </div>
 </template>

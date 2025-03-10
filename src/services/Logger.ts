@@ -1,3 +1,4 @@
+import { EXTENSION_NAME } from 'boot/constants'
 import { api } from 'src/boot/axios'
 import { useAppStore } from 'src/stores/appStore'
 
@@ -11,7 +12,7 @@ function log(msg: string, level: number) {
     host: process.env.HOST,
     short_message: msg,
     level: level,
-    _app: 'tabsets',
+    _app: EXTENSION_NAME,
     _mode: process.env.MODE,
     _version: version,
     _logflowId: useAppStore().logflowId,
