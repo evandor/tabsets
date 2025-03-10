@@ -1,5 +1,5 @@
-import { EXTENSION_NAME } from 'boot/constants'
 import { api } from 'src/boot/axios'
+import { EXTENSION_NAME } from 'src/boot/constants'
 import { useAppStore } from 'src/stores/appStore'
 
 const version = import.meta.env.PACKAGE_VERSION
