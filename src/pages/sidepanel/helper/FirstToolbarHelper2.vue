@@ -197,17 +197,6 @@ watchEffect(() => {
   watermark.value = useUiStore().getWatermark()
 })
 
-// if ($q.platform.is.chrome && $q.platform.is.bex) {
-//   chrome.commands.onCommand.addListener((command) => {
-//     if (command === 'search') {
-//       console.debug(`got Command: ${command}`)
-//       toggleSearch()
-//     }
-//   })
-// }
-
-const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
-
 const title = (): string => {
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     return useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')

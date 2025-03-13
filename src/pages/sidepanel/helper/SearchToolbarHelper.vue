@@ -9,23 +9,6 @@
         @on-term-changed="(val) => emits('onTermChanged', val)"
         @on-enter="toggleSearch" />
     </div>
-
-    <!--    <div-->
-    <!--      class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-none"-->
-    <!--      v-if="!useUiStore().appLoading"-->
-    <!--      style="border: 0 solid green">-->
-    <!--      <div class="q-ma-none q-qa-none q-mr-xs">-->
-    <!--        &lt;!&ndash;        <SidePanelToolbarButton icon="search" class="q-mr-sm" id="toggleSearchBtn" size="xs" @click="toggleSearch" />&ndash;&gt;-->
-    <!--        &lt;!&ndash; TODO &ndash;&gt;-->
-    <!--        &lt;!&ndash;        <SidePanelToolbarButton&ndash;&gt;-->
-    <!--        &lt;!&ndash;          icon="o_filter_list"&ndash;&gt;-->
-    <!--        &lt;!&ndash;          class="q-mr-sm"&ndash;&gt;-->
-    <!--        &lt;!&ndash;          id="toggleSearchBtn"&ndash;&gt;-->
-    <!--        &lt;!&ndash;          size="xs"&ndash;&gt;-->
-    <!--        &lt;!&ndash;          @click="toggleSearch" />&ndash;&gt;-->
-    <!--        <SidePanelToolbarTabNavigationHelper />-->
-    <!--      </div>-->
-    <!--    </div>-->
   </div>
 </template>
 
