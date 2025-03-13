@@ -21,7 +21,7 @@
 
           <!-- folders -->
           <div class="col-12">
-            <SidePanelFoldersView v-if="currentTabset" :tabset="currentTabset" />
+            <SidePanelFoldersView v-if="currentTabset" :tabset="currentTabset" :filter="filter" />
           </div>
 
           <!-- list of tabs, assuming here we have at least one tabset-->

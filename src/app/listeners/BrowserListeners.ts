@@ -170,6 +170,7 @@ class BrowserListeners {
         NavigationService.forwardOneTab()
         break
       case 'search':
+        //console.log('in command search')
         break
       default:
         console.log(`unknown Command: ${command}`)

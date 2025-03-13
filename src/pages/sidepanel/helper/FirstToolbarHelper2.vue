@@ -197,14 +197,14 @@ watchEffect(() => {
   watermark.value = useUiStore().getWatermark()
 })
 
-if ($q.platform.is.chrome && $q.platform.is.bex) {
-  chrome.commands.onCommand.addListener((command) => {
-    if (command === 'search') {
-      console.debug(`got Command: ${command}`)
-      toggleSearch()
-    }
-  })
-}
+// if ($q.platform.is.chrome && $q.platform.is.bex) {
+//   chrome.commands.onCommand.addListener((command) => {
+//     if (command === 'search') {
+//       console.debug(`got Command: ${command}`)
+//       toggleSearch()
+//     }
+//   })
+// }
 
 const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 

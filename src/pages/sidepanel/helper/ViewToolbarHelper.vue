@@ -129,14 +129,14 @@ watchEffect(() => {
   showFilter.value = useUiStore().sidePanelActiveViewIs(SidePanelViews.TABS_LIST) && useUiStore().toolbarFilter
 })
 
-if ($q.platform.is.chrome && $q.platform.is.bex) {
-  chrome.commands.onCommand.addListener((command) => {
-    if (command === 'search') {
-      console.debug(`got Command: ${command}`)
-      toggleSearch()
-    }
-  })
-}
+// if ($q.platform.is.chrome && $q.platform.is.bex) {
+//   chrome.commands.onCommand.addListener((command) => {
+//     if (command === 'search') {
+//       console.debug(`got Command: ${command}`)
+//       toggleSearch()
+//     }
+//   })
+// }
 
 const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
 

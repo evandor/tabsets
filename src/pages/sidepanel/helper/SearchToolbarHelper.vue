@@ -119,15 +119,6 @@ watchEffect(() => {
   showWatermark.value = useUiStore().getWatermark().length > 0
   watermark.value = useUiStore().getWatermark()
 })
-
-if ($q.platform.is.chrome && $q.platform.is.bex) {
-  chrome.commands.onCommand.addListener((command) => {
-    if (command === 'search') {
-      console.debug(`got Command: ${command}`)
-      toggleSearch()
-    }
-  })
-}
 </script>
 
 <style scoped>
