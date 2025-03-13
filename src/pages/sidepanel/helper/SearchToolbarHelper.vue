@@ -1,45 +1,39 @@
 <template>
   <!-- SearchToolbarHelper -->
   <div class="row fit">
-    <div class="col-8 q-ma-none q-pa-none q-ml-none">
+    <div class="col-12 q-ma-none q-pa-none q-ml-none">
       <!--          <SearchWithTransitionHelper :search-term="props.searchTerm" :search-hits="props.searchHits!" />-->
       <SearchWidget2
         :search-term="props.searchTerm"
         :search-hits="props.searchHits!"
-        @on-enter="toggleSearch"
-        :placeholder="props.placeholder || undefined" />
+        @on-term-changed="(val) => emits('onTermChanged', val)"
+        @on-enter="toggleSearch" />
     </div>
 
-    <div
-      class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-none"
-      v-if="!useUiStore().appLoading"
-      style="border: 0 solid green">
-      <div class="q-ma-none q-qa-none q-mr-xs">
-        <SidePanelToolbarButton icon="search" class="q-mr-sm" id="toggleSearchBtn" size="xs" @click="toggleSearch" />
-        <!-- TODO -->
-        <!--        <SidePanelToolbarButton-->
-        <!--          icon="o_filter_list"-->
-        <!--          class="q-mr-sm"-->
-        <!--          id="toggleSearchBtn"-->
-        <!--          size="xs"-->
-        <!--          @click="toggleSearch" />-->
-        <SidePanelToolbarTabNavigationHelper />
-      </div>
-    </div>
+    <!--    <div-->
+    <!--      class="col text-subtitle1 text-right q-ma-none q-pa-none q-pr-none"-->
+    <!--      v-if="!useUiStore().appLoading"-->
+    <!--      style="border: 0 solid green">-->
+    <!--      <div class="q-ma-none q-qa-none q-mr-xs">-->
+    <!--        &lt;!&ndash;        <SidePanelToolbarButton icon="search" class="q-mr-sm" id="toggleSearchBtn" size="xs" @click="toggleSearch" />&ndash;&gt;-->
+    <!--        &lt;!&ndash; TODO &ndash;&gt;-->
+    <!--        &lt;!&ndash;        <SidePanelToolbarButton&ndash;&gt;-->
+    <!--        &lt;!&ndash;          icon="o_filter_list"&ndash;&gt;-->
+    <!--        &lt;!&ndash;          class="q-mr-sm"&ndash;&gt;-->
+    <!--        &lt;!&ndash;          id="toggleSearchBtn"&ndash;&gt;-->
+    <!--        &lt;!&ndash;          size="xs"&ndash;&gt;-->
+    <!--        &lt;!&ndash;          @click="toggleSearch" />&ndash;&gt;-->
+    <!--        <SidePanelToolbarTabNavigationHelper />-->
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useQuasar } from 'quasar'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import SidePanelToolbarTabNavigationHelper from 'src/opentabs/pages/SidePanelToolbarTabNavigationHelper.vue'
 import SearchWidget2 from 'src/search/widgets/SearchWidget2.vue'
-import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
@@ -56,8 +50,9 @@ const props = defineProps({
   showSearchBox: { type: Boolean, default: false },
   searchTerm: { type: String, default: '' },
   searchHits: { type: Number, required: false },
-  placeholder: { type: String, required: false },
 })
+
+const emits = defineEmits(['onTermChanged'])
 
 const $q = useQuasar()
 const router = useRouter()
@@ -132,40 +127,6 @@ if ($q.platform.is.chrome && $q.platform.is.bex) {
       toggleSearch()
     }
   })
-}
-
-const showSearchIcon = () => useTabsetsStore().tabsets.size > 1
-
-const title = (): string => {
-  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-    return useSpacesStore().space ? useSpacesStore().space.label : t('no_space_selected')
-  } else {
-    const currentTs = useTabsetsStore().getCurrentTabset
-    if (currentTs) {
-      switch (currentTs.type) {
-        case TabsetType.SESSION:
-          return `Session (${currentTs.tabs.length} tab${currentTs.tabs.length > 1 ? 's' : ''})`
-        default:
-          switch (currentTs.sharing.sharing) {
-            case TabsetSharing.UNSHARED:
-              return 'Collection'
-            case TabsetSharing.PUBLIC_LINK:
-              return 'Shared Collection'
-            case TabsetSharing.PUBLIC_LINK_OUTDATED:
-              return 'Shared Collection'
-            case TabsetSharing.USER:
-              return currentTs.sharing.shareReference ? 'Shared Collection' : 'Sharing Collection'
-            default:
-              return 'Collection'
-          }
-      }
-    }
-    return 'Collection'
-  }
-}
-
-function getActiveFolder(tabset: Tabset) {
-  return tabset.folderActive ? useTabsetService().findFolder([tabset], tabset.folderActive) : undefined
 }
 </script>
 

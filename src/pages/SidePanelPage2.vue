@@ -1,6 +1,6 @@
 <template>
   <!-- SidePanelPage2 -->
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 83px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 80px">
     <offline-info />
 
     <div class="wrap" v-if="useUiStore().appLoading">
@@ -27,6 +27,7 @@
           <!-- list of tabs, assuming here we have at least one tabset-->
           <SidePanelPageTabList
             v-if="currentTabset"
+            :filter="filter"
             :tabsCount="useTabsetService().tabsToShow(currentTabset as Tabset)?.length"
             :tabset="tabsetForTabList(currentTabset as Tabset)" />
         </div>
@@ -38,14 +39,14 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
       <FirstToolbarHelper2 :showSearchBox="showSearchBox"></FirstToolbarHelper2>
-      <SearchToolbarHelper v-if="useTabsetsStore().allTabsCount > 0" :placeholder="searchPlaceholder" />
+      <SearchToolbarHelper v-if="useTabsetsStore().allTabsCount > 0" @on-term-changed="(val) => termChanged(val)" />
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import { LocalStorage, useQuasar } from 'quasar'
+import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { useUtils } from 'src/core/services/Utils'
@@ -71,15 +72,14 @@ import { useRouter } from 'vue-router'
 
 const { inBexMode } = useUtils()
 
-const $q = useQuasar()
 const router = useRouter()
 const uiStore = useUiStore()
 
+const filter = ref<string>('')
 const showSearchBox = ref(false)
 const tabsets = ref<Tabset[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
-const searchPlaceholder = ref('search')
 
 function updateOnlineStatus(e: any) {
   const { type } = e
@@ -101,15 +101,6 @@ onMounted(() => {
   } else {
     Analytics.firePageViewEvent('SidePanelPage2', document.location.href)
   }
-
-  chrome.commands.getAll().then((cs: chrome.commands.Command[]) => {
-    const searchCommand = cs.filter((c: chrome.commands.Command) => c.name === 'search').shift()
-    if (searchCommand) {
-      searchPlaceholder.value = 'Search... (' + searchCommand.shortcut + ')'
-    } else {
-      searchPlaceholder.value = 'Search...'
-    }
-  })
 })
 
 onUnmounted(() => {
@@ -315,6 +306,10 @@ const tabsetForTabList = (tabset: Tabset) => {
 }
 
 const showStartingHint = () => !useUiStore().appLoading && useTabsetsStore().allTabsCount === 0
+
+const termChanged = (a: { term: string }) => {
+  filter.value = a.term
+}
 </script>
 
 <style lang="scss" src="./css/sidePanelPage2.scss" />
