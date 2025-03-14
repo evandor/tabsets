@@ -1,5 +1,5 @@
 <template>
-  <q-item v-ripple class="q-mb-lg">
+  <q-item v-ripple class="q-ma-none">
     <q-item-section
       v-if="useUiStore().listDetailLevelGreaterEqual('SOME', undefined)"
       @click.stop="open(hit)"
@@ -18,7 +18,7 @@
       <q-item-label>
         <div>
           <div class="q-pr-sm cursor-pointer ellipsis" v-if="isTabsetHit(hit)">
-            <span class="text-bold">{{ hit.name ? hit.name : hit.title }}</span>
+            <span class="text-bold">***{{ hit.name ? hit.name : hit.title }}</span>
           </div>
           <div class="q-pr-sm cursor-pointer ellipsis" v-else>
             <span>{{ hit.name ? hit.name : hit.title }}</span>
