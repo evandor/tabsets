@@ -28,7 +28,7 @@
           <SidePanelPageTabList
             v-if="currentTabset"
             :filter="filter"
-            :tabsCount="useTabsetService().tabsToShow(currentTabset as Tabset)?.length"
+            :tabsCount="currentTabset.tabs.length"
             :tabset="tabsetForTabList(currentTabset as Tabset)" />
         </div>
       </template>
@@ -109,12 +109,6 @@ onUnmounted(() => {
 
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
-})
-
-watchEffect(() => {
-  if (useUiStore().tabsFilter) {
-    console.log('filtering:::', useUiStore().tabsFilter)
-  }
 })
 
 const getTabsetOrder = [
