@@ -270,14 +270,16 @@ const handleTreeClick = (node: NodeTreeObject) => {
 }
 
 const openIndicatorIcon = (stat: any) => {
-  if (stat.children.length === 0) {
+  if (stat.children && stat.children.length === 0) {
     return ''
   }
   return stat.open ? 'keyboard_arrow_down' : 'chevron_right'
 }
 
 const topLevelSubfolderExist = () =>
-  treeData.value ? treeData.value.findIndex((nto: NodeTreeObject) => nto.children.length > 0) >= 0 : false
+  treeData.value
+    ? treeData.value.findIndex((nto: NodeTreeObject) => nto.children && nto.children.length > 0) >= 0
+    : false
 </script>
 
 <style lang="scss">
