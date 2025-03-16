@@ -1,6 +1,6 @@
 name: 'build'
 on:
-  pull_request:
+#  pull_request:
 #    branches:
 #      - master
 #      - main
