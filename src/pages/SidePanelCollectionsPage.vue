@@ -1,5 +1,5 @@
 <template>
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 85px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 90px">
     <div class="row q-ma-none q-pa-none items-start" :class="topLevelSubfolderExist() ? 'q-ml-md' : ''">
       <div>
         <Draggable
@@ -9,7 +9,7 @@
           @change="ondrop2($event)"
           :treeLine="false"
           :tree-line-offset="0"
-          :defaultOpen="false"
+          :defaultOpen="true"
           :indent="25">
           <template #default="{ node, stat }">
             <q-icon :name="openIndicatorIcon(stat)" @click="stat.open = !stat.open" />
@@ -25,7 +25,9 @@
                 color="secondary"
                 class="q-mx-sm" />
               <q-icon v-else name="o_folder" color="warning" class="q-mx-sm" />
-              {{ node.text }} {{ node.id === currentTabset?.id ? ' (current)' : '' }}
+              <Highlight
+                :filter="filter"
+                :text="node.text + ' ' + (node.id === currentTabset?.id ? ' (current)' : '')" />
             </span>
           </template>
         </Draggable>
@@ -35,7 +37,7 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
       <SidePanelCollectionsPageToolbar />
-      <SearchToolbarHelper />
+      <SearchToolbarHelper @on-term-changed="(val) => filterTermChanged(val)" />
     </q-page-sticky>
   </q-page>
 </template>
@@ -60,12 +62,14 @@ import '@he-tree/vue/style/default.css'
 import SearchToolbarHelper from 'src/pages/sidepanel/helper/SearchToolbarHelper.vue'
 import { DeleteTabsetFolderCommand } from 'src/tabsets/commands/DeleteTabsetFolderCommand'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import Highlight from 'src/tabsets/widgets/Highlight.vue'
 
 type NodeTreeObject = {
   text: string
   id: string
   tsId: string
   level: number
+  path: string
   url: string
   children: NodeTreeObject[]
   type: TabsetType
@@ -76,6 +80,7 @@ const router = useRouter()
 const tabsets = ref<Tabset[]>([])
 const treeData = ref<NodeTreeObject[]>()
 const currentTabset = ref<Tabset | undefined>(undefined)
+const filter = ref<string | undefined>(undefined)
 
 function updateOnlineStatus(e: any) {
   const { type } = e
@@ -187,18 +192,40 @@ const ondrop2 = (evt: any) => {
   }
 }
 
-function treeNodeFromNote(n: Tabset, rootId: string = n.id, level = 0): NodeTreeObject {
+function treeNodeFromNote(n: Tabset, rootId: string = n.id, path = '', level = 0): NodeTreeObject {
+  var path = n.name + '|' + path
   return {
     text: n.name,
     id: n.id,
     tsId: rootId,
     level,
+    path,
     url: chrome && chrome.runtime ? chrome.runtime.getURL(`/www/index.html#/mainpanel/notes/${n.id}`) : n.id,
     children: _.map(n.folders, (f: Tabset) => {
-      return treeNodeFromNote(f, rootId, level + 1)
+      return treeNodeFromNote(f, rootId, path, level + 1)
     }),
     type: n.type,
   }
+}
+
+const removeNonMatches = (treeData: NodeTreeObject[], filter: string): NodeTreeObject[] => {
+  const res: NodeTreeObject[] = []
+  for (const node of treeData) {
+    if (node.children.length > 0) {
+      const children: NodeTreeObject[] = []
+      for (const child of node.children) {
+        const res: NodeTreeObject[] = removeNonMatches([child], filter)
+        if (res.length > 0) {
+          children.push(...res)
+        }
+      }
+      node.children = children
+    }
+    if (node.text.toLowerCase().indexOf(filter.toLowerCase()) >= 0 || node.children.length > 0) {
+      res.push(node)
+    }
+  }
+  return res
 }
 
 watchEffect(async () => {
@@ -219,6 +246,10 @@ watchEffect(async () => {
         return treeNodeFromNote(f)
       })
       .sort((a, b) => a.text.localeCompare(b.text))
+
+    if (filter.value && filter.value.trim() !== '') {
+      treeData.value = removeNonMatches(treeData.value, filter.value)
+    }
   }
 })
 
@@ -280,6 +311,10 @@ const topLevelSubfolderExist = () =>
   treeData.value
     ? treeData.value.findIndex((nto: NodeTreeObject) => nto.children && nto.children.length > 0) >= 0
     : false
+
+const filterTermChanged = (val: { term: string }) => {
+  filter.value = val.term
+}
 </script>
 
 <style lang="scss">

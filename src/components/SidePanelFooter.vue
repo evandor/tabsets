@@ -57,7 +57,7 @@
           icon="o_lightbulb"
           :label="suggestionsLabel()"
           :color="dependingOnStates()"
-          size="12px"
+          size="sm"
           @click="suggestionDialog()"
           class="q-ma-none q-pa-xs q-ml-sm q-mt-xs q-pr-md cursor-pointer">
         </q-btn>
