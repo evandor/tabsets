@@ -188,6 +188,7 @@
 
 <script setup lang="ts">
 import { EXTENSION_NAME } from 'boot/constants'
+import Navigation2 from 'components/Navigation2.vue'
 import _ from 'lodash'
 import { useMeta, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'

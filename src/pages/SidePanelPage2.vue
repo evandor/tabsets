@@ -27,6 +27,7 @@
           <!-- list of tabs, assuming here we have at least one tabset-->
           <SidePanelPageTabList
             v-if="currentTabset"
+            :key="tabsetsLastUpdate"
             :filter="filter"
             :tabsCount="currentTabset.tabs.length"
             :tabset="tabsetForTabList(currentTabset as Tabset)" />
@@ -80,6 +81,7 @@ const showSearchBox = ref(false)
 const tabsets = ref<Tabset[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
+const tabsetsLastUpdate = ref(0)
 
 function updateOnlineStatus(e: any) {
   const { type } = e
@@ -109,6 +111,10 @@ onUnmounted(() => {
 
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
+})
+
+watchEffect(() => {
+  tabsetsLastUpdate.value = useTabsetsStore().lastUpdate
 })
 
 const getTabsetOrder = [

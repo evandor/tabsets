@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "quasar dev -m bex -T chrome",
     "dev firefox": "quasar dev -m bex -T firefox",
+    "pwa (for debug)": "quasar dev --mode pwa",
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "build bex chrome": "quasar build -m bex -T chrome",

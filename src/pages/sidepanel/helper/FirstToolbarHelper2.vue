@@ -90,6 +90,7 @@
                   :currentChromeTab="currentChromeTab"
                   :tabset="currentTabset"
                   :level="'root'" />
+                <q-btn v-else icon="add" label="tab" size="sm" class="q-mr-md" @click="addUrlDialog()" />
               </span>
               <!--              <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer" />-->
               <!--              <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset" />-->
@@ -110,6 +111,7 @@ import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
 import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder'
 import SpecialUrlAddToTabsetComponent from 'src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue'
+import AddUrlDialog from 'src/tabsets/dialogues/AddUrlDialog.vue'
 import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -236,6 +238,8 @@ const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClic
 }
 
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : '')
+
+const addUrlDialog = () => $q.dialog({ component: AddUrlDialog })
 </script>
 
 <style scoped>

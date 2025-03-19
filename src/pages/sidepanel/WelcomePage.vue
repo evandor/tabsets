@@ -8,61 +8,128 @@
           <div class="row">
             <div class="col-12 text-caption">The Art Of Linking</div>
           </div>
-          <div class="col-12 text-h6 q-mb-md">{{ $t('welcome_to_tabsets') }}</div>
+          <div class="col-12 text-h6 q-mb-md text-primary">{{ $t('welcome_to_tabsets') }}</div>
         </div>
 
-        <div class="q-pa-sm q-mb-none row items-start q-gutter-md" @click.stop="selected()">
-          <q-card class="my-card fit">
-            <q-card-section class="q-pb-none">
-              <div class="text-subtitle2 q-mb-sm">{{ $t('create_your_first_ts') }}</div>
-              <q-input
-                v-model="tabsetName"
-                id="addTabsetSubmitBtn"
-                class="input-box"
-                autofocus
-                ref="tabsetNameRef"
-                :error-message="$t('no_special_chars_and_length')"
-                :error="!newTabsetNameIsValid()"
-                data-testid="newTabsetName"
-                @keydown.enter="addFirstTabset()"
-                hint="e.g. Music, Holidays, News..."
-                :label="$t('tabset_name')" />
-            </q-card-section>
-            <q-card-section class="q-ml-sm q-pl-none text-grey-8">
-              <q-checkbox v-model="addCurrentTabs" :label="$t('add_current_tabs')" size="xs" color="text-grey-8" />
-            </q-card-section>
-            <q-card-actions align="right" class="q-pr-md q-pb-xs q-ma-none q-my-md">
-              <DialogButton
-                :label="$t('add_tabset')"
-                @was-clicked="addFirstTabset"
-                :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()" />
-            </q-card-actions>
-            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none q-mt-none">
-              <div
-                class="text-right q-ma-none q-pa-none text-accent cursor-pointer"
-                style="font-size: smaller"
-                @click="importFromBackup()">
-                or import from backup...
-              </div>
-            </q-card-actions>
-            <!--            <q-card-actions align="right" class="q-pr-md q-pb-md q-ma-none q-mt-none">-->
-            <!--              <div-->
-            <!--                class="text-right q-ma-none q-pa-none text-accent cursor-pointer"-->
-            <!--                style="font-size: smaller"-->
-            <!--                @click="importFromBookmarks()">-->
-            <!--                or import from bookmarks...-->
-            <!--              </div>-->
-            <!--              <div-->
-            <!--                class="text-right q-ma-none q-pa-none text-accent cursor-pointer"-->
-            <!--                style="font-size: smaller"-->
-            <!--                @click="opentabsView()">-->
-            <!--                or start from your open tabs...-->
-            <!--              </div>-->
-            <!--            </q-card-actions>-->
-          </q-card>
+        <div
+          class="q-pa-sm q-mb-none row items-start q-gutter-md relative-position overflow-hidden cursor-pointer non-selectable"
+          @click.stop="selected()">
+          <transition name="q-transition--scale" :style="cardStyle()">
+            <q-card v-if="!showDocumentation" class="my-card fit">
+              <q-card-section class="q-pb-none">
+                <div class="row">
+                  <div class="col-11">
+                    <div class="text-h6 q-mb-sm">{{ $t('create_your_first_ts') }}</div>
+                  </div>
+                  <div class="col text-right">
+                    <q-icon
+                      name="sym_o_help"
+                      class="cursor-pointer"
+                      @click="toggleDocumentation"
+                      size="xs"
+                      color="accent" />
+                  </div>
+                </div>
+
+                <q-input
+                  v-model="tabsetName"
+                  id="addTabsetSubmitBtn"
+                  class="input-box"
+                  autofocus
+                  ref="tabsetNameRef"
+                  :error-message="$t('no_special_chars_and_length')"
+                  :error="!newTabsetNameIsValid()"
+                  data-testid="newTabsetName"
+                  @keydown.enter="addFirstTabset()"
+                  hint="e.g. Music, Holidays, News..."
+                  :label="$t('tabset_name')" />
+              </q-card-section>
+              <q-card-section class="q-ml-sm q-pl-none text-grey-8 text-body1">
+                <q-checkbox v-model="addCurrentTabs" :label="$t('add_current_tabs')" size="xs" color="text-grey-8" />
+              </q-card-section>
+              <q-card-actions align="center" class="q-pr-md q-pb-xs q-ma-none q-my-md">
+                <DialogButton
+                  :label="$t('add_tabset')"
+                  @was-clicked="addFirstTabset"
+                  color="primary"
+                  :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()" />
+              </q-card-actions>
+              <q-card-actions align="center" class="q-pr-md q-pb-md q-ma-none q-mt-xl">
+                <div>&nbsp;</div>
+              </q-card-actions>
+              <q-card-actions align="center" class="q-pr-md q-pb-md q-ma-none q-mt-none">
+                <div
+                  class="text-center q-ma-none q-pa-none text-accent cursor-pointer"
+                  style="font-size: smaller"
+                  @click="importFromBackup()">
+                  or import from backup...
+                </div>
+              </q-card-actions>
+            </q-card>
+
+            <q-card v-else class="my-card fit" :style="cardStyle()">
+              <q-card-section class="q-pb-none">
+                <div class="q-row">
+                  <div class="q-col text-h6">Getting started...</div>
+                </div>
+                <div class="q-row q-my-md q-ml-sm">
+                  <div class="q-col text-body1">
+                    <div class="row">
+                      <div class="col-1">
+                        <q-icon name="o_featured_play_list" color="primary" class="q-mb-xs" size="xs" />
+                      </div>
+                      <div class="col q-ml-sm">Create a <em>collection</em> first</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="q-row q-my-md q-ml-sm">
+                  <div class="q-col text-body1">
+                    <div class="row">
+                      <div class="col-1">
+                        <q-icon name="o_tab" color="primary" class="q-mr-sm q-mb-xs" size="xs" />
+                      </div>
+                      <div class="col q-ml-sm">Add your <em>active tab</em> to the new collection</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="q-row q-my-md q-ml-sm">
+                  <div class="q-col text-body1">
+                    <div class="row">
+                      <div class="col-1">
+                        <q-icon name="o_replay" color="primary" class="q-mr-sm q-mb-xs" size="xs" />
+                      </div>
+                      <div class="col q-ml-sm">Switch tab, Repeat</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="q-row q-my-md q-ml-sm">
+                  <div class="q-col text-body1">
+                    <div class="row">
+                      <div class="col-1">
+                        <q-icon name="o_settings" color="primary" class="q-mr-sm q-mb-xs" size="xs" />
+                      </div>
+                      <div class="col q-ml-sm">Discover more features</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="q-row">
+                  <div class="q-col text-body1 text-center q-mt-xl">
+                    <DialogButton label="got it" @was-clicked="toggleDocumentation()" color="primary" />
+                  </div>
+                </div>
+                <div class="q-row q-mt-lg">
+                  <div
+                    class="q-col text-body2 text-blue-8 text-center"
+                    @click="useNavigationService().browserTabFor('https://youtu.be/jxOonJ_x7Eg')">
+                    Introductionary Video
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </transition>
         </div>
         <div class="row q-mr-sm">
-          <div class="col-12 text-right">
+          <div class="col-12 text-center">
             <span
               class="text-grey q-mx-none cursor-pointer"
               style="font-size: smaller"
@@ -92,14 +159,12 @@
 
 <script lang="ts" setup>
 import { LocalStorage, openURL } from 'quasar'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import { STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT } from 'src/boot/constants'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import Analytics from 'src/core/utils/google-analytics'
-import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCommand'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
@@ -116,12 +181,21 @@ const login = ref(false)
 const addCurrentTabs = ref(false)
 const showWatermark = ref(false)
 const watermark = ref('')
+const showDocumentation = ref(true)
+const imgSrc = ref('https://cdn.quasar.dev/img/parallax2.jpg')
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href)
   windowLocation.value = window.location.href
   LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
 })
+
+const urlFirst = 'https://cdn.quasar.dev/img/parallax2.jpg'
+const urlSecond = 'https://cdn.quasar.dev/img/parallax1.jpg'
+
+const toggleDocumentation = () => {
+  showDocumentation.value = !showDocumentation.value
+}
 
 watchEffect(() => {
   useUiStore().showLoginTable = login.value
@@ -159,29 +233,16 @@ const stageIdentifier = () => (process.env.TABSETS_STAGE !== 'PRD' ? ' (' + proc
 
 const clicked = (url: string) => openURL(url)
 
-const opentabsView = () => {
-  // useFeaturesStore().activateFeature(FeatureIdent.OPEN_TABS)
-  useUiStore().sidePanelSetActiveView(SidePanelViews.TABS_LIST)
-}
-
-const importFromBookmarks = () => {
-  useCommandExecutor()
-    .execute(new ActivateFeatureCommand(FeatureIdent.BOOKMARKS))
-    .then(() => {
-      router.push('/sidepanel/bookmarks/import')
-    })
-}
-
 const importFromBackup = () => {
   const url = chrome.runtime.getURL('/www/index.html#/mainpanel/settings?tab=importExport')
   useNavigationService().browserTabFor(url)
 }
-</script>
 
-<style scoped>
-:deep(.input-box .q-field__control),
-:deep(.input-box .q-field__marginal) {
-  height: 52px;
-  font-size: 18px;
+const cardStyle = () => {
+  if (showDocumentation.value) {
+    return 'border: 3px solid #a17de9; border-radius: 10px; min-height: 400px'
+  } else {
+    return 'border: 1px solid #a17de9; border-radius: 10px; min-height: 400px'
+  }
 }
-</style>
+</script>
