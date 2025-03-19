@@ -264,6 +264,9 @@ watchEffect(() => {
 
 watchEffect(async () => {
   const suggestions = useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED', 'NOTIFICATION'])
+  if (!chrome || !chrome.windows) {
+    return
+  }
   const currentWindow = await chrome.windows.getCurrent()
   //console.log("watcheffect for", suggestions)
   showSuggestionButton.value =

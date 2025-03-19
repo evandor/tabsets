@@ -193,7 +193,7 @@ function treeNodeFromNote(n: Tabset, rootId: string = n.id, level = 0): NodeTree
     id: n.id,
     tsId: rootId,
     level,
-    url: chrome.runtime.getURL(`/www/index.html#/mainpanel/notes/${n.id}`),
+    url: chrome && chrome.runtime ? chrome.runtime.getURL(`/www/index.html#/mainpanel/notes/${n.id}`) : n.id,
     children: _.map(n.folders, (f: Tabset) => {
       return treeNodeFromNote(f, rootId, level + 1)
     }),
