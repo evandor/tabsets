@@ -2,11 +2,11 @@
   <transition appear enter-active-class="animated fadeIn slower delay-5s" leave-active-class="animated fadeOut">
     <div class="q-ma-lg q-mt-xl">
       <div class="row items-center text-grey-5">how to start?</div>
-      <div style="min-width: 300px; border: 1px solid #efefef; border-radius: 5px">
+      <div class="box" style="min-width: 300px">
         <q-list>
           <q-item clickable @click="useUiStore().startButtonAnimation('addtab')">
             <q-item-section avatar>
-              <q-btn outline label="..." color="primary" size="sm" />
+              <q-btn outline label="..." color="primary" size="xs" class="q-mx-none q-px-sm" />
             </q-item-section>
 
             <q-item-section>
@@ -80,3 +80,10 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 </script>
+
+<style lang="scss">
+.box {
+  border: 1px solid $accent;
+  border-radius: 10px;
+}
+</style>

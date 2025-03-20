@@ -14,7 +14,7 @@
         <div
           class="q-pa-sm q-mb-none row items-start q-gutter-md relative-position overflow-hidden cursor-pointer non-selectable"
           @click.stop="selected()">
-          <transition name="q-transition--scale" :style="cardStyle()">
+          <transition name="q-transition--scale" :class="showDocumentation ? 'documentation' : 'box'">
             <q-card v-if="!showDocumentation" class="my-card fit">
               <q-card-section class="q-pb-none">
                 <div class="row">
@@ -67,7 +67,7 @@
               </q-card-actions>
             </q-card>
 
-            <q-card v-else class="my-card fit" :style="cardStyle()">
+            <q-card v-else class="my-card fit" :class="showDocumentation ? 'documentation' : 'box'">
               <q-card-section class="q-pb-none">
                 <div class="q-row">
                   <div class="q-col text-h6">Getting started...</div>
@@ -237,12 +237,18 @@ const importFromBackup = () => {
   const url = chrome.runtime.getURL('/www/index.html#/mainpanel/settings?tab=importExport')
   useNavigationService().browserTabFor(url)
 }
-
-const cardStyle = () => {
-  if (showDocumentation.value) {
-    return 'border: 3px solid #a17de9; border-radius: 10px; min-height: 400px'
-  } else {
-    return 'border: 1px solid #a17de9; border-radius: 10px; min-height: 400px'
-  }
-}
 </script>
+
+<style lang="scss">
+.documentation {
+  border: 3px solid $accent;
+  border-radius: 10px;
+  min-height: 400px;
+}
+
+.box {
+  border: 1px solid $accent;
+  border-radius: 10px;
+  min-height: 400px;
+}
+</style>
