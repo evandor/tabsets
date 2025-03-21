@@ -5,6 +5,7 @@ function urlFor(extensionId: string, path: string) {
   return `chrome-extension://${extensionId}/www/index.html#${path}`
 }
 
+// make sure to run "build chrome" first
 test('first tabset', async ({ page, extensionId, context }) => {
   // === click in settings page to activate sidepanel ===
   const settingsUrl = urlFor(extensionId, '/mainpanel/settings')
@@ -24,6 +25,9 @@ test('first tabset', async ({ page, extensionId, context }) => {
       return value && value.url() && value.url().match(extensionId) && value.url().match('sidepanel/welcome')
     }) as Page
   console.log('found sidePanelPage', sidePanelPage.url())
+
+  // === close intro ===
+  await sidePanelPage.locator('[data-testid=welcome-got-it]').click()
 
   // === create first tabset ===
   const newTabsetName = sidePanelPage.locator('[data-testid=newTabsetName]')

@@ -134,8 +134,6 @@ class BrowserApi {
             contexts: ['all'],
           },
           () => {
-            console.log('callback of create menu')
-
             // chrome.contextMenus.create({
             //   id: 'open_tabsets_page',
             //   parentId: 'tabset_extension',
@@ -161,7 +159,6 @@ class BrowserApi {
             //   contexts: ['all']
             // })
             //}
-            console.debug(' > context menu: save_to_currentTS')
             chrome.contextMenus.create({
               id: 'save_to_currentTS',
               parentId: 'tabset_extension',

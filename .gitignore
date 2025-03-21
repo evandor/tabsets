@@ -52,9 +52,8 @@ docs/.vitepress/cache
 /blob-report/
 /test-results/
 /playwright-report/trace/
-/playwright-report/data/8bc23f7d61d4feaf97c5e928f124a55ae23dd0c7.zip
+/playwright-report/data/
 /playwright-report/index.html
-/playwright-report/data/5d4853c068e16f8f2bfce4a4c55e11ce76176f22.zip
 /coverage/
 /.env.opera
 /envs/env.local

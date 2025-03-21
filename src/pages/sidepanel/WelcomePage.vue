@@ -114,7 +114,11 @@
                 </div>
                 <div class="q-row">
                   <div class="q-col text-body1 text-center q-mt-xl">
-                    <DialogButton label="got it" @was-clicked="toggleDocumentation()" color="primary" />
+                    <DialogButton
+                      label="got it"
+                      @was-clicked="toggleDocumentation()"
+                      color="primary"
+                      data-testid="welcome-got-it" />
                   </div>
                 </div>
                 <div class="q-row q-mt-lg">

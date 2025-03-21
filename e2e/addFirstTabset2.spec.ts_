@@ -1,0 +1,6 @@
+import { expect, test } from './fixtures'
+
+test('popup page', async ({ page, extensionId }) => {
+  await page.goto(`chrome-extension://${extensionId}/www/index.html#/sidepanel`)
+  await expect(page.locator('body')).toHaveText('my-extension popup')
+})

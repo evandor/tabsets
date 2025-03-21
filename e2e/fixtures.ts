@@ -13,10 +13,11 @@ export const test = base.extend<{
     const __filename = fileURLToPath(import.meta.url) // get the resolved path to the file
     const __dirname = path.dirname(__filename) // get the name of the directory
 
-    const pathToExtension = path.join(__dirname, '../dist/bex-chrome--dev')
+    const pathToExtension = path.join(__dirname, '../dist/bex-chrome')
     console.log('pathToExtension', pathToExtension)
     const context = await chromium.launchPersistentContext('', {
       headless: false,
+      channel: 'chromium',
       args: [
         `--disable-extensions-except=${pathToExtension}`,
         `--load-extension=${pathToExtension}`,
@@ -27,8 +28,8 @@ export const test = base.extend<{
     await context.close()
   },
   extensionId: async ({ context }, use) => {
-    // console.log("context", context)
-    // console.log("use", use)
+    // console.log('context', context)
+    console.log('use', use)
     /*
     // for manifest v2:
     let [background] = context.backgroundPages()
