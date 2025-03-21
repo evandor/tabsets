@@ -125,7 +125,7 @@
             }}</q-tooltip>
           </q-btn>
           <q-menu :offset="[-10, 0]">
-            <q-list dense>
+            <q-list dense style="min-width: 180px">
               <ContextMenuItem v-close-popup @was-clicked="openOptionsPage()" icon="o_settings" label="Open Settings" />
 
               <q-separator />
