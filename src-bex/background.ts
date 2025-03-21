@@ -99,6 +99,27 @@ chrome.runtime.onConnect.addListener(function (port) {
   }
 })
 
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('adding menuA...')
+  chrome.contextMenus.create({
+    id: 'sampleContextMenu',
+    title: 'Sample Context MenuA',
+    contexts: ['selection'],
+  })
+
+  chrome.contextMenus.create(
+    {
+      id: 'tabset_extension',
+      title: 'Tabsets Extension!',
+      documentUrlPatterns: ['https://*/*', 'https://*/', 'chrome-extension://*/'],
+      contexts: ['all'],
+    },
+    () => {
+      console.log('hier!!!')
+    },
+  )
+})
+
 declare module '@quasar/app-vite' {
   interface BexEventMap {
     log: [{ message: string; data?: any[] }, void]
