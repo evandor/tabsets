@@ -117,7 +117,7 @@
             icon="o_settings"
             v-if="showSettingsButton()"
             class="q-my-xs q-px-xs q-mr-none"
-            :class="{ shake: animateSettingsButton }"
+            :class="{ shakeWithColor: animateSettingsButton }"
             flat
             :size="getButtonSize()">
             <q-tooltip :delay="4000" class="tooltip_small" anchor="top left" self="bottom left">{{

@@ -51,7 +51,7 @@
                 <DialogButton
                   :label="$t('add_tabset')"
                   @was-clicked="addFirstTabset"
-                  color="primary"
+                  :default-action="true"
                   :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()" />
               </q-card-actions>
               <q-card-actions align="center" class="q-pr-md q-pb-md q-ma-none q-mt-xl">
@@ -123,9 +123,9 @@
                 </div>
                 <div class="q-row q-mt-lg">
                   <div
-                    class="q-col text-body2 text-blue-8 text-center"
+                    class="q-col text-body2 text-blue-8 text-center cursor-pointer"
                     @click="useNavigationService().browserTabFor('https://youtu.be/jxOonJ_x7Eg')">
-                    Introductionary Video
+                    Introduction Video
                   </div>
                 </div>
               </q-card-section>

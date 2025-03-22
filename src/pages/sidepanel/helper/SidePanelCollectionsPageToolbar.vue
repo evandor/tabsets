@@ -30,7 +30,7 @@
               icon="add"
               label="Collection"
               size="sm"
-              :class="{ shake: annimateNewTabsetButton }"
+              :class="{ shakeWithColor: annimateNewTabsetButton }"
               data-testid="addTabsetBtn"
               @click="openNewTabsetDialog()"
               class="q-ma-none q-pl-xs q-pr-sm q-py-xs"

@@ -115,7 +115,7 @@
   <SidePanelFooterLeftButton
     :side-panel-view="SidePanelViews.TABS_LIST"
     :size="props.size"
-    :class="{ shake: animateTabsListButton }"
+    :class="{ shakeWithColor: animateTabsListButton }"
     icon="o_playlist_add"
     tooltip="All your browser's open tabs" />
 
@@ -132,7 +132,7 @@
     :side-panel-view="SidePanelViews.BOOKMARKS"
     icon="o_bookmark"
     defaultColor="warning"
-    :class="{ shake: animateBookmarksButton }"
+    :class="{ shakeWithColor: animateBookmarksButton }"
     :size="props.size"
     tooltip="Show the Bookmarks Browser" />
 
