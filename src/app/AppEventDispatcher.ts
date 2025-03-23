@@ -1,6 +1,7 @@
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useSearchStore } from 'src/search/stores/searchStore'
+import { IgnoreUrlCommand } from 'src/tabsets/commands/IgnoreUrlCommand'
 import { RestoreTabsetCommand } from 'src/tabsets/commands/RestoreTabset'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 
@@ -13,6 +14,7 @@ export type DispatcherEvents =
   | 'remove-captured-screenshot'
   | 'tab-deleted'
   | 'delete-bookmark-by-url'
+  | 'ignore_url'
 
 /**
  * meant for inter-submodule communication.
@@ -66,6 +68,11 @@ class AppEventDispatcher {
         case 'tab-deleted':
           const bookmarks = await useBookmarksStore().findBookmarksForUrl(params['url' as keyof object])
           return Promise.resolve({ name: 'bookmarks-found', bookmarks: bookmarks.length })
+        case 'ignore_url':
+          useCommandExecutor()
+            .execute(new IgnoreUrlCommand(params['url' as keyof object]))
+            .catch((err: any) => console.warn('error in IgnoreUrlCommand', err))
+          return Promise.resolve({})
         default:
           return Promise.reject(`unknown event ${name}`)
       }

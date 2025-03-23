@@ -186,6 +186,10 @@ if (inBexMode()) {
       useTabsetsStore().selectCurrentTabset(tsId)
     } else if (message.name === 'feature-activated') {
       useFeaturesStore().activateFeature(message.data.feature)
+    } else if (message.name === 'show-ignored') {
+      console.log('hier')
+      useTabsetsStore().selectCurrentTabset('IGNORED')
+      router.push('/sidepanel')
     } else if (message.name === 'text-selection') {
       console.log('message', message)
     } else if (message.name === 'feature-deactivated') {

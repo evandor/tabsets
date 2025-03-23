@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { LocalStorage, uid } from 'quasar'
+import AppEventDispatcher from 'src/app/AppEventDispatcher'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { CLEANUP_PERIOD_IN_MINUTES, GITHUB_AUTO_BACKUP, MONITORING_PERIOD_IN_MINUTES } from 'src/boot/constants'
 import { ContentItem } from 'src/content/models/ContentItem'
@@ -162,7 +163,22 @@ class BrowserApi {
             chrome.contextMenus.create({
               id: 'save_to_currentTS',
               parentId: 'tabset_extension',
-              title: 'Save to current Tabset (' + useTabsetsStore().currentTabsetName + ')',
+              title: 'Save to current Collection (' + useTabsetsStore().currentTabsetName + ')',
+              documentUrlPatterns: ['*://*/*'],
+              contexts: ['all'],
+            })
+
+            chrome.contextMenus.create({
+              id: 'separator_ignore_url',
+              parentId: 'tabset_extension',
+              type: 'separator',
+              documentUrlPatterns: ['*://*/*'],
+              contexts: ['all'],
+            })
+            chrome.contextMenus.create({
+              id: 'ignore_url',
+              parentId: 'tabset_extension',
+              title: 'Ignore this URL in tabsets',
               documentUrlPatterns: ['*://*/*'],
               contexts: ['all'],
             })
@@ -269,6 +285,10 @@ class BrowserApi {
                   this.executeAddToTS(currentTsId, tab)
                 }
               })
+          } else if (e.menuItemId === 'ignore_url') {
+            if (tab) {
+              AppEventDispatcher.dispatchEvent('ignore_url', { url: tab.url })
+            }
           } else if (e.menuItemId === 'annotate_website') {
             console.log('creating annotation JS', tab)
             if (tab && tab.id) {

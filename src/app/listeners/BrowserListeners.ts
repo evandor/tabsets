@@ -315,6 +315,8 @@ class BrowserListeners {
       this.handleCaptureClipping(request, sender, sendResponse)
     } else if (request.name === 'sidepanel-switch-view') {
       useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
+    } else if (request.name === 'show-ignored') {
+      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
     } else {
       console.log('got unknown message', request)
     }

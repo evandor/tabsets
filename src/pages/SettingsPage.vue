@@ -16,7 +16,7 @@
     <q-tabs align="left" inline-label v-model="tab" no-caps>
       <q-tab name="appearance" :label="t('appearance')" />
       <q-tab name="thirdparty" label="Third Party Services" />
-      <!--      <q-tab name="ignored" label="Ignored Urls"/>-->
+      <q-tab name="ignored" label="Ignored Urls" v-if="showIgnored()" />
       <q-tab
         name="archived"
         label="Archived Tabsets"
@@ -42,8 +42,13 @@
   <div v-if="tab === 'ignored'">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded
-        >Urls can be ignored so that the tabsets extension will not notifiy you about changes.
+        >Urls can be ignored so that the tabsets extension will close them immediately when cleaning up
       </q-banner>
+      <div class="row">
+        <div class="col">
+          <q-btn class="q-ml-md" label="show Ignored" @click="showIgnoredTabset()" />
+        </div>
+      </div>
 
       <!--      <div class="row q-pa-md" v-for="tabset in ignoredUrls()">-->
       <!--        <div class="col-3"><b>{{ tabset.url }}</b></div>-->
@@ -104,7 +109,7 @@
 
   <div v-if="tab === 'thirdparty'">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner rounded style="border: 1px solid orange"> TODO </q-banner>
+      <q-banner rounded style="border: 1px solid orange"> TODO</q-banner>
 
       <div class="row q-pa-md">
         <div class="col-3"><b>DuckDuckGo FavIcon Service</b></div>
@@ -140,6 +145,10 @@
  *
  */
 
+/**
+ * refactoring remark: uses many other modules, needs to be one-per-application
+ *
+ */
 import _ from 'lodash'
 import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
@@ -238,4 +247,13 @@ const unarchive = (tabset: Tabset) =>
     })
 
 const setTab = (t: string) => (tab.value = t)
+
+const showIgnored = () => {
+  const ignoredTabset = useTabsetsStore().getTabset('IGNORED')
+  return !(!ignoredTabset || ignoredTabset.tabs.length === 0)
+}
+
+const showIgnoredTabset = () => {
+  sendMsg('show-ignored')
+}
 </script>

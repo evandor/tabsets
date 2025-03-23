@@ -15,14 +15,19 @@
             <q-icon :name="openIndicatorIcon(stat)" @click="stat.open = !stat.open" />
             <span class="mtl-ml cursor-pointer" @click="handleTreeClick(node)">
               <q-icon
-                v-if="node.level == 0 && node.type !== TabsetType.SESSION"
-                name="o_tab"
-                color="primary"
-                class="q-mx-sm" />
-              <q-icon
-                v-else-if="node.level == 0 && node.type === TabsetType.SESSION"
+                v-if="node.level == 0 && node.type === TabsetType.SESSION"
                 name="sym_o_new_window"
                 color="secondary"
+                class="q-mx-sm" />
+              <q-icon
+                v-else-if="node.level == 0 && node.type === TabsetType.SPECIAL"
+                name="o_folder_special"
+                color="grey-6"
+                class="q-mx-sm" />
+              <q-icon
+                v-else-if="node.level == 0 && node.type !== TabsetType.SESSION"
+                name="o_tab"
+                color="primary"
                 class="q-mx-sm" />
               <q-icon v-else name="o_folder" color="warning" class="q-mx-sm" />
               <Highlight
@@ -234,6 +239,7 @@ watchEffect(async () => {
     const space = useSpacesStore().space
     treeData.value = tabsets.value
       .filter((ts: Tabset) => ts.status !== TabsetStatus.ARCHIVED)
+      .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
       .filter((ts: Tabset) => {
         if (useSpaces && space) {
           return ts.spaces.indexOf(space.id) >= 0
