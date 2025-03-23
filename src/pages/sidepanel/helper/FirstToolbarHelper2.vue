@@ -83,14 +83,20 @@
 
               <span>
                 <SpecialUrlAddToTabsetComponent
-                  v-if="currentChromeTab && currentTabset"
+                  v-if="currentChromeTab && currentTabset && currentTabset.type !== TabsetType.SPECIAL"
                   @button-clicked="
                     (args: ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)
                   "
                   :currentChromeTab="currentChromeTab"
                   :tabset="currentTabset"
                   :level="'root'" />
-                <q-btn v-else icon="add" label="tab" size="sm" class="q-mr-md" @click="addUrlDialog()" />
+                <q-btn
+                  v-else-if="!currentTabset || currentTabset.type !== TabsetType.SPECIAL"
+                  icon="add"
+                  label="tab"
+                  size="sm"
+                  class="q-mr-md"
+                  @click="addUrlDialog()" />
               </span>
               <!--              <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer" />-->
               <!--              <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset" />-->
