@@ -7,6 +7,8 @@
  */
 import { createBridge } from '#q-app/bex/content'
 
+console.log('[BEX-CT] loading my-content-scripts')
+
 // The use of the bridge is optional.
 const bridge = createBridge({ debug: false })
 /**

@@ -244,7 +244,7 @@ watchEffect(async () => {
         if (useSpaces && space) {
           return ts.spaces.indexOf(space.id) >= 0
         } else if (useSpaces && !space) {
-          return ts.spaces.length === 0
+          return ts.spaces?.length === 0
         }
         return true
       })
