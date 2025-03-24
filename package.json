@@ -6,6 +6,7 @@
   "author": "evandor <evandor@gmail.com>",
   "type": "module",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "quasar dev -m bex -T chrome",
     "dev firefox": "quasar dev -m bex -T firefox",

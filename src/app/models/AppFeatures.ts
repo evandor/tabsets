@@ -269,23 +269,23 @@ export class AppFeatures {
     ),
 
     // permission allOrigins?
-    new Feature(
-      FeatureIdent.ANALYSE_TABS,
-      'EXPERIMENTAL',
-      'Analyse Tabs',
-      "This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab's content, " +
-        'its links and the received http headers are taken into account. ' +
-        'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
-      'o_tab',
-      '/analyse.png',
-      ['bex'],
-    )
-      .setActivateCommands([new GrantPermissionCommand('webRequest')])
-      .setImageWidth('700px'),
+    // new Feature(
+    //   FeatureIdent.ANALYSE_TABS,
+    //   'EXPERIMENTAL',
+    //   'Analyse Tabs',
+    //   "This extension can analyse the tabs you visit, so that the search can be improved significantly. The tab's content, " +
+    //     'its links and the received http headers are taken into account. ' +
+    //     'Please note that only tabs that you visit (or revisit) after the activation of this feature are going to be analysed.',
+    //   'o_tab',
+    //   '/analyse.png',
+    //   ['bex'],
+    // )
+    //   .setActivateCommands([new GrantPermissionCommand('webRequest')])
+    //   .setImageWidth('700px'),
 
     new Feature(
       FeatureIdent.TAB_GROUPS,
-      'EXPERIMENTAL',
+      'DISABLED',
       'Chrome Tab Groups',
       'Utilize Chrome Tab Groups',
       'o_view_list',

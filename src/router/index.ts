@@ -1,6 +1,9 @@
 import { defineRouter } from '#q-app/wrappers'
+import { useLogger } from 'src/services/Logger'
 import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import routes from './routes'
+
+const { info } = useLogger()
 
 /*
  * If not building with SSR mode, you can
@@ -30,6 +33,10 @@ export default defineRouter(function (/* { store, ssrContext } */) {
 
   Router.beforeEach((to, from) => {
     console.log(`%crouter event ${from.fullPath} -> ${to.fullPath}`, 'color:green')
+  })
+
+  Router.afterEach((to, from) => {
+    info(`router set to '${to.fullPath}'`)
   })
 
   Router.onError((error: any) => {

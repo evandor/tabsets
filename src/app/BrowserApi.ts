@@ -23,6 +23,7 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { v5 as uuidv5 } from 'uuid'
 import { Router } from 'vue-router'
+import { EXTENSION_NAME } from '../../../tabsets-pro/src/boot/constants'
 
 function runHousekeeping() {
   //console.log("housekeeping now...")
@@ -85,11 +86,7 @@ class BrowserApi {
       // NavigationService.updateAvailable(details)
     })
 
-    if (useFeaturesStore().hasFeature(FeatureIdent.ANALYSE_TABS)) {
-      this.startWebRequestListener()
-    } else {
-      this.stopWebRequestListener()
-    }
+    this.startWebRequestListener()
   }
 
   startWebRequestListener() {
@@ -130,7 +127,7 @@ class BrowserApi {
         chrome.contextMenus.create(
           {
             id: 'tabset_extension',
-            title: 'Tabsets',
+            title: EXTENSION_NAME,
             documentUrlPatterns: ['*://*/*'],
             contexts: ['all'],
           },

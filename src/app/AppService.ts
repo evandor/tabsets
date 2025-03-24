@@ -1,3 +1,4 @@
+import { EXTENSION_NAME } from 'boot/constants'
 import _ from 'lodash'
 import { QVueGlobals } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
@@ -22,7 +23,6 @@ import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAppStore } from 'src/stores/appStore'
-import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -55,7 +55,7 @@ class AppService {
 
     this.router = router
 
-    useUiStore().appLoading = 'loading tabsets...'
+    useUiStore().appLoading = `loading ${EXTENSION_NAME}...`
 
     useAppStore().init()
 
@@ -83,29 +83,12 @@ class AppService {
       .catch((err: any) => console.error(err))
 
     // init services
-    await useSuggestionsStore().init(IndexedDbSuggestionsPersistence)
+    await useSuggestionsStore().init(useDB().suggestionsDb)
 
     // tabsetService.setLocalStorage(localStorage)
 
     await this.initCoreSerivces(quasar, this.router)
   }
-
-  // restart(ar: string) {
-  //   console.error('%crestarting tabsets', 'font-weight:bold', window.location.href, ar)
-  //   const baseLocation = window.location.href.split('?')[0]
-  //   console.log('%cbaseLocation', 'font-weight:bold', baseLocation)
-  //   console.log('%cwindow.location.href', 'font-weight:bold', window.location.href)
-  //   if (window.location.href.indexOf('?') < 0) {
-  //     const tsIframe = window.parent.frames[0]
-  //     //log("iframe", tsIframe)
-  //     if (tsIframe) {
-  //       console.debug('%cnew window.location.href', 'font-weight:bold', baseLocation + '?' + ar)
-  //       tsIframe.location.href = baseLocation + '?' + ar
-  //       //tsIframe.location.href = "https://www.skysail.io"
-  //       tsIframe.location.reload()
-  //     }
-  //   }
-  // }
 
   private async initCoreSerivces(quasar: QVueGlobals, router: Router) {
     //console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
