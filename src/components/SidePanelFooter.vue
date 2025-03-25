@@ -152,6 +152,9 @@
                 icon="o_open_in_new"
                 label="Issues" />
 
+              <!-- seems like this is not possible with current sentry in a chrome extension, not even with API -->
+              <!--              <ContextMenuItem v-close-popup @was-clicked="openBugDialog()" icon="o_bug_report" label="Report a Bug" />-->
+
               <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)">
                 <q-separator />
 
@@ -180,6 +183,7 @@
 </template>
 
 <script setup lang="ts">
+import { captureFeedback } from '@sentry/browser'
 import _ from 'lodash'
 import { openURL, uid, useQuasar } from 'quasar'
 import BrowserApi from 'src/app/BrowserApi'
@@ -202,6 +206,7 @@ import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import SidePanelMessagesMarkup from 'src/tabsets/components/helper/SidePanelMessagesMarkup.vue'
 import SidePanelTabsetListMarkup from 'src/tabsets/components/helper/SidePanelTabsetListMarkup.vue'
+import NewBugDialog from 'src/tabsets/dialogues/NewBugDialog.vue'
 import { Tab, TabSnippet } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -445,6 +450,16 @@ const drop = (evt: any) => {
 }
 
 const reload = () => window.location.reload()
+
+const openBugDialog = () => {
+  $q.dialog({
+    component: NewBugDialog,
+    componentProps: {},
+  }).onOk((userFeedback: any) => {
+    console.log('data', userFeedback)
+    captureFeedback(userFeedback)
+  })
+}
 </script>
 
 <style>

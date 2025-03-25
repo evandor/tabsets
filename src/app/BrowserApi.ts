@@ -506,7 +506,7 @@ class BrowserApi {
     const allTabsets: Tabset[] = [...useTabsetsStore().tabsets.values()] as Tabset[]
     const checkedTabs: { url: string; newHash: string; tabId: string; tabsetId: string }[] = []
     for (const ts of allTabsets) {
-      for (const monitoredTab of ts.monitoredTabs) {
+      for (const monitoredTab of ts.monitoredTabs || []) {
         const tabAndTabsetId: TabAndTabsetId | undefined = useTabsetsStore().getTabAndTabsetId(monitoredTab.tabId)
         if (tabAndTabsetId) {
           const url = tabAndTabsetId.tab.url
