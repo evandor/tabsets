@@ -2,7 +2,12 @@ import _ from 'lodash'
 import { LocalStorage, uid } from 'quasar'
 import AppEventDispatcher from 'src/app/AppEventDispatcher'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { CLEANUP_PERIOD_IN_MINUTES, GITHUB_AUTO_BACKUP, MONITORING_PERIOD_IN_MINUTES } from 'src/boot/constants'
+import {
+  CLEANUP_PERIOD_IN_MINUTES,
+  EXTENSION_NAME,
+  GITHUB_AUTO_BACKUP,
+  MONITORING_PERIOD_IN_MINUTES,
+} from 'src/boot/constants'
 import { ContentItem } from 'src/content/models/ContentItem'
 import { useContentService } from 'src/content/services/ContentService'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
@@ -23,7 +28,6 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { v5 as uuidv5 } from 'uuid'
 import { Router } from 'vue-router'
-import { EXTENSION_NAME } from '../../../tabsets-pro/src/boot/constants'
 
 function runHousekeeping() {
   //console.log("housekeeping now...")

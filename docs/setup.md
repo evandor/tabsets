@@ -5,7 +5,7 @@ Browser Extension to manage tabsets and bookmarks
 ## Checkout
 
 ```
-git clone https://github.com/evandor/tabsets.git
+git clone --recurse-submodules -j8 https://github.com/evandor/tabsets.git
 ```
 
 Change into the tabsets directory and checkout the branch for your browser

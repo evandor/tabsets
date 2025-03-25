@@ -10,16 +10,11 @@ https://evandor.github.io/tabsets/
 
 https://docs.tabsets.net
 
-# Quasar App (quasar-project)
-
-A Quasar Project
-
-## Install the dependencies
+## Quick setup
 
 ```bash
-yarn
-# or
-npm install
+git clone --recurse-submodules -j8 https://github.com/evandor/tabsets.git
+yarn install
 ```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
