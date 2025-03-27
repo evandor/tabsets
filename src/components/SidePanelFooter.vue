@@ -41,9 +41,9 @@
 
     <div class="row fit q-ma-none q-pa-none" v-if="!checkToasts() && useUiStore().progress">
       <div class="col-12">
-        <q-linear-progress stripe size="18px" :value="progressValue" color="grey-7" track-color="grey-4">
+        <q-linear-progress stripe size="18px" :value="progressValue" color="warning" track-color="grey-4">
           <div class="absolute-full flex flex-center">
-            <q-badge :label="progressLabel" color="grey" />
+            <q-badge :label="progressLabel" color="white" text-color="primary" />
           </div>
         </q-linear-progress>
       </div>

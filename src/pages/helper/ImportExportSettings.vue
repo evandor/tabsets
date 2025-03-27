@@ -46,6 +46,6 @@ const $q = useQuasar()
 
 const emits = defineEmits(['showTab'])
 
-const showExportDialog = () => $q.dialog({ component: ExportDialog, componentProps: { inSidePanel: true } })
+const showExportDialog = () => $q.dialog({ component: ExportDialog, componentProps: {} })
 const showImportDialog = () => $q.dialog({ component: ImportDialog, componentProps: { inSidePanel: true } })
 </script>

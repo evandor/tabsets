@@ -27,8 +27,10 @@ const GITHUB_USERNAME = 'github.username'
 const GITHUB_REPONAME = 'github.reponame'
 const GITHUB_TOKEN = 'github.token'
 const GITHUB_AUTO_BACKUP = 'github.autobackup'
+const GITHUB_AUTO_SYNC = 'github.sync'
 const GITHUB_LOG = 'github.log'
 const GITHUB_PATH = 'github.path'
+const GITHUB_AUTO_SYNC_LASTUPDATE = 'github.sync.lastUpdate'
 
 const SPACES_LIMIT_NO_SUBSCRIPTION = 2 // pro only
 const TABS_LIMIT_NO_SUBSCRIPTION = 100 // pro only
@@ -55,6 +57,8 @@ export {
   GITHUB_REPONAME,
   GITHUB_TOKEN,
   GITHUB_AUTO_BACKUP,
+  GITHUB_AUTO_SYNC,
+  GITHUB_AUTO_SYNC_LASTUPDATE,
   GITHUB_LOG,
   GITHUB_PATH,
   SPACES_LIMIT_NO_SUBSCRIPTION,

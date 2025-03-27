@@ -27,12 +27,20 @@
                   v-if="route.path !== '/sidepanel/spaces'"
                   class="text-caption cursor-pointer"
                   @click.stop="router.push('/sidepanel/spaces')">
-                  <span
-                    >{{ title() }}
+                  <q-icon
+                    name="sync"
+                    class="q-mr-xs cursor-pointer"
+                    size="12px"
+                    v-if="syncingActive()"
+                    @click.stop="syncNow()">
+                    <q-tooltip class="tooltip-small">Last synced: {{ lastSyncTime() }}. Click to sync now</q-tooltip>
+                  </q-icon>
+                  <span>
+                    {{ title() }}
                     <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />
                     <q-tooltip class="tooltip-small" :delay="1000"
-                      >Select a different space or create a new one</q-tooltip
-                    >
+                      >Select a different space or create a new one
+                    </q-tooltip>
                   </span>
                 </div>
                 <div v-else class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel')">
@@ -45,7 +53,17 @@
                 </div>
               </template>
               <template v-else>
-                <div class="text-caption">{{ title() }}</div>
+                <div class="text-caption">
+                  <q-icon
+                    name="sync"
+                    class="q-mr-xs cursor-pointer"
+                    size="12px"
+                    v-if="syncingActive()"
+                    @click="syncNow()">
+                    <q-tooltip class="tooltip-small">Last synced: {{ lastSyncTime() }}. Click to sync now</q-tooltip>
+                  </q-icon>
+                  {{ title() }}
+                </div>
               </template>
               <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
                 <template v-if="currentTabset">
@@ -109,14 +127,17 @@
 </template>
 
 <script lang="ts" setup>
-import { useQuasar } from 'quasar'
+import { GITHUB_AUTO_SYNC, GITHUB_AUTO_SYNC_LASTUPDATE } from 'boot/constants'
+import { date, LocalStorage, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
 import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder'
 import SpecialUrlAddToTabsetComponent from 'src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue'
+import { GithubReadEventsCommand } from 'src/tabsets/commands/github/GithubReadEventsCommand'
 import AddUrlDialog from 'src/tabsets/dialogues/AddUrlDialog.vue'
 import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -246,6 +267,22 @@ const handleButtonClicked = async (tabset: Tabset, args: ActionHandlerButtonClic
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : '')
 
 const addUrlDialog = () => $q.dialog({ component: AddUrlDialog })
+
+const syncingActive = () => LocalStorage.getItem(GITHUB_AUTO_SYNC)
+
+const syncNow = () => {
+  const lastUpdate: number = (LocalStorage.getItem(GITHUB_AUTO_SYNC_LASTUPDATE) as number) || 0
+  useCommandExecutor().executeFromUi(new GithubReadEventsCommand(lastUpdate))
+  router.push('/sidepanel/collections')
+}
+
+const lastSyncTime = () => {
+  const lastUpdate: number = (LocalStorage.getItem(GITHUB_AUTO_SYNC_LASTUPDATE) as number) || 0
+  if (lastUpdate == 0) {
+    return 'never'
+  }
+  return date.formatDate(lastUpdate, 'DD.MM.YY HH:mm')
+}
 </script>
 
 <style scoped>
