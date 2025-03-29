@@ -65,7 +65,7 @@
 </template>
 
 <script lang="ts" setup>
-import { captureFeedback, captureMessage } from '@sentry/browser'
+import { captureFeedback, captureMessage } from '@sentry/vue'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'

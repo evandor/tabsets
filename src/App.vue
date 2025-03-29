@@ -7,7 +7,6 @@ import { EXTENSION_NAME } from 'boot/constants'
 import { setCssVar, useQuasar } from 'quasar'
 import AppService from 'src/app/AppService'
 import BexFunctions from 'src/core/communication/BexFunctions'
-import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'
 import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
 import { useLogger } from 'src/services/Logger'
@@ -15,14 +14,13 @@ import { useAppStore } from 'src/stores/appStore'
 import { useSettingsStore } from 'src/stores/settingsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const router = useRouter()
-const route = useRoute()
-const { inBexMode } = useUtils()
+const { inBexMode, setupConsoleInterceptor } = useUtils()
 
-const { handleError } = useNotificationHandler()
+setupConsoleInterceptor(useUiStore())
 
 const settingsStore = useSettingsStore()
 settingsStore.initialize($q.localStorage)

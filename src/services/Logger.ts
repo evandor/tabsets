@@ -1,8 +1,8 @@
 import { useErrorHandlingConfig } from 'src/core/config/errorHandlingConfig'
 
-const version = import.meta.env.PACKAGE_VERSION
+// const version = import.meta.env.PACKAGE_VERSION
 
-let graylogErrorLogged = false
+// let graylogErrorLogged = false
 
 const { setupErrorHandling } = useErrorHandlingConfig()
 var scope = setupErrorHandling()

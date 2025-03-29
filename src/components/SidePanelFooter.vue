@@ -22,7 +22,7 @@
       </Transition>
     </template>
 
-    <template v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST)">
+    <template v-if="useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST) && useUiStore().showTabsetList">
       <SidePanelTabsetListMarkup />
     </template>
 
@@ -71,6 +71,11 @@
       </div>
       <div class="col text-right" v-if="useUiStore().appLoading">&nbsp;</div>
       <div v-else class="col text-right">
+        <q-icon
+          class="cursor-pointer q-mr-sm"
+          v-if="!useUiStore().showTabsetList"
+          name="o_featured_play_list"
+          @click="useUiStore().hideTabsetList(false)" />
         <span>
           <input
             class="q-ma-none q-pa-none"
@@ -125,7 +130,7 @@
             }}</q-tooltip>
           </q-btn>
           <q-menu :offset="[-10, 0]">
-            <q-list dense style="min-width: 180px">
+            <q-list dense style="min-width: 190px">
               <ContextMenuItem v-close-popup @was-clicked="openOptionsPage()" icon="o_settings" label="Open Settings" />
 
               <q-separator />
@@ -153,7 +158,11 @@
                 label="Issues" />
 
               <!-- seems like this is not possible with current sentry in a chrome extension, not even with API -->
-              <!--              <ContextMenuItem v-close-popup @was-clicked="openBugDialog()" icon="o_bug_report" label="Report a Bug" />-->
+              <ContextMenuItem v-close-popup @was-clicked="openBugDialog()" icon="o_bug_report" label="Report a Bug">
+                <template v-slot:banner v-if="warningOrErrorCount()">
+                  <q-badge :label="warningOrErrorCount()" align="top" :color="warningOrErrorColor()" size="xs" />
+                </template>
+              </ContextMenuItem>
 
               <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SESSIONS)">
                 <q-separator />
@@ -183,7 +192,7 @@
 </template>
 
 <script setup lang="ts">
-import { captureFeedback } from '@sentry/browser'
+import { captureFeedback } from '@sentry/vue'
 import _ from 'lodash'
 import { openURL, uid, useQuasar } from 'quasar'
 import BrowserApi from 'src/app/BrowserApi'
@@ -459,6 +468,29 @@ const openBugDialog = () => {
     console.log('data', userFeedback)
     captureFeedback(userFeedback)
   })
+}
+
+const warningOrErrorCount = (): string | undefined => {
+  const warningCount = useUiStore().warningCount
+  const errorCount = useUiStore().errorCount
+  if (errorCount > 0) {
+    return errorCount > 9 ? '9+' : errorCount.toString()
+  }
+  if (warningCount > 0) {
+    return warningCount > 9 ? '9+' : warningCount.toString()
+  }
+  return undefined
+}
+const warningOrErrorColor = () => {
+  const warningCount = useUiStore().warningCount
+  const errorCount = useUiStore().errorCount
+  if (errorCount > 0) {
+    return 'negative'
+  }
+  if (warningCount > 0) {
+    return 'warning'
+  }
+  return 'primary'
 }
 </script>
 
