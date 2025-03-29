@@ -20,6 +20,7 @@ const $q = useQuasar()
 const router = useRouter()
 const { inBexMode, setupConsoleInterceptor } = useUtils()
 
+// TODO only in prod?
 setupConsoleInterceptor(useUiStore())
 
 const settingsStore = useSettingsStore()
