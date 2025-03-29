@@ -10,16 +10,6 @@
       </div>
       <div class="row q-ma-none q-pa-none">
         <div class="col-6 q-ma-none q-pa-none" style="border: 0 solid red">
-          <!-- no spaces && searching -->
-          <!--          <SearchWithTransitionHelper-->
-          <!--            v-if="searching"-->
-          <!--            :search-term="props.searchTerm"-->
-          <!--            :search-hits="props.searchHits!" />-->
-
-          <!--          <FilterWithTransitionHelper v-else-if="showFilter" />-->
-          <!-- no spaces && not searching -->
-          <!--          <template v-else>-->
-          <!-- no spaces && not searching -->
           <div class="col-12 text-subtitle1">
             <div class="q-ml-md q-mt-sm">
               <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
@@ -88,17 +78,6 @@
           style="border: 0 solid green">
           <slot name="iconsRight">
             <div class="q-mt-sm q-ma-none q-qa-none q-mr-xs">
-              <!--              <template v-if="showSearchIcon()">-->
-              <!--                <SidePanelToolbarButton-->
-              <!--                  icon="search"-->
-              <!--                  class="q-mr-sm"-->
-              <!--                  id="toggleSearchBtn"-->
-              <!--                  size="11px"-->
-              <!--                  @click="toggleSearch" />-->
-              <!--              </template>-->
-
-              <!--              <SidePanelToolbarTabNavigationHelper />-->
-
               <span>
                 <SpecialUrlAddToTabsetComponent
                   v-if="currentChromeTab && currentTabset && currentTabset.type !== TabsetType.SPECIAL"
@@ -108,13 +87,13 @@
                   :currentChromeTab="currentChromeTab"
                   :tabset="currentTabset"
                   :level="'root'" />
-                <q-btn
+                <transition
                   v-else-if="!currentTabset || currentTabset.type !== TabsetType.SPECIAL"
-                  icon="add"
-                  label="tab"
-                  size="sm"
-                  class="q-mr-md"
-                  @click="addUrlDialog()" />
+                  appear
+                  enter-active-class="animated fadeIn slower delay-5s"
+                  leave-active-class="animated fadeOut">
+                  <q-btn icon="add" label="tab" size="sm" class="q-mr-md" @click="addUrlDialog()" />
+                </transition>
               </span>
               <!--              <q-icon name="more_vert" size="sm" color="secondary" class="cursor-pointer" />-->
               <!--              <SidePanelPageContextMenu v-if="currentTabset" :tabset="currentTabset as Tabset" />-->
@@ -127,10 +106,10 @@
 </template>
 
 <script lang="ts" setup>
-import { GITHUB_AUTO_SYNC, GITHUB_AUTO_SYNC_LASTUPDATE } from 'boot/constants'
 import { date, LocalStorage, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import { GITHUB_AUTO_SYNC, GITHUB_AUTO_SYNC_LASTUPDATE } from 'src/boot/constants'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'

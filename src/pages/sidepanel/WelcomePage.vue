@@ -45,7 +45,11 @@
                   :label="$t('tabset_name')" />
               </q-card-section>
               <q-card-section class="q-ml-sm q-pl-none text-grey-8 text-body1">
-                <q-checkbox v-model="addCurrentTabs" :label="$t('add_current_tabs')" size="xs" color="text-grey-8" />
+                <q-checkbox
+                  v-model="addCurrentTabs"
+                  :label="$t('add_current_tabs', { count: openTabsCount })"
+                  size="xs"
+                  color="text-grey-8" />
               </q-card-section>
               <q-card-actions align="center" class="q-pr-md q-pb-xs q-ma-none q-my-md">
                 <DialogButton
@@ -186,7 +190,7 @@ const addCurrentTabs = ref(false)
 const showWatermark = ref(false)
 const watermark = ref('')
 const showDocumentation = ref(true)
-const imgSrc = ref('https://cdn.quasar.dev/img/parallax2.jpg')
+const openTabsCount = ref(0)
 
 onMounted(() => {
   Analytics.firePageViewEvent('WelcomePage', document.location.href)
@@ -194,12 +198,13 @@ onMounted(() => {
   LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
 })
 
-const urlFirst = 'https://cdn.quasar.dev/img/parallax2.jpg'
-const urlSecond = 'https://cdn.quasar.dev/img/parallax1.jpg'
-
 const toggleDocumentation = () => {
   showDocumentation.value = !showDocumentation.value
 }
+
+watchEffect(() => {
+  openTabsCount.value = useTabsStore2().browserTabs.length
+})
 
 watchEffect(() => {
   useUiStore().showLoginTable = login.value

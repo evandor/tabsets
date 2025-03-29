@@ -54,7 +54,7 @@ describe('NewTabsetDialogBody', () => {
 
   it('should be mounted', async () => {
     expect(wrapper.text()).toContain('Add Tabset')
-    expect(wrapper.text()).toContain('Add all open tabs')
+    expect(wrapper.text()).toContain('Add all 0 open tabs')
   })
 
   it('adds Tabset with a new Name', async () => {
