@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh LpR lFr">
     <q-header elevated>
-      <q-toolbar class="bg-grey-2 text-primary">
+      <q-toolbar>
         <template v-if="leftDrawerOpen">
           <q-img
             class="q-ml-xs q-mr-none cursor-pointer"
@@ -93,24 +93,6 @@
             </q-list>
           </q-menu>
         </span>
-
-        <!--        <ToolbarButton-->
-        <!--          :feature="FeatureIdent.SAVE_TAB"-->
-        <!--          :drawer="DrawerTabs.SAVED_TABS"-->
-        <!--          icon="o_save"-->
-        <!--          tooltip="List of MTHML Snapshots"/>-->
-
-        <!--        <ToolbarButton-->
-        <!--          :feature="FeatureIdent.SAVE_TAB_AS_PNG"-->
-        <!--          :drawer="DrawerTabs.SAVED_TABS_AS_PNG"-->
-        <!--          icon="o_image"-->
-        <!--          tooltip="The List of PNGs"/>-->
-
-        <!--        <ToolbarButton-->
-        <!--          :feature="FeatureIdent.SAVE_TAB_AS_PDF"-->
-        <!--          :drawer="DrawerTabs.SAVED_TABS_AS_PDF"-->
-        <!--          icon="o_picture_as_pdf"-->
-        <!--          tooltip="The List of PDFs"/>-->
 
         <ToolbarButton
           :feature="FeatureIdent.GROUP_BY_DOMAIN"

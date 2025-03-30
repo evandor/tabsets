@@ -7,8 +7,8 @@
     <div class="row items-baseline q-ma-md q-gutter-md">
       <InfoLine :label="$t('dark_mode')">
         <q-radio v-model="darkMode" val="auto" :label="$t('Auto')" />
-        <q-radio v-model="darkMode" val="true" :label="$t('Enabled')" />
-        <q-radio v-model="darkMode" val="false" :label="$t('Disabled')" />
+        <q-radio v-model="darkMode" val="true" :label="$t('enabled')" />
+        <q-radio v-model="darkMode" val="false" :label="$t('disabled')" />
         &nbsp;&nbsp;&nbsp;{{ $t('changing_needs_restart') }}
       </InfoLine>
 
