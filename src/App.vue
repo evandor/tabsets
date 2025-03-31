@@ -21,7 +21,9 @@ const router = useRouter()
 const { inBexMode, setupConsoleInterceptor } = useUtils()
 
 // TODO only in prod?
-setupConsoleInterceptor(useUiStore())
+if (process.env.TABSETS_STAGE !== 'DEV') {
+  setupConsoleInterceptor(useUiStore())
+}
 
 const settingsStore = useSettingsStore()
 settingsStore.initialize($q.localStorage)

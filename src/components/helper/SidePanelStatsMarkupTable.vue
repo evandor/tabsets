@@ -25,7 +25,7 @@
       <tbody>
         <tr v-for="row in rows" :key="row['id' as keyof object]" style="max-height: 15px">
           <td class="text-left">
-            <span :data-testid="'windowDataColumn_name_' + row['id' as keyof object]">
+            <span :data-testid="'windowDataColumn_name_' + row['id' as keyof object]" :class="colorForQuota(row.quota)">
               {{ row['name' as keyof object] }}
               {{ row.quota ? '(' + row.quota + '%)' : '' }}
             </span>
@@ -33,9 +33,7 @@
           <td>
             {{ row.count }}
           </td>
-          <td v-if="row['snapshot' as keyof object]">
-            {{ row.count - row.snapshot }}
-          </td>
+          <td v-if="row['snapshot' as keyof object]">{{ row.count - row.snapshot }}</td>
           <td v-else>-</td>
           <td v-if="row.link && row.count === 0">
             <q-icon
@@ -127,11 +125,6 @@ watch(
 )
 
 const calcStatsRows = (): StatRow[] => {
-  console.log(
-    '===',
-    useTabsetsStore().allTabsCount,
-    useAuthStore().limitExceeded('TABS', useTabsetsStore().allTabsCount),
-  )
   return [
     {
       name: 'Tabs',
@@ -212,6 +205,17 @@ const snapshotDate = () => {
     return date.formatDate(Number(tstamp), 'DD.MM.YY HH:mm')
   }
   return '---'
+}
+
+const colorForQuota = (quota: number | undefined) => {
+  if (!quota) {
+    return ''
+  } else if (quota > 90) {
+    return 'text-negative'
+  } else if (quota > 70) {
+    return 'text-warning'
+  }
+  return 'text-green'
 }
 </script>
 
