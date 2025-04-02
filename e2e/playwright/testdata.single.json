@@ -1,0 +1,21 @@
+[
+  {
+    "country_iso_code": "AT",
+    "username": "nkam.at_07594",
+    "password": "2IamAtestUserSGATE2025",
+    "bp_name": "NKAM-26377 BP AT",
+    "street": "Siegfried-Marcus-Straße 24",
+    "postcode": "5020",
+    "postbox": "123",
+    "city": "Salzburg",
+    "country": "174640007",
+    "county": "Salzburg",
+    "vat": "ATU37035105",
+    "bp_type": "Business",
+    "legal_entity": "Private Limited Company",
+    "nat_id1": "FN12345D",
+    "nat_id2": "04595920879",
+    "nat_id3": "",
+    "owning_kam": "QDN5M49 DebugUser"
+  }
+]

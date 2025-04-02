@@ -14,7 +14,9 @@
         <div
           class="q-pa-sm q-mb-none row items-start q-gutter-md relative-position overflow-hidden cursor-pointer non-selectable"
           @click.stop="selected()">
-          <transition name="q-transition--scale" :class="showDocumentation ? 'documentation' : 'box'">
+          <transition
+            :name="showDocumentation ? 'q-transition--slide-right' : 'q-transition--slide-left'"
+            :class="showDocumentation ? 'documentation' : 'box'">
             <q-card v-if="!showDocumentation" class="my-card fit">
               <q-card-section class="q-pb-none">
                 <div class="row">
@@ -82,7 +84,7 @@
                       <div class="col-1">
                         <q-icon name="o_featured_play_list" color="primary" class="q-mb-xs" size="xs" />
                       </div>
-                      <div class="col q-ml-sm">Create a <em>collection</em> first</div>
+                      <div class="col q-ml-sm">Create a <em>tabset collection</em> first</div>
                     </div>
                   </div>
                 </div>
@@ -92,7 +94,7 @@
                       <div class="col-1">
                         <q-icon name="o_tab" color="primary" class="q-mr-sm q-mb-xs" size="xs" />
                       </div>
-                      <div class="col q-ml-sm">Add your <em>active tab</em> to the new collection</div>
+                      <div class="col q-ml-sm">Add your <em>active tab(s)</em> to the new collection</div>
                     </div>
                   </div>
                 </div>
@@ -102,11 +104,11 @@
                       <div class="col-1">
                         <q-icon name="o_replay" color="primary" class="q-mr-sm q-mb-xs" size="xs" />
                       </div>
-                      <div class="col q-ml-sm">Switch tab, Repeat</div>
+                      <div class="col q-ml-sm">Switch tab or tabset, Repeat</div>
                     </div>
                   </div>
                 </div>
-                <div class="q-row q-my-md q-ml-sm">
+                <div class="q-row q-mt-md q-ml-sm">
                   <div class="q-col text-body1">
                     <div class="row">
                       <div class="col-1">
@@ -116,18 +118,28 @@
                     </div>
                   </div>
                 </div>
+                <div class="q-row q-mb-md q-ml-sm">
+                  <div class="q-col text-body1">
+                    <div class="row">
+                      <div class="col-1"></div>
+                      <div class="col q-ml-md text-body2 text-grey">
+                        Search<br />
+                        Drag & Drop<br />
+                        Bookmarks Integration<br />
+                        Quick Access to tabs<br />
+                        ...<br />
+                      </div>
+                    </div>
+                  </div>
+                </div>
                 <div class="q-row">
-                  <div class="q-col text-body1 text-center q-mt-xl">
-                    <DialogButton
-                      label="got it"
-                      @was-clicked="toggleDocumentation()"
-                      color="primary"
-                      data-testid="welcome-got-it" />
+                  <div class="q-col text-body1 text-center q-mt-sm">
+                    <DialogButton label="got it..." @was-clicked="toggleDocumentation()" data-testid="welcome-got-it" />
                   </div>
                 </div>
                 <div class="q-row q-mt-lg">
                   <div
-                    class="q-col text-body2 text-blue-8 text-center cursor-pointer"
+                    class="q-col text-body2 text-blue-8 text-center cursor-pointer q-mb-sm"
                     @click="useNavigationService().browserTabFor('https://youtu.be/jxOonJ_x7Eg')">
                     Introduction Video
                   </div>
@@ -256,7 +268,7 @@ const importFromBackup = () => {
 }
 
 .box {
-  border: 1px solid $accent;
+  border: 2px solid $accent;
   border-radius: 10px;
   min-height: 400px;
 }

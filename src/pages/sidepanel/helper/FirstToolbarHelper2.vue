@@ -153,29 +153,26 @@ const overlapTooltip = ref('')
 const showWatermark = ref(false)
 const watermark = ref('')
 
-const toggleSearch = () => {
-  searching.value = !searching.value
-  if (searching.value) {
-    router.push('/sidepanel/search')
-  } else {
-    router.push('/sidepanel')
-  }
-}
-
 windowLocation.value = window.location.href
 
-setTimeout(() => {
-  // redirect to welcome page if there are not tabsets
-  if (useTabsetsStore().tabsets.size === 0) {
-    router.push('/sidepanel/welcome')
-  }
-}, 1000)
+const redirectOnEmpty = () => {
+  setTimeout(() => {
+    // redirect to welcome page if there are not tabsets
+    if (useTabsetsStore().tabsets.size === 0) {
+      router.push('/sidepanel/welcome')
+    }
+  }, 1000)
+}
+
+redirectOnEmpty()
 
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
   if (currentTabset.value) {
     overlap.value = useTabsStore2().getOverlap(currentTabset.value)
     overlapTooltip.value = `${Math.round(100 * overlap.value)}% overlap between this tabset and the currently open tabs`
+  } else {
+    redirectOnEmpty()
   }
 })
 
@@ -217,19 +214,19 @@ const title = (): string => {
         default:
           switch (currentTs.sharing.sharing) {
             case TabsetSharing.UNSHARED:
-              return 'Collection'
+              return 'Tabset'
             case TabsetSharing.PUBLIC_LINK:
-              return 'Shared Collection'
+              return 'Shared Tabset'
             case TabsetSharing.PUBLIC_LINK_OUTDATED:
-              return 'Shared Collection'
+              return 'Shared Tabset'
             case TabsetSharing.USER:
-              return currentTs.sharing.shareReference ? 'Shared Collection' : 'Sharing Collection'
+              return currentTs.sharing.shareReference ? 'Shared Tabset' : 'Sharing Tabset'
             default:
-              return 'Collection'
+              return 'Tabset'
           }
       }
     }
-    return 'Collection'
+    return 'Tabset'
   }
 }
 

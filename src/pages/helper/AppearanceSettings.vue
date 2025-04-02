@@ -193,12 +193,11 @@ const settingsStore = useSettingsStore()
 const darkMode = ref<string>(LocalStorage.getItem('darkMode') || 'auto')
 const installationTitle = ref<string>((LocalStorage.getItem(TITLE_IDENT) as string) || 'My Tabsets')
 const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
-const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || 'MAXIMAL')
+const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || 'MINIMAL')
 const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const overlapIndicator = ref(LocalStorage.getItem('ui.overlapIndicator') || false)
 const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))
-const oldLayout = ref(LocalStorage.getItem('ui.sidepanel.oldLayout') || false)
 
 let suggestionsCounter = 0
 
@@ -299,13 +298,6 @@ watch(
     } else {
       useCommandExecutor().execute(new DeactivateFeatureCommand(FeatureIdent.TABSET_LIST.toString()))
     }
-  },
-)
-
-watch(
-  () => oldLayout.value,
-  (a: any, b: any) => {
-    LocalStorage.set('ui.sidepanel.oldLayout', oldLayout.value)
   },
 )
 

@@ -21,7 +21,13 @@
 
           <!-- folders -->
           <div class="col-12">
-            <SidePanelFoldersView v-if="currentTabset" :tabset="currentTabset" :filter="filter" />
+            <SidePanelFoldersView
+              v-if="currentTabset"
+              :key="currentTabset.id + '_' + currentTabset.folderActive"
+              :tabset="currentTabset"
+              :filter="filter"
+              @folder-selected="update()"
+              @folders-found="(n: number) => (filteredFoldersCount = n)" />
           </div>
 
           <!-- list of tabs, assuming here we have at least one tabset-->
@@ -30,7 +36,8 @@
             :key="tabsetsLastUpdate"
             :filter="filter"
             :tabsCount="currentTabset.tabs.length"
-            :tabset="tabsetForTabList(currentTabset as Tabset)" />
+            :tabset="tabsetForTabList(currentTabset as Tabset)"
+            @tabs-found="(n: number) => (filteredTabsCount = n)" />
         </div>
       </template>
 
@@ -40,14 +47,17 @@
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
       <FirstToolbarHelper2 :showSearchBox="showSearchBox"></FirstToolbarHelper2>
-      <SearchToolbarHelper v-if="useTabsetsStore().allTabsCount > 0" @on-term-changed="(val) => termChanged(val)" />
+      <SearchToolbarHelper
+        v-if="useTabsetsStore().allTabsCount > 0"
+        @on-term-changed="(val) => termChanged(val)"
+        :filteredFoldersCount="filteredFoldersCount"
+        :filteredTabsCount="filteredTabsCount" />
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { useUtils } from 'src/core/services/Utils'
@@ -82,6 +92,8 @@ const tabsets = ref<Tabset[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
 const tabsetsLastUpdate = ref(0)
+const filteredTabsCount = ref(0)
+const filteredFoldersCount = ref(0)
 
 function updateOnlineStatus(e: any) {
   const { type } = e
@@ -89,10 +101,6 @@ function updateOnlineStatus(e: any) {
 }
 
 onMounted(() => {
-  if (LocalStorage.getItem('ui.sidepanel.oldLayout')) {
-    router.push('/sidepanelOld')
-  }
-
   window.addEventListener('keypress', checkKeystroke)
 
   window.addEventListener('offline', (e) => updateOnlineStatus(e))
@@ -116,6 +124,10 @@ watchEffect(() => {
 watchEffect(() => {
   tabsetsLastUpdate.value = useTabsetsStore().lastUpdate
 })
+
+const update = () => {
+  currentTabset.value = useTabsetsStore().getCurrentTabset
+}
 
 const getTabsetOrder = [
   function (o: Tabset) {
@@ -311,9 +323,7 @@ const tabsetForTabList = (tabset: Tabset) => {
 
 const showStartingHint = () => !useUiStore().appLoading && useTabsetsStore().allTabsCount === 0
 
-const termChanged = (a: { term: string }) => {
-  filter.value = a.term
-}
+const termChanged = (a: { term: string }) => (filter.value = a.term)
 </script>
 
 <style lang="scss" src="./css/sidePanelPage2.scss" />

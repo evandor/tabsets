@@ -2,7 +2,7 @@ import { EXTENSION_NAME } from 'boot/constants'
 import _ from 'lodash'
 import { QVueGlobals } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
-import ChromeListeners from 'src/app/listeners/BrowserListeners'
+import BrowserListeners from 'src/app/listeners/BrowserListeners'
 import BookmarksService from 'src/bookmarks/services/BookmarksService'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
@@ -47,7 +47,7 @@ class AppService {
     // }
     //
     // if (this.initialized) {
-    //   await ChromeListeners.resetListeners()
+    //   await BrowserListeners.resetListeners()
     //   useWindowsStore().resetListeners()
     // }
     //
@@ -59,7 +59,7 @@ class AppService {
 
     useAppStore().init()
 
-    await ChromeListeners.initListeners()
+    await BrowserListeners.initListeners()
 
     // Bookmarks
     ChromeBookmarkListeners.initListeners()

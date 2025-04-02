@@ -23,15 +23,6 @@
 
     <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <!--      <FirstToolbarHelper2-->
-      <!--        :show-search-box="true"-->
-      <!--        :search-term="searchStore.term"-->
-      <!--        :search-hits="tabsetHits.length"-->
-      <!--        :title="'Found ' + searchStore.term + ' ' + tabsetHits.length + ' time(s)'">-->
-      <!--        <template v-slot:iconsRight>-->
-      <!--          <CloseSidePanelViewButton />-->
-      <!--        </template>-->
-      <!--      </FirstToolbarHelper2>-->
       <ViewToolbarHelper title="Search Results" />
       <SearchToolbarHelper :search-term="searchStore.term" :search-hits="tabsetHits.length" />
     </q-page-sticky>

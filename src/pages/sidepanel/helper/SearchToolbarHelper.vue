@@ -5,7 +5,8 @@
       <!--          <SearchWithTransitionHelper :search-term="props.searchTerm" :search-hits="props.searchHits!" />-->
       <SearchWidget2
         :search-term="props.searchTerm"
-        :search-hits="props.searchHits!"
+        :filtered-tabs-count="props.filteredTabsCount"
+        :filtered-folders-count="props.filteredFoldersCount"
         @on-term-changed="(val) => emits('onTermChanged', val)"
         @on-enter="toggleSearch" />
     </div>
@@ -13,7 +14,6 @@
 </template>
 
 <script lang="ts" setup>
-import { useQuasar } from 'quasar'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import SearchWidget2 from 'src/search/widgets/SearchWidget2.vue'
 import { Tabset } from 'src/tabsets/models/Tabset'
@@ -22,10 +22,7 @@ import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { ref, watchEffect } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-
-const { t } = useI18n({ useScope: 'global' })
 
 const props = defineProps({
   title: { type: String, default: 'My Tabsets' },
@@ -33,11 +30,12 @@ const props = defineProps({
   showSearchBox: { type: Boolean, default: false },
   searchTerm: { type: String, default: '' },
   searchHits: { type: Number, required: false },
+  filteredFoldersCount: { type: Number, default: 0 },
+  filteredTabsCount: { type: Number, default: 0 },
 })
 
 const emits = defineEmits(['onTermChanged'])
 
-const $q = useQuasar()
 const router = useRouter()
 
 const searching = ref(false)

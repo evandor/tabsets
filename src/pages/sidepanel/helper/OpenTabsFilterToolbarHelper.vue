@@ -10,6 +10,7 @@
       <SearchWidget2
         :search-term="props.searchTerm"
         :search-hits="props.searchHits!"
+        :filtered-tabs-count="props.searchHits || 0"
         @on-term-changed="(val) => emits('onTermChanged', val)"
         @on-enter="toggleSearch" />
     </div>

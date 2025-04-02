@@ -1,0 +1,5 @@
+contexts:
+  - name: Tabsets
+    terms:
+      - name: Collection
+        definition: A set of parcels with a common delivery destination.

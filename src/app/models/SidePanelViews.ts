@@ -5,7 +5,11 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 export class SidePanelViews {
   static readonly MAIN = new SidePanelViews('main', '/sidepanel')
 
-  static readonly TABS_LIST = new SidePanelViews('tabsList', '/sidepanel/tabslist', () => true)
+  static readonly TABS_LIST = new SidePanelViews(
+    'tabsList',
+    '/sidepanel/tabslist',
+    () => true, //!useUiStore().appLoading && useTabsetsStore().allTabsCount > 0,
+  )
 
   static readonly TAGS_LIST = new SidePanelViews(
     'tagsList',

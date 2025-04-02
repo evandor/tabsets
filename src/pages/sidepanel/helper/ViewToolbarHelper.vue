@@ -9,15 +9,6 @@
       </div>
       <div class="row q-ma-none q-pa-none">
         <div class="col-6 q-ma-none q-pa-none" style="border: 0 solid red">
-          <!-- no spaces && searching -->
-          <!--          <SearchWithTransitionHelper-->
-          <!--            v-if="searching"-->
-          <!--            :search-term="props.searchTerm"-->
-          <!--            :search-hits="props.searchHits!" />-->
-
-          <!--          <FilterWithTransitionHelper v-else-if="showFilter" />-->
-          <!--          &lt;!&ndash; not searching &ndash;&gt;-->
-          <!--          <template v-else>-->
           <div class="col-12 text-subtitle1">
             <div class="q-ml-md q-mt-sm">
               <div class="text-caption cursor-pointer" @click.stop="backToMainView()">
@@ -58,10 +49,7 @@ import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { ref, watchEffect } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-
-const { t } = useI18n({ useScope: 'global' })
 
 const props = defineProps({
   title: { type: String, default: 'My Tabsets' },
