@@ -89,6 +89,13 @@
           </transition>
         </q-list>
       </div>
+      <div class="row q-mt-lg">
+        <div
+          class="col text-body2 text-blue-8 text-center cursor-pointer q-mb-sm"
+          @click="useNavigationService().browserTabFor('https://docs.tabsets.net/glossary')">
+          Glossary
+        </div>
+      </div>
     </div>
   </transition>
 </template>
@@ -96,6 +103,7 @@
 <script lang="ts" setup>
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import SidePanelToolbarButton from 'src/core/components/SidePanelToolbarButton.vue'
+import { useNavigationService } from 'src/core/services/NavigationService'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
@@ -110,7 +118,7 @@ setTimeout(() => (showOpenTabs.value = true), 7 * 1000)
 setTimeout(() => (showBookmarks.value = true), 10 * 1000)
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .box {
   border: 1px solid $accent;
   border-radius: 10px;

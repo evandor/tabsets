@@ -12,10 +12,10 @@
         </div>
 
         <div
-          class="q-pa-sm q-mb-none row items-start q-gutter-md relative-position overflow-hidden cursor-pointer non-selectable"
+          class="q-pa-none q-ma-sm row items-start relative-position overflow-hidden cursor-pointer non-selectable"
           @click.stop="selected()">
           <transition
-            :name="showDocumentation ? 'q-transition--slide-right' : 'q-transition--slide-left'"
+            :name="showDocumentation ? 'q-transition--jump-right' : 'q-transition--jump-left'"
             :class="showDocumentation ? 'documentation' : 'box'">
             <q-card v-if="!showDocumentation" class="my-card fit">
               <q-card-section class="q-pb-none">
@@ -44,6 +44,7 @@
                   data-testid="newTabsetName"
                   @keydown.enter="addFirstTabset()"
                   hint="e.g. Music, Holidays, News..."
+                  label-color="grey"
                   :label="$t('tabset_name')" />
               </q-card-section>
               <q-card-section class="q-ml-sm q-pl-none text-grey-8 text-body1">
@@ -51,26 +52,31 @@
                   v-model="addCurrentTabs"
                   :label="$t('add_current_tabs', { count: openTabsCount })"
                   size="xs"
+                  class="text-grey"
                   color="text-grey-8" />
               </q-card-section>
-              <q-card-actions align="center" class="q-pr-md q-pb-xs q-ma-none q-my-md">
+              <q-card-actions align="center" class="q-pr-md q-pb-xs q-ma-none q-my-none">
                 <DialogButton
                   :label="$t('add_tabset')"
                   @was-clicked="addFirstTabset"
                   :default-action="true"
                   :disable="tabsetName.trim().length === 0 || !newTabsetNameIsValid()" />
               </q-card-actions>
-              <q-card-actions align="center" class="q-pr-md q-pb-md q-ma-none q-mt-xl">
-                <div>&nbsp;</div>
-              </q-card-actions>
-              <q-card-actions align="center" class="q-pr-md q-pb-md q-ma-none q-mt-none">
+              <q-card-section align="center" class="q-pr-md q-pb-none q-ma-none q-mt-sm" style="min-height: 95px">
+                <div v-if="addCurrentTabs" class="text-body2 text-grey">
+                  Your new tabset will contain all open tabs.<br />
+                  Closing a tab will not delete it from the set.<br />
+                </div>
+                <div v-else>&nbsp;</div>
+              </q-card-section>
+              <q-card-section align="center" class="q-pr-md q-pb-md q-ma-none q-mt-none">
                 <div
                   class="text-center q-ma-none q-pa-none text-accent cursor-pointer"
                   style="font-size: smaller"
                   @click="importFromBackup()">
                   or import from backup...
                 </div>
-              </q-card-actions>
+              </q-card-section>
             </q-card>
 
             <q-card v-else class="my-card fit" :class="showDocumentation ? 'documentation' : 'box'">
@@ -139,7 +145,7 @@
                 </div>
                 <div class="q-row q-mt-lg">
                   <div
-                    class="q-col text-body2 text-blue-8 text-center cursor-pointer q-mb-sm"
+                    class="col text-body2 text-blue-8 text-center cursor-pointer q-mb-sm"
                     @click="useNavigationService().browserTabFor('https://youtu.be/jxOonJ_x7Eg')">
                     Introduction Video
                   </div>

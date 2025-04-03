@@ -12,7 +12,7 @@ export default {
   auto: 'Auto',
   changing_needs_restart: '(changing this needs restart)',
   click_here: 'click here',
-  create_your_first_ts: 'Create your first Collection',
+  create_your_first_ts: 'Your first Tabsets Collection:',
   dark_mode: 'Dark Mode (experimental)',
   disabled: 'Disabled',
   documentation: 'Documentation',
