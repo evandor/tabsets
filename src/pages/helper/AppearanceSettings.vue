@@ -35,6 +35,8 @@
       <div class="col"></div>
 
       <InfoLine label="Font Size">
+        <q-radio v-model="fontsize" :val="FontSize.SMALLER" label="Smaller" />
+        <q-radio v-model="fontsize" :val="FontSize.SMALL" label="Small" />
         <q-radio v-model="fontsize" :val="FontSize.DEFAULT" label="Default Size" />
         <q-radio v-model="fontsize" :val="FontSize.LARGE" label="Large" />
         <q-radio v-model="fontsize" :val="FontSize.LARGER" label="Larger" />

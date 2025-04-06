@@ -59,6 +59,15 @@
           icon="o_note"
           :size="buttonSize" />
 
+        <!--        <div>-->
+        <!--          <q-item @click="showHistory()" dense clickable v-close-popup v-if="$q.platform.is.chrome">-->
+        <!--            <q-item-section avatar>-->
+        <!--              <q-icon color="primary" name="o_note" :size="buttonSize" />-->
+        <!--            </q-item-section>-->
+        <!--            <q-item-section>History</q-item-section>-->
+        <!--          </q-item>-->
+        <!--        </div>-->
+
         <!-- :disable="useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN)" -->
         <SidePanelFooterViewMenuItem
           :side-panel-view="SidePanelViews.MAIN"
@@ -154,15 +163,16 @@
 <script setup lang="ts">
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import { useNavigationService } from 'src/core/services/NavigationService'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import OpenTabsThresholdWidget from 'src/opentabs/widgets/OpenTabsThresholdWidget.vue'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import SidePanelFooterLeftButton from 'src/ui/components/SidePanelFooterLeftButton.vue'
 import SidePanelFooterViewMenuItem from 'src/ui/components/SidePanelFooterViewMenuItem.vue'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watchEffect } from 'vue'
+import { useTabsStore2 } from '../../tabsets/stores/tabsStore2'
 
 const props = defineProps({
   showSuggestionIcon: { type: Boolean, required: true },
@@ -205,6 +215,10 @@ const showViewMenu = () => {
     useFeaturesStore().hasFeature(FeatureIdent.TOP10),
   ]
   return activeViews.filter(Boolean).length > 3
+}
+
+const showHistory = () => {
+  useNavigationService().browserTabFor('chrome://history')
 }
 </script>
 

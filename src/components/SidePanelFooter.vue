@@ -276,14 +276,12 @@ watchEffect(() => {
   animateSettingsButton.value = useUiStore().animateSettingsButton
 })
 
-watchEffect(async () => {
-  const suggestions = useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED', 'NOTIFICATION'])
-  if (!chrome || !chrome.windows) {
-    return
-  }
+const calcShowSuggestionButton = async (suggestions: Suggestion[]) => {
   const currentWindow = await chrome.windows.getCurrent()
-  //console.log("watcheffect for", suggestions)
-  showSuggestionButton.value =
+  if (!chrome || !chrome.windows) {
+    return false
+  }
+  return (
     doShowSuggestionButton.value ||
     (useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
       _.findIndex(suggestions, (s: Suggestion) => {
@@ -293,14 +291,33 @@ watchEffect(async () => {
           (s.state === 'NOTIFICATION' && !useFeaturesStore().hasFeature(FeatureIdent.NOTIFICATIONS))
         )
       }) >= 0)
+  )
+}
 
-  showSuggestionIcon.value =
+const calcShowSuggestionIcon = (suggestions: Suggestion[]) => {
+  return (
     !doShowSuggestionButton.value &&
     useUiStore().sidePanelActiveViewIs(SidePanelViews.MAIN) &&
     _.findIndex(suggestions, (s: Suggestion) => {
       return s.state === 'DECISION_DELAYED'
     }) >= 0
+  )
+}
+
+watchEffect(async () => {
+  const suggestions: Suggestion[] = useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED', 'NOTIFICATION'])
+  showSuggestionButton.value = await calcShowSuggestionButton(suggestions)
+  showSuggestionIcon.value = calcShowSuggestionIcon(suggestions)
 })
+
+watch(
+  () => doShowSuggestionButton.value,
+  async () => {
+    const suggestions: Suggestion[] = useSuggestionsStore().getSuggestions(['NEW', 'DECISION_DELAYED', 'NOTIFICATION'])
+    showSuggestionButton.value = await calcShowSuggestionButton(suggestions)
+    showSuggestionIcon.value = calcShowSuggestionIcon(suggestions)
+  },
+)
 
 watchEffect(() => {
   if (currentChromeTabs.value[0]?.url) {

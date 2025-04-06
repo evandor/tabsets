@@ -125,7 +125,6 @@ const newSearch = (term: string) => {
       //console.log("h", h.item.bookmarkId)
       const theHit = new Hit(
         uid(),
-        //       ChromeApi.createChromeTabObject(h.item.title, h.item.url, h.item.favIconUrl),
         h.item.title,
         h.item.url,
         h.item.favIconUrl,

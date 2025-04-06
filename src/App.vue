@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { EXTENSION_NAME } from 'boot/constants'
-import { setCssVar, useQuasar } from 'quasar'
+import { EXTENSION_NAME, NEW_TAB_EXTENSION_ID } from 'boot/constants'
+import { LocalStorage, setCssVar, useQuasar } from 'quasar'
 import AppService from 'src/app/AppService'
 import BexFunctions from 'src/core/communication/BexFunctions'
 import { useUtils } from 'src/core/services/Utils'
@@ -78,4 +78,19 @@ if (inBexMode()) {
     $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
   })
 }
+
+// newtab extension installed?
+console.log('checkin', NEW_TAB_EXTENSION_ID)
+chrome.runtime.sendMessage(NEW_TAB_EXTENSION_ID, { message: 'getVersion' }, function (response) {
+  console.log('testing for newtab extension', response)
+  if (response) {
+    console.log('newtab is installed')
+    LocalStorage.setItem('ui.newtab.installed', true)
+  } else if (chrome.runtime.lastError) {
+    LocalStorage.setItem('ui.newtab.installed', false)
+    /* ignore */
+  }
+  // if (targetInRange(response.targetData))
+  //chrome.runtime.sendMessage('bafapaeaebbfoobjakidbomlnpfcfakn', { activateLasers: true })
+})
 </script>

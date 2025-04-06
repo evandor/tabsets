@@ -28,6 +28,7 @@ const GITHUB_REPONAME = 'github.reponame'
 const GITHUB_TOKEN = 'github.token'
 const GITHUB_AUTO_BACKUP = 'github.autobackup'
 const GITHUB_AUTO_SYNC = 'github.sync'
+const GITHUB_AUTO_SYNC_READONLY = 'github.sync.readonly'
 const GITHUB_LOG = 'github.log'
 const GITHUB_PATH = 'github.path'
 const GITHUB_AUTO_SYNC_LASTUPDATE = 'github.sync.lastUpdate'
@@ -36,6 +37,8 @@ const SPACES_LIMIT_NO_SUBSCRIPTION = 2 // pro only
 const TABS_LIMIT_NO_SUBSCRIPTION = 100 // pro only
 const TABSETS_LIMIT_NO_SUBSCRIPTION = 5 // pro only
 const THUMBNAILS_LIMIT_NO_SUBSCRIPTION = 1 // pro only
+
+const NEW_TAB_EXTENSION_ID = 'bafapaeaebbfoobjakidbomlnpfcfakn'
 
 export default boot(({}) => {})
 
@@ -58,6 +61,7 @@ export {
   GITHUB_TOKEN,
   GITHUB_AUTO_BACKUP,
   GITHUB_AUTO_SYNC,
+  GITHUB_AUTO_SYNC_READONLY,
   GITHUB_AUTO_SYNC_LASTUPDATE,
   GITHUB_LOG,
   GITHUB_PATH,
@@ -65,4 +69,5 @@ export {
   TABSETS_LIMIT_NO_SUBSCRIPTION,
   TABS_LIMIT_NO_SUBSCRIPTION,
   THUMBNAILS_LIMIT_NO_SUBSCRIPTION,
+  NEW_TAB_EXTENSION_ID,
 }

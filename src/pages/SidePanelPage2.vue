@@ -14,6 +14,7 @@
     <div class="q-ma-none q-pa-none q-pt-xs">
       <template v-if="useTabsetsStore().tabsets.size > 0">
         <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
+          <SidePanelPageContent />
           <!-- optional: notes -->
           <div class="col-12">
             <SidePanelNotesView v-if="currentTabset" :tabset="currentTabset" />
@@ -23,7 +24,7 @@
           <div class="col-12">
             <SidePanelFoldersView
               v-if="currentTabset"
-              :key="currentTabset.id + '_' + currentTabset.folderActive"
+              :key="currentTabset.id + '_' + currentTabset.folderActive + '_' + tabsetsLastUpdate"
               :tabset="currentTabset"
               :filter="filter"
               @folder-selected="update()"
@@ -33,7 +34,7 @@
           <!-- list of tabs, assuming here we have at least one tabset-->
           <SidePanelPageTabList
             v-if="currentTabset"
-            :key="tabsetsLastUpdate"
+            :key="tabsetsLastUpdate + '_' + filter"
             :filter="filter"
             :tabsCount="currentTabset.tabs.length"
             :tabset="tabsetForTabList(currentTabset as Tabset)"
@@ -58,6 +59,7 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
+import SidePanelPageContent from 'pages/SidePanelPageContent.vue'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { useUtils } from 'src/core/services/Utils'

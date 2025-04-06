@@ -23,7 +23,7 @@
         v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)" />
       <q-tab name="search" label="Search Engine" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
       <q-tab name="importExport" label="Import/Export" />
-      <q-tab name="backup" label="Backup" />
+      <q-tab name="backup" label="Backup" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
       <q-tab name="internals" label="Internals" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
       <!--      <q-tab name="featureToggles" label="Feature Toggles"-->
       <!--             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>-->

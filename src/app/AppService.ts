@@ -85,8 +85,6 @@ class AppService {
     // init services
     await useSuggestionsStore().init(useDB().suggestionsDb)
 
-    // tabsetService.setLocalStorage(localStorage)
-
     await this.initCoreSerivces(quasar, this.router)
   }
 
