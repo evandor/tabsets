@@ -14,7 +14,11 @@
     <div class="q-ma-none q-pa-none q-pt-xs">
       <template v-if="useTabsetsStore().tabsets.size > 0">
         <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
-          <SidePanelPageContent />
+          <!--          <SidePanelPageContent-->
+          <!--            v-if="currentTabset"-->
+          <!--            :tabset="currentTabset"-->
+          <!--            @tabs-found="(n: number) => (filteredTabsCount = n)" />-->
+
           <!-- optional: notes -->
           <div class="col-12">
             <SidePanelNotesView v-if="currentTabset" :tabset="currentTabset" />
@@ -59,7 +63,6 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import SidePanelPageContent from 'pages/SidePanelPageContent.vue'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { useUtils } from 'src/core/services/Utils'
