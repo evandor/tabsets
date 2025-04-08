@@ -42,6 +42,11 @@
         <q-radio v-model="fontsize" :val="FontSize.LARGER" label="Larger" />
       </InfoLine>
 
+      <InfoLine label="Folder Appearance">
+        <q-radio v-model="folderAppearance" val="expand" label="Expand" />
+        <q-radio v-model="folderAppearance" val="goInto" label="Go into" />
+      </InfoLine>
+
       <InfoLine
         :label="
           $t('tab_info_detail_level', {
@@ -184,7 +189,7 @@ import NavigationService from 'src/services/NavigationService'
 import { useSettingsStore } from 'src/stores/settingsStore'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import { FontSize, ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
+import { FolderAppearance, FontSize, ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watch, watchEffect } from 'vue'
 
 const { sendMsg } = useUtils()
@@ -197,6 +202,7 @@ const installationTitle = ref<string>((LocalStorage.getItem(TITLE_IDENT) as stri
 const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || 'MINIMAL')
 const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
+const folderAppearance = ref<FolderAppearance>(LocalStorage.getItem('ui.folder.style') || 'goInto')
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const overlapIndicator = ref(LocalStorage.getItem('ui.overlapIndicator') || false)
 const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))
@@ -270,6 +276,14 @@ watch(
     LocalStorage.set('ui.fontsize', fontsize.value)
     //sendMsg('detail-level-changed', {level: detailLevel.value})
     sendMsg('settings-changed', { identifier: 'ui.fontsize', value: fontsize.value })
+  },
+)
+
+watch(
+  () => folderAppearance.value,
+  () => {
+    LocalStorage.set('ui.folder.style', folderAppearance.value)
+    sendMsg('settings-changed', { identifier: 'ui.folder.style', value: folderAppearance.value })
   },
 )
 

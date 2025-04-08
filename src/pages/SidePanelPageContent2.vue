@@ -6,11 +6,12 @@
 
   <!-- folders -->
   <div class="col-12">
-    <SidePanelFoldersView
+    <SidePanelFoldersView2
       v-if="props.tabset"
       :key="props.tabset.id + '_' + props.tabset.folderActive + '_' + tabsetsLastUpdate"
       :tabset="props.tabset"
       :filter="filter"
+      @folder-selected="expand()"
       @folders-found="(n: number) => emits('folders-found', n)" />
   </div>
 
@@ -28,7 +29,7 @@ import SidePanelPageTabList from 'src/tabsets/layouts/SidePanelPageTabList.vue'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import SidePanelFoldersView from 'src/tabsets/views/sidepanel/SidePanelFoldersView.vue'
+import SidePanelFoldersView2 from 'src/tabsets/views/sidepanel/SidePanelFoldersView2.vue'
 import { ref, watchEffect } from 'vue'
 
 type Props = {
@@ -53,5 +54,9 @@ const tabsetForTabList = (tabset: Tabset) => {
     }
   }
   return tabset
+}
+
+const expand = () => {
+  console.log('expanding')
 }
 </script>

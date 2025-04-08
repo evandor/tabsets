@@ -14,35 +14,18 @@
     <div class="q-ma-none q-pa-none q-pt-xs">
       <template v-if="useTabsetsStore().tabsets.size > 0">
         <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
-          <!--          <SidePanelPageContent-->
-          <!--            v-if="currentTabset"-->
-          <!--            :tabset="currentTabset"-->
-          <!--            @tabs-found="(n: number) => (filteredTabsCount = n)" />-->
-
-          <!-- optional: notes -->
-          <div class="col-12">
-            <SidePanelNotesView v-if="currentTabset" :tabset="currentTabset" />
-          </div>
-
-          <!-- folders -->
-          <div class="col-12">
-            <SidePanelFoldersView
-              v-if="currentTabset"
-              :key="currentTabset.id + '_' + currentTabset.folderActive + '_' + tabsetsLastUpdate"
-              :tabset="currentTabset"
-              :filter="filter"
-              @folder-selected="update()"
-              @folders-found="(n: number) => (filteredFoldersCount = n)" />
-          </div>
-
-          <!-- list of tabs, assuming here we have at least one tabset-->
-          <SidePanelPageTabList
-            v-if="currentTabset"
-            :key="tabsetsLastUpdate + '_' + filter"
+          <SidePanelPageContent2
+            v-if="currentTabset && useFolderExpansion === 'expand'"
+            :tabset="currentTabset"
             :filter="filter"
-            :tabsCount="currentTabset.tabs.length"
-            :tabset="tabsetForTabList(currentTabset as Tabset)"
-            @tabs-found="(n: number) => (filteredTabsCount = n)" />
+            @tabs-found="(n: number) => (filteredTabsCount = n)"
+            @folders-found="(n: number) => (filteredFoldersCount = n)" />
+          <SidePanelPageContent
+            v-if="currentTabset && useFolderExpansion === 'goInto'"
+            :tabset="currentTabset"
+            :filter="filter"
+            @tabs-found="(n: number) => (filteredTabsCount = n)"
+            @folders-found="(n: number) => (filteredFoldersCount = n)" />
         </div>
       </template>
 
@@ -63,25 +46,24 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
+import SidePanelPageContent from 'pages/SidePanelPageContent.vue'
+import SidePanelPageContent2 from 'pages/SidePanelPageContent2.vue'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { useUtils } from 'src/core/services/Utils'
 import Analytics from 'src/core/utils/google-analytics'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import SidePanelNotesView from 'src/notes/views/sidepanel/SidePanelNotesView.vue'
 import FirstToolbarHelper2 from 'src/pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import SearchToolbarHelper from 'src/pages/sidepanel/helper/SearchToolbarHelper.vue'
 import StartingHint from 'src/pages/widgets/StartingHint.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAuthStore } from 'src/stores/authStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import SidePanelPageTabList from 'src/tabsets/layouts/SidePanelPageTabList.vue'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
-import SidePanelFoldersView from 'src/tabsets/views/sidepanel/SidePanelFoldersView.vue'
-import { useUiStore } from 'src/ui/stores/uiStore'
+import { FolderAppearance, useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
@@ -99,6 +81,7 @@ const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
 const tabsetsLastUpdate = ref(0)
 const filteredTabsCount = ref(0)
 const filteredFoldersCount = ref(0)
+const useFolderExpansion = ref<FolderAppearance>(useUiStore().folderStyle)
 
 function updateOnlineStatus(e: any) {
   const { type } = e
@@ -120,6 +103,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('keypress', checkKeystroke)
+})
+
+watchEffect(() => {
+  useFolderExpansion.value = useUiStore().folderStyle
 })
 
 watchEffect(() => {
@@ -270,6 +257,9 @@ if (inBexMode()) {
           break
         case 'ui.fontsize':
           useUiStore().setFontsize(message.data.value)
+          break
+        case 'ui.folder.style':
+          useUiStore().setFolderStyle(message.data.value)
           break
         default:
           console.log(`unknown message identifier ${message.data.identifier}`)
