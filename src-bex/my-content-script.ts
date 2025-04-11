@@ -9,31 +9,35 @@ import { createBridge } from '#q-app/bex/content'
 
 console.log('[BEX-CT] loading my-content-scripts')
 
-// The use of the bridge is optional.
-const bridge = createBridge({ debug: false })
-/**
- * bridge.portName is 'content@<path>-<number>'
- *   where <path> is the relative path of this content script
- *   filename (without extension) from /src-bex
- *   (eg. 'my-content-script', 'subdir/my-script')
- *   and <number> is a unique instance number (1-10000).
- */
+const bridge = createBridge({ debug: true })
+
+//bridge.log('Hello world!!!')
+bridge.log('portname', bridge.portName)
 
 /**
  * When the drawer is toggled set the iFrame height to take the whole page.
  * Reset when the drawer is closed.
  */
 bridge.on('wb.drawer.toggle', (x) => {
-  if ((x['data' as keyof object] as any).open) {
-    setIFrameHeight('100%')
-  } else {
+  console.log('got message', x, x.payload.height)
+  //if ((x['data' as keyof object] as any).open) {
+  setIFrameHeight(x.payload.height)
+  /*} else {
     resetIFrameHeight()
   }
   const f = x['respond' as keyof object] as any
-  f()
+  f()*/
+
+  return { banner: 'Hello from a content-script!' }
+})
+
+bridge.on('getUrl', (x) => {
+  console.log('got message', x)
+  return { url: location.href }
 })
 
 const iFrame = document.createElement('iframe')
+iFrame.id = 'tabset-nav-iframe'
 const defaultFrameHeight = '62px'
 
 /**
@@ -73,7 +77,8 @@ Object.assign(iFrame.style, {
 })
 ;(function () {
   // When the page loads, insert our browser extension app.
-  iFrame.src = chrome.runtime.getURL('www/index.html')
+  iFrame.src = chrome.runtime.getURL('www/index.html#/mainpanel/navigation?portName=' + bridge.portName)
+  console.log('iframe source', iFrame.src)
   document.body.prepend(iFrame)
 })()
 
@@ -83,18 +88,10 @@ declare module '@quasar/app-vite' {
   }
 }
 
-// Hook into the bridge to listen for events sent from the other BEX parts.
-bridge.on('some.event', ({ payload }) => {
-  if (payload.someProp) {
-    // Access a DOM element from here.
-    // Document in this instance is the underlying website the contentScript runs on
-    const el = document.getElementById('some-id')
-    if (el) {
-      el.innerText = 'Quasar Rocks!'
-    }
-  }
+bridge.on('resize-frame-request', ({ payload }) => {
+  console.log('resize-frame-request', payload)
+  setIFrameHeight(payload.height)
 })
-
 /**
  * Leave this AFTER you attach your initial listeners
  * so that the bridge can properly handle them.
@@ -107,7 +104,7 @@ bridge.on('some.event', ({ payload }) => {
 bridge
   .connectToBackground()
   .then(() => {
-    console.log('Connected to background')
+    console.log('Connected to background...')
   })
   .catch((err) => {
     console.error('Failed to connect to background:', err)
@@ -194,13 +191,3 @@ console.log('[BEX-CT] bridge.portName', bridge.portName)
 // Dynamically set debug mode
 // bridge.setDebug(true); // boolean
 //
-// // Log a message on the console (if debug is enabled)
-// bridge.log('Hello world!');
-// bridge.log('Hello', 'world!');
-// bridge.log('Hello world!', { some: 'data' });
-// bridge.log('Hello', 'world', '!', { some: 'object' });
-// Log a warning on the console (regardless of the debug setting)
-// bridge.warn('bridge.portName', bridge.portName);
-// bridge.warn('Hello', 'world!');
-// bridge.warn('Hello world!', { some: 'data' });
-// bridge.warn('Hello', 'world', '!', { some: 'object' });

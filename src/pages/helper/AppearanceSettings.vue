@@ -43,8 +43,8 @@
       </InfoLine>
 
       <InfoLine label="Folder Appearance">
-        <q-radio v-model="folderAppearance" val="expand" label="Expand" />
-        <q-radio v-model="folderAppearance" val="goInto" label="Go into" />
+        <q-radio v-model="folderAppearance" val="expand" label="Expand (experimental)" />
+        <q-radio v-model="folderAppearance" val="goInto" label="Go into (default)" />
       </InfoLine>
 
       <InfoLine

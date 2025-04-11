@@ -38,7 +38,7 @@ const TABS_LIMIT_NO_SUBSCRIPTION = 100 // pro only
 const TABSETS_LIMIT_NO_SUBSCRIPTION = 5 // pro only
 const THUMBNAILS_LIMIT_NO_SUBSCRIPTION = 1 // pro only
 
-const NEW_TAB_EXTENSION_ID = 'bafapaeaebbfoobjakidbomlnpfcfakn'
+const NEW_TAB_EXTENSION_ID = 'ehmmamlcpigodgfgakpkbcgddoifmcpm'
 
 export default boot(({}) => {})
 

@@ -261,6 +261,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/pages/mainpanel/MainPanelReadingModePage.vue') }],
   },
   {
+    path: '/mainpanel/navigation',
+    component: () => import('layouts/MainNavigationLayout.vue'),
+    children: [{ path: '', component: () => import('src/pages/mainpanel/NavigationPage.vue') }],
+  },
+  {
     path: '/settings',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('pages/SettingsPage.vue') }],
@@ -299,11 +304,6 @@ const routes: RouteRecordRaw[] = [
     path: '/historyByAge/:encodedAge',
     component: () => import('layouts/DefaultLayout.vue'),
     children: [{ path: '', component: () => import('src/tabsets/pages/ByAgePage.vue') }],
-  },
-  {
-    path: '/features/:feature',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [{ path: '', component: () => import('src/features/pages/FeaturesPage.vue') }],
   },
   {
     path: '/search',

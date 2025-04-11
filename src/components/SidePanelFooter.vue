@@ -135,6 +135,16 @@
 
               <q-separator />
 
+              <template v-if="syncingActive()">
+                <ContextMenuItem
+                  v-close-popup
+                  @was-clicked="syncNow()"
+                  icon="o_sync"
+                  :label="'Sync (' + lastSyncTime() + ')'" />
+
+                <q-separator />
+              </template>
+
               <ContextMenuItem
                 v-close-popup
                 @was-clicked="openURL('https://docs.tabsets.net')"
@@ -193,8 +203,9 @@
 
 <script setup lang="ts">
 import { captureFeedback } from '@sentry/vue'
+import { GITHUB_AUTO_SYNC, GITHUB_AUTO_SYNC_LASTUPDATE } from 'boot/constants'
 import _ from 'lodash'
-import { openURL, uid, useQuasar } from 'quasar'
+import { date, LocalStorage, openURL, uid, useQuasar } from 'quasar'
 import BrowserApi from 'src/app/BrowserApi'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
@@ -213,6 +224,7 @@ import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
+import { GithubReadEventsCommand } from 'src/tabsets/commands/github/GithubReadEventsCommand'
 import SidePanelMessagesMarkup from 'src/tabsets/components/helper/SidePanelMessagesMarkup.vue'
 import SidePanelTabsetListMarkup from 'src/tabsets/components/helper/SidePanelTabsetListMarkup.vue'
 import NewBugDialog from 'src/tabsets/dialogues/NewBugDialog.vue'
@@ -508,6 +520,22 @@ const warningOrErrorColor = () => {
     return 'warning'
   }
   return 'primary'
+}
+
+const syncingActive = () => LocalStorage.getItem(GITHUB_AUTO_SYNC)
+
+const syncNow = () => {
+  const lastUpdate: number = (LocalStorage.getItem(GITHUB_AUTO_SYNC_LASTUPDATE) as number) || 0
+  useCommandExecutor().executeFromUi(new GithubReadEventsCommand(lastUpdate))
+  router.push('/sidepanel/collections')
+}
+
+const lastSyncTime = () => {
+  const lastUpdate: number = (LocalStorage.getItem(GITHUB_AUTO_SYNC_LASTUPDATE) as number) || 0
+  if (lastUpdate == 0) {
+    return 'never'
+  }
+  return date.formatDate(lastUpdate, 'DD.MM.YY HH:mm')
 }
 </script>
 

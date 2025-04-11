@@ -10,13 +10,13 @@
       v-if="props.tabset"
       :key="props.tabset.id + '_' + props.tabset.folderActive + '_' + tabsetsLastUpdate"
       :tabset="props.tabset"
-      :filter="filter"
+      :filter="filter || ''"
       @folders-found="(n: number) => emits('folders-found', n)" />
   </div>
 
   <SidePanelPageTabList
     :key="tabsetsLastUpdate + '_' + filter"
-    :filter="filter"
+    :filter="filter || ''"
     :tabsCount="props.tabset.tabs.length"
     :tabset="tabsetForTabList(props.tabset as Tabset)"
     @tabs-found="(n: number) => emits('tabs-found', n)" />

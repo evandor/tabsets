@@ -17,24 +17,29 @@
           <SidePanelPageContent2
             v-if="currentTabset && useFolderExpansion === 'expand'"
             :tabset="currentTabset"
+            :key="currentTabset.id"
             :filter="filter"
             @tabs-found="(n: number) => (filteredTabsCount = n)"
             @folders-found="(n: number) => (filteredFoldersCount = n)" />
           <SidePanelPageContent
             v-if="currentTabset && useFolderExpansion === 'goInto'"
             :tabset="currentTabset"
+            :key="currentTabset.id"
             :filter="filter"
             @tabs-found="(n: number) => (filteredTabsCount = n)"
             @folders-found="(n: number) => (filteredFoldersCount = n)" />
+        </div>
+        <div>PortName: {{ portName }}</div>
+        <div v-for="p in portList">
+          <div @click="toggle(p)">{{ p }}</div>
         </div>
       </template>
 
       <StartingHint v-if="showStartingHint()" />
     </div>
 
-    <!-- place QPageSticky at end of page -->
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode">
-      <FirstToolbarHelper2 :showSearchBox="showSearchBox"></FirstToolbarHelper2>
+      <FirstToolbarHelper2 :showSearchBox="showSearchBox" @tabset-changed="tabsetChanged()" />
       <SearchToolbarHelper
         v-if="useTabsetsStore().allTabsCount > 0"
         @on-term-changed="(val) => termChanged(val)"
@@ -45,9 +50,11 @@
 </template>
 
 <script lang="ts" setup>
+import { PortName } from '#q-app'
 import _ from 'lodash'
 import SidePanelPageContent from 'pages/SidePanelPageContent.vue'
 import SidePanelPageContent2 from 'pages/SidePanelPageContent2.vue'
+import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { useUtils } from 'src/core/services/Utils'
@@ -70,6 +77,7 @@ import { useRouter } from 'vue-router'
 
 const { inBexMode } = useUtils()
 
+const $q = useQuasar()
 const router = useRouter()
 const uiStore = useUiStore()
 
@@ -82,6 +90,8 @@ const tabsetsLastUpdate = ref(0)
 const filteredTabsCount = ref(0)
 const filteredFoldersCount = ref(0)
 const useFolderExpansion = ref<FolderAppearance>(useUiStore().folderStyle)
+const portList = ref<PortName[]>([])
+const portName = ref<PortName>($q.bex.portName)
 
 function updateOnlineStatus(e: any) {
   const { type } = e
@@ -116,10 +126,6 @@ watchEffect(() => {
 watchEffect(() => {
   tabsetsLastUpdate.value = useTabsetsStore().lastUpdate
 })
-
-const update = () => {
-  currentTabset.value = useTabsetsStore().getCurrentTabset
-}
 
 const getTabsetOrder = [
   function (o: Tabset) {
@@ -306,19 +312,36 @@ function checkKeystroke(e: KeyboardEvent) {
   }
 }
 
-const tabsetForTabList = (tabset: Tabset) => {
-  if (tabset.folderActive) {
-    const af = useTabsetService().findFolder(tabset.folders, tabset.folderActive)
-    if (af) {
-      return af
-    }
-  }
-  return tabset
-}
-
 const showStartingHint = () => !useUiStore().appLoading && useTabsetsStore().allTabsCount === 0
 
 const termChanged = (a: { term: string }) => (filter.value = a.term)
+
+const toggle = async (p: PortName) => {
+  console.log('hier', $q.bex)
+  //const portNames = $q.bex.portList.filter((portName: string) => portName.startsWith('content'))
+  //for (const portName of portNames) {
+  console.log('sending to portname', p)
+  await $q.bex.send({
+    event: 'wb.drawer.toggle', // example event which sums two numbers
+    to: p,
+    payload: { height: '100px' },
+  })
+  //}
+}
+
+const tabsetChanged = () => {
+  currentTabset.value = useTabsetsStore().getCurrentTabset
+}
+
+$q.bex.on('@quasar:ports', (x: object) => {
+  console.log('X:', x)
+  portList.value = $q.bex.portList.filter((p: PortName) => p.startsWith('content@my-'))
+  portName.value = $q.bex.portName
+  // const newPortName = x['payload' as keyof object]['added' as keyof object]
+  // chrome.tabs.getCurrent().then((t: chrome.tabs.Tab | undefined) => {
+  //   console.log('t', t)
+  // })
+})
 </script>
 
 <style lang="scss" src="./css/sidePanelPage2.scss" />

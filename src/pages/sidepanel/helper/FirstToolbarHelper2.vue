@@ -9,59 +9,51 @@
         </q-linear-progress>
       </div>
       <div class="row q-ma-none q-pa-none">
-        <div class="col-6 q-ma-none q-pa-none" style="border: 0 solid red">
+        <div class="col-4 q-ma-none q-pa-none" style="border: 0 solid red">
           <div class="col-12 text-subtitle1">
-            <div class="q-ml-md q-mt-sm">
-              <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">
-                <div
-                  v-if="route.path !== '/sidepanel/spaces'"
-                  class="text-caption cursor-pointer"
-                  @click.stop="router.push('/sidepanel/spaces')">
-                  <q-icon
-                    name="sync"
-                    class="q-mr-xs cursor-pointer"
-                    size="12px"
-                    v-if="syncingActive()"
-                    @click.stop="syncNow()">
-                    <q-tooltip class="tooltip-small">Last synced: {{ lastSyncTime() }}. Click to sync now</q-tooltip>
-                  </q-icon>
-                  <span>
-                    {{ title() }}
-                    <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />
-                    <q-tooltip class="tooltip-small" :delay="1000"
-                      >Select a different space or create a new one
-                    </q-tooltip>
-                  </span>
-                </div>
-                <div v-else class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel')">
-                  <span
-                    >&lt;&nbsp;back
-                    <q-tooltip class="tooltip-small" :delay="1000"
-                      >Click again to return or choose a new space</q-tooltip
-                    >
-                  </span>
-                </div>
-              </template>
-              <template v-else>
-                <div class="text-caption">
-                  <q-icon
-                    name="sync"
-                    class="q-mr-xs cursor-pointer"
-                    size="12px"
-                    v-if="syncingActive()"
-                    @click="syncNow()">
-                    <q-tooltip class="tooltip-small">Last synced: {{ lastSyncTime() }}. Click to sync now</q-tooltip>
-                  </q-icon>
-                  {{ title() }}
-                </div>
-              </template>
-              <div class="text-body1 text-bold cursor-pointer ellipsis" @click="router.push('/sidepanel/collections')">
+            <div class="q-ml-xs q-mt-none">
+              <div class="text-body1 text-bold ellipsis">
                 <template v-if="currentTabset">
-                  {{ currentTabset.name }}
-                  <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />
-                  <q-tooltip class="tooltip-small" :delay="1000"
-                    >Select a different collection or create a new one {{ currentTabset.size }}
-                  </q-tooltip>
+                  <!--                  <q-btn-dropdown no-caps class="q-ma-none q-px-none q-py-none" dense size="sm" v-close-popup flat>-->
+                  <!--                    <template v-slot:label>-->
+                  <!--                      <div class="column">-->
+                  <!--                        <div class="text-caption">{{ tabsetSelectLabel() }}</div>-->
+                  <!--                        <div class="text-body2">{{ model?.label }}</div>-->
+                  <!--                      </div>-->
+                  <!--                    </template>-->
+
+                  <!--                    <q-list dense>-->
+                  <!--                      <q-item clickable v-close-popup v-for="option in options">-->
+                  <!--                        <q-item-section>-->
+                  <!--                          <q-item-label>{{ option.label }}</q-item-label>-->
+                  <!--                        </q-item-section>-->
+                  <!--                      </q-item>-->
+                  <!--                    </q-list>-->
+                  <!--                  </q-btn-dropdown>-->
+
+                  <q-select
+                    v-if="options.length > 1"
+                    borderless
+                    label="Tabset"
+                    v-model="model"
+                    @update:model-value="(newTabset: object) => switchTabset(newTabset)"
+                    :options="options"
+                    dense
+                    options-dense />
+                  <div v-else>
+                    <div class="text-caption q-ml-md">{{ title() }}</div>
+                    <div class="q-ml-md">{{ currentTabset.name }}</div>
+                  </div>
+                  <!--                  {{ currentTabset.name }}-->
+                  <!--                  <q-icon-->
+                  <!--                    name="arrow_drop_down"-->
+                  <!--                    class="q-ma-none q-pa-none"-->
+                  <!--                    color="grey-5"-->
+                  <!--                    size="xs"-->
+                  <!--                    @click="router.push('/sidepanel/collections')" />-->
+                  <!--                  <q-tooltip class="tooltip-small" :delay="1000"-->
+                  <!--                    >Select a different collection or create a new one {{ currentTabset.size }}-->
+                  <!--                  </q-tooltip>-->
                 </template>
                 <template v-else>
                   <q-spinner color="primary" size="1em" />
@@ -72,12 +64,43 @@
           <!--          </template>-->
         </div>
 
+        <div class="col-4 text-center" style="border: 0 solid blue">
+          <span
+            v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)"
+            class="text-body1 cursor-pointer"
+            @click="router.push('/sidepanel/spaces')"
+            >{{ useSpacesStore().space.label }}</span
+          >
+        </div>
         <div
-          class="col-6 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none"
+          class="col-4 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none"
           v-if="!useUiStore().appLoading"
           style="border: 0 solid green">
           <slot name="iconsRight">
-            <div class="q-mt-sm q-ma-none q-qa-none q-mr-xs">
+            <div class="q-mt-none q-ma-none q-qa-none q-mr-xs q-mt-xs">
+              <!--              <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">-->
+              <!--                <div-->
+              <!--                  v-if="route.path !== '/sidepanel/spaces'"-->
+              <!--                  class="text-caption cursor-pointer"-->
+              <!--                  @click.stop="router.push('/sidepanel/spaces')">-->
+              <!--                  <span class="text-bold">-->
+              <!--                    <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />-->
+              <!--                    <q-tooltip class="tooltip-small" :delay="1000"-->
+              <!--                      >Select a different space or create a new one-->
+              <!--                    </q-tooltip>-->
+              <!--                    {{ title() }}-->
+              <!--                  </span>-->
+              <!--                </div>-->
+              <!--                <div v-else class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel')">-->
+              <!--                  <span-->
+              <!--                    >&lt;&nbsp;back-->
+              <!--                    <q-tooltip class="tooltip-small" :delay="1000"-->
+              <!--                      >Click again to return or choose a new space</q-tooltip-->
+              <!--                    >-->
+              <!--                  </span>-->
+              <!--                </div>-->
+              <!--              </template>-->
+
               <span>
                 <SpecialUrlAddToTabsetComponent
                   v-if="currentChromeTab && currentTabset && currentTabset.type !== TabsetType.SPECIAL"
@@ -106,17 +129,17 @@
 </template>
 
 <script lang="ts" setup>
-import { date, LocalStorage, useQuasar } from 'quasar'
+import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { GITHUB_AUTO_SYNC, GITHUB_AUTO_SYNC_LASTUPDATE } from 'src/boot/constants'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
 import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder'
 import SpecialUrlAddToTabsetComponent from 'src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue'
-import { GithubReadEventsCommand } from 'src/tabsets/commands/github/GithubReadEventsCommand'
+import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import AddUrlDialog from 'src/tabsets/dialogues/AddUrlDialog.vue'
 import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -128,6 +151,8 @@ import { ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
+type SelectOption = { label: string; value: string }
+
 const { t } = useI18n({ useScope: 'global' })
 
 const props = defineProps({
@@ -137,6 +162,8 @@ const props = defineProps({
   searchTerm: { type: String, default: '' },
   searchHits: { type: Number, required: false },
 })
+
+const emits = defineEmits(['tabset-changed'])
 
 const $q = useQuasar()
 const router = useRouter()
@@ -152,6 +179,10 @@ const overlap = ref(0.5)
 const overlapTooltip = ref('')
 const showWatermark = ref(false)
 const watermark = ref('')
+const tabsets = ref<Tabset[]>([])
+
+const model = ref<SelectOption | undefined>(undefined)
+const options = ref<SelectOption[]>([])
 
 windowLocation.value = window.location.href
 
@@ -165,6 +196,28 @@ const redirectOnEmpty = () => {
 }
 
 redirectOnEmpty()
+
+watchEffect(() => {
+  tabsets.value = [...useTabsetsStore().tabsets.values()] as Tabset[]
+  options.value = tabsets.value
+    .map((ts: Tabset) => {
+      return {
+        label: ts.name,
+        value: ts.id,
+      }
+    })
+    .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+  if (options.value.length > 10) {
+    options.value = options.value.slice(0, 10)
+    options.value.push({ label: 'show all...', value: '' })
+  } else {
+    options.value.push({ label: 'more...', value: '' })
+  }
+  model.value = {
+    label: currentTabset.value?.name || '?',
+    value: currentTabset.value?.id || '-',
+  }
+})
 
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
@@ -244,20 +297,24 @@ const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'm
 
 const addUrlDialog = () => $q.dialog({ component: AddUrlDialog })
 
-const syncingActive = () => LocalStorage.getItem(GITHUB_AUTO_SYNC)
-
-const syncNow = () => {
-  const lastUpdate: number = (LocalStorage.getItem(GITHUB_AUTO_SYNC_LASTUPDATE) as number) || 0
-  useCommandExecutor().executeFromUi(new GithubReadEventsCommand(lastUpdate))
-  router.push('/sidepanel/collections')
+const switchTabset = async (tabset: object) => {
+  const tsId = tabset['value' as keyof object]
+  if (tsId === '') {
+    await router.push('/sidepanel/collections')
+    return
+  }
+  const result: ExecutionResult<Tabset | undefined> = await useCommandExecutor().execute(
+    new SelectTabsetCommand(tabset['value' as keyof object]),
+  )
+  currentTabset.value = result.result
+  emits('tabset-changed')
 }
 
-const lastSyncTime = () => {
-  const lastUpdate: number = (LocalStorage.getItem(GITHUB_AUTO_SYNC_LASTUPDATE) as number) || 0
-  if (lastUpdate == 0) {
-    return 'never'
+const tabsetSelectLabel = () => {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
+    return useSpacesStore().space.label
   }
-  return date.formatDate(lastUpdate, 'DD.MM.YY HH:mm')
+  return 'Tabset'
 }
 </script>
 
