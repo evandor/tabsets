@@ -12,6 +12,9 @@ import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
 import { useLogger } from 'src/services/Logger'
 import { useAppStore } from 'src/stores/appStore'
 import { useSettingsStore } from 'src/stores/settingsStore'
+import { Tab } from 'src/tabsets/models/Tab'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
@@ -77,6 +80,25 @@ if (inBexMode()) {
   onBeforeUnmount(() => {
     $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
   })
+  $q.bex.on('reload-current-tabset', async ({ payload }: { payload: object }) => {
+    // const tsId = await useTabsetsStore().getCurrentTabsetId()
+    console.log('!!!!!!', payload['tab' as keyof object])
+    const currentTabset = useTabsetsStore().getCurrentTabset
+    if (currentTabset) {
+      const index = currentTabset.tabs.findIndex((tab: Tab) => tab.id === payload['tab' as keyof object]['id'])
+      console.log('found index', index)
+      if (index >= 0) {
+        currentTabset.tabs[index] = payload['tab' as keyof object] as Tab
+      }
+    }
+    await useTabsetService().saveCurrentTabset()
+
+    // const ts = await useTabsetsStore().reloadTabset(tsId!)
+    // console.log('ts', ts)
+  })
+  // onBeforeUnmount(() => {
+  //   $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
+  // })
 }
 
 // newtab extension installed?
@@ -92,5 +114,19 @@ chrome.runtime.sendMessage(NEW_TAB_EXTENSION_ID, { message: 'getVersion' }, func
   }
   // if (targetInRange(response.targetData))
   //chrome.runtime.sendMessage('bafapaeaebbfoobjakidbomlnpfcfakn', { activateLasers: true })
+})
+
+chrome.runtime.onMessageExternal.addListener(function (request, sender, sendResponse) {
+  // if (sender.id === "oeocceffjkjgiljgelllkaddapnaafgn") { // tabsets.net
+  //   if (request.message === "getVersion") {
+  //     sendResponse({version: "0.0.1"});
+  //   } else if (request.message === "setTabset") {
+  //     useTabsetsStore().setTabset( request.tabset)
+  //     sendResponse({message: "done"});
+  //   }
+  //   // sendResponse({version: import.meta.env.PACKAGE_VERSION});
+  // }
+  console.log('request:', request)
+  console.log('sender:', sender)
 })
 </script>

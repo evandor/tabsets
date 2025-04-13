@@ -9,6 +9,7 @@ import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
+import { ChangeInfo } from 'src/tabsets/models/Tabset'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -32,7 +33,7 @@ async function stopTimer(url: string) {
     const ts = useTabsetsStore().getTabset(tabWithTsId.tabsetId)
     if (ts) {
       //console.log('saving', ts)
-      await useTabsetService().saveTabset(ts)
+      await useTabsetService().saveTabset(ts, new ChangeInfo('tab', 'edited', tabWithTsId.tab.id, tabWithTsId.tab.url!))
     }
   }
   if (tabsForUrl.length === 0) {
@@ -149,6 +150,8 @@ async function checkSwitchTabsetSuggestion(windowId: number) {
 }
 
 class BrowserListeners {
+  private injectList: number[] = []
+
   private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) =>
     this.onUpdated(number, info, tab)
   private onMovedListener = (number: number, info: chrome.tabs.TabMoveInfo) => this.onMoved(number, info)
@@ -228,7 +231,25 @@ class BrowserListeners {
     if (this.ignoreUrl(chromeTab.url) || info.status !== 'complete') {
       return
     }
-    console.debug(`==> tabUpdate: ${chromeTab.url?.substring(0, 30)}`)
+    console.debug(`==> tabUpdate: ${chromeTab.id} - ${chromeTab.url?.substring(0, 30)}`)
+
+    if (
+      chromeTab.id &&
+      useFeaturesStore().hasFeature(FeatureIdent.TOOLBAR_INTEGRATION) &&
+      chromeTab.url?.startsWith('https://')
+    ) {
+      //if (this.injectList.filter((n: number) => n === chromeTab.id).length === 0) {
+      this.injectList.push(chromeTab.id)
+      console.log(`injecting into ${chromeTab.id}`, this.injectList, info)
+      chrome.scripting
+        .executeScript({
+          target: { tabId: chromeTab.id, allFrames: false },
+          files: ['my-content-script.js'],
+          injectImmediately: true,
+        })
+        .catch((err) => console.log('executeScript error:', err))
+      //}
+    }
     useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
     useTabsetService().urlWasActivated(chromeTab.url)
     useTabsetsUiStore().updateExtensionIcon(chromeTab.id)

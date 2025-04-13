@@ -91,7 +91,7 @@
                         <q-icon name="o_featured_play_list" color="primary" class="q-mb-xs" size="xs" />
                       </div>
                       <div class="col q-ml-sm">
-                        Start by creating a <em>tabset</em> (i.e. a <em>named set of tabs</em>).
+                        Start by creating a <em>tabset</em> (a <em>set of tabs</em> with a <em>name</em>).
                       </div>
                     </div>
                   </div>
@@ -102,7 +102,7 @@
                       <div class="col-1">
                         <q-icon name="o_tab" color="primary" class="q-mr-sm q-mb-xs" size="xs" />
                       </div>
-                      <div class="col q-ml-sm">Add your <em>active tab(s)</em> to this new tabset</div>
+                      <div class="col q-ml-sm">Add (all) your <em>active tab(s)</em> to this new tabset</div>
                     </div>
                   </div>
                 </div>

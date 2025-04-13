@@ -9,7 +9,7 @@ var scope = setupErrorHandling()
 
 function log(msg: string, level: number) {
   // console.log('sending message to sentry...', scope)
-  scope.captureMessage(msg)
+  // scope.captureMessage(msg)
   // const gelfMessage = {
   //   version: '1.1',
   //   host: process.env.HOST,

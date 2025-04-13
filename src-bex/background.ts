@@ -147,3 +147,20 @@ bridge.on('storage.set', async ({ payload: { key, value } }) => {
 bridge.on('storage.remove', async ({ payload: key }) => {
   await chrome.storage.local.remove(key)
 })
+
+bridge.on('reload-current-tabset', async ({ payload }) => {
+  // const ts = useTabsetsStore().getCurrentTabset
+  // const currentTabsetId = await useTabsetsStore().getCurrentTabsetId()
+  console.log('reload-current-tabset', payload)
+  await bridge.send({
+    event: 'reload-current-tabset',
+    to: 'app',
+    payload: payload,
+  })
+  // IndexedDbTabsetsPersistence.init()
+  // if (currentTabsetId) {
+  //   await useTabsetsStore().reloadTabset(currentTabsetId)
+  // }
+  // //commentFrame?.style.setProperty('display', 'none')
+  // return 'done'
+})

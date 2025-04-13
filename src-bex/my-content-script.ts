@@ -1,10 +1,3 @@
-/**
- * Importing the file below initializes the content script.
- *
- * Warning:
- *   Do not remove the import statement below. It is required for the extension to work.
- *   If you don't need createBridge(), leave it as "import '#q-app/bex/content'".
- */
 import { createBridge } from '#q-app/bex/content'
 
 console.log('[BEX-CT] loading my-content-scripts')
@@ -36,51 +29,51 @@ bridge.on('getUrl', (x) => {
   return { url: location.href }
 })
 
-const iFrame = document.createElement('iframe')
-iFrame.id = 'tabset-nav-iframe'
-const defaultFrameHeight = '62px'
+// *** iFrame for top navigation / tabs-integration ***
+const defaultFrameHeight = '42px'
+var iframeId = 'tabset-nav-iframe'
+let iFrame: HTMLIFrameElement | undefined = undefined
+let commentFrame: HTMLIFrameElement | undefined = undefined
 
-/**
- * Set the height of our iFrame housing our BEX
- * @param height
- */
 function setIFrameHeight(height: string) {
   bridge.log('logging2', height)
-  iFrame.height = height
+  if (iFrame) {
+    iFrame.height = height
+  }
 }
 
-/**
- * Reset the iFrame to its default height e.g The height of the top bar.
- */
 function resetIFrameHeight() {
-  setIFrameHeight(defaultFrameHeight)
+  if (iFrame) {
+    setIFrameHeight(defaultFrameHeight)
+  }
 }
 
-/**
- * The code below will get everything going. Initialize the iFrame with defaults and add it to the page.
- * @type {string}
- */
-iFrame.id = 'bex-app-iframe'
-iFrame.width = '100%'
-resetIFrameHeight()
+const existing = document.getElementById('tabset-nav-iframe')
+//console.log('existing', existing, document.getElementsByTagName('iframe').length)
+if (!existing) {
+  iFrame = document.createElement('iframe')
+  iFrame.id = iframeId
+  iFrame.width = '100%'
+  resetIFrameHeight()
 
-// Assign some styling so it looks seamless
-Object.assign(iFrame.style, {
-  //position: 'fixed',
-  top: '0',
-  right: '0',
-  bottom: '0',
-  left: '0',
-  border: '0',
-  zIndex: '9999999', // Make sure it's on top
-  // overflow: 'visible'
-})
-;(function () {
-  // When the page loads, insert our browser extension app.
-  iFrame.src = chrome.runtime.getURL('www/index.html#/mainpanel/navigation?portName=' + bridge.portName)
-  console.log('iframe source', iFrame.src)
-  document.body.prepend(iFrame)
-})()
+  // Assign some styling so it looks seamless
+  Object.assign(iFrame.style, {
+    // position: 'fixed',
+    top: '0',
+    right: '0',
+    bottom: '0',
+    left: '0',
+    border: '0',
+    zIndex: '9999999', // Make sure it's on top
+    // overflow: 'visible'
+  })
+  ;(function () {
+    // When the page loads, insert our browser extension app.
+    iFrame.src = chrome.runtime.getURL('www/index.html#/mainpanel/navigation?portName=' + bridge.portName)
+    console.log('iframe source', iFrame.src)
+    document.body.prepend(iFrame)
+  })()
+}
 
 declare module '@quasar/app-vite' {
   interface BexEventMap {
@@ -88,19 +81,53 @@ declare module '@quasar/app-vite' {
   }
 }
 
-bridge.on('resize-frame-request', ({ payload }) => {
-  console.log('resize-frame-request', payload)
-  setIFrameHeight(payload.height)
+bridge.on('open-comment-request', ({ payload }) => {
+  console.log('open-comment-request', payload)
+  //setIFrameHeight(payload.height)
+  if (commentFrame) {
+    commentFrame?.style.setProperty('display', 'block')
+    return
+  }
+
+  commentFrame = document.createElement('iframe')
+  commentFrame.id = 'comment-iframe'
+  //commentFrame.width = '100%'
+  resetIFrameHeight()
+
+  // Assign some styling so it looks seamless
+  Object.assign(commentFrame.style, {
+    position: 'absolute',
+    top: '50px',
+    right: '20px',
+    width: '350px',
+    height: '450px',
+    border: '1px solid grey',
+    borderRadius: '5px',
+    zIndex: '9999998',
+    background: 'white',
+    // overflow: 'visible'
+  })
+  ;(function () {
+    // When the page loads, insert our browser extension app.
+    commentFrame.src = chrome.runtime.getURL('www/index.html#/mainpanel/comment?portName=' + bridge.portName)
+    console.log('iframe source', commentFrame.src)
+    document.body.prepend(commentFrame)
+  })()
 })
-/**
- * Leave this AFTER you attach your initial listeners
- * so that the bridge can properly handle them.
- *
- * You can also disconnect from the background script
- * later on by calling bridge.disconnectFromBackground().
- *
- * To check connection status, access bridge.isConnected
- */
+
+bridge.on('close-comment-request', ({ payload }) => {
+  console.log('close-comment-request', payload)
+  commentFrame?.style.setProperty('display', 'none')
+  return 'done'
+})
+
+bridge.on('save-comment-request', ({ payload }) => {
+  //const ts = useTabsetsStore().getCurrentTabset
+  console.log('save-comment-request', payload)
+  //commentFrame?.style.setProperty('display', 'none')
+  return 'done'
+})
+
 bridge
   .connectToBackground()
   .then(() => {
@@ -109,81 +136,6 @@ bridge
   .catch((err) => {
     console.error('Failed to connect to background:', err)
   })
-
-// More examples:
-
-// Listen to a message from the client
-// bridge.on('test', message => {
-//   console.log(message);
-//   console.log(message.payload);
-// });
-
-// Send a message and split payload into chunks
-// to avoid max size limit of BEX messages.
-// Warning! This happens automatically when the payload is an array.
-// If you actually want to send an Array, wrap it in an object.
-// bridge.send({
-//   event: 'test',
-//   to: 'app',
-//   payload: [ 'chunk1', 'chunk2', 'chunk3', ... ]
-// }).then(responsePayload => { ... }).catch(err => { ... });
-
-// Send a message and wait for a response
-// bridge.send({
-//   event: 'test',
-//   to: 'background',
-//   payload: { banner: 'Hello from content-script' }
-// }).then(responsePayload => { ... }).catch(err => { ... });
-
-// Listen to a message from the client and respond synchronously
-// bridge.on('test', message => {
-//   console.log(message);
-//   return { banner: 'Hello from a content-script!' };
-// });
-
-// Listen to a message from the client and respond asynchronously
-// bridge.on('test', async message => {
-//   console.log(message);
-//   const result = await someAsyncFunction();
-//   return result;
-// });
-// bridge.on('test', message => {
-//   console.log(message);
-//   return new Promise(resolve => {
-//     setTimeout(() => {
-//       resolve({ banner: 'Hello from a content-script!' });
-//     }, 1000);
-//   });
-// });
-
-// Broadcast a message to background, app & the other content scripts
-// bridge.portList.forEach(portName => {
-//   bridge.send({ event: 'test', to: portName, payload: 'Hello from content-script!' });
-// });
-//
-// // Find any connected content script and send a message to it
-// const contentPort = bridge.portList.find(portName => portName.startsWith('content@'));
-// if (contentPort) {
-//   bridge.send({ event: 'test', to: contentPort, payload: 'Hello from a content-script!' });
-// }
-
-// Send a message to a certain content script
-// bridge
-//   .send({ event: 'test', to: 'content@my-content-script-2345', payload: 'Hello from a content-script!' })
-//   .then(responsePayload => { ... })
-//   .catch(err => { ... });
-
-// Listen for connection events
-// (the "@quasar:ports" is an internal event name registered automatically by the bridge)
-// --> ({ portList: string[], added?: string } | { portList: string[], removed?: string })
-// bridge.on('@quasar:ports', ({ portList, added, removed }) => {
-//   console.log('Ports:', portList);
-//   if (added) {
-//     console.log('New connection:', added);
-//   } else if (removed) {
-//     console.log('Connection removed:', removed);
-//   }
-// });
 
 // Current bridge port name (can be 'content@<name>-<xxxxx>')
 console.log('[BEX-CT] bridge.portName', bridge.portName)

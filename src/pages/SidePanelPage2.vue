@@ -125,7 +125,17 @@ watchEffect(() => {
 
 watchEffect(() => {
   tabsetsLastUpdate.value = useTabsetsStore().lastUpdate
+  console.log('lastUpdate', tabsetsLastUpdate.value)
+  // useTabsetsStore().reloadTabset(currentTabset.value!.id)
 })
+
+// watch(
+//   () => useTabsetsStore().lastUpdate,
+//   (a: any, b: any) => {
+//     console.log('lastUpdate2', a, b)
+//     currentTabset.value = useTabsetsStore().getCurrentTabset
+//   },
+// )
 
 const getTabsetOrder = [
   function (o: Tabset) {
@@ -291,6 +301,10 @@ if (inBexMode()) {
       console.error('message reload-applictation was called, no-op')
     } else if (message.name === 'window-updated') {
       useWindowsStore().setup('window-updated event')
+    } else if (message.message === 'refresh-store') {
+      console.log('refresh-store message received')
+      const tabsetId = useTabsetsStore().getCurrentTabset!.id
+      useTabsetService().reloadTabset(tabsetId)
     } else {
       console.log('got unmatched message', message)
     }
@@ -317,16 +331,17 @@ const showStartingHint = () => !useUiStore().appLoading && useTabsetsStore().all
 const termChanged = (a: { term: string }) => (filter.value = a.term)
 
 const toggle = async (p: PortName) => {
-  console.log('hier', $q.bex)
-  //const portNames = $q.bex.portList.filter((portName: string) => portName.startsWith('content'))
-  //for (const portName of portNames) {
-  console.log('sending to portname', p)
-  await $q.bex.send({
-    event: 'wb.drawer.toggle', // example event which sums two numbers
-    to: p,
-    payload: { height: '100px' },
-  })
-  //}
+  // console.log('hier', $q.bex)
+  // //const portNames = $q.bex.portList.filter((portName: string) => portName.startsWith('content'))
+  // //for (const portName of portNames) {
+  // console.log('sending to portname', p)
+  // await $q.bex.send({
+  //   event: 'wb.drawer.toggle', // example event which sums two numbers
+  //   to: p,
+  //   payload: { height: '100px' },
+  // })
+  // //}
+  useTabsetsStore().lastUpdate = new Date().getTime()
 }
 
 const tabsetChanged = () => {

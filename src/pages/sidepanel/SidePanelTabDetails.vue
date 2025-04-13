@@ -502,9 +502,8 @@ const showTabDetails = () =>
   NavigationService.openOrCreateTab([chrome.runtime.getURL('/www/index.html#/mainpanel/tab/' + tab.value?.id)])
 
 const updatedTags = (val: string[]) => {
-  console.log('val', val)
   if (tab.value) {
-    console.log('updating tag', val)
+    //console.log('updating tag', val)
     tab.value.tags = val
     useTabsetService()
       .saveCurrentTabset()
@@ -513,7 +512,7 @@ const updatedTags = (val: string[]) => {
 }
 
 const openTabset = (chip: any) => {
-  console.log('chip', chip)
+  // console.log('chip', chip)
   useCommandExecutor().execute(new SelectTabsetCommand(chip['tabsetId']))
 }
 

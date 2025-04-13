@@ -33,7 +33,7 @@
 
                   <q-select
                     v-if="options.length > 1"
-                    borderless
+                    filled
                     label="Tabset"
                     v-model="model"
                     @update:model-value="(newTabset: object) => switchTabset(newTabset)"

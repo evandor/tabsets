@@ -17,7 +17,7 @@
         "js": ["tabsets-request-interceptor-inject.js","tabsets-request-interceptor.js"]
       },
       {
-        "matches": ["*://*/*"],
+        "matches": ["*://*/disabled---*"],
         "js": ["my-content-script.ts"]
       }
     ],

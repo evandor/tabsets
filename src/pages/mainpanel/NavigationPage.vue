@@ -29,18 +29,39 @@
               new-value-mode="add-unique"
               @update:model-value="(val) => updatedTags(val)" />
           </div>
-          <div class="col-6">
-            <q-icon name="o_comment" @click="openComments()" class="rotate-90"></q-icon>
-          </div>
+          <div class="col-6"></div>
         </div>
       </div>
-      <div class="col ellipsis">{{ callerPortName }}</div>
+      <div class="col ellipsis text-caption q-mt-sm q-mr-sm text-right">
+        <q-icon name="edit_note" @click="openComments()" size="sm" class="cursor-pointer">
+          <q-tooltip :delay="1000">Create or Edit Notes for this page</q-tooltip>
+        </q-icon>
+        <q-badge color="blue" class="q-ml-sm" style="width: 50px; height: 17px">
+          <template v-slot:default>
+            <div class="text-right fit" style="text-align: center">
+              {{ tab?.activatedCount }}x
+              <q-tooltip :delay="1000" anchor="center middle">Opened x times</q-tooltip>
+            </div>
+          </template>
+        </q-badge>
+        <q-badge color="blue" class="q-ml-sm" style="width: 50px; height: 17px">
+          <template v-slot:default>
+            <div class="text-right fit" style="text-align: center">
+              <q-icon name="o_schedule" color="white" />
+              {{ formatReadingTime(tab?.readingTime) }}
+              <q-tooltip :delay="1000" anchor="center middle">Cumulated Reading Time</q-tooltip>
+            </div>
+          </template>
+        </q-badge>
+      </div>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
+import BexFunctions from 'src/core/communication/BexFunctions'
+import { useUtils } from 'src/core/services/Utils'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
@@ -50,6 +71,8 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+
+const { formatReadingTime } = useUtils()
 
 const portName = ref('---')
 const currentSpace = ref('---')
@@ -67,8 +90,15 @@ const route = useRoute()
 const callerPortName = route.query.portName as string
 console.log('route', route.query.portName)
 
-watchEffect(() => {
+watchEffect(async () => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
+  console.log('hier-------', currentTabset.value?.name)
+  // const tsId: string | undefined = await useTabsetsStore().getCurrentTabsetId()
+  // if (tsId) {
+  //   await useTabsetsStore().reloadTabset(tsId)
+  //   console.log('hier-------', tsId)
+  //   currentTabset.value = useTabsetsStore().getCurrentTabset
+  // }
 })
 
 watchEffect(() => {
@@ -102,6 +132,7 @@ watchEffect(() => {
     return
   }
   tab.value = tabInCurrentTs
+  console.log('got', tab.value.url, tab.value.tags.length)
   if (tab.value.tags.constructor === Array) {
     tags.value = [...new Set(tab.value.tags)]
     Tab.setTags(tab.value, tags.value)
@@ -113,12 +144,8 @@ watchEffect(() => {
 const openComments = () => {
   large.value = !large.value
   $q.bex.log('hier', large.value)
+  BexFunctions.bexSendWithRetry($q, 'open-comment-request', callerPortName)
   //window.parent.document.getElementById('tabset-nav-iframe')?.height = '500px';
-  $q.bex.send({
-    event: 'resize-frame-request',
-    to: callerPortName,
-    payload: { height: large.value ? '200px' : '62px' },
-  })
 }
 
 const indexInCurrentTabset = () => {
@@ -132,8 +159,19 @@ const updatedTags = (val: string[]) => {
   if (tab.value) {
     console.log('updating tag', val, useTabsetsStore().getCurrentTabset)
     tab.value.tags = val
+
+    //BexFunctions.bexSendWithRetry($q, 'reload-current-tabset', 'background', { tab: tab.value })
+
     useTabsetService()
       .saveCurrentTabset()
+      .then(() => {
+        chrome.runtime.sendMessage(null, { message: 'refresh-store' }, function (response) {
+          console.log('refreshed store', response)
+        })
+
+        // BexFunctions.bexSendWithRetry($q, 'reload-current-tabset', 'background')
+        // useTabsetsStore().reloadTabset(currentTabset.value!.id)
+      })
       .catch((err) => console.error(err))
   }
 }
