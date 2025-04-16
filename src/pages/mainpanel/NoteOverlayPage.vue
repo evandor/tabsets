@@ -43,11 +43,11 @@
             ['save'],
           ]" />
 
-        <!--        <q-card flat bordered>-->
-        <!--          <q-card-section>-->
-        <!--            <pre style="white-space: pre-line">{{ editor }}</pre>-->
-        <!--          </q-card-section>-->
-        <!--        </q-card>-->
+        <q-card flat bordered>
+          <q-card-section>
+            <pre style="white-space: pre-line">{{ editor }}</pre>
+          </q-card-section>
+        </q-card>
 
         <!--        <q-card flat bordered>-->
         <!--          <q-card-section v-html="editor" />-->
@@ -61,6 +61,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
 import BexFunctions from 'src/core/communication/BexFunctions'
+import { useUtils } from 'src/core/services/Utils'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
@@ -69,6 +70,8 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+
+const { sendMsg } = useUtils()
 
 const portName = ref('---')
 const currentSpace = ref('---')
@@ -126,7 +129,9 @@ watchEffect(() => {
 const closeComment = () => {
   $q.bex.log('hier closeComment')
   //window.parent.document.getElementById('tabset-nav-iframe')?.height = '500px';
-  BexFunctions.bexSendWithRetry($q, 'close-comment-request', callerPortName)
+  BexFunctions.bexSendWithRetry($q, 'close-overlay', callerPortName, {
+    name: 'note',
+  })
   // $q.bex
   //   .send({
   //     event: 'close-comment-request',
@@ -143,7 +148,11 @@ const saveWork = () => {
     })
   }
   tab.value!.note = editor.value
-  useTabsetsStore().saveTabset(currentTabset.value!)
+  useTabsetsStore()
+    .saveTabset(currentTabset.value!)
+    .then(() => {
+      sendMsg('refresh-store')
+    })
   // $q.bex
   //   .send({
   //     event: 'save-comment-request',

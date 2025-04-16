@@ -9,51 +9,43 @@
         </q-linear-progress>
       </div>
       <div class="row q-ma-none q-pa-none">
-        <div class="col-4 q-ma-none q-pa-none" style="border: 0 solid red">
+        <div class="col-6 q-ma-none q-pa-none" style="border: 0 solid red">
           <div class="col-12 text-subtitle1">
             <div class="q-ml-xs q-mt-none">
               <div class="text-body1 text-bold ellipsis">
                 <template v-if="currentTabset">
-                  <!--                  <q-btn-dropdown no-caps class="q-ma-none q-px-none q-py-none" dense size="sm" v-close-popup flat>-->
-                  <!--                    <template v-slot:label>-->
-                  <!--                      <div class="column">-->
-                  <!--                        <div class="text-caption">{{ tabsetSelectLabel() }}</div>-->
-                  <!--                        <div class="text-body2">{{ model?.label }}</div>-->
-                  <!--                      </div>-->
-                  <!--                    </template>-->
-
-                  <!--                    <q-list dense>-->
-                  <!--                      <q-item clickable v-close-popup v-for="option in options">-->
-                  <!--                        <q-item-section>-->
-                  <!--                          <q-item-label>{{ option.label }}</q-item-label>-->
-                  <!--                        </q-item-section>-->
-                  <!--                      </q-item>-->
-                  <!--                    </q-list>-->
-                  <!--                  </q-btn-dropdown>-->
-
                   <q-select
-                    v-if="options.length > 1"
+                    v-if="tabsetSelectionOptions.length > 1"
                     filled
-                    label="Tabset"
-                    v-model="model"
+                    transition-show="scale"
+                    transition-hide="scale"
+                    :label="tabsetSelectLabel()"
+                    v-model="tabsetSelectionModel"
                     @update:model-value="(newTabset: object) => switchTabset(newTabset)"
-                    :options="options"
+                    :options="tabsetSelectionOptions"
                     dense
-                    options-dense />
+                    options-dense>
+                    <template v-slot:option="scope">
+                      <q-item v-bind="scope.itemProps">
+                        <template v-if="scope.opt.label.length > 0">
+                          <q-item-section style="max-width: 20px">
+                            <q-icon size="xs" :name="scope.opt.icon" v-if="scope.opt.icon" />
+                          </q-item-section>
+                          <q-item-section>
+                            <q-item-label>{{ scope.opt.label }}</q-item-label>
+                            <q-item-label caption>{{ scope.opt.description }}</q-item-label>
+                          </q-item-section>
+                        </template>
+                        <q-item-section class="q-ma-none q-pa-none" v-else>
+                          <q-separator />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
                   <div v-else>
                     <div class="text-caption q-ml-md">{{ title() }}</div>
                     <div class="q-ml-md">{{ currentTabset.name }}</div>
                   </div>
-                  <!--                  {{ currentTabset.name }}-->
-                  <!--                  <q-icon-->
-                  <!--                    name="arrow_drop_down"-->
-                  <!--                    class="q-ma-none q-pa-none"-->
-                  <!--                    color="grey-5"-->
-                  <!--                    size="xs"-->
-                  <!--                    @click="router.push('/sidepanel/collections')" />-->
-                  <!--                  <q-tooltip class="tooltip-small" :delay="1000"-->
-                  <!--                    >Select a different collection or create a new one {{ currentTabset.size }}-->
-                  <!--                  </q-tooltip>-->
                 </template>
                 <template v-else>
                   <q-spinner color="primary" size="1em" />
@@ -64,43 +56,13 @@
           <!--          </template>-->
         </div>
 
-        <div class="col-4 text-center" style="border: 0 solid blue">
-          <span
-            v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)"
-            class="text-body1 cursor-pointer"
-            @click="router.push('/sidepanel/spaces')"
-            >{{ useSpacesStore().space.label }}</span
-          >
-        </div>
+        <div class="col-2 text-center" style="border: 0 solid blue"></div>
         <div
           class="col-4 text-subtitle1 text-right q-ma-none q-pa-none q-pr-none"
           v-if="!useUiStore().appLoading"
           style="border: 0 solid green">
           <slot name="iconsRight">
             <div class="q-mt-none q-ma-none q-qa-none q-mr-xs q-mt-xs">
-              <!--              <template v-if="useFeaturesStore().hasFeature(FeatureIdent.SPACES)">-->
-              <!--                <div-->
-              <!--                  v-if="route.path !== '/sidepanel/spaces'"-->
-              <!--                  class="text-caption cursor-pointer"-->
-              <!--                  @click.stop="router.push('/sidepanel/spaces')">-->
-              <!--                  <span class="text-bold">-->
-              <!--                    <q-icon name="arrow_drop_down" class="q-ma-none q-pa-none" color="grey-5" size="xs" />-->
-              <!--                    <q-tooltip class="tooltip-small" :delay="1000"-->
-              <!--                      >Select a different space or create a new one-->
-              <!--                    </q-tooltip>-->
-              <!--                    {{ title() }}-->
-              <!--                  </span>-->
-              <!--                </div>-->
-              <!--                <div v-else class="text-caption cursor-pointer" @click.stop="router.push('/sidepanel')">-->
-              <!--                  <span-->
-              <!--                    >&lt;&nbsp;back-->
-              <!--                    <q-tooltip class="tooltip-small" :delay="1000"-->
-              <!--                      >Click again to return or choose a new space</q-tooltip-->
-              <!--                    >-->
-              <!--                  </span>-->
-              <!--                </div>-->
-              <!--              </template>-->
-
               <span>
                 <SpecialUrlAddToTabsetComponent
                   v-if="currentChromeTab && currentTabset && currentTabset.type !== TabsetType.SPECIAL"
@@ -141,7 +103,7 @@ import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/mod
 import SpecialUrlAddToTabsetComponent from 'src/tabsets/actionHandling/SpecialUrlAddToTabsetComponent.vue'
 import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import AddUrlDialog from 'src/tabsets/dialogues/AddUrlDialog.vue'
-import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetSharing, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
@@ -151,7 +113,7 @@ import { ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 
-type SelectOption = { label: string; value: string }
+type SelectOption = { label: string; value: string; disable?: boolean; icon?: string }
 
 const { t } = useI18n({ useScope: 'global' })
 
@@ -181,8 +143,8 @@ const showWatermark = ref(false)
 const watermark = ref('')
 const tabsets = ref<Tabset[]>([])
 
-const model = ref<SelectOption | undefined>(undefined)
-const options = ref<SelectOption[]>([])
+const tabsetSelectionModel = ref<SelectOption | undefined>(undefined)
+const tabsetSelectionOptions = ref<SelectOption[]>([])
 
 windowLocation.value = window.location.href
 
@@ -199,21 +161,40 @@ redirectOnEmpty()
 
 watchEffect(() => {
   tabsets.value = [...useTabsetsStore().tabsets.values()] as Tabset[]
-  options.value = tabsets.value
+  const useSpaces = useFeaturesStore().hasFeature(FeatureIdent.SPACES)
+  const space = useSpacesStore().space
+  tabsetSelectionOptions.value = tabsets.value
+    .filter((ts: Tabset) => ts.status !== TabsetStatus.ARCHIVED)
+    .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
+    .filter((ts: Tabset) => {
+      if (useSpaces && space) {
+        return ts.spaces.indexOf(space.id) >= 0
+      } else if (useSpaces && !space) {
+        return ts.spaces?.length === 0
+      }
+      return true
+    })
     .map((ts: Tabset) => {
       return {
         label: ts.name,
         value: ts.id,
+        disable: ts.id === currentTabset.value?.id,
       }
     })
     .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
-  if (options.value.length > 10) {
-    options.value = options.value.slice(0, 10)
-    options.value.push({ label: 'show all...', value: '' })
+  if (tabsetSelectionOptions.value.length > 10) {
+    tabsetSelectionOptions.value = tabsetSelectionOptions.value.slice(0, 10)
+    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+    tabsetSelectionOptions.value.push({ label: 'show all...', value: '' })
   } else {
-    options.value.push({ label: 'more...', value: '' })
+    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+    tabsetSelectionOptions.value.push({ label: 'more...', value: '' })
   }
-  model.value = {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
+    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+    tabsetSelectionOptions.value.push({ label: 'Select Space...', value: 'select-space', icon: 'o_space_dashboard' })
+  }
+  tabsetSelectionModel.value = {
     label: currentTabset.value?.name || '?',
     value: currentTabset.value?.id || '-',
   }
@@ -299,6 +280,10 @@ const addUrlDialog = () => $q.dialog({ component: AddUrlDialog })
 
 const switchTabset = async (tabset: object) => {
   const tsId = tabset['value' as keyof object]
+  if (tsId === 'select-space') {
+    await router.push('/sidepanel/spaces')
+    return
+  }
   if (tsId === '') {
     await router.push('/sidepanel/collections')
     return
@@ -312,7 +297,7 @@ const switchTabset = async (tabset: object) => {
 
 const tabsetSelectLabel = () => {
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-    return useSpacesStore().space.label
+    return useSpacesStore().space?.label || 'no space selected'
   }
   return 'Tabset'
 }
@@ -327,5 +312,10 @@ const tabsetSelectLabel = () => {
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+.q-list--dense > .q-item,
+.q-item--dense {
+  min-height: 22px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-ma-none q-mt-lg">
+  <div class="row q-ma-none q-mt-xs">
     <div class="col-5 text-caption text-bold">{{ title() }}</div>
     <div class="col-5 text-caption">{{ date.formatDate(created, 'DD.MM.YYYY HH:mm') }}</div>
     <div class="col-2 text-caption text-right">

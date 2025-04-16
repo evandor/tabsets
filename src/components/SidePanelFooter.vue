@@ -203,12 +203,12 @@
 
 <script setup lang="ts">
 import { captureFeedback } from '@sentry/vue'
-import { GITHUB_AUTO_SYNC, GITHUB_AUTO_SYNC_LASTUPDATE } from 'boot/constants'
 import _ from 'lodash'
 import { date, LocalStorage, openURL, uid, useQuasar } from 'quasar'
 import BrowserApi from 'src/app/BrowserApi'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import { GITHUB_AUTO_SYNC, GITHUB_AUTO_SYNC_LASTUPDATE } from 'src/boot/constants'
 import SidePanelFooterLeftButtons from 'src/components/helper/SidePanelFooterLeftButtons.vue'
 import SidePanelStatsMarkupTable from 'src/components/helper/SidePanelStatsMarkupTable.vue'
 import { useContentStore } from 'src/content/stores/contentStore'

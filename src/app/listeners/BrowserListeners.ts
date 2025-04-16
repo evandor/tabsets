@@ -105,6 +105,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'entity-changed' ||
     request.name === 'reload-entities' ||
     request.name === 'api-changed' ||
+    request.name === 'refresh-store' ||
     request.name === 'tabsets.app.change.currentTabset' ||
     request.action === 'highlight-annotation'
   )
@@ -231,7 +232,7 @@ class BrowserListeners {
     if (this.ignoreUrl(chromeTab.url) || info.status !== 'complete') {
       return
     }
-    console.debug(`==> tabUpdate: ${chromeTab.id} - ${chromeTab.url?.substring(0, 30)}`)
+    //console.debug(`tabUpdate: ${chromeTab.id} - ${chromeTab.url?.substring(0, 30)}`)
 
     if (
       chromeTab.id &&
@@ -282,7 +283,7 @@ class BrowserListeners {
       // ignore single closing of tab if the whole window is about to be closed.
       return
     }
-    console.debug(`==> tabRemoved: window ${info.windowId}`)
+    //console.debug(`==> tabRemoved: window ${info.windowId}`)
     // await checkSwitchTabsetSuggestion(info.windowId)
   }
 
@@ -293,7 +294,7 @@ class BrowserListeners {
 
   // #region snippet2
   async onActivated(info: chrome.tabs.TabActiveInfo) {
-    console.debug(`==> tabActivated: ${JSON.stringify(info)}`)
+    //console.debug(`tabActivated: ${JSON.stringify(info)}`)
     await setCurrentTab()
     useTabsetsUiStore().updateExtensionIcon(info.tabId)
     chrome.tabs.get(info.tabId, (tab) => {
@@ -329,7 +330,7 @@ class BrowserListeners {
     if (inIgnoredMessages(request)) {
       return true
     }
-    console.debug(` <<< got message '${request.msg}'`, request)
+    console.debug(` <<< message '${request.msg}'`, request)
     if (request.msg === 'addTabToTabset') {
       this.handleAddTabToTabset(request, sender, sendResponse)
     } else if (request.msg === 'captureClipping') {

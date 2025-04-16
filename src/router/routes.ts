@@ -266,9 +266,14 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/pages/mainpanel/NavigationPage.vue') }],
   },
   {
-    path: '/mainpanel/comment',
+    path: '/overlay/note',
     component: () => import('layouts/MainNavigationLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/mainpanel/CommentOverlayPage.vue') }],
+    children: [{ path: '', component: () => import('src/pages/mainpanel/NoteOverlayPage.vue') }],
+  },
+  {
+    path: '/overlay/snapshots',
+    component: () => import('layouts/MainNavigationLayout.vue'),
+    children: [{ path: '', component: () => import('src/pages/mainpanel/SnapshotOverlayPage.vue') }],
   },
   {
     path: '/settings',

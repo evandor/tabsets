@@ -1,13 +1,12 @@
 <template>
   <!-- optional: notes -->
   <div class="col-12">
-    <SidePanelNotesView v-if="props.tabset" :tabset="props.tabset" />
+    <SidePanelNotesView :tabset="props.tabset" />
   </div>
 
   <!-- folders -->
   <div class="col-12">
     <SidePanelFoldersView
-      v-if="props.tabset"
       :key="props.tabset.id + '_' + props.tabset.folderActive + '_' + tabsetsLastUpdate"
       :tabset="props.tabset"
       :filter="filter || ''"
@@ -20,6 +19,10 @@
     :tabsCount="props.tabset.tabs.length"
     :tabset="tabsetForTabList(props.tabset as Tabset)"
     @tabs-found="(n: number) => emits('tabs-found', n)" />
+
+  <!--  <div v-for="tab in props.tabset.tabs">-->
+  <!--    <div class="ellipsis" @click="useNavigationService().browserTabFor(tab.url!)">{{ tab.title }}</div>-->
+  <!--  </div>-->
 </template>
 
 <script setup lang="ts">

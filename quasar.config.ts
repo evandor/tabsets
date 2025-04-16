@@ -70,6 +70,10 @@ export default defineConfig((ctx) => {
         TABSETS_STAGE: process.env.STAGE,
         LOCALE: process.env.LOCALE,
         SENTRY_DSN: process.env.SENTRY_DSN,
+        GRAFANA_LOKI_USER: process.env.GRAFANA_LOKI_USER,
+        GRAFANA_LOKI_TOKEN: process.env.GRAFANA_LOKI_TOKEN,
+        GRAFANA_METRICS_USER: process.env.GRAFANA_METRICS_USER,
+        GRAFANA_METRICS_KEY: process.env.GRAFANA_METRICS_KEY,
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

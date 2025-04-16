@@ -3,18 +3,15 @@
 </template>
 
 <script setup lang="ts">
-import { EXTENSION_NAME, NEW_TAB_EXTENSION_ID } from 'boot/constants'
 import { LocalStorage, setCssVar, useQuasar } from 'quasar'
 import AppService from 'src/app/AppService'
+import { EXTENSION_NAME, NEW_TAB_EXTENSION_ID } from 'src/boot/constants'
 import BexFunctions from 'src/core/communication/BexFunctions'
 import { useUtils } from 'src/core/services/Utils'
 import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
 import { useLogger } from 'src/services/Logger'
 import { useAppStore } from 'src/stores/appStore'
 import { useSettingsStore } from 'src/stores/settingsStore'
-import { Tab } from 'src/tabsets/models/Tab'
-import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
@@ -73,38 +70,23 @@ useUiStore().setFontsize(fontsize)
 
 AppService.init($q, router)
 
-info(`${EXTENSION_NAME} started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
+info(`${EXTENSION_NAME} started`)
 
 if (inBexMode()) {
   $q.bex.on('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
   onBeforeUnmount(() => {
     $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
   })
-  $q.bex.on('reload-current-tabset', async ({ payload }: { payload: object }) => {
-    // const tsId = await useTabsetsStore().getCurrentTabsetId()
-    console.log('!!!!!!', payload['tab' as keyof object])
-    const currentTabset = useTabsetsStore().getCurrentTabset
-    if (currentTabset) {
-      const index = currentTabset.tabs.findIndex((tab: Tab) => tab.id === payload['tab' as keyof object]['id'])
-      console.log('found index', index)
-      if (index >= 0) {
-        currentTabset.tabs[index] = payload['tab' as keyof object] as Tab
-      }
-    }
-    await useTabsetService().saveCurrentTabset()
-
-    // const ts = await useTabsetsStore().reloadTabset(tsId!)
-    // console.log('ts', ts)
+  $q.bex.on('reload-current-tabset', BexFunctions.handleReload)
+  onBeforeUnmount(() => {
+    $q.bex.off('reload-current-tabset', BexFunctions.handleReload)
   })
-  // onBeforeUnmount(() => {
-  //   $q.bex.off('tabsets.bex.tab.excerpt', BexFunctions.handleBexTabExcerpt)
-  // })
 }
 
 // newtab extension installed?
-console.log('checkin', NEW_TAB_EXTENSION_ID)
+//console.log('checkin', NEW_TAB_EXTENSION_ID)
 chrome.runtime.sendMessage(NEW_TAB_EXTENSION_ID, { message: 'getVersion' }, function (response) {
-  console.log('testing for newtab extension', response)
+  //console.log('testing for newtab extension', response)
   if (response) {
     console.log('newtab is installed')
     LocalStorage.setItem('ui.newtab.installed', true)

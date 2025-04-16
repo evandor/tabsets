@@ -31,11 +31,11 @@
 
 <script setup lang="ts">
 import _ from 'lodash'
-import ViewToolbarHelper from 'pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { uid } from 'quasar'
 import SearchHit from 'src/components/layouts/SearchHit.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import SearchToolbarHelper from 'src/pages/sidepanel/helper/SearchToolbarHelper.vue'
+import ViewToolbarHelper from 'src/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { Hit } from 'src/search/models/Hit'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { Tab } from 'src/tabsets/models/Tab'
