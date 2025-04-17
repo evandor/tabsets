@@ -1,5 +1,5 @@
 import { getLokiLogger } from '@miketako3/cloki'
-import { EXTENSION_NAME } from 'boot/constants'
+import { EXTENSION_NAME } from 'src/boot/constants'
 import { useErrorHandlingConfig } from 'src/core/config/errorHandlingConfig'
 
 const version = import.meta.env.PACKAGE_VERSION
