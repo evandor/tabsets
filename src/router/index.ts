@@ -1,5 +1,5 @@
 import { defineRouter } from '#q-app/wrappers'
-import { useLogger } from 'src/services/Logger'
+import { useLogger } from 'src/core/services/Logger'
 import { createMemoryHistory, createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import routes from './routes'
 
