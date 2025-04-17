@@ -296,7 +296,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.AUTO_TAB_SWITCHER,
-      'EXPERIMENTAL',
+      'DISABLED',
       'Auto Tab Switcher',
       "Switch the Tab's URL every x Seconds",
       'o_switch_left',
@@ -306,7 +306,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.WEBSITE_CLIP,
-      'EXPERIMENTAL',
+      'DISABLED',
       'Website Clip',
       'Create an image clip from a website and store it',
       'filter_center_focus',
@@ -316,7 +316,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.TAB_HELPER,
-      'EXPERIMENTAL',
+      'DISABLED',
       'Tab Helper',
       'Add a small tag on any website to access tabsets features quickly.<br>' +
         'You need to restart tabsets if you activate or deactivate this feature.<br>' +
@@ -328,7 +328,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.DYNAMIC_TABSET,
-      'EXPERIMENTAL',
+      'DISABLED',
       'Dynamic Tabset',
       'Create a "dynamic" tabset which retrieves its tabs by interpreting its "source" URL',
       'dynamic_feed',

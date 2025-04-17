@@ -1,6 +1,0 @@
-contexts:
-  - terms:
-      - name: Tabset
-        definition: a collection of tabs. Icon is 'o_featured_play_list'
-      - name: Tabs
-        definition: a single tab in the browser, as well as an URL. Icon is 'o_tab'

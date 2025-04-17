@@ -41,17 +41,6 @@ class AppService {
   async init(quasar: QVueGlobals, router: Router) {
     console.log(`%cinitializing AppService`, 'font-weight:bold')
 
-    // if (this.initialized && !forceRestart) {
-    //   console.debug('stopping AppService initialization; already initialized and not forcing restart')
-    //   return Promise.resolve()
-    // }
-    //
-    // if (this.initialized) {
-    //   await BrowserListeners.resetListeners()
-    //   useWindowsStore().resetListeners()
-    // }
-    //
-    // this.initialized = true
 
     this.router = router
 
