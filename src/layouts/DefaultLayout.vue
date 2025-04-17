@@ -175,12 +175,12 @@
 </template>
 
 <script setup lang="ts">
-import DrawerRight from 'components/DrawerRight.vue'
-import ToolbarButton from 'components/widgets/ToolbarButton.vue'
 import _ from 'lodash'
 import { useMeta, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import Navigation from 'src/components/Navigation.vue'
+import ToolbarButton from 'src/components/widgets/ToolbarButton.vue'
+import DrawerRight from 'src/core/components/DrawerRight.vue'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import OpenTabsThresholdWidget from 'src/opentabs/widgets/OpenTabsThresholdWidget.vue'
