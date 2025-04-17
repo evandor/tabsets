@@ -186,7 +186,7 @@ import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatur
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import InfoLine from 'src/pages/helper/InfoLine.vue'
 import NavigationService from 'src/services/NavigationService'
-import { useSettingsStore } from 'src/stores/settingsStore'
+import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { FolderAppearance, FontSize, ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'

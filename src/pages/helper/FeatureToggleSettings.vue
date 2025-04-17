@@ -72,7 +72,7 @@ import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCommand'
 import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatureCommand'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { useSettingsStore } from 'src/stores/settingsStore'
+import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { ref, watchEffect } from 'vue'
 
 const settingsStore = useSettingsStore()
