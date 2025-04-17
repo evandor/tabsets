@@ -11,9 +11,9 @@
             </q-tooltip>
           </q-icon>
         </div>
-        <div class="col-8" style="border: 0 solid green">
+        <div class="col-7" style="border: 0 solid green">
           <!--        {{ portName }}: {{ currentChromeTab?.url }}-->
-          <div class="row" style="border: 1px solid blue">
+          <div class="row" style="border: 0 solid blue">
             <div class="col-1" :style="tags.length > 0 ? 'max-width: 17px; border: 0 solid orange' : 'padding-top:8px'">
               <div class="text-caption" :style="tags.length > 0 ? 'transform: rotate(90deg)' : ''">&nbsp;Tags</div>
             </div>
@@ -35,7 +35,7 @@
             <div class="col-6"></div>
           </div>
         </div>
-        <div class="col ellipsis text-caption q-mt-sm q-mr-sm text-right">
+        <div class="col text-caption q-mt-sm q-mr-sm text-right" style="border: 0 solid orange">
           <!--        <q-icon-->
           <!--          name="o_mail"-->
           <!--          @click="share()"-->

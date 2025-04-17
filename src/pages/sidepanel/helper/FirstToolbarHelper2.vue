@@ -15,7 +15,7 @@
               <div class="text-body1 text-bold ellipsis">
                 <template v-if="currentTabset">
                   <q-select
-                    v-if="tabsetSelectionOptions.length > 1"
+                    v-if="showTabsetSelection()"
                     filled
                     transition-show="scale"
                     transition-hide="scale"
@@ -166,6 +166,7 @@ watchEffect(() => {
   tabsetSelectionOptions.value = tabsets.value
     .filter((ts: Tabset) => ts.status !== TabsetStatus.ARCHIVED)
     .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
+    .filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
     .filter((ts: Tabset) => {
       if (useSpaces && space) {
         return ts.spaces.indexOf(space.id) >= 0
@@ -182,18 +183,34 @@ watchEffect(() => {
       }
     })
     .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+
+  let tabsetsAdded = false
   if (tabsetSelectionOptions.value.length > 10) {
     tabsetSelectionOptions.value = tabsetSelectionOptions.value.slice(0, 10)
+    tabsetsAdded = true
     tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
     tabsetSelectionOptions.value.push({ label: 'show all...', value: '' })
-  } else {
+  } else if (tabsetSelectionOptions.value.length > 1) {
+    tabsetsAdded = true
     tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
     tabsetSelectionOptions.value.push({ label: 'more...', value: '' })
   }
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+    if (tabsetSelectionOptions.value.length > 1) {
+      tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+    }
     tabsetSelectionOptions.value.push({ label: 'Select Space...', value: 'select-space', icon: 'o_space_dashboard' })
   }
+
+  if (tabsetsAdded) {
+    tabsetSelectionOptions.value.unshift({
+      label: 'Switch to:',
+      value: '',
+      icon: 'o_featured_play_list',
+      disable: true,
+    })
+  }
+
   tabsetSelectionModel.value = {
     label: currentTabset.value?.name || '?',
     value: currentTabset.value?.id || '-',
@@ -301,6 +318,17 @@ const tabsetSelectLabel = () => {
   }
   return 'Tabset'
 }
+
+const showTabsetSelection = () => {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
+    return true
+  }
+  return (
+    tabsets.value
+      .filter((ts: Tabset) => ts.status !== TabsetStatus.ARCHIVED)
+      .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL).length > 1
+  )
+}
 </script>
 
 <style scoped>
@@ -316,6 +344,6 @@ const tabsetSelectLabel = () => {
 
 .q-list--dense > .q-item,
 .q-item--dense {
-  min-height: 22px;
+  min-height: 32px;
 }
 </style>

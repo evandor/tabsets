@@ -102,6 +102,13 @@ watch(
   },
 )
 
+watch(
+  () => useTabsetsStore().tabsets.size,
+  (a, b) => {
+    rows.value = calcStatsRows()
+  },
+)
+
 watchEffect(() => {
   const res =
     useWindowsStore().currentBrowserWindow && useWindowsStore().currentBrowserWindow?.id

@@ -24,6 +24,10 @@ jobs:
           echo SENTRY_PROJECT_NAME="tabsets" >> .env
           echo SENTRY_DSN="${{ secrets.SENTRY_DNS }}" >> .env
           echo HOST="edge.extension" >> .env
+          echo GRAFANA_LOKI_USER="1188330" >> .env
+          echo GRAFANA_METRICS_USER="2385306" >> .env
+          echo GRAFANA_LOKI_TOKEN="${{ secrets.GRAFANA_LOKI_TOKEN }}" >> .env
+          echo GRAFANA_METRICS_KEY="${{ secrets.GRAFANA_METRICS_KEY }}" >> .env
       - name: Build
         run: |
           yarn install
