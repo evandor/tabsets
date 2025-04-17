@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import TabsAsTree from 'src/components/TabsAsTree.vue'
+import TabsAsTree from 'src/core/components/TabsAsTree.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import ViewToolbarHelper from 'src/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { onMounted } from 'vue'
