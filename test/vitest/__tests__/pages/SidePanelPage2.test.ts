@@ -2,7 +2,7 @@ import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-v
 import { mount, VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import ChromeApi from 'src/app/BrowserApi'
-import SidePanelPage2 from 'src/pages/SidePanelPage2.vue'
+import SidePanelPage2 from 'src/core/pages/SidePanelPage2.vue'
 import { useDB } from 'src/services/usePersistenceService'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
