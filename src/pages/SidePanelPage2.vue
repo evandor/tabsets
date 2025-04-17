@@ -1,6 +1,6 @@
 <template>
   <!-- SidePanelPage2 -->
-  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 80px">
+  <q-page class="darkInDarkMode brightInBrightMode" style="padding-top: 77px">
     <offline-info />
 
     <div class="wrap" v-if="useUiStore().appLoading">
@@ -47,7 +47,6 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { useUtils } from 'src/core/services/Utils'
@@ -59,7 +58,6 @@ import SidePanelPageContent from 'src/pages/SidePanelPageContent.vue'
 import SidePanelPageContent2 from 'src/pages/SidePanelPageContent2.vue'
 import StartingHint from 'src/pages/widgets/StartingHint.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { useAuthStore } from 'src/stores/authStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -72,9 +70,7 @@ import { useRouter } from 'vue-router'
 
 const { inBexMode } = useUtils()
 
-const $q = useQuasar()
 const router = useRouter()
-const uiStore = useUiStore()
 
 const filter = ref<string>('')
 const showSearchBox = ref(false)
@@ -95,11 +91,7 @@ onMounted(() => {
   window.addEventListener('offline', (e) => updateOnlineStatus(e))
   window.addEventListener('online', (e) => updateOnlineStatus(e))
 
-  if (!useAuthStore().isAuthenticated) {
-    //router.push("/authenticate")
-  } else {
-    Analytics.firePageViewEvent('SidePanelPage2', document.location.href)
-  }
+  Analytics.firePageViewEvent('SidePanelPage2', document.location.href)
 })
 
 watchEffect(() => {
@@ -167,21 +159,14 @@ function inIgnoredMessages(message: any) {
   return message.msg === 'captureThumbnail' || message.name === 'reload-spaces'
 }
 
-const onMessageListener = (message: any, sender: any, sendResponse: (response?: any) => void) => {
-  console.log(' <<< message', message)
+const onMessageListener = (message: any) => {
   if (inIgnoredMessages(message)) {
     return true
   }
-  if (message.name === 'current-tabset-id-change') {
-    if (message.ignore) {
-      return true
-    }
-    const tsId = message.data.tabsetId
-    useTabsetsStore().selectCurrentTabset(tsId)
-  } else if (message.name === 'feature-activated') {
+  console.log(' <<< message', message)
+  if (message.name === 'feature-activated') {
     useFeaturesStore().activateFeature(message.data.feature)
   } else if (message.name === 'show-ignored') {
-    console.log('hier')
     useTabsetsStore().selectCurrentTabset('IGNORED')
     router.push('/sidepanel')
   } else if (message.name === 'text-selection') {
@@ -209,24 +194,12 @@ const onMessageListener = (message: any, sender: any, sendResponse: (response?: 
     // hmm - getting this twice...
     console.log(" > got message '" + message.name + "'", message)
     useTabsetService().reloadTabset(message.data.tabsetId)
-    //updateSelectedTabset(message.data.tabsetId, true)
   } else if (message.name === 'tab-deleted') {
     useTabsetService().reloadTabset(message.data.tabsetId)
   } else if (message.name === 'tabset-added') {
     useTabsetService().reloadTabset(message.data.tabsetId)
-    // } else if (message.name === "mark-tabset-deleted") {
-    //   TabsetService.markAsDeleted(message.data.tabsetId)
   } else if (message.name === 'tabset-renamed') {
     useTabsetService().rename(message.data.tabsetId, message.data.newName, message.data.newColor)
-  } else if (message.name === 'progress-indicator') {
-    if (message.percent) {
-      uiStore.setProgress(message.percent)
-      // uiStore.progressLabel = message.label
-    }
-    if (message.status === 'done') {
-      uiStore.stopProgress()
-    }
-    sendResponse('ui store progress set to ' + JSON.stringify(uiStore.progress))
   } else if (message.name === 'detail-level-changed') {
     console.log('setting list detail level to ', message.data.level)
     useUiStore().setListDetailLevel(message.data.level)
@@ -272,7 +245,7 @@ const onMessageListener = (message: any, sender: any, sendResponse: (response?: 
     }
   } else if (message.name === 'reload-application') {
     //AppService.restart('restarted=true')
-    console.error('message reload-applictation was called, no-op')
+    console.error('message reload-application was called, no-op')
   } else if (message.name === 'window-updated') {
     useWindowsStore().setup('window-updated event')
   } else if (message.name === 'refresh-store') {

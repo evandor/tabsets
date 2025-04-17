@@ -2,7 +2,6 @@
   <!-- SearchToolbarHelper -->
   <div class="row fit">
     <div class="col-12 q-ma-none q-pa-none q-ml-none">
-      <!--          <SearchWithTransitionHelper :search-term="props.searchTerm" :search-hits="props.searchHits!" />-->
       <SearchWidget2
         :search-term="props.searchTerm"
         :filtered-tabs-count="props.filteredTabsCount"

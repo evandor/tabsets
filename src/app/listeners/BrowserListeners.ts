@@ -82,8 +82,6 @@ async function setCurrentTab() {
 function inIgnoredMessages(request: any) {
   // TODO name vs. msg!
   return (
-    request.name === 'progress-indicator' ||
-    request.name === 'current-tabset-id-change' ||
     request.name === 'tab-being-dragged' ||
     request.name === 'note-changed' ||
     request.name === 'tab-added' ||

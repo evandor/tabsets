@@ -184,14 +184,12 @@ watchEffect(() => {
     })
     .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
 
-  let tabsetsAdded = false
+  let tabsetsAdded = tabsetSelectionOptions.value.length > 0
   if (tabsetSelectionOptions.value.length > 10) {
     tabsetSelectionOptions.value = tabsetSelectionOptions.value.slice(0, 10)
-    tabsetsAdded = true
     tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
     tabsetSelectionOptions.value.push({ label: 'show all...', value: '' })
   } else if (tabsetSelectionOptions.value.length > 1) {
-    tabsetsAdded = true
     tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
     tabsetSelectionOptions.value.push({ label: 'more...', value: '' })
   }
