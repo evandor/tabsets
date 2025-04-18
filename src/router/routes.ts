@@ -258,22 +258,22 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/mainpanel/readingmode/:tabId',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/mainpanel/MainPanelReadingModePage.vue') }],
+    children: [{ path: '', component: () => import('src/core/pages/mainpanel/MainPanelReadingModePage.vue') }],
   },
   {
     path: '/mainpanel/navigation',
     component: () => import('layouts/MainNavigationLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/mainpanel/NavigationPage.vue') }],
+    children: [{ path: '', component: () => import('src/core/pages/mainpanel/NavigationPage.vue') }],
   },
   {
     path: '/overlay/note',
     component: () => import('layouts/MainNavigationLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/mainpanel/NoteOverlayPage.vue') }],
+    children: [{ path: '', component: () => import('src/core/pages/mainpanel/NoteOverlayPage.vue') }],
   },
   {
     path: '/overlay/snapshots',
     component: () => import('layouts/MainNavigationLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/mainpanel/SnapshotOverlayPage.vue') }],
+    children: [{ path: '', component: () => import('src/core/pages/mainpanel/SnapshotOverlayPage.vue') }],
   },
   {
     path: '/settings',
