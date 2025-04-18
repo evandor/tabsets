@@ -178,7 +178,7 @@
 import _ from 'lodash'
 import { useMeta, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import Navigation from 'src/components/Navigation.vue'
+import Navigation from 'src/core/components/Navigation.vue'
 import DrawerRight from 'src/core/components/DrawerRight.vue'
 import ToolbarButton from 'src/core/components/widgets/ToolbarButton.vue'
 import { useUtils } from 'src/core/services/Utils'

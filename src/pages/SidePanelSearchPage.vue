@@ -32,7 +32,7 @@
 <script setup lang="ts">
 import _ from 'lodash'
 import { uid } from 'quasar'
-import SearchHit from 'src/components/layouts/SearchHit.vue'
+import SearchHit from 'src/core/components/layouts/SearchHit.vue'
 import SearchToolbarHelper from 'src/core/pages/sidepanel/helper/SearchToolbarHelper.vue'
 import ViewToolbarHelper from 'src/core/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import Analytics from 'src/core/utils/google-analytics'
