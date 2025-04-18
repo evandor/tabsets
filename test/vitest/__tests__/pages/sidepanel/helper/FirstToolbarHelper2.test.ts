@@ -2,7 +2,7 @@ import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-v
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import ChromeApi from 'src/app/BrowserApi'
-import FirstToolbarHelper2 from 'src/pages/sidepanel/helper/FirstToolbarHelper2.vue'
+import FirstToolbarHelper2 from 'src/core/pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

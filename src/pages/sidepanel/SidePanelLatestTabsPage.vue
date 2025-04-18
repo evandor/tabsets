@@ -71,8 +71,8 @@
 <script lang="ts" setup>
 import { formatDistance } from 'date-fns'
 import _ from 'lodash'
+import ViewToolbarHelper from 'src/core/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import Analytics from 'src/core/utils/google-analytics'
-import ViewToolbarHelper from 'src/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'

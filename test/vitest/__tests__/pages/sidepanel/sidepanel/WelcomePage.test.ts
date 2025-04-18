@@ -2,7 +2,7 @@ import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-v
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import ChromeApi from 'src/app/BrowserApi'
-import WelcomePage from 'src/pages/sidepanel/WelcomePage.vue'
+import WelcomePage from 'src/core/pages/sidepanel/WelcomePage.vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useRoute, useRouter } from 'vue-router'
 
