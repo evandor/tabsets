@@ -42,7 +42,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/sidepanel/search',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/sidepanelSearchPage.vue') }],
+    children: [{ path: '', component: () => import('src/pages/SidePanelSearchPage.vue') }],
   },
   {
     path: '/sidepanel/research/:sourceId',
