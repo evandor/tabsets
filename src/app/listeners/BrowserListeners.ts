@@ -302,7 +302,11 @@ class BrowserListeners {
       if (chrome.runtime.lastError) {
         console.warn('got runtime error:', chrome.runtime.lastError)
       }
+      // clear / update content data
       useContentStore().setCurrentTabUrl(tab.url)
+      useContentStore().setCurrentTabContent(undefined)
+      useContentStore().setCurrentTabMetas(undefined)
+
       useTabsetService().urlWasActivated(tab.url)
       useTabsetsUiStore().setMatchingTabsFor(tab.url)
 

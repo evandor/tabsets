@@ -90,7 +90,7 @@ export default defineConfigWithVueTs(
       'vue/no-mutating-props': 'off',
       'vue/multi-word-component-names': 'off',
       'vue/no-deprecated-v-bind-sync': 'off',
-      'tabsets.bex.tab.excerpt': 'off',
+      //'tabsets.bex.tab.excerpt': 'off',
       'vue/valid-v-for': 'off',
       'vue/require-v-for-key': 'off',
       'no-case-declarations': 'off',
