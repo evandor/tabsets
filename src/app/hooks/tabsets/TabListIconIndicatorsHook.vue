@@ -14,6 +14,7 @@ const props = defineProps({
 
 const showResearchIndicator = ref(false)
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 watchEffect(async () => {
   showResearchIndicator.value = (await useSnapshotsStore().metadataFor(props.tabId)).length > 0
 })

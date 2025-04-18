@@ -7,7 +7,7 @@ const updateTrigger = 10
 // https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
 //console.log("ga: installing google analytics")
 
-addEventListener('unhandledrejection', async (event) => {
+addEventListener('unhandledrejection', (event) => {
   console.log('[service-worker] ga: fire error event', event)
   // getting error: Service worker registration failed. Status code: 15
   Analytics.fireErrorEvent(event.reason)
@@ -140,12 +140,12 @@ bridge.on('storage.get', ({ payload: key }) => {
   })
 })
 
-bridge.on('storage.set', async ({ payload: { key, value } }) => {
-  await chrome.storage.local.set({ [key]: value })
+bridge.on('storage.set', ({ payload: { key, value } }) => {
+  chrome.storage.local.set({ [key]: value })
 })
 
-bridge.on('storage.remove', async ({ payload: key }) => {
-  await chrome.storage.local.remove(key)
+bridge.on('storage.remove', ({ payload: key }) => {
+  chrome.storage.local.remove(key)
 })
 
 bridge.on('reload-current-tabset', async ({ payload }) => {

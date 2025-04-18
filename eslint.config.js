@@ -64,8 +64,8 @@ export default defineConfigWithVueTs(
     // add your custom rules here
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-misused-promises': 'off',
-      //'@typescript-eslint/no-floating-promises': 'off',
+      //'@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       'prefer-promise-reject-errors': 'off',
       '@typescript-eslint/no-this-alias': 'off',
@@ -85,7 +85,7 @@ export default defineConfigWithVueTs(
       'no-var': 'off',
       'no-empty': 'off',
       'no-empty-pattern': 'off',
-      //'no-useless-escape': 'off',
+      'no-useless-escape': 'off',
       'prefer-const': 'off',
       'vue/no-mutating-props': 'off',
       'vue/multi-word-component-names': 'off',
