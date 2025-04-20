@@ -69,7 +69,7 @@ export default defineConfigWithVueTs(
       '@typescript-eslint/no-explicit-any': 'off',
       'prefer-promise-reject-errors': 'off',
       '@typescript-eslint/no-this-alias': 'off',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+      //'@typescript-eslint/no-unnecessary-type-assertion': 'off',
       '@typescript-eslint/no-wrapper-object-types': 'off',
       '@typescript-eslint/prefer-promise-reject-errors': 'off',
       '@typescript-eslint/require-await': 'off',

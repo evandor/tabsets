@@ -1,4 +1,4 @@
-import { uid } from 'quasar'
+import { LocalStorage, uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import { useContentStore } from 'src/content/stores/contentStore'
@@ -237,7 +237,7 @@ class BrowserListeners {
 
     if (
       chromeTab.id &&
-      useFeaturesStore().hasFeature(FeatureIdent.TOOLBAR_INTEGRATION) &&
+      LocalStorage.getItem('ui.toolbar.integration') === 'all' &&
       chromeTab.url?.startsWith('https://')
     ) {
       //if (this.injectList.filter((n: number) => n === chromeTab.id).length === 0) {
@@ -246,7 +246,7 @@ class BrowserListeners {
       chrome.scripting
         .executeScript({
           target: { tabId: chromeTab.id, allFrames: false },
-          files: ['my-content-script.js'],
+          files: ['tabsets-toolbar-contentscript.js'],
           injectImmediately: true,
         })
         .catch((err) => console.log('executeScript error:', err))

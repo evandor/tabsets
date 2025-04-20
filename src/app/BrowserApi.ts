@@ -332,12 +332,30 @@ class BrowserApi {
     // console.log('restoring urls and groups:', urlAndGroupArray)
     if (inNewWindow && !windowName) {
       console.log('creating new window with urls', urlAndGroupArray)
-      chrome.windows.create({
-        focused: true,
-        left: 50,
-        top: 50,
-        url: _.map(urlAndGroupArray, (a: any) => a['url' as keyof object]),
-      })
+      chrome.windows.create(
+        {
+          focused: true,
+          left: 50,
+          top: 50,
+          url: _.map(urlAndGroupArray, (a: any) => a['url' as keyof object]),
+        },
+        (window: chrome.windows.Window | undefined) => {
+          if (window) {
+            console.log('got window', window.tabs)
+            window.tabs?.forEach((t: chrome.tabs.Tab) => {
+              const matchingTab = tabset.tabs.find((a: Tab) => {
+                console.log('comparing1', a.url)
+                console.log('comparing2', t.pendingUrl, t)
+                return a.url === t.url || a.url === t.pendingUrl
+              })
+              console.log('matching tab', matchingTab?.url, matchingTab?.pinned)
+              if (matchingTab && matchingTab.pinned) {
+                chrome.tabs.update(t.id!, { pinned: true })
+              }
+            })
+          }
+        },
+      )
     } else if (windowName) {
       console.log('creating new window with name', windowName)
       useTabsetsStore().selectCurrentTabset(tabset.id)

@@ -1,6 +1,6 @@
 import { createBridge } from '#q-app/bex/content'
 
-console.log('[BEX-CT] loading my-content-scripts')
+console.log('[BEX-CT] loading tabsets-toolbar-contentscript')
 
 const bridge = createBridge({ debug: false })
 
@@ -66,7 +66,7 @@ if (!existing) {
     bottom: '0',
     left: '0',
     border: '0',
-    zIndex: '9999999', // Make sure it's on top
+    zIndex: '2147483647', // Make sure it's on top
     // overflow: 'visible'
   })
   ;(function () {

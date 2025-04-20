@@ -380,16 +380,6 @@ export class AppFeatures {
       '',
       ['all'],
     ),
-
-    new Feature(
-      FeatureIdent.TOOLBAR_INTEGRATION,
-      'EXPERIMENTAL',
-      'Toolbar Integration',
-      'Adds a Bar to all open tabs to quickly access Tabsets features',
-      'sym_o_toolbar',
-      '',
-      ['all'],
-    ),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {

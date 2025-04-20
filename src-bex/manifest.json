@@ -18,7 +18,7 @@
       },
       {
         "matches": ["*://*/disabled---*"],
-        "js": ["my-content-script.ts"]
+        "js": ["tabsets-toolbar-contentscript.ts"]
       }
     ],
     "content_security_policy": {

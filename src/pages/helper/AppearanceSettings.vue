@@ -4,7 +4,7 @@
       {{ $t('settings_adjust_general_appearance') }}
     </q-banner>
 
-    <div class="row items-baseline q-ma-md q-gutter-md">
+    <div class="row">
       <InfoLine :label="$t('dark_mode')">
         <q-radio v-model="darkMode" val="auto" :label="$t('Auto')" />
         <q-radio v-model="darkMode" val="true" :label="$t('enabled')" />
@@ -33,7 +33,16 @@
         <!--          style="min-width: 150px" />-->
       </div>
       <div class="col"></div>
+    </div>
 
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-9">
+        <hr />
+      </div>
+    </div>
+
+    <div class="row items-baseline">
       <InfoLine label="Font Size">
         <q-radio v-model="fontsize" :val="FontSize.SMALLER" label="Smaller" />
         <q-radio v-model="fontsize" :val="FontSize.SMALL" label="Small" />
@@ -42,11 +51,26 @@
         <q-radio v-model="fontsize" :val="FontSize.LARGER" label="Larger" />
       </InfoLine>
 
+      <InfoLine label="Toolbar Integration" helpLink="https://docs.tabsets.net/tabsets-toolbar">
+        <q-radio v-model="toolbarIntegration" val="none" label="None" />
+        <q-radio v-model="toolbarIntegration" val="tabsets" label="Tabsets (default)" />
+        <q-radio v-model="toolbarIntegration" val="all" label="All Websites" />
+      </InfoLine>
+
       <InfoLine label="Folder Appearance">
         <q-radio v-model="folderAppearance" val="expand" label="Expand (experimental)" />
         <q-radio v-model="folderAppearance" val="goInto" label="Go into (default)" />
       </InfoLine>
+    </div>
 
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-9">
+        <hr />
+      </div>
+    </div>
+
+    <div class="row items-baseline">
       <InfoLine
         :label="
           $t('tab_info_detail_level', {
@@ -65,7 +89,16 @@
       <InfoLine label="URLs">
         <q-checkbox v-model="fullUrls" :label="$t('show_full_url')" />
       </InfoLine>
+    </div>
 
+    <div class="row items-baseline">
+      <div class="col-3"></div>
+      <div class="col-9">
+        <hr />
+      </div>
+    </div>
+
+    <div class="row items-baseline">
       <InfoLine label="Show Recent Tabsets list">
         <q-checkbox
           v-model="showRecentTabsetsList"
@@ -79,25 +112,32 @@
       </InfoLine>
     </div>
 
-    <div
-      class="row items-baseline q-ma-md q-gutter-md"
-      v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">
-      <div class="col-3">
-        {{ $t('tab_switching_time') }}
-      </div>
+    <!--    <div-->
+    <!--      class="row items-baseline q-ma-md q-gutter-md"-->
+    <!--      v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">-->
+    <!--      <div class="col-3">-->
+    <!--        {{ $t('tab_switching_time') }}-->
+    <!--      </div>-->
+    <!--      <div class="col-9">-->
+    <!--        <q-select-->
+    <!--          :label="$t('tab_switcher_settings')"-->
+    <!--          filled-->
+    <!--          v-model="autoSwitcherOption"-->
+    <!--          :options="autoSwitcherOptions"-->
+    <!--          map-options-->
+    <!--          emit-value-->
+    <!--          style="width: 250px" />-->
+    <!--      </div>-->
+    <!--    </div>-->
+
+    <div class="row">
+      <div class="col-3"></div>
       <div class="col-9">
-        <q-select
-          :label="$t('tab_switcher_settings')"
-          filled
-          v-model="autoSwitcherOption"
-          :options="autoSwitcherOptions"
-          map-options
-          emit-value
-          style="width: 250px" />
+        <hr />
       </div>
     </div>
 
-    <div class="row items-baseline q-ma-md q-gutter-md">
+    <div class="row">
       <div class="col-3">
         {{ $t('restore_info_msg') }}
       </div>
@@ -110,9 +150,7 @@
       </div>
     </div>
 
-    <div
-      class="row items-baseline q-ma-md q-gutter-md"
-      v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
+    <div class="row items-baseline" v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
       <div class="col-3">
         {{ $t('warning_thresholds') }}
       </div>
@@ -124,7 +162,7 @@
       </div>
     </div>
 
-    <div class="row items-baseline q-ma-md q-gutter-md">
+    <div class="row items-baseline">
       <div class="col-3">
         {{ $t('thumbnail_quality') }}
       </div>
@@ -155,7 +193,7 @@
     <!--      </div>-->
     <!--    </div>-->
 
-    <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+    <div class="row items-baseline" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
       <div class="col-3">New Suggestion Simulation</div>
       <div class="col-3">
         Simulate that there is a new suggestion to use a (new) feature (refresh sidebar for effects)
@@ -165,7 +203,7 @@
       </div>
     </div>
 
-    <div class="row items-baseline q-ma-md q-gutter-md">
+    <div class="row items-baseline">
       <div class="col-3">Sidebar not opened?</div>
       <div class="col-3">CLick here to open the Side Panel</div>
       <div class="col q-ma-xl">
@@ -189,7 +227,7 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import { FolderAppearance, FontSize, ListDetailLevel, useUiStore } from 'src/ui/stores/uiStore'
+import { FolderAppearance, FontSize, ListDetailLevel, ToolbarIntegration, useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watch, watchEffect } from 'vue'
 
 const { sendMsg } = useUtils()
@@ -203,6 +241,7 @@ const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || 
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || 'MINIMAL')
 const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
 const folderAppearance = ref<FolderAppearance>(LocalStorage.getItem('ui.folder.style') || 'goInto')
+const toolbarIntegration = ref<ToolbarIntegration>(LocalStorage.getItem('ui.toolbar.integration') || 'tabsets')
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const overlapIndicator = ref(LocalStorage.getItem('ui.overlapIndicator') || false)
 const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))
@@ -284,6 +323,14 @@ watch(
   () => {
     LocalStorage.set('ui.folder.style', folderAppearance.value)
     sendMsg('settings-changed', { identifier: 'ui.folder.style', value: folderAppearance.value })
+  },
+)
+
+watch(
+  () => toolbarIntegration.value,
+  () => {
+    LocalStorage.set('ui.toolbar.integration', toolbarIntegration.value)
+    //sendMsg('settings-changed', { identifier: 'ui.toolbar.integration', value: toolbarIntegration.value })
   },
 )
 
