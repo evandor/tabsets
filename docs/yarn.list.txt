@@ -703,8 +703,8 @@
 ├─ @one-ini/wasm@0.1.1
 ├─ @pkgjs/parseargs@0.11.0
 ├─ @pkgr/core@0.2.4
-├─ @playwright/test@1.51.1
-│  └─ playwright@1.51.1
+├─ @playwright/test@1.52.0
+│  └─ playwright@1.52.0
 ├─ @polka/url@1.0.0-next.29
 ├─ @quasar/app-vite@2.2.0
 │  ├─ @quasar/render-ssr-error@^1.0.3
@@ -2044,7 +2044,7 @@
 ├─ ee-first@1.1.1
 ├─ ejs@3.1.10
 │  └─ jake@^10.8.5
-├─ electron-to-chromium@1.5.137
+├─ electron-to-chromium@1.5.138
 ├─ element-resize-detector@1.2.4
 │  └─ batch-processor@1.0.0
 ├─ elementtree@0.1.7
@@ -3211,11 +3211,11 @@
 │  ├─ confbox@^0.1.8
 │  ├─ mlly@^1.7.4
 │  └─ pathe@^2.0.1
-├─ playwright-core@1.51.1
-├─ playwright@1.51.1
+├─ playwright-core@1.52.0
+├─ playwright@1.52.0
 │  ├─ fsevents@2.3.2
 │  ├─ fsevents@2.3.2
-│  └─ playwright-core@1.51.1
+│  └─ playwright-core@1.52.0
 ├─ pn@1.1.0
 ├─ pngjs@7.0.0
 ├─ points-on-curve@0.2.0
@@ -3971,7 +3971,7 @@
 │  ├─ debug@^4.1.1
 │  ├─ globrex@^0.1.2
 │  └─ tsconfck@^3.0.3
-├─ vite@6.3.1
+├─ vite@6.3.2
 │  ├─ esbuild@^0.25.0
 │  ├─ fdir@^6.4.3
 │  ├─ fsevents@~2.3.3

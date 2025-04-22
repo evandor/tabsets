@@ -8,7 +8,7 @@ import { configDefaults, defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     environment: 'happy-dom',
-    setupFiles: 'test/vitest/setup-file.ts', // additional info see https://stackoverflow.com/questions/72260793/how-to-mock-stub-vue-i18n
+    setupFiles: ['test/vitest/setup-file.ts'], // additional info see https://stackoverflow.com/questions/72260793/how-to-mock-stub-vue-i18n
     testTimeout: 50000,
     hookTimeout: 50000,
     include: [

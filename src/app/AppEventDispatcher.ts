@@ -27,7 +27,7 @@ export type DispatcherEvents =
  */
 class AppEventDispatcher {
   async dispatchEvent(name: DispatcherEvents, params: object): Promise<object> {
-    //console.debug(" >>> dispatching event", name, params)
+    //console.debug(' >>> dispatching event', name, params)
     try {
       switch (name) {
         case 'add-to-search':

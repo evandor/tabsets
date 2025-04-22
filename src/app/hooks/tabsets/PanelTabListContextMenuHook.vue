@@ -1,20 +1,12 @@
 <template>
-  <q-item
-    v-if="useFeaturesStore().hasFeature(FeatureIdent.RESEARCH_SESSIONS) && hasResearchData()"
-    clickable
-    v-close-popup
-    @click.stop="openResearchPage()">
+  <q-item v-if="showResearchEntry() && hasResearchData()" clickable v-close-popup @click.stop="openResearchPage()">
     <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
       <q-icon size="xs" name="o_science" color="info" />
     </q-item-section>
     <q-item-section> Research </q-item-section>
   </q-item>
 
-  <q-item
-    clickable
-    v-if="useFeaturesStore().hasFeature(FeatureIdent.RESEARCH_SESSIONS) && !hasResearchData()"
-    v-close-popup
-    @click="startResearch()">
+  <q-item clickable v-if="showResearchEntry() && !hasResearchData()" v-close-popup @click="startResearch()">
     <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
       <q-icon size="xs" name="o_science" color="primary" />
     </q-item-section>
@@ -53,6 +45,8 @@ const props = defineProps({
 const router = useRouter()
 const route = useRoute()
 
+const fullpageView = route.fullPath.startsWith('/tabsets/')
+
 const openResearchPage = () => {
   openURL(props.tab.url!)
   router.push('/sidepanel/research/' + props.tab.id)
@@ -80,4 +74,6 @@ const resetActivationCounter = () => {
     }
   }
 }
+
+const showResearchEntry = () => useFeaturesStore().hasFeature(FeatureIdent.RESEARCH_SESSIONS) && !fullpageView
 </script>

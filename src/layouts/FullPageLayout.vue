@@ -1,17 +1,17 @@
 <template>
   <q-layout view="hHh LpR lFr">
     <q-header elevated>
-      <q-toolbar>
+      <q-toolbar class="text-white">
         <template v-if="leftDrawerOpen">
-          <q-img
-            class="q-ml-xs q-mr-none cursor-pointer"
-            style="margin-top: -7px"
-            @click="toggleLeftDrawer"
-            src="favicon.ico"
-            height="32px"
-            width="32px">
-            <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>
-          </q-img>
+          <!--          <q-img-->
+          <!--            class="q-ml-xs q-mr-none cursor-pointer"-->
+          <!--            @click="toggleLeftDrawer"-->
+          <!--            src="/public/favicon.ico"-->
+          <!--            height="32px"-->
+          <!--            width="32px">-->
+          <!--            <q-tooltip class="tooltip">Toggle the tabset list view by clicking here</q-tooltip>-->
+          <!--          </q-img>-->
+          <q-icon name="menu" @click="toggleLeftDrawer"></q-icon>
           <q-toolbar-title
             v-if="!useFeaturesStore().hasFeature(FeatureIdent.SPACES)"
             @click.stop="goHome()"
@@ -22,7 +22,7 @@
             <q-tooltip class="tooltip">Reload Tabsets Extension</q-tooltip>
           </q-toolbar-title>
           <q-toolbar-title v-else>
-            {{ title() }}
+            <span class="capitalize">{{ title() }}</span>
           </q-toolbar-title>
         </template>
         <!-- left drawer closed -->
@@ -100,11 +100,11 @@
           icon="o_dns"
           tooltip="Your tabs grouped by domain" />
 
-        <ToolbarButton
-          :feature="FeatureIdent.RSS"
-          :drawer="DrawerTabs.RSS"
-          icon="o_rss_feed"
-          tooltip="Access to your rss feed" />
+        <!--        <ToolbarButton-->
+        <!--          :feature="FeatureIdent.RSS"-->
+        <!--          :drawer="DrawerTabs.RSS"-->
+        <!--          icon="o_rss_feed"-->
+        <!--          tooltip="Access to your rss feed" />-->
 
         <ToolbarButton
           v-if="useFeaturesStore().hasFeature(FeatureIdent.BOOKMARKS)"
@@ -113,27 +113,27 @@
           icon="o_bookmark"
           tooltip="Access to your bookmarks" />
 
-        <ToolbarButton
-          :drawer="DrawerTabs.OPEN_TABS"
-          icon="o_playlist_add"
-          tooltip="Show Open Tabs View"
-          :restricted="$q.platform.is.chrome" />
+        <!--        <ToolbarButton-->
+        <!--          :drawer="DrawerTabs.OPEN_TABS"-->
+        <!--          icon="o_playlist_add"-->
+        <!--          tooltip="Show Open Tabs View"-->
+        <!--          :restricted="$q.platform.is.chrome" />-->
 
-        <ToolbarButton
-          v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)"
-          :drawer="DrawerTabs.TAGS_VIEWER"
-          icon="o_label"
-          tooltip="Show tags viewer"
-          :restricted="$q.platform.is.chrome" />
+        <!--        <ToolbarButton-->
+        <!--          v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)"-->
+        <!--          :drawer="DrawerTabs.TAGS_VIEWER"-->
+        <!--          icon="o_label"-->
+        <!--          tooltip="Show tags viewer"-->
+        <!--          :restricted="$q.platform.is.chrome" />-->
 
         <div>
           <q-btn @click="toggleSettings" flat size="12px" class="q-mr-md" icon="o_settings"> </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item clickable @click="router.push('/settings')">Settings</q-item>
-              <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>
-                Activate more Features
-              </q-item>
+              <!--              <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>-->
+              <!--                Activate more Features-->
+              <!--              </q-item>-->
               <q-item clickable @click="showImportDialog" v-close-popup> Import Tabsets </q-item>
               <q-item clickable @click="showExportDialog" v-close-popup> Export Tabsets </q-item>
             </q-list>
@@ -150,16 +150,16 @@
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" side="left" behavior="desktop" bordered>
-      <Navigation2></Navigation2>
+      <FullpageNavigation></FullpageNavigation>
     </q-drawer>
 
-    <!--    <q-drawer-->
-    <!--      v-model="useUiStore().rightDrawerOpen"-->
-    <!--      side="right"-->
-    <!--      bordered-->
-    <!--      content-class="column justify-between no-wrap bg-grey-1">-->
-    <!--      <DrawerRight />-->
-    <!--    </q-drawer>-->
+    <q-drawer
+      v-model="useUiStore().rightDrawerOpen"
+      side="right"
+      bordered
+      content-class="column justify-between no-wrap bg-grey-1">
+      <DrawerRight />
+    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -173,8 +173,9 @@ import _ from 'lodash'
 import { useMeta, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { EXTENSION_NAME } from 'src/boot/constants'
+import DrawerRight from 'src/core/components/DrawerRight.vue'
+import FullpageNavigation from 'src/core/components/FullpageNavigation.vue'
 import ToolbarButton from 'src/core/components/widgets/ToolbarButton.vue'
-import Navigation2 from 'src/core/components/Navigation2.vue'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import OpenTabsThresholdWidget from 'src/opentabs/widgets/OpenTabsThresholdWidget.vue'

@@ -236,9 +236,18 @@ const routes: RouteRecordRaw[] = [
   //   ],
   // },
   {
-    path: '/mainpanel/spaces', // TODO combine with Spaces page
+    path: '/mainpanel/spaces',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/spaces/pages/MainPanelSpacesPage.vue') }],
+    children: [
+      { path: '', component: () => import('src/spaces/pages/MainPanelSpacesPage.vue'), props: { fullpage: false } },
+    ],
+  },
+  {
+    path: '/fullpage/spaces',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/spaces/pages/MainPanelSpacesPage.vue'), props: { fullpage: true } },
+    ],
   },
   {
     path: '/mainpanel/bookmarks/:id',

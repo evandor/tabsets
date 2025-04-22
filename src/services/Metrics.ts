@@ -1,20 +1,13 @@
 const version = import.meta.env.PACKAGE_VERSION
 
-async function log(msg: string, level: number) {
+async function log(type: string, key: string, value: number) {
   const body = [
     {
-      name: 'test.metric',
+      name: 'tabsets.metrics.count',
       interval: 10,
-      value: 12.345,
-      tags: ['foo=bar', 'source=grafanacloud-tabsets-prom'],
-      time: new Date().getTime() * 1000000,
-    },
-    {
-      name: 'test.metric',
-      interval: 10,
-      value: 12.245,
-      tags: ['foo=baz', 'source=grafanacloud-tabsets-prom'],
-      time: new Date().getTime() * 1000000,
+      value,
+      tags: [`${type}=${key}`, 'source=extension', `version=${version}`],
+      time: Math.round(new Date().getTime() / 1000),
     },
   ]
 
@@ -27,17 +20,20 @@ async function log(msg: string, level: number) {
     },
   })
 
-  const data = await response.json()
-
-  console.log(data)
+  await response.json()
 }
 
 export function useMetrics() {
   const gauge = (msg: string) => {
-    log(msg, 5)
+    // log(msg, 5)
+  }
+
+  const count = (key: string, value: number) => {
+    log('count', key, value)
   }
 
   return {
     gauge,
+    count,
   }
 }
