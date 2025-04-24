@@ -33,7 +33,7 @@ async function stopTimer(url: string) {
     const ts = useTabsetsStore().getTabset(tabWithTsId.tabsetId)
     if (ts) {
       //console.log('saving', ts)
-      await useTabsetService().saveTabset(ts, new ChangeInfo('tab', 'edited', tabWithTsId.tab.id, tabWithTsId.tab.url!))
+      await useTabsetService().saveTabset(ts, new ChangeInfo('tab', 'edited', tabWithTsId.tab.id, tabWithTsId.tab.url))
     }
   }
   if (tabsForUrl.length === 0) {

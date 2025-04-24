@@ -3,21 +3,45 @@
 </template>
 
 <script setup lang="ts">
+import { getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk'
+import { TracingInstrumentation } from '@grafana/faro-web-tracing'
 import { LocalStorage, setCssVar, useQuasar } from 'quasar'
 import AppService from 'src/app/AppService'
 import { EXTENSION_NAME, NEW_TAB_EXTENSION_ID } from 'src/boot/constants'
 import BexFunctions from 'src/core/communication/BexFunctions'
-import { useUtils } from 'src/core/services/Utils'
-import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
 import { useLogger } from 'src/core/services/Logger'
+import { useUtils } from 'src/core/services/Utils'
 import { useAppStore } from 'src/core/stores/appStore'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
+import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+
+const version = import.meta.env.PACKAGE_VERSION
+
+initializeFaro({
+  url: process.env.GRAFANA_FARO_COLLECTOR_URL as string,
+  app: {
+    name: EXTENSION_NAME + '.extension',
+    version: version,
+    environment: 'test',
+    namespace: process.env.MODE || 'unknown',
+    // _mode: process.env.MODE || 'unknown', _version: version, service_name: EXTENSION_NAME
+  },
+  trackGeolocation: false,
+  instrumentations: [
+    // Mandatory, omits default instrumentations otherwise.
+    ...getWebInstrumentations(),
+
+    // Tracing package to get end-to-end visibility for HTTP requests.
+    new TracingInstrumentation(),
+  ],
+})
 
 const $q = useQuasar()
 const router = useRouter()
+const route = useRoute()
 const { inBexMode, setupConsoleInterceptor } = useUtils()
 
 // TODO only in prod?

@@ -28,6 +28,7 @@ jobs:
           echo GRAFANA_METRICS_USER="2385306" >> .env
           echo GRAFANA_LOKI_TOKEN="${{ secrets.GRAFANA_LOKI_TOKEN }}" >> .env
           echo GRAFANA_METRICS_KEY="${{ secrets.GRAFANA_METRICS_KEY }}" >> .env
+          echo GRAFANA_FARO_COLLECTOR_URL="https://faro-collector-prod-eu-west-2.grafana.net/collect/937ed141737572b1e1823cfbe9895c7b" >> .env
       - name: Build
         run: |
           yarn install

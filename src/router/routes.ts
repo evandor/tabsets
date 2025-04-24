@@ -151,7 +151,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/mainpanel/features/:feature',
-    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
+    component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('src/features/pages/FeaturesPage.vue') }],
   },
   {
@@ -275,14 +275,14 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/core/pages/mainpanel/NavigationPage.vue') }],
   },
   {
-    path: '/overlay/note',
+    path: '/overlay/note/:tabId',
     component: () => import('layouts/MainNavigationLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/mainpanel/NoteOverlayPage.vue') }],
+    children: [{ path: '', component: () => import('src/core/pages/mainpanel/NoteOverlayPage.vue'), props: true }],
   },
   {
-    path: '/overlay/snapshots',
+    path: '/overlay/snapshots/:tabId',
     component: () => import('layouts/MainNavigationLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/mainpanel/SnapshotOverlayPage.vue') }],
+    children: [{ path: '', component: () => import('src/core/pages/mainpanel/SnapshotOverlayPage.vue'), props: true }],
   },
   {
     path: '/settings',

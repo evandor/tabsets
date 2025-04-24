@@ -7,23 +7,6 @@ const bridge = createBridge({ debug: false })
 //bridge.log('Hello world!!!')
 bridge.log('portname', bridge.portName)
 
-/**
- * When the drawer is toggled set the iFrame height to take the whole page.
- * Reset when the drawer is closed.
- */
-bridge.on('wb.drawer.toggle', (x) => {
-  console.log('got message', x, x.payload.height)
-  //if ((x['data' as keyof object] as any).open) {
-  setIFrameHeight(x.payload.height)
-  /*} else {
-    resetIFrameHeight()
-  }
-  const f = x['respond' as keyof object] as any
-  f()*/
-
-  return { banner: 'Hello from a content-script!' }
-})
-
 bridge.on('getUrl', (x) => {
   console.log('got message', x)
   return { url: location.href }

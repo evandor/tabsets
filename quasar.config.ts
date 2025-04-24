@@ -74,6 +74,7 @@ export default defineConfig((ctx) => {
         GRAFANA_LOKI_TOKEN: process.env.GRAFANA_LOKI_TOKEN,
         GRAFANA_METRICS_USER: process.env.GRAFANA_METRICS_USER,
         GRAFANA_METRICS_KEY: process.env.GRAFANA_METRICS_KEY,
+        GRAFANA_FARO_COLLECTOR_URL: process.env.GRAFANA_FARO_COLLECTOR_URL,
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
