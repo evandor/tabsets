@@ -150,8 +150,13 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/pages/SettingsPage.vue') }],
   },
   {
-    path: '/mainpanel/features/:feature',
+    path: '/features/:feature',
     component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('src/features/pages/FeaturesPage.vue') }],
+  },
+  {
+    path: '/mainpanel/features/:feature',
+    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
     children: [{ path: '', component: () => import('src/features/pages/FeaturesPage.vue') }],
   },
   {
