@@ -46,5 +46,5 @@ jobs:
         path: |
           test-results/
           playwright-report/
-          e2e/*.png
+          e2e/**/*.png
         retention-days: 30
