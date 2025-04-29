@@ -21,7 +21,7 @@ Important local packages
   pinia - 3.0.2 -- Intuitive, type safe and flexible Store for Vue
   vite - 6.3.2 -- Native-ESM powered web dev build tool
   vite-plugin-checker - Not installed
-  eslint - 9.24.0 -- An AST-based pattern checker for JavaScript.
+  eslint - 9.25.0 -- An AST-based pattern checker for JavaScript.
   esbuild - 0.25.2 -- An extremely fast JavaScript and CSS bundler and minifier.
   typescript - 5.5.4 -- TypeScript is a language for application scale JavaScript development
   workbox-build - 7.3.0 -- A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.
@@ -38,6 +38,6 @@ Quasar App Extensions
   @quasar/quasar-app-extension-testing-unit-vitest - 1.1.0 -- A Quasar App Extension for running tests with Vitest
 
 Networking
-  Host - 45a6b08e-5b6d-4575-94b3-14891d8b483f.fritz.box
-  en0 - 192.168.178.174
+  Host - a454d34d-fb91-41a5-b60c-3868b8f8a21d.fritz.box
+  en0 - 192.168.178.185
 
