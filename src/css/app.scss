@@ -275,9 +275,10 @@
 .documentation {
   border: 2px solid $accent;
   border-radius: 10px;
+  //background: linear-gradient(to bottom, white, #efefef);
 }
 
 .box {
-  border: 1px solid grey;
+  border: 2px solid $accent;
   border-radius: 10px;
 }
