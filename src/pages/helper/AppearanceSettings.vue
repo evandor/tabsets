@@ -279,7 +279,6 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  //console.log("***setting dark mode to ", typeof darkMode.value, darkMode.value)
   switch (darkMode.value) {
     case 'true':
       $q.dark.set(true)
@@ -291,6 +290,7 @@ watchEffect(() => {
       $q.dark.set('auto')
   }
   LocalStorage.set('darkMode', darkMode.value)
+  sendMsg('reload-application')
 })
 
 watch(

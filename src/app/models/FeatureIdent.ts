@@ -11,7 +11,7 @@ export enum FeatureIdent {
   SPACES = 'SPACES',
   HELP = 'HELP',
   TOP10 = 'TOP10',
-  // OPEN_TABS = 'OPEN_TABS', -- always active default
+  OPEN_TABS = 'OPEN_TABS',
   WINDOWS = 'WINDOWS',
   SCHEDULED = 'SCHEDULED',
   BACKUP = 'BACKUP',

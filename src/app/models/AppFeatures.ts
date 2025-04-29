@@ -72,16 +72,16 @@ export class AppFeatures {
       ['all'],
     ),
 
-    // new Feature(
-    //   FeatureIdent.OPEN_TABS,
-    //   'RECOMMENDED',
-    //   'Open Tabs',
-    //   'Quick access to all your open tabs of the current browsers window<br><br>' +
-    //     'Adds quick navigation to jump back and forth to recently opened tabs.',
-    //   'o_playlist_add',
-    //   '/opentabs.png',
-    //   ['bex'],
-    // ),
+    new Feature(
+      FeatureIdent.OPEN_TABS,
+      'RECOMMENDED',
+      'Open Tabs',
+      'Quick access to all your open tabs of the current browsers window<br><br>' +
+        'Adds quick navigation to jump back and forth to recently opened tabs.',
+      'sym_o_tabs',
+      '/opentabs.png',
+      ['bex'],
+    ),
 
     new Feature(
       FeatureIdent.GROUP_BY_DOMAIN,

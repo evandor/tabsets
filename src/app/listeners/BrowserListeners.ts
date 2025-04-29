@@ -127,6 +127,9 @@ function runOnNotificationClick(notificationId: string, buttonIndex: number) {
 }
 
 async function checkSwitchTabsetSuggestion(windowId: number) {
+  if (!LocalStorage.getItem('ui.overlapIndicator')) {
+    return Promise.resolve()
+  }
   const suggestedTabsetAndFolder = await useTabsStore2().suggestTabsetAndFolder(0.6)
   if (suggestedTabsetAndFolder) {
     console.log('suggestedTabsetAndFolder', suggestedTabsetAndFolder)
@@ -148,8 +151,33 @@ async function checkSwitchTabsetSuggestion(windowId: number) {
   }
 }
 
+class Queue<T extends any[]> {
+  queue: T[] = []
+
+  constructor(private size: number) {}
+
+  private add(a: T) {
+    if (this.queue.length >= this.size) {
+      this.queue.shift()
+    }
+    this.queue.push(a)
+  }
+  hasRepetition(a: T) {
+    //console.log('hasRepetition', a, this.queue.length)
+    for (const q of this.queue) {
+      if (q[0] == a[0] && JSON.stringify(q[1]) == JSON.stringify(a[1])) {
+        return true
+      }
+    }
+    this.add(a)
+    return false
+  }
+}
+
 class BrowserListeners {
   private injectList: number[] = []
+
+  private lastTabUpdates = new Queue<[number, chrome.tabs.TabChangeInfo]>(10)
 
   private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) =>
     this.onUpdated(number, info, tab)
@@ -229,11 +257,16 @@ class BrowserListeners {
 
   // #region snippet
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
+    //console.debug(`tabUpdate: ${chromeTab.id} - ${chromeTab.url?.substring(0, 30)}`, info)
+    //this.lastTabUpdates.add([number, info])
+    if (this.lastTabUpdates.hasRepetition([number, info])) {
+      //console.log('stopping repetition in onUpdated')
+      return
+    }
     await setCurrentTab()
     if (this.ignoreUrl(chromeTab.url) || info.status !== 'complete') {
       return
     }
-    //console.debug(`tabUpdate: ${chromeTab.id} - ${chromeTab.url?.substring(0, 30)}`)
 
     if (
       chromeTab.id &&
@@ -416,7 +449,7 @@ class BrowserListeners {
 
     if (sender.tab && currentTS) {
       //console.log('blob', blob)
-      const blobId = await useTabsetService().saveBlob(sender.tab, blob as unknown as Blob)
+      const blobId = await useTabsetService().saveBlob(sender.tab, blob as Blob)
 
       const newTab = new Tab(uid(), sender.tab)
       newTab.image = 'blob://' + blobId

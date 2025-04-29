@@ -4,7 +4,7 @@
       <InfoMessageWidget
         :probability="1"
         ident="sidePanelNewestTabsPage_overview"
-        hint="Here you can check the 100 newest of your tabs sorted by creation date." />
+        hint="Here you can check the 100 newest of your tabs sorted by creation or accessed date." />
     </div>
 
     <q-tabs v-model="tab" dense class="text-grey" active-color="primary" indicator-color="primary" narrow-indicator>
@@ -26,7 +26,11 @@
               clickable
               v-ripple
               class="q-ma-none q-pa-sm">
-              <PanelTabListElementWidget :header="'opened: ' + formatDate(tab.lastActive)" :tab="tab" />
+              <PanelTabListElementWidget :header="'opened: ' + formatDate(tab.lastActive)" :tab="tab">
+                <template v-slot:actionPart>
+                  <span>&nbsp;</span>
+                </template>
+              </PanelTabListElementWidget>
             </q-item>
           </q-list>
         </template>
@@ -45,7 +49,11 @@
               clickable
               v-ripple
               class="q-ma-none q-pa-sm">
-              <PanelTabListElementWidget :header="'created: ' + formatDate(tab.created)" :tab="tab" />
+              <PanelTabListElementWidget :header="'created: ' + formatDate(tab.created)" :tab="tab">
+                <template v-slot:actionPart>
+                  <span>&nbsp;</span>
+                </template>
+              </PanelTabListElementWidget>
             </q-item>
           </q-list>
         </template>

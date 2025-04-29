@@ -77,7 +77,6 @@ class AppEventDispatcher {
           return Promise.reject(`unknown event ${name}`)
       }
     } catch (err: any) {
-      console.log(' >>> dispatching event', name, params)
       console.warn('problem dispatching event: ', err)
       return Promise.reject('problem dispatching event: ' + err.toString())
     }
