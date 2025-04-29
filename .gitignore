@@ -61,3 +61,4 @@ docs/.vitepress/cache
 /envs/env.dev
 /envs/env.emulator
 /docs/submodules/build/
+/e2e/results/

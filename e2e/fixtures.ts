@@ -16,7 +16,7 @@ export const test = base.extend<{
     const pathToExtension = path.join(__dirname, '../dist/bex-chrome')
     console.log('pathToExtension', pathToExtension)
     const context = await chromium.launchPersistentContext('', {
-      headless: true,
+      headless: false,
       channel: 'chromium',
       args: [
         `--disable-extensions-except=${pathToExtension}`,

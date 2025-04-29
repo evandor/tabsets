@@ -50,12 +50,17 @@ test('first tabset', async ({ page, extensionId, context }) => {
   const skysailTabDetails = await context.newPage()
   await skysailTabDetails.goto(urlFor(extensionId, `/mainpanel/tab/${tabId}`))
   await skysailTabDetails.locator('#contentTab').click()
+  await page.screenshot({ path: 'e2e/results/addFirstTabset/contentTab1.png' })
+
   // await skysailTabDetails.locator('#debugTab').click()
   expect(skysailTabDetails.locator('[data-testid=content-content]')).toContainText(
     'this website uses cookies ensure best experience',
   )
   expect(skysailTabDetails.locator('[data-testid=content-meta]')).toContainText('noindex, nofollow')
   expect(skysailTabDetails.locator('[data-testid=content-title]')).toContainText('Skysail Consulting')
+  await page.screenshot({ path: 'e2e/results/addFirstTabset/page/contentTab2.png' })
+  await sidePanelPage.screenshot({ path: 'e2e/results/addFirstTabset/sidePanelPage/contentTab2.png' })
+  await skysailTabDetails.screenshot({ path: 'e2e/results/addFirstTabset/skysailTabDetails/contentTab2.png' })
 
   // await skysailTabDetails.locator('#debugTabA').click()
 })
