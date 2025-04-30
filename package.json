@@ -15,7 +15,7 @@
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "build bex chrome": "quasar build -m bex -T chrome",
     "build bex firefox": "quasar build -m bex -T firefox",
-    "build bex edge": "scripts/build.sh edge",
+    "build bex edge": "echo 'simply use chrome build'",
     "build bex opera": "scripts/build.sh opera",
     "icon": "icongenie generate -i src/assets/icon.png",
     "postinstall": "quasar prepare",

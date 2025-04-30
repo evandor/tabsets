@@ -82,7 +82,7 @@ class BrowserApi {
           }
         })
       } catch (err) {
-        console.warn('ff issue with creating alarms, alarms deactivated due to', err)
+        console.log('ff issue with creating alarms, alarms deactivated')
       }
     }
 

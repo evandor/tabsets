@@ -16,7 +16,7 @@ import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const version = import.meta.env.PACKAGE_VERSION
 
@@ -41,8 +41,9 @@ initializeFaro({
 
 const $q = useQuasar()
 const router = useRouter()
-const route = useRoute()
 const { inBexMode, setupConsoleInterceptor } = useUtils()
+const platform = $q.platform
+LocalStorage.set('platform', platform)
 
 // TODO only in prod?
 if (process.env.TABSETS_STAGE !== 'DEV') {
