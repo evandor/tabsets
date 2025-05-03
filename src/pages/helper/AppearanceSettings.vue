@@ -71,20 +71,15 @@
     </div>
 
     <div class="row items-baseline">
-      <InfoLine
-        :label="
-          $t('tab_info_detail_level', {
-            detailLevelPerTabset: detailLevelPerTabset ? ' (Default)' : '',
-          })
-        ">
+      <InfoLine label="Tab Detail Level (default)">
         <q-radio v-model="detailLevel" :val="'MINIMAL'" label="Minimal Details" />
         <q-radio v-model="detailLevel" :val="'SOME'" label="Some Details" />
         <q-radio v-model="detailLevel" :val="'MAXIMAL'" label="All Details" />
       </InfoLine>
 
-      <InfoLine label="">
-        <q-checkbox v-model="detailLevelPerTabset" :label="$t('individually_per_tabset')" />
-      </InfoLine>
+      <!--      <InfoLine label="">-->
+      <!--        <q-checkbox v-model="detailLevelPerTabset" :label="$t('individually_per_tabset')" />-->
+      <!--      </InfoLine>-->
 
       <InfoLine label="URLs">
         <q-checkbox v-model="fullUrls" :label="$t('show_full_url')" />
@@ -237,7 +232,7 @@ const settingsStore = useSettingsStore()
 
 const darkMode = ref<string>(LocalStorage.getItem('darkMode') || 'auto')
 const installationTitle = ref<string>((LocalStorage.getItem(TITLE_IDENT) as string) || 'My Tabsets')
-const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
+// const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || 'MINIMAL')
 const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
 const folderAppearance = ref<FolderAppearance>(LocalStorage.getItem('ui.folder.style') || 'goInto')
@@ -293,13 +288,13 @@ watchEffect(() => {
   sendMsg('reload-application')
 })
 
-watch(
-  () => detailLevelPerTabset.value,
-  (v: any) => {
-    LocalStorage.set('ui.detailsPerTabset', detailLevelPerTabset.value)
-    sendMsg('detail-level-perTabset-changed', { level: detailLevelPerTabset.value })
-  },
-)
+// watch(
+//   () => detailLevelPerTabset.value,
+//   (v: any) => {
+//     LocalStorage.set('ui.detailsPerTabset', detailLevelPerTabset.value)
+//     sendMsg('detail-level-perTabset-changed', { level: detailLevelPerTabset.value })
+//   },
+// )
 
 watch(
   () => detailLevel.value,

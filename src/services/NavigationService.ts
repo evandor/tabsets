@@ -49,7 +49,7 @@ class NavigationService {
   ) {
     withUrls.map((u) => u.replace(this.placeholderPattern, ''))
     const useWindowIdent = this.getUseWindowIdent(forceCurrent, withUrls)
-    console.log(` > opening #url ${withUrls.length} in window: '${useWindowIdent}', groups: '${groups}'`)
+    console.log(` > opening #url ${withUrls.length} in window: '${useWindowIdent}', groups: '${groups.toString()}'`)
 
     const windowFromDb = await useWindowsStore().windowFor(useWindowIdent)
     const existingWindow = await useWindowsStore().currentWindowFor(useWindowIdent)

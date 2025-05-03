@@ -9,6 +9,8 @@ const routes: RouteRecordRaw[] = [
         : //'/sidepanel' : // use case: ???
           '/sidepanel',
   },
+
+  /** FullPage **/
   {
     path: '/fullpage',
     component: () => import('layouts/FullPageLayout.vue'),
@@ -22,6 +24,8 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+
+  /** SidePanel **/
   {
     path: '/sidepanel',
     component: () => import('layouts/SidePanelLayout.vue'),
@@ -30,7 +34,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'bookmarks', component: () => import('src/core/pages/sidepanel/SidePanelBookmarksPage.vue') },
       {
         path: 'bookmarks/import',
-        component: () => import('layouts/SidePanelNoFooterLayout.vue'),
+        component: () => import('layouts/SidePanelWithoutLayout.vue'),
         children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelImportBookmarksPage.vue') }],
       },
       { path: 'byDomainList', component: () => import('src/core/pages/sidepanel/SidePanelByDomainList.vue') },
@@ -54,7 +58,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'top10List', component: () => import('src/core/pages/sidepanel/SidePanelTop10Page.vue') },
       {
         path: 'welcome',
-        component: () => import('layouts/SidePanelNoFooterLayout.vue'),
+        component: () => import('layouts/SidePanelWithoutLayout.vue'),
         children: [{ path: '', component: () => import('src/core/pages/sidepanel/WelcomePage.vue') }],
       },
     ],
@@ -67,7 +71,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       { path: 'bookmarks/:id', component: () => import('src/bookmarks/pages/MainPanelBookmarksPage.vue') },
       { path: 'editedHtml/:snapshotId', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue') },
-      { path: 'features/:feature', component: () => import('src/features/pages/FeaturesPage.vue') },
+      //{ path: 'features/:feature', component: () => import('src/features/pages/FeaturesPage.vue') },
       {
         path: 'features/:feature',
         component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
@@ -115,60 +119,24 @@ const routes: RouteRecordRaw[] = [
     ],
   },
 
+  /** Overlay **/
   {
-    path: '/overlay/note/:tabId',
+    path: '/overlay',
     component: () => import('layouts/MainNavigationLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/mainpanel/NoteOverlayPage.vue'), props: true }],
+    children: [
+      { path: 'note/:tabId', component: () => import('src/core/pages/mainpanel/NoteOverlayPage.vue'), props: true },
+      {
+        path: 'snapshots/:tabId',
+        component: () => import('src/core/pages/mainpanel/SnapshotOverlayPage.vue'),
+        props: true,
+      },
+    ],
   },
+
   {
-    path: '/overlay/snapshots/:tabId',
-    component: () => import('layouts/MainNavigationLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/mainpanel/SnapshotOverlayPage.vue'), props: true }],
-  },
-  {
-    path: '/settings',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/SettingsPage.vue') }],
-  },
-  {
-    path: '/tabsets',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/TabsetPage.vue') }],
-  },
-  {
-    path: '/dynamicTs/:tabsetId',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/TabsetPage.vue') }],
-  },
-  {
-    path: '/bookmarks/:id',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [{ path: '', component: () => import('src/bookmarks/pages/BookmarksPage.vue') }],
-  },
-  {
-    path: '/bydomain/:encodedUrl',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/ByDomainPage.vue') }],
-  },
-  {
-    path: '/historyByAge/:encodedAge',
-    component: () => import('layouts/DefaultLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/ByAgePage.vue') }],
-  },
-  {
-    path: '/search',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/SearchPage.vue') }],
-  },
-  {
-    path: '/searchresult',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/SearchResultPage.vue') }],
-  },
-  {
-    path: '/browser/:tabId',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/BrowserViewPage.vue') }],
+    path: '/features/:feature',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('src/features/pages/FeaturesPage.vue') }],
   },
 
   {

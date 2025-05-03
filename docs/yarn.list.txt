@@ -518,7 +518,7 @@
 │  ├─ js-yaml@^4.1.0
 │  ├─ minimatch@^3.1.2
 │  └─ strip-json-comments@^3.1.1
-├─ @eslint/js@9.25.0
+├─ @eslint/js@9.26.0
 ├─ @eslint/object-schema@2.1.6
 ├─ @eslint/plugin-kit@0.2.8
 │  ├─ @eslint/core@^0.13.0
@@ -721,6 +721,96 @@
 ├─ @mermaid-js/parser@0.4.0
 │  └─ langium@3.3.1
 ├─ @miketako3/cloki@0.1.16
+├─ @modelcontextprotocol/sdk@1.11.0
+│  ├─ accepts@2.0.0
+│  │  ├─ mime-types@^3.0.0
+│  │  └─ negotiator@^1.0.0
+│  ├─ body-parser@2.2.0
+│  │  ├─ bytes@^3.1.2
+│  │  ├─ content-type@^1.0.5
+│  │  ├─ debug@^4.4.0
+│  │  ├─ http-errors@^2.0.0
+│  │  ├─ iconv-lite@^0.6.3
+│  │  ├─ on-finished@^2.4.1
+│  │  ├─ qs@^6.14.0
+│  │  ├─ raw-body@^3.0.0
+│  │  └─ type-is@^2.0.0
+│  ├─ content-disposition@1.0.0
+│  │  └─ safe-buffer@5.2.1
+│  ├─ content-type@^1.0.5
+│  ├─ cookie-signature@1.2.2
+│  ├─ cookie@0.7.2
+│  ├─ cors@^2.8.5
+│  ├─ cross-spawn@^7.0.3
+│  ├─ eventsource@^3.0.2
+│  ├─ express-rate-limit@^7.5.0
+│  ├─ express@^5.0.1
+│  ├─ express@5.1.0
+│  │  ├─ accepts@^2.0.0
+│  │  ├─ body-parser@^2.2.0
+│  │  ├─ content-disposition@^1.0.0
+│  │  ├─ content-type@^1.0.5
+│  │  ├─ cookie-signature@^1.2.1
+│  │  ├─ cookie@^0.7.1
+│  │  ├─ debug@^4.4.0
+│  │  ├─ encodeurl@^2.0.0
+│  │  ├─ escape-html@^1.0.3
+│  │  ├─ etag@^1.8.1
+│  │  ├─ finalhandler@^2.1.0
+│  │  ├─ fresh@^2.0.0
+│  │  ├─ http-errors@^2.0.0
+│  │  ├─ merge-descriptors@^2.0.0
+│  │  ├─ mime-types@^3.0.0
+│  │  ├─ on-finished@^2.4.1
+│  │  ├─ once@^1.4.0
+│  │  ├─ parseurl@^1.3.3
+│  │  ├─ proxy-addr@^2.0.7
+│  │  ├─ qs@^6.14.0
+│  │  ├─ range-parser@^1.2.1
+│  │  ├─ router@^2.2.0
+│  │  ├─ send@^1.1.0
+│  │  ├─ serve-static@^2.2.0
+│  │  ├─ statuses@^2.0.1
+│  │  ├─ type-is@^2.0.1
+│  │  └─ vary@^1.1.2
+│  ├─ finalhandler@2.1.0
+│  │  ├─ debug@^4.4.0
+│  │  ├─ encodeurl@^2.0.0
+│  │  ├─ escape-html@^1.0.3
+│  │  ├─ on-finished@^2.4.1
+│  │  ├─ parseurl@^1.3.3
+│  │  └─ statuses@^2.0.1
+│  ├─ fresh@2.0.0
+│  ├─ media-typer@1.1.0
+│  ├─ merge-descriptors@2.0.0
+│  ├─ mime-types@3.0.1
+│  │  └─ mime-db@^1.54.0
+│  ├─ negotiator@1.0.0
+│  ├─ pkce-challenge@^5.0.0
+│  ├─ raw-body@^3.0.0
+│  ├─ send@1.2.0
+│  │  ├─ debug@^4.3.5
+│  │  ├─ encodeurl@^2.0.0
+│  │  ├─ escape-html@^1.0.3
+│  │  ├─ etag@^1.8.1
+│  │  ├─ fresh@^2.0.0
+│  │  ├─ http-errors@^2.0.0
+│  │  ├─ mime-types@^3.0.1
+│  │  ├─ ms@^2.1.3
+│  │  ├─ on-finished@^2.4.1
+│  │  ├─ range-parser@^1.2.1
+│  │  └─ statuses@^2.0.1
+│  ├─ serve-static@2.2.0
+│  │  ├─ encodeurl@^2.0.0
+│  │  ├─ escape-html@^1.0.3
+│  │  ├─ parseurl@^1.3.3
+│  │  └─ send@^1.2.0
+│  ├─ type-is@2.0.1
+│  │  ├─ content-type@^1.0.5
+│  │  ├─ media-typer@^1.1.0
+│  │  └─ mime-types@^3.0.0
+│  ├─ zod-to-json-schema@^3.24.1
+│  └─ zod@^3.23.8
 ├─ @mozilla/readability@0.6.0
 ├─ @nodelib/fs.scandir@2.1.5
 │  ├─ @nodelib/fs.stat@2.0.5
@@ -1566,10 +1656,19 @@
 │  ├─ destroy@1.2.0
 │  ├─ http-errors@2.0.0
 │  ├─ iconv-lite@0.4.24
+│  ├─ iconv-lite@0.4.24
+│  │  └─ safer-buffer@>= 2.1.2 < 3
 │  ├─ ms@2.0.0
 │  ├─ on-finished@2.4.1
 │  ├─ qs@6.13.0
+│  ├─ qs@6.13.0
+│  │  └─ side-channel@^1.0.6
 │  ├─ raw-body@2.5.2
+│  ├─ raw-body@2.5.2
+│  │  ├─ bytes@3.1.2
+│  │  ├─ http-errors@2.0.0
+│  │  ├─ iconv-lite@0.4.24
+│  │  └─ unpipe@1.0.0
 │  ├─ type-is@~1.6.18
 │  └─ unpipe@1.0.0
 ├─ boolbase@1.0.0
@@ -1772,8 +1871,7 @@
 │     ├─ process@^0.11.10
 │     └─ string_decoder@^1.3.0
 ├─ compressible@2.0.18
-│  ├─ mime-db@>= 1.43.0 < 2
-│  └─ mime-db@1.54.0
+│  └─ mime-db@>= 1.43.0 < 2
 ├─ compression@1.8.0
 │  ├─ bytes@3.1.2
 │  ├─ compressible@~2.0.18
@@ -1803,6 +1901,9 @@
 ├─ core-js-compat@3.41.0
 │  └─ browserslist@^4.24.4
 ├─ core-util-is@1.0.3
+├─ cors@2.8.5
+│  ├─ object-assign@^4
+│  └─ vary@^1
 ├─ cose-base@1.0.3
 │  └─ layout-base@^1.0.0
 ├─ crc-32@1.2.2
@@ -1900,8 +2001,6 @@
 │  ├─ commander@7
 │  ├─ commander@7.2.0
 │  ├─ iconv-lite@0.6
-│  ├─ iconv-lite@0.6.3
-│  │  └─ safer-buffer@>= 2.1.2 < 3.0.0
 │  └─ rw@1
 ├─ d3-ease@3.0.1
 ├─ d3-fetch@3.0.1
@@ -2118,8 +2217,6 @@
 ├─ encodeurl@2.0.0
 ├─ encoding-sniffer@0.2.0
 │  ├─ iconv-lite@^0.6.3
-│  ├─ iconv-lite@0.6.3
-│  │  └─ safer-buffer@>= 2.1.2 < 3.0.0
 │  ├─ whatwg-encoding@^3.1.1
 │  └─ whatwg-encoding@3.1.1
 │     └─ iconv-lite@0.6.3
@@ -2240,7 +2337,7 @@
 ├─ eslint-plugin-prettier@5.2.6
 │  ├─ prettier-linter-helpers@^1.0.0
 │  └─ synckit@^0.11.0
-├─ eslint-plugin-vue@10.0.0
+├─ eslint-plugin-vue@10.1.0
 │  ├─ @eslint-community/eslint-utils@^4.4.0
 │  ├─ natural-compare@^1.4.0
 │  ├─ nth-check@^2.1.1
@@ -2252,18 +2349,19 @@
 │  ├─ esrecurse@^4.3.0
 │  └─ estraverse@^5.2.0
 ├─ eslint-visitor-keys@3.4.3
-├─ eslint@9.25.0
+├─ eslint@9.26.0
 │  ├─ @eslint-community/eslint-utils@^4.2.0
 │  ├─ @eslint-community/regexpp@^4.12.1
 │  ├─ @eslint/config-array@^0.20.0
 │  ├─ @eslint/config-helpers@^0.2.1
 │  ├─ @eslint/core@^0.13.0
 │  ├─ @eslint/eslintrc@^3.3.1
-│  ├─ @eslint/js@9.25.0
+│  ├─ @eslint/js@9.26.0
 │  ├─ @eslint/plugin-kit@^0.2.8
 │  ├─ @humanfs/node@^0.16.6
 │  ├─ @humanwhocodes/module-importer@^1.0.1
 │  ├─ @humanwhocodes/retry@^0.4.2
+│  ├─ @modelcontextprotocol/sdk@^1.8.0
 │  ├─ @types/estree@^1.0.6
 │  ├─ @types/json-schema@^7.0.15
 │  ├─ ajv@^6.12.4
@@ -2290,7 +2388,8 @@
 │  ├─ lodash.merge@^4.6.2
 │  ├─ minimatch@^3.1.2
 │  ├─ natural-compare@^1.4.0
-│  └─ optionator@^0.9.3
+│  ├─ optionator@^0.9.3
+│  └─ zod@^3.24.2
 ├─ espree@10.3.0
 │  ├─ acorn-jsx@^5.3.2
 │  ├─ acorn@^8.14.0
@@ -2307,10 +2406,14 @@
 ├─ etag@1.8.1
 ├─ event-target-shim@5.0.1
 ├─ events@3.3.0
+├─ eventsource-parser@3.0.1
+├─ eventsource@3.0.6
+│  └─ eventsource-parser@^3.0.1
 ├─ evp_bytestokey@1.0.3
 │  ├─ md5.js@^1.3.4
 │  └─ safe-buffer@^5.1.1
 ├─ expect-type@1.2.1
+├─ express-rate-limit@7.5.0
 ├─ express@4.21.2
 │  ├─ accepts@~1.3.8
 │  ├─ array-flatten@1.1.1
@@ -2337,6 +2440,8 @@
 │  ├─ path-to-regexp@0.1.12
 │  ├─ proxy-addr@~2.0.7
 │  ├─ qs@6.13.0
+│  ├─ qs@6.13.0
+│  │  └─ side-channel@^1.0.6
 │  ├─ range-parser@~1.2.1
 │  ├─ safe-buffer@5.2.1
 │  ├─ send@0.19.0
@@ -2351,6 +2456,8 @@
 ├─ external-editor@3.1.0
 │  ├─ chardet@^0.7.0
 │  ├─ iconv-lite@^0.4.24
+│  ├─ iconv-lite@0.4.24
+│  │  └─ safer-buffer@>= 2.1.2 < 3
 │  └─ tmp@^0.0.33
 ├─ extsprintf@1.3.0
 ├─ fake-indexeddb@6.0.0
@@ -2564,8 +2671,8 @@
 ├─ https-proxy-agent@5.0.1
 │  ├─ agent-base@6
 │  └─ debug@4
-├─ iconv-lite@0.4.24
-│  └─ safer-buffer@>= 2.1.2 < 3
+├─ iconv-lite@0.6.3
+│  └─ safer-buffer@>= 2.1.2 < 3.0.0
 ├─ idb@8.0.2
 ├─ ieee754@1.2.1
 ├─ ignore@5.3.2
@@ -2661,6 +2768,7 @@
 ├─ is-number@7.0.0
 ├─ is-obj@1.0.1
 ├─ is-plain-object@5.0.0
+├─ is-promise@4.0.0
 ├─ is-regex@1.2.1
 │  ├─ call-bound@^1.0.2
 │  ├─ gopd@^1.2.0
@@ -3034,8 +3142,9 @@
 ├─ miller-rabin@4.0.1
 │  ├─ bn.js@^4.0.0
 │  └─ brorand@^1.0.1
-├─ mime-db@1.52.0
+├─ mime-db@1.54.0
 ├─ mime-types@2.1.35
+│  ├─ mime-db@1.52.0
 │  └─ mime-db@1.52.0
 ├─ mime@1.6.0
 ├─ mimic-fn@2.1.0
@@ -3246,6 +3355,7 @@
 │  └─ @vue/devtools-api@7.7.5
 │     └─ @vue/devtools-kit@^7.7.5
 ├─ pirates@4.0.7
+├─ pkce-challenge@5.0.0
 ├─ pkg-dir@5.0.0
 │  └─ find-up@^5.0.0
 ├─ pkg-types@1.3.1
@@ -3313,8 +3423,8 @@
 │  ├─ randombytes@^2.0.1
 │  └─ safe-buffer@^5.1.2
 ├─ punycode@2.3.1
-├─ qs@6.13.0
-│  └─ side-channel@^1.0.6
+├─ qs@6.14.0
+│  └─ side-channel@^1.1.0
 ├─ quansync@0.2.10
 ├─ quasar@2.18.1
 ├─ querystring-es3@0.2.1
@@ -3327,10 +3437,10 @@
 │  ├─ randombytes@^2.0.5
 │  └─ safe-buffer@^5.1.0
 ├─ range-parser@1.2.1
-├─ raw-body@2.5.2
+├─ raw-body@3.0.0
 │  ├─ bytes@3.1.2
 │  ├─ http-errors@2.0.0
-│  ├─ iconv-lite@0.4.24
+│  ├─ iconv-lite@0.6.3
 │  └─ unpipe@1.0.0
 ├─ readable-stream@3.6.2
 │  ├─ inherits@^2.0.3
@@ -3508,6 +3618,13 @@
 │  ├─ path-data-parser@^0.1.0
 │  ├─ points-on-curve@^0.2.0
 │  └─ points-on-path@^0.2.1
+├─ router@2.2.0
+│  ├─ debug@^4.4.0
+│  ├─ depd@^2.0.0
+│  ├─ is-promise@^4.0.0
+│  ├─ parseurl@^1.3.3
+│  ├─ path-to-regexp@^8.0.0
+│  └─ path-to-regexp@8.2.0
 ├─ run-applescript@7.0.0
 ├─ run-async@3.0.0
 ├─ run-parallel@1.2.0
@@ -3968,9 +4085,7 @@
 ├─ url@0.11.4
 │  ├─ punycode@^1.4.1
 │  ├─ punycode@1.4.1
-│  ├─ qs@^6.12.3
-│  └─ qs@6.14.0
-│     └─ side-channel@^1.1.0
+│  └─ qs@^6.12.3
 ├─ utf8@2.1.2
 ├─ util-deprecate@1.0.2
 ├─ util@0.12.5
@@ -4205,7 +4320,9 @@
 ├─ webpack-sources@3.2.3
 ├─ webpack-virtual-modules@0.5.0
 ├─ whatwg-encoding@1.0.5
+│  ├─ iconv-lite@0.4.24
 │  └─ iconv-lite@0.4.24
+│     └─ safer-buffer@>= 2.1.2 < 3
 ├─ whatwg-mimetype@2.3.0
 ├─ whatwg-url@7.1.0
 │  ├─ lodash.sortby@^4.7.0
@@ -4411,4 +4528,6 @@
 │     ├─ events@^3.3.0
 │     ├─ process@^0.11.10
 │     └─ string_decoder@^1.3.0
+├─ zod-to-json-schema@3.24.5
+├─ zod@3.24.3
 └─ zwitch@2.0.4

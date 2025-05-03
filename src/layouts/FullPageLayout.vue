@@ -130,7 +130,7 @@
           <q-btn @click="toggleSettings" flat size="12px" class="q-mr-md" icon="o_settings"> </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
-              <q-item clickable @click="router.push('/settings')">Settings</q-item>
+              <q-item clickable @click="router.push('/mainpanel/settings')">Settings</q-item>
               <!--              <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>-->
               <!--                Activate more Features-->
               <!--              </q-item>-->
@@ -225,9 +225,6 @@ watchEffect(() => {
     .concat({ id: '', label: '(unassigned)' })
     .concat({ id: '', label: 'create new space' })
 })
-
-//@ts-ignore
-const appVersion = import.meta.env.PACKAGE_VERSION
 
 useMeta(() => {
   return {

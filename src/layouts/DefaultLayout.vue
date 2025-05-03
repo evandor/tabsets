@@ -135,7 +135,7 @@
               <q-item v-if="!useAuthStore().isAuthenticated" clickable @click="router.push('/login')">Login</q-item>
               <q-item v-else clickable @click="router.push('/logout')">Logout</q-item>
 
-              <q-item clickable @click="router.push('/settings')">Settings</q-item>
+              <q-item clickable @click="router.push('/mainpanel/settings')">Settings</q-item>
               <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>
                 Activate more Features
               </q-item>
@@ -178,17 +178,17 @@
 import _ from 'lodash'
 import { useMeta, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import Navigation from 'src/core/components/Navigation.vue'
 import DrawerRight from 'src/core/components/DrawerRight.vue'
+import Navigation from 'src/core/components/Navigation.vue'
 import ToolbarButton from 'src/core/components/widgets/ToolbarButton.vue'
 import { useUtils } from 'src/core/services/Utils'
+import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import OpenTabsThresholdWidget from 'src/opentabs/widgets/OpenTabsThresholdWidget.vue'
 import SearchWidget from 'src/search/widgets/SearchWidget.vue'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import SpacesSelectorWidget from 'src/spaces/widgets/SpacesSelectorWidget.vue'
 import { useAuthStore } from 'src/stores/authStore'
-import { useSettingsStore } from 'src/core/stores/settingsStore'
 import SuggestionDialog from 'src/suggestions/dialogues/SuggestionDialog.vue'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'

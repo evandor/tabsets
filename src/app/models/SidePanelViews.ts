@@ -66,6 +66,7 @@ export class SidePanelViews {
   private constructor(
     public readonly ident: string,
     public readonly path: any,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     public readonly showButtonFunction: Function = (): boolean => true,
   ) {}
 
