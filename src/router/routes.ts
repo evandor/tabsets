@@ -104,11 +104,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelByDomainList.vue') }],
   },
-  // {
-  //   path: '/sidepanel/sharedTsList',
-  //   component: () => import('layouts/SidePanelLayout.vue'),
-  //   children: [{path: '', component: () => import('src/core/pages/sidepanel/SidePanelSharedTsList.vue')}],
-  // },
   {
     path: '/sidepanel/latestList',
     component: () => import('layouts/SidePanelLayout.vue'),
@@ -339,26 +334,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/SearchResultPage.vue') }],
   },
-  // {
-  //   path: '/iframe/:tabId',
-  //   component: () => import('layouts/DefaultLayout.vue'),
-  //   children: [{path: '', component: () => import('src/core/pages/IFramePage.vue')}],
-  // },
-  // {
-  //   path: '/preview/:tabId',
-  //   component: () => import('layouts/DefaultLayout.vue'),
-  //   children: [{ path: '', component: () => import('src/core/pages/PreviewPage.vue') }],
-  // },
   {
     path: '/browser/:tabId',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/BrowserViewPage.vue') }],
   },
-  // {
-  //   path: '/help/:ident',
-  //   component: () => import('layouts/DefaultLayout.vue'),
-  //   children: [{ path: '', component: () => import('src/core/pages/HelpPage.vue') }],
-  // },
   {
     path: '/mainpanel/obsidian/files/:file',
     component: () => import('layouts/PlainLayout.vue'),

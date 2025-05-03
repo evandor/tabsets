@@ -110,30 +110,18 @@ if (inBexMode()) {
 
 // newtab extension installed?
 //console.log('checkin', NEW_TAB_EXTENSION_ID)
-chrome.runtime.sendMessage(NEW_TAB_EXTENSION_ID, { message: 'getVersion' }, function (response) {
-  //console.log('testing for newtab extension', response)
-  if (response) {
-    console.log('newtab is installed')
-    LocalStorage.setItem('ui.newtab.installed', true)
-  } else if (chrome.runtime.lastError) {
-    LocalStorage.setItem('ui.newtab.installed', false)
-    /* ignore */
-  }
-  // if (targetInRange(response.targetData))
-  //chrome.runtime.sendMessage('bafapaeaebbfoobjakidbomlnpfcfakn', { activateLasers: true })
-})
-
-chrome.runtime.onMessageExternal.addListener(function (request, sender, sendResponse) {
-  // if (sender.id === "oeocceffjkjgiljgelllkaddapnaafgn") { // tabsets.net
-  //   if (request.message === "getVersion") {
-  //     sendResponse({version: "0.0.1"});
-  //   } else if (request.message === "setTabset") {
-  //     useTabsetsStore().setTabset( request.tabset)
-  //     sendResponse({message: "done"});
-  //   }
-  //   // sendResponse({version: import.meta.env.PACKAGE_VERSION});
-  // }
-  console.log('request:', request)
-  console.log('sender:', sender)
-})
+if (chrome && chrome.runtime) {
+  chrome.runtime.sendMessage(NEW_TAB_EXTENSION_ID, { message: 'getVersion' }, function (response) {
+    //console.log('testing for newtab extension', response)
+    if (response) {
+      console.log('newtab is installed')
+      LocalStorage.setItem('ui.newtab.installed', true)
+    } else if (chrome.runtime.lastError) {
+      LocalStorage.setItem('ui.newtab.installed', false)
+      /* ignore */
+    }
+    // if (targetInRange(response.targetData))
+    //chrome.runtime.sendMessage('bafapaeaebbfoobjakidbomlnpfcfakn', { activateLasers: true })
+  })
+}
 </script>
