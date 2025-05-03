@@ -11,269 +11,110 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/fullpage',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/FullpageStart.vue') }],
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [
+      { path: '', component: () => import('src/core/pages/FullpageStart.vue') },
+      { path: 'tabsets/:tabsetId', component: () => import('src/tabsets/pages/TabsetPage.vue') },
+      {
+        path: 'spaces',
+        component: () => import('src/spaces/pages/MainPanelSpacesPage.vue'),
+        props: { fullpage: true },
+      },
+    ],
   },
   {
     path: '/sidepanel',
     component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/SidePanelPage2.vue') }],
-  },
-  {
-    path: '/sidepanel/collections',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/SidePanelCollectionsPage.vue') }],
-  },
-  {
-    path: '/sidepanel/welcome',
-    component: () => import('layouts/SidePanelNoFooterLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/WelcomePage.vue') }],
-  },
-  // {
-  //   path: '/sidepanel/tabsets/:tabsetId',
-  //   component: () => import('layouts/SidePanelLayout.vue'),
-  //   children: [{ path: '', component: () => import('src/tabsets/pages/SidePanelTabsetPage.vue') }],
-  // },
-  {
-    path: '/sidepanel/spaces',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/spaces/pages/SidePanelSpacesPage.vue') }],
-  },
-  {
-    path: '/sidepanel/search',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/SidePanelSearchPage.vue') }],
-  },
-  {
-    path: '/sidepanel/research/:sourceId',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/SidePanelResearchPage.vue') }],
-  },
-  {
-    path: '/sidepanel/tab/:tabId',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelTabDetails.vue') }],
-  },
-  {
-    path: '/sidepanel/bookmarks/import',
-    component: () => import('layouts/SidePanelNoFooterLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelImportBookmarksPage.vue') }],
-  },
-  {
-    path: '/sidepanel/bookmarks',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelBookmarksPage.vue') }],
-  },
-  {
-    path: '/sidepanel/tabslist',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/opentabs/pages/SidePanelOpenTabsPage.vue') }],
-  },
-  {
-    path: '/sidepanel/sessions',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/SidePanelSessionsPage.vue') }],
-  },
-  {
-    path: '/sidepanel/reminders',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/SidePanelRemindersPage.vue') }],
-  },
-  {
-    path: '/sidepanel/tagslist',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelTagsListViewer.vue') }],
-  },
-  {
-    path: '/sidepanel/tags',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelTagsPage.vue') }],
-  },
-  {
-    path: '/sidepanel/rsslist',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelRssListViewer.vue') }],
-  },
-  {
-    path: '/sidepanel/rss/:encodedUrl',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelRssPage.vue') }],
-  },
-  {
-    path: '/sidepanel/byDomainList',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelByDomainList.vue') }],
-  },
-  {
-    path: '/sidepanel/latestList',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/sidepanel/SidePanelLatestTabsPage.vue') }],
-  },
-  {
-    path: '/sidepanel/tabsAsTree',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelTabsAsTreePage.vue') }],
-  },
-  {
-    path: '/sidepanel/notesView',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelNotesViewPage.vue') }],
-  },
-  {
-    path: '/sidepanel/messages',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelMessagesPage.vue') }],
-  },
-  {
-    path: '/sidepanel/top10List',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelTop10Page.vue') }],
-  },
-  {
-    path: '/sidepanel/byDomain/:encodedUrl',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelByDomainPage.vue') }],
-  },
-  {
-    path: '/sidepanel/research/:sourceId',
-    component: () => import('layouts/SidePanelLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/SidePanelResearchPage.vue') }],
-  },
-  {
-    path: '/mainpanel/settings',
-    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/SettingsPage.vue') }],
-  },
-  {
-    path: '/features/:feature',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/features/pages/FeaturesPage.vue') }],
-  },
-  {
-    path: '/mainpanel/features/:feature',
-    component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
-    children: [{ path: '', component: () => import('src/features/pages/FeaturesPage.vue') }],
-  },
-  {
-    path: '/mainpanel/notes/:notebookId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue') }],
-  },
-  {
-    path: '/mainpanel/notes/:notebookId/:subNoteId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue') }],
-  },
-  {
-    path: '/mainpanel/notes/',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue') }],
-  },
-  {
-    path: '/mainpanel/html/:snapshotId', // both MHtml and HTML managed by same page
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue') }],
-  },
-  {
-    path: '/mainpanel/editedHtml/:snapshotId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue') }],
-  },
-  {
-    path: '/mainpanel/mhtml/:snapshotId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue') }],
-  },
-  {
-    path: '/mainpanel/png/:snapshotId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') }],
-  },
-  {
-    path: '/mainpanel/pdf/:snapshotId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/snapshots/pages/MainPanelPdfPage.vue') }],
+    children: [
+      { path: '', component: () => import('src/core/pages/SidePanelPage2.vue') },
+      { path: 'bookmarks', component: () => import('src/core/pages/sidepanel/SidePanelBookmarksPage.vue') },
+      {
+        path: 'bookmarks/import',
+        component: () => import('layouts/SidePanelNoFooterLayout.vue'),
+        children: [{ path: '', component: () => import('src/core/pages/sidepanel/SidePanelImportBookmarksPage.vue') }],
+      },
+      { path: 'byDomainList', component: () => import('src/core/pages/sidepanel/SidePanelByDomainList.vue') },
+      { path: 'byDomain/:encodedUrl', component: () => import('src/core/pages/sidepanel/SidePanelByDomainPage.vue') },
+      { path: 'collections', component: () => import('src/core/pages/SidePanelCollectionsPage.vue') },
+      { path: 'latestList', component: () => import('src/pages/sidepanel/SidePanelLatestTabsPage.vue') },
+      { path: 'messages', component: () => import('src/core/pages/sidepanel/SidePanelMessagesPage.vue') },
+      { path: 'notesView', component: () => import('src/core/pages/sidepanel/SidePanelNotesViewPage.vue') },
+      { path: 'reminders', component: () => import('src/tabsets/pages/SidePanelRemindersPage.vue') },
+      { path: 'research/:sourceId', component: () => import('src/core/pages/SidePanelResearchPage.vue') },
+      { path: 'rss/:encodedUrl', component: () => import('src/core/pages/sidepanel/SidePanelRssPage.vue') },
+      { path: 'rsslist', component: () => import('src/core/pages/sidepanel/SidePanelRssListViewer.vue') },
+      { path: 'search', component: () => import('src/pages/SidePanelSearchPage.vue') },
+      { path: 'sessions', component: () => import('src/tabsets/pages/SidePanelSessionsPage.vue') },
+      { path: 'spaces', component: () => import('src/spaces/pages/SidePanelSpacesPage.vue') },
+      { path: 'tab/:tabId', component: () => import('src/core/pages/sidepanel/SidePanelTabDetails.vue') },
+      { path: 'tabsAsTree', component: () => import('src/core/pages/sidepanel/SidePanelTabsAsTreePage.vue') },
+      { path: 'tabslist', component: () => import('src/opentabs/pages/SidePanelOpenTabsPage.vue') },
+      { path: 'tags', component: () => import('src/core/pages/sidepanel/SidePanelTagsPage.vue') },
+      { path: 'tagslist', component: () => import('src/core/pages/sidepanel/SidePanelTagsListViewer.vue') },
+      { path: 'top10List', component: () => import('src/core/pages/sidepanel/SidePanelTop10Page.vue') },
+      {
+        path: 'welcome',
+        component: () => import('layouts/SidePanelNoFooterLayout.vue'),
+        children: [{ path: '', component: () => import('src/core/pages/sidepanel/WelcomePage.vue') }],
+      },
+    ],
   },
 
+  /** MainPanel **/
   {
-    path: '/mainpanel/tabsets/overview/:tabsetId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue') }],
-  },
-  {
-    path: '/mainpanel/tabsets/overview',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/MainPanelTabsetsOverviewPage.vue') }],
-  },
-  {
-    path: '/mainpanel/png/:tabId/:blobId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue') }],
-  },
-  {
-    path: '/mainpanel/html/:tabId/:blobId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue') }],
-  },
-  {
-    path: '/mainpanel/pdf/:tabId/:blobId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') }],
-  },
-  {
-    path: '/mainpanel/tab/:id', // TODO combine with Tag page
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/TabPage.vue') }],
-  },
-  // {
-  //   path: '/mainpanel/suggestions/:suggestionId',
-  //   component: () => import('layouts/PlainLayout.vue'),
-  //   children: [
-  //     {
-  //       path: '',
-  //       component: () => import('src/suggestions/pages/MainPanelCheckSuggestionPage.vue'),
-  //     },
-  //   ],
-  // },
-  {
-    path: '/mainpanel/spaces',
+    path: '/mainpanel',
     component: () => import('layouts/PlainLayout.vue'),
     children: [
-      { path: '', component: () => import('src/spaces/pages/MainPanelSpacesPage.vue'), props: { fullpage: false } },
+      { path: 'bookmarks/:id', component: () => import('src/bookmarks/pages/MainPanelBookmarksPage.vue') },
+      { path: 'editedHtml/:snapshotId', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue') },
+      { path: 'features/:feature', component: () => import('src/features/pages/FeaturesPage.vue') },
+      {
+        path: 'features/:feature',
+        component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
+        children: [{ path: '', component: () => import('src/features/pages/FeaturesPage.vue') }],
+      },
+      { path: 'html/:snapshotId', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue') },
+      { path: 'html/:tabId/:blobId', component: () => import('src/snapshots/pages/MainPanelHtmlPage.vue') },
+      { path: 'mhtml/:snapshotId', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue') },
+      { path: 'mhtml/:tabId/:blobIndex', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue') },
+      {
+        path: 'navigation',
+        component: () => import('layouts/MainNavigationLayout.vue'),
+        children: [{ path: '', component: () => import('src/core/pages/mainpanel/NavigationPage.vue') }],
+      },
+      { path: 'notes/:notebookId', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue') },
+      {
+        path: 'notes/:notebookId/:subNoteId',
+        component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue'),
+      },
+      { path: 'notes', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue') },
+      { path: 'obsidian/files/:file', component: () => import('src/core/pages/ObsidianPage.vue') },
+      { path: 'pdf/:snapshotId', component: () => import('src/snapshots/pages/MainPanelPdfPage.vue') },
+      { path: 'pdf/:tabId/:blobId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },
+      { path: 'png/:snapshotId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },
+      { path: 'png/:tabId/:blobId', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue') },
+      { path: 'readingmode/:tabId', component: () => import('src/core/pages/mainpanel/MainPanelReadingModePage.vue') },
+      { path: 'restapi/:api', component: () => import('src/core/pages/RestCallResultPage.vue') },
+      {
+        path: 'settings',
+        component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
+        children: [{ path: '', component: () => import('src/pages/SettingsPage.vue') }],
+      },
+      {
+        path: 'spaces',
+        component: () => import('src/spaces/pages/MainPanelSpacesPage.vue'),
+        props: { fullpage: false },
+      },
+      { path: 'tab/:id', component: () => import('src/core/pages/TabPage.vue') },
+      { path: 'tabAssignment/:id', component: () => import('src/pages/mainpanel/MainPanelTabAssignmentPage.vue') },
+      { path: 'tabsets/overview', component: () => import('src/tabsets/pages/MainPanelTabsetsOverviewPage.vue') },
+      {
+        path: 'tabsets/overview/:tabsetId',
+        component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue'),
+      },
     ],
   },
-  {
-    path: '/fullpage/spaces',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [
-      { path: '', component: () => import('src/spaces/pages/MainPanelSpacesPage.vue'), props: { fullpage: true } },
-    ],
-  },
-  {
-    path: '/mainpanel/bookmarks/:id',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/bookmarks/pages/MainPanelBookmarksPage.vue') }],
-  },
-  {
-    path: '/mainpanel/tabAssignment/:id',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/pages/mainpanel/MainPanelTabAssignmentPage.vue') }],
-  },
-  {
-    path: '/mainpanel/mhtml/:tabId/:blobIndex',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/snapshots/pages/MainPanelMHtmlPage.vue') }],
-  },
-  {
-    path: '/mainpanel/readingmode/:tabId',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/mainpanel/MainPanelReadingModePage.vue') }],
-  },
-  {
-    path: '/mainpanel/navigation',
-    component: () => import('layouts/MainNavigationLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/mainpanel/NavigationPage.vue') }],
-  },
+
   {
     path: '/overlay/note/:tabId',
     component: () => import('layouts/MainNavigationLayout.vue'),
@@ -290,11 +131,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/pages/SettingsPage.vue') }],
   },
   {
-    path: '/tabsets/:tabsetId',
-    component: () => import('layouts/FullPageLayout.vue'),
-    children: [{ path: '', component: () => import('src/tabsets/pages/TabsetPage.vue') }],
-  },
-  {
     path: '/tabsets',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('src/tabsets/pages/TabsetPage.vue') }],
@@ -304,11 +140,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('src/tabsets/pages/TabsetPage.vue') }],
   },
-  // {
-  //   path: '/tab/:id',
-  //   component: () => import('layouts/DefaultLayout.vue'),
-  //   children: [{path: '', component: () => import('src/core/pages/TabPage.vue')}],
-  // },
   {
     path: '/bookmarks/:id',
     component: () => import('layouts/FullPageLayout.vue'),
@@ -339,16 +170,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/FullPageLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/BrowserViewPage.vue') }],
   },
-  {
-    path: '/mainpanel/obsidian/files/:file',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/ObsidianPage.vue') }],
-  },
-  {
-    path: '/mainpanel/restapi/:api',
-    component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/RestCallResultPage.vue') }],
-  },
+
   {
     path: '/:catchAll(.*)*',
     component: () => import('src/app/pages/ErrorNotFound.vue'),
