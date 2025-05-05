@@ -1,6 +1,8 @@
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import StatsUtils from 'src/core/utils/StatsUtils'
 import { useSearchStore } from 'src/search/stores/searchStore'
+import { useMetrics } from 'src/services/Metrics'
 import { IgnoreUrlCommand } from 'src/tabsets/commands/IgnoreUrlCommand'
 import { RestoreTabsetCommand } from 'src/tabsets/commands/RestoreTabset'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
@@ -15,18 +17,19 @@ export type DispatcherEvents =
   | 'tab-deleted'
   | 'delete-bookmark-by-url'
   | 'ignore_url'
+  | 'run-metrics'
 
 /**
  * meant for inter-submodule communication.
  *
- * We cannot use runtime messages for this, neither bex events. Submodule A can create an Event and let
- * this class dispatch it. Depending on the event name, different functions of other submodules can be
- * called.
+ * We cannot use runtime messages for this, neither bex events, neither quasars event bus.
+ * Submodule A can create an Event and let this class dispatch it. Depending on the event name,
+ * different functions of other submodules can be called.
  *
  * This class has to be implemented once-per-application if this kind of dispatch is needed.
  */
 class AppEventDispatcher {
-  async dispatchEvent(name: DispatcherEvents, params: object): Promise<object> {
+  async dispatchEvent(name: DispatcherEvents, params: object = {}): Promise<object> {
     //console.debug(' >>> dispatching event', name, params)
     try {
       switch (name) {
@@ -72,6 +75,12 @@ class AppEventDispatcher {
           useCommandExecutor()
             .execute(new IgnoreUrlCommand(params['url' as keyof object]))
             .catch((err: any) => console.warn('error in IgnoreUrlCommand', err))
+          return Promise.resolve({})
+        case 'run-metrics':
+          const stats = StatsUtils.calcStatsRows()
+          useMetrics().count('tabsets', stats.find((s) => s.name === 'Tabsets')?.count || 0)
+          useMetrics().count('tabs', stats.find((s) => s.name === 'Tabs')?.count || 0)
+          useMetrics().count('spaces', stats.find((s) => s.name === 'Spaces')?.count || 0)
           return Promise.resolve({})
         default:
           return Promise.reject(`unknown event ${name}`)

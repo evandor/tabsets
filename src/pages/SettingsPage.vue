@@ -112,7 +112,7 @@
       <q-banner rounded style="border: 1px solid orange"> TODO</q-banner>
 
       <div class="row q-pa-md">
-        <div class="col-3"><b>DuckDuckGo FavIcon Service</b></div>
+        <div class="col-3"><b>Disable DuckDuckGo FavIcon Service</b></div>
         <div class="col-5">
           Usually, the favicon (the little icon displayed next to a tab url) is provided by the page you are visiting.
           Sometimes, Tabsets does not have the information (yet) and might defer to a third party service, here
@@ -120,7 +120,19 @@
         </div>
         <div class="col-1"></div>
         <div class="col-3">
-          <!--          <q-toggle v-model="ddgEnabled" @click="updateSettings('noDDG', ddgEnabled)"/>-->
+          <q-toggle v-model="ddgEnabled" @click="updateSettings('noDDG', ddgEnabled)" />
+        </div>
+      </div>
+
+      <div class="row q-pa-md">
+        <div class="col-3"><b>Opt-out Performance Metrics and Error Tracking</b></div>
+        <div class="col-5">
+          We track anonymous performance metrics and track error messages to improve our application. If you do not want
+          to transmit any of this active this toggle to opt out.
+        </div>
+        <div class="col-1"></div>
+        <div class="col-3">
+          <q-toggle v-model="monitoringEnabled" @click="updateSettings('noMonitoring', monitoringEnabled)" />
         </div>
       </div>
     </div>
@@ -145,6 +157,10 @@
  *
  */
 
+/**
+ * refactoring remark: uses many other modules, needs to be one-per-application
+ *
+ */
 import _ from 'lodash'
 import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
@@ -193,7 +209,8 @@ const state = reactive({
 })
 
 const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
-const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
+const monitoringEnabled = ref<boolean>(!settingsStore.isEnabled('noMonitoring'))
+//const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
 
 const tab = ref<string>(route.query['tab'] ? (route.query['tab'] as string) : 'appearance')
 
@@ -207,9 +224,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  //console.log("watching settingsStore.activeToggles...", settingsStore.activeToggles)
   ddgEnabled.value = settingsStore.isEnabled('noDDG')
-  ignoreExtensionsEnabled.value = settingsStore.isEnabled('extensionsAsTabs')
+})
+
+watchEffect(() => {
+  monitoringEnabled.value = settingsStore.isEnabled('noMonitoring')
 })
 
 watchEffect(() => {
@@ -251,5 +270,10 @@ const showIgnored = () => {
 
 const showIgnoredTabset = () => {
   sendMsg('show-ignored')
+}
+
+const updateSettings = (ident: string, val: boolean) => {
+  console.log('settings updated to', ident, val)
+  settingsStore.setFeatureToggle(ident, val)
 }
 </script>

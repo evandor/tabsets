@@ -1,7 +1,7 @@
 <template>
   <q-layout view="hHh LpR lFr">
-    <q-header elevated>
-      <q-toolbar class="text-white">
+    <q-header elevated :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-1 text-primary'">
+      <q-toolbar class="text-primary">
         <template v-if="leftDrawerOpen">
           <!--          <q-img-->
           <!--            class="q-ml-xs q-mr-none cursor-pointer"-->

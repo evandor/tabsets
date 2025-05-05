@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh LpR lFr">
-    <q-header elevated>
+    <q-header elevated class="bg-grey-3 text-primary">
       <q-toolbar>
         <template v-if="leftDrawerOpen">
           <q-img

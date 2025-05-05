@@ -1,9 +1,11 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { useDB } from 'src/services/usePersistenceService'
+import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
@@ -18,8 +20,8 @@ describe('CreateTabsetCommand', () => {
     setActivePinia(createPinia())
     await IndexedDbTabsetsPersistence.init()
     db = useDB(undefined).tabsetsDb
-    // await useTabsetsStore().initialize(db)
-    // await useSuggestionsStore().init(suggestionsDB)
+    await useTabsetsStore().initialize(db)
+    await useSuggestionsStore().init(useDB(undefined).suggestionsDb)
     // const chromeMock = {
     //   windows: {
     //     getCurrent: async () => window,
@@ -32,7 +34,7 @@ describe('CreateTabsetCommand', () => {
   })
 
   afterEach(async () => {
-    // db.clear('tabsets')
+    db.clear('tabsets')
     // db.clear('tabs')
   })
 
@@ -44,27 +46,27 @@ describe('CreateTabsetCommand', () => {
     )
   })
 
-  // it('creates new tabset in empty DB', async () => {
-  //   const executionResult = await new CreateTabsetCommand('tabsetName', []).execute()
-  //   expect(executionResult.result.replaced).toBe(false)
-  //   expect(executionResult.result.tabset.name).toBe('tabsetName')
-  //   expect(executionResult.message).toBe('Tabset created')
-  //
-  //   const db = useDB(undefined).tabsetsDb
-  //   await db.loadTabsets()
-  //   const tabsets = useTabsetsStore().tabsets
-  //   expect(tabsets.size).toBe(1)
-  //   expect(tabsets.get(executionResult.result.tabset.id)?.name).toBe('tabsetName')
-  // })
+  it('creates new tabset in empty DB', async () => {
+    const executionResult = await new CreateTabsetCommand('tabsetName', []).execute()
+    expect(executionResult.result.replaced).toBe(false)
+    expect(executionResult.result.tabset.name).toBe('tabsetName')
+    expect(executionResult.message).toBe('Tabset created')
 
-  // it('creates second tabset in non-empty DB', async () => {
-  //   await new CreateTabsetCommand('tabsetName1', []).execute()
-  //   const executionResult = await new CreateTabsetCommand('tabsetName2', []).execute()
-  //   await db.loadTabsets()
-  //   const tabsets = useTabsetsStore().tabsets
-  //   expect(tabsets.size).toBe(2)
-  //   expect(tabsets.get(executionResult.result.tabset.id)?.name).toBe('tabsetName2')
-  // })
+    const db = useDB(undefined).tabsetsDb
+    await db.loadTabsets()
+    const tabsets = useTabsetsStore().tabsets
+    expect(tabsets.size).toBe(1)
+    expect(tabsets.get(executionResult.result.tabset.id)?.name).toBe('tabsetName')
+  })
+
+  it('creates second tabset in non-empty DB', async () => {
+    await new CreateTabsetCommand('tabsetName1', []).execute()
+    const executionResult = await new CreateTabsetCommand('tabsetName2', []).execute()
+    await db.loadTabsets()
+    const tabsets = useTabsetsStore().tabsets
+    expect(tabsets.size).toBe(2)
+    expect(tabsets.get(executionResult.result.tabset.id)?.name).toBe('tabsetName2')
+  })
 
   // it('overwrites existing tabset', async () => {
   //   await new CreateTabsetCommand("tabsetName3", []).execute()

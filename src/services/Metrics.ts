@@ -1,3 +1,5 @@
+import { useSettingsStore } from 'src/core/stores/settingsStore'
+
 const version = import.meta.env.PACKAGE_VERSION
 
 async function log(type: string, key: string, value: number) {
@@ -29,7 +31,10 @@ export function useMetrics() {
   }
 
   const count = (key: string, value: number) => {
-    log('count', key, value)
+    //console.log('counting metrics', key, value)
+    if (useSettingsStore().isDisabled('noMonitoring')) {
+      log('count', key, value)
+    }
   }
 
   return {

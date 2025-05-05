@@ -20,24 +20,26 @@ import { useRouter } from 'vue-router'
 
 const version = import.meta.env.PACKAGE_VERSION
 
-initializeFaro({
-  url: process.env.GRAFANA_FARO_COLLECTOR_URL as string,
-  app: {
-    name: EXTENSION_NAME + '.extension',
-    version: version,
-    environment: 'test',
-    namespace: process.env.MODE || 'unknown',
-    // _mode: process.env.MODE || 'unknown', _version: version, service_name: EXTENSION_NAME
-  },
-  trackGeolocation: false,
-  instrumentations: [
-    // Mandatory, omits default instrumentations otherwise.
-    ...getWebInstrumentations(),
+if (useSettingsStore().isDisabled('noMonitoring')) {
+  initializeFaro({
+    url: process.env.GRAFANA_FARO_COLLECTOR_URL as string,
+    app: {
+      name: EXTENSION_NAME + '.extension',
+      version: version,
+      environment: 'test',
+      namespace: process.env.MODE || 'unknown',
+      // _mode: process.env.MODE || 'unknown', _version: version, service_name: EXTENSION_NAME
+    },
+    trackGeolocation: false,
+    instrumentations: [
+      // Mandatory, omits default instrumentations otherwise.
+      ...getWebInstrumentations(),
 
-    // Tracing package to get end-to-end visibility for HTTP requests.
-    new TracingInstrumentation(),
-  ],
-})
+      // Tracing package to get end-to-end visibility for HTTP requests.
+      new TracingInstrumentation(),
+    ],
+  })
+}
 
 const $q = useQuasar()
 const router = useRouter()
