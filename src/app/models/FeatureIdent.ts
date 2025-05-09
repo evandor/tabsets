@@ -41,6 +41,7 @@ export enum FeatureIdent {
   TABSET_LIST = 'TABSET_LIST',
   REMINDER = 'REMINDER',
   MONITOR = 'MONITOR',
+  PIN_TAB = 'PIN_TAB',
 }
 
 export type FeatureType = 'RECOMMENDED' | 'OPTIONAL' | 'EXPERIMENTAL' | 'PLANNED' | 'DISABLED' | 'INTERNAL'

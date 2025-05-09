@@ -128,10 +128,10 @@ export class AppFeatures {
       'sym_o_new_window',
       '',
       ['all'],
-    )
-      .setActivateCommands([new GrantPermissionCommand('sessions')])
-      .setDeactivateCommands([new RevokePermissionCommand('sessions')]),
+    ),
 
+    // .setActivateCommands([new GrantPermissionCommand('sessions')])
+    // .setDeactivateCommands([new RevokePermissionCommand('sessions')])
     new Feature(
       FeatureIdent.SPACES,
       'OPTIONAL',
@@ -342,7 +342,7 @@ export class AppFeatures {
       'EXPERIMENTAL',
       'Reading Mode',
       'Analyse tab contents and use the distraction-free Reading Mode if applicable',
-      'library_books',
+      'sym_o_menu_book',
       '',
       ['bex'],
     ),
@@ -377,6 +377,15 @@ export class AppFeatures {
       'Tab Monitor',
       'Periodically check for changes',
       'notifications',
+      '',
+      ['all'],
+    ),
+    new Feature(
+      FeatureIdent.PIN_TAB,
+      'EXPERIMENTAL',
+      'Pin Tabs',
+      'Pinning a tab means that it will show up in all subfolders',
+      'sym_o_keep',
       '',
       ['all'],
     ),

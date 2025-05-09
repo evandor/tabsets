@@ -11,7 +11,16 @@
         <q-radio v-model="darkMode" val="false" :label="$t('disabled')" />
         &nbsp;&nbsp;&nbsp;{{ $t('changing_needs_restart') }}
       </InfoLine>
+    </div>
 
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-9">
+        <hr />
+      </div>
+    </div>
+
+    <div class="row">
       <InfoLine :label="$t('keyboard_shortcuts')">
         <div
           class="text-accent cursor-pointer"
@@ -43,6 +52,33 @@
     </div>
 
     <div class="row items-baseline">
+      <InfoLine label="UI Density">
+        <q-radio v-model="density" :val="'dense'" label="Dense" />
+        <q-radio v-model="density" :val="'thin'" label="Light (Default)" />
+      </InfoLine>
+    </div>
+
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-9">
+        <hr />
+      </div>
+    </div>
+
+    <div class="row items-baseline">
+      <InfoLine label="Quick Access Menu">
+        <q-checkbox v-model="quickAccessSearch" label="Search" />
+      </InfoLine>
+    </div>
+
+    <div class="row">
+      <div class="col-3"></div>
+      <div class="col-9">
+        <hr />
+      </div>
+    </div>
+
+    <div class="row items-baseline">
       <InfoLine label="Font Size">
         <q-radio v-model="fontsize" :val="FontSize.SMALLER" label="Smaller" />
         <q-radio v-model="fontsize" :val="FontSize.SMALL" label="Small" />
@@ -59,7 +95,7 @@
 
       <InfoLine label="Folder Appearance">
         <q-radio v-model="folderAppearance" val="expand" label="Expand (experimental)" />
-        <q-radio v-model="folderAppearance" val="goInto" label="Go into (default)" />
+        <q-radio v-model="folderAppearance" val="goInto" label="Go into (Default)" />
       </InfoLine>
     </div>
 
@@ -222,7 +258,14 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import { FolderAppearance, FontSize, ListDetailLevel, ToolbarIntegration, useUiStore } from 'src/ui/stores/uiStore'
+import {
+  FolderAppearance,
+  FontSize,
+  ListDetailLevel,
+  ToolbarIntegration,
+  UiDensity,
+  useUiStore,
+} from 'src/ui/stores/uiStore'
 import { ref, watch, watchEffect } from 'vue'
 
 const { sendMsg } = useUtils()
@@ -235,11 +278,14 @@ const installationTitle = ref<string>((LocalStorage.getItem(TITLE_IDENT) as stri
 // const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || 'MINIMAL')
 const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
+const density = ref<UiDensity>(LocalStorage.getItem('ui.density') || 'thin')
 const folderAppearance = ref<FolderAppearance>(LocalStorage.getItem('ui.folder.style') || 'goInto')
 const toolbarIntegration = ref<ToolbarIntegration>(LocalStorage.getItem('ui.toolbar.integration') || 'tabsets')
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const overlapIndicator = ref(LocalStorage.getItem('ui.overlapIndicator') || false)
 const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))
+
+const quickAccessSearch = ref(useUiStore().quickAccessFor('search'))
 
 let suggestionsCounter = 0
 
@@ -264,6 +310,11 @@ const autoSwitcherOptions = [
   { label: '2 min.', value: 120000 },
   { label: '5 min.', value: 300000 },
 ]
+
+watchEffect(() => {
+  useUiStore().setQuickAccess('search', quickAccessSearch.value)
+  sendMsg('settings-changed', { identifier: 'ui.quickAccess', value: quickAccessSearch.value })
+})
 
 watchEffect(() => {
   if (installationTitle.value && installationTitle.value.trim().length > 0) {
@@ -310,6 +361,14 @@ watch(
     LocalStorage.set('ui.fontsize', fontsize.value)
     //sendMsg('detail-level-changed', {level: detailLevel.value})
     sendMsg('settings-changed', { identifier: 'ui.fontsize', value: fontsize.value })
+  },
+)
+
+watch(
+  () => density.value,
+  () => {
+    LocalStorage.set('ui.density', density.value)
+    sendMsg('settings-changed', { identifier: 'ui.density', value: density.value })
   },
 )
 
