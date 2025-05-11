@@ -31,7 +31,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.GALLERY,
-      'OPTIONAL',
+      'RECOMMENDED',
       'Gallery View',
       'View and organize your tabs in a Tabset Gallery',
       'calendar_view_month',

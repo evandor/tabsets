@@ -20,13 +20,14 @@ import { useRouter } from 'vue-router'
 
 const version = import.meta.env.PACKAGE_VERSION
 
+// console.log('===', useSettingsStore().isDisabled('noMonitoring'), process.env.GRAFANA_FARO_COLLECTOR_URL as string)
 if (useSettingsStore().isDisabled('noMonitoring')) {
   initializeFaro({
     url: process.env.GRAFANA_FARO_COLLECTOR_URL as string,
     app: {
       name: EXTENSION_NAME + '.extension',
       version: version,
-      environment: 'test',
+      environment: process.env.DEV ? 'development' : 'production',
       namespace: process.env.MODE || 'unknown',
       // _mode: process.env.MODE || 'unknown', _version: version, service_name: EXTENSION_NAME
     },

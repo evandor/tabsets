@@ -1,9 +1,9 @@
 
 Operating System - Darwin(24.4.0) - darwin/arm64
-NodeJs - 18.20.7
+NodeJs - 22.15.0
 
 Global packages
-  NPM - 10.8.2
+  NPM - 10.9.2
   yarn - 1.22.22
   pnpm - Not installed
   bun - Not installed
@@ -38,6 +38,6 @@ Quasar App Extensions
   @quasar/quasar-app-extension-testing-unit-vitest - 1.1.0 -- A Quasar App Extension for running tests with Vitest
 
 Networking
-  Host - Carstens-MacBook-Pro.fritz.box
-  en0 - 192.168.178.185
+  Host - 8ff25f10-b09b-4fde-97ee-37391c069132.fritz.box
+  en0 - 192.168.178.197
 
