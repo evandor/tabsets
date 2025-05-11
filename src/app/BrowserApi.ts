@@ -533,7 +533,7 @@ class BrowserApi {
         if (tabAndTabsetId) {
           const url = tabAndTabsetId.tab.url
           if (url) {
-            // console.log('monitoring for tabAndTabsetId', tabAndTabsetId, url)
+            console.log('monitoring for tabAndTabsetId', tabAndTabsetId, url)
             const res = await fetch(url)
             const html = await res.text()
             const tokens = ContentUtils.html2tokens(html)
