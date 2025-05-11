@@ -14,6 +14,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 installQuasarPlugin()
 
+vi.mock('vue-router')
+
 describe('SidePanelPage2', () => {
   vi.mock('vue-i18n', () => ({
     useI18n: () => ({
@@ -83,7 +85,7 @@ describe('SidePanelPage2', () => {
     await new CreateTabsetCommand('existing Tabset', []).execute()
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     const wrapper = mount(SidePanelPage2)
-    //console.log("hier", wrapper.html())
+    console.log('hier', wrapper.html())
     //console.log("hier2", wrapper.text())
     expect(wrapper.html()).toContain('existing Tabset')
     //expect(wrapper.html()).not.toContain("search");
