@@ -163,7 +163,7 @@ class Queue<T extends any[]> {
     this.queue.push(a)
   }
   hasRepetition(a: T) {
-    console.log('hasRepetition', a, this.queue.length)
+    //console.log('hasRepetition', a, this.queue.length)
     for (const q of this.queue) {
       if (q[0] == a[0] && JSON.stringify(q[1]) == JSON.stringify(a[1])) {
         return true
@@ -257,7 +257,7 @@ class BrowserListeners {
 
   // #region snippet
   async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
-    console.debug(`tabUpdate: ${chromeTab.id} - ${chromeTab.url?.substring(0, 30)}`, info)
+    //console.debug(`tabUpdate: ${chromeTab.id} - ${chromeTab.url?.substring(0, 30)}`, info)
     //this.lastTabUpdates.add([number, info])
     // if (this.lastTabUpdates.hasRepetition([number, info])) {
     //   console.log('stopping repetition in onUpdated')
@@ -268,12 +268,6 @@ class BrowserListeners {
       return
     }
 
-    console.log(
-      '--->',
-      chromeTab.id,
-      LocalStorage.getItem('ui.toolbar.integration'),
-      chromeTab.url?.startsWith('https://'),
-    )
     if (
       chromeTab.id &&
       LocalStorage.getItem('ui.toolbar.integration') === 'all' &&

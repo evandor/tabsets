@@ -8,7 +8,7 @@ async function log(type: string, key: string, value: number) {
       name: 'tabsets.metrics.count',
       interval: 10,
       value,
-      tags: [`${type}=${key}`, 'source=extension', `version=${version}`],
+      tags: [`${type}=${key}`, 'source=extension', `version=${version}`, `stage=${process.env.TABSETS_STAGE}`],
       time: Math.round(new Date().getTime() / 1000),
     },
   ]

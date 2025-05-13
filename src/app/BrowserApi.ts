@@ -50,40 +50,38 @@ class BrowserApi {
     }
 
     // console.debug(' ...initializing ChromeApi')
-    if (chrome && chrome.alarms) {
-      try {
-        chrome.alarms
-          .create('housekeeping', { periodInMinutes: CLEANUP_PERIOD_IN_MINUTES })
-          .catch((err: any) => console.warn('could not start housekeeping alarm due to ', err))
+    try {
+      chrome.alarms
+        .create('housekeeping', { periodInMinutes: CLEANUP_PERIOD_IN_MINUTES })
+        .catch((err: any) => console.warn('could not start housekeeping alarm due to ', err))
 
-        chrome.alarms
-          .create('hourlyTasks', { periodInMinutes: 60 })
-          .catch((err: any) => console.warn('could not start hourlyTasks alarm due to ', err))
+      chrome.alarms
+        .create('hourlyTasks', { periodInMinutes: 60 })
+        .catch((err: any) => console.warn('could not start hourlyTasks alarm due to ', err))
 
-        chrome.alarms
-          .create('monitoring', { periodInMinutes: MONITORING_PERIOD_IN_MINUTES })
-          .catch((err: any) => console.warn('could not start monitoring alarm due to ', err))
+      chrome.alarms
+        .create('monitoring', { periodInMinutes: MONITORING_PERIOD_IN_MINUTES })
+        .catch((err: any) => console.warn('could not start monitoring alarm due to ', err))
 
-        chrome.alarms.onAlarm.addListener((alarm: chrome.alarms.Alarm) => {
-          if (alarm.name === 'housekeeping') {
-            runHousekeeping()
-            //runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
-            //runContentHousekeeping(useTabsetService().urlExistsInATabset)
-          } else if (alarm.name === 'monitoring') {
-            if (useFeaturesStore().hasFeature(FeatureIdent.MONITOR)) {
-              this.checkMonitors()
-            }
-          } else if (alarm.name === 'hourlyTasks') {
-            if (LocalStorage.getItem(GITHUB_AUTO_BACKUP) as boolean) {
-              useCommandExecutor().execute(new GithubBackupCommand())
-            }
-          } else {
-            console.log('unknown alarm', alarm)
+      chrome.alarms.onAlarm.addListener((alarm: chrome.alarms.Alarm) => {
+        if (alarm.name === 'housekeeping') {
+          runHousekeeping()
+          //runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
+          //runContentHousekeeping(useTabsetService().urlExistsInATabset)
+        } else if (alarm.name === 'monitoring') {
+          if (useFeaturesStore().hasFeature(FeatureIdent.MONITOR)) {
+            this.checkMonitors()
           }
-        })
-      } catch (err) {
-        console.log('ff issue with creating alarms, alarms deactivated')
-      }
+        } else if (alarm.name === 'hourlyTasks') {
+          if (LocalStorage.getItem(GITHUB_AUTO_BACKUP) as boolean) {
+            useCommandExecutor().execute(new GithubBackupCommand())
+          }
+        } else {
+          console.log('unknown alarm', alarm)
+        }
+      })
+    } catch (err) {
+      console.log('ff issue with creating alarms, alarms deactivated')
     }
 
     chrome.runtime.onUpdateAvailable.addListener((details: any) => {
@@ -125,7 +123,7 @@ class BrowserApi {
     }
 
     // console.log(' building context menu', caller)
-    if (chrome && chrome.contextMenus) {
+    try {
       chrome.contextMenus.removeAll(() => {
         //console.debug(' ...creating contextmenu for tabset_extension')
         chrome.contextMenus.create(
@@ -310,6 +308,8 @@ class BrowserApi {
           }
         },
       )
+    } catch (error) {
+      console.debug("can't check for newtab extension", error)
     }
   }
 

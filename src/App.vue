@@ -113,7 +113,7 @@ if (inBexMode()) {
 
 // newtab extension installed?
 //console.log('checkin', NEW_TAB_EXTENSION_ID)
-if (chrome && chrome.runtime) {
+try {
   chrome.runtime.sendMessage(NEW_TAB_EXTENSION_ID, { message: 'getVersion' }, function (response) {
     //console.log('testing for newtab extension', response)
     if (response) {
@@ -126,5 +126,7 @@ if (chrome && chrome.runtime) {
     // if (targetInRange(response.targetData))
     //chrome.runtime.sendMessage('bafapaeaebbfoobjakidbomlnpfcfakn', { activateLasers: true })
   })
+} catch (error) {
+  console.debug("can't check for newtab extension", error)
 }
 </script>
