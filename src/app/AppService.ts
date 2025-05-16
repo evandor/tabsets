@@ -9,7 +9,9 @@ import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbConten
 import { useContentService } from 'src/content/services/ContentService'
 import { SpaceInfo } from 'src/core/models/SpaceInfo'
 import { TabsetInfo } from 'src/core/models/TabsetInfo'
+import { useAppStore } from 'src/core/stores/appStore'
 import { useEntityRegistryStore } from 'src/core/stores/entityRegistryStore'
+import { usePagesStore } from 'src/custompages/stores/pagesStore'
 import { useEventsStore } from 'src/events/stores/eventsStore'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useMessagesStore } from 'src/messages/stores/messagesStore'
@@ -22,7 +24,6 @@ import { useDB } from 'src/services/usePersistenceService'
 import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { useAppStore } from 'src/core/stores/appStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -40,7 +41,6 @@ class AppService {
 
   async init(quasar: QVueGlobals, router: Router) {
     console.log(`%cinitializing AppService`, 'font-weight:bold')
-
 
     this.router = router
 
@@ -73,6 +73,10 @@ class AppService {
 
     // init services
     await useSuggestionsStore().init(useDB().suggestionsDb)
+
+    // Pages
+    await usePagesStore().initialize(useDB().pagesDb)
+    //await useSnapshotsService().init()
 
     await this.initCoreSerivces(quasar, this.router)
   }

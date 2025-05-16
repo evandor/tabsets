@@ -93,6 +93,16 @@ const routes: RouteRecordRaw[] = [
       },
       { path: 'notes', component: () => import('src/notes/pages/mainpanel/MainPanelNotePage.vue') },
       { path: 'obsidian/files/:file', component: () => import('src/core/pages/ObsidianPage.vue') },
+      {
+        path: 'pages/:pageId',
+        component: () => import('src/custompages/pages/CustomPage.vue'),
+        props: { edit: false },
+      },
+      {
+        path: 'pages/:pageId/edit',
+        component: () => import('src/custompages/pages/CustomPage.vue'),
+        props: { edit: true },
+      },
       { path: 'pdf/:snapshotId', component: () => import('src/snapshots/pages/MainPanelPdfPage.vue') },
       { path: 'pdf/:tabId/:blobId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },
       { path: 'png/:snapshotId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },

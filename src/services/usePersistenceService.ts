@@ -1,4 +1,6 @@
 import { QVueGlobals } from 'quasar'
+import CustomPagesPersistence from 'src/custompages/persistence/CustomPagesPersistence'
+import IndexedDbCustomPagesPersistence from 'src/custompages/persistence/IndexedDbCustomPagesPersistence'
 import FeaturesPersistence from 'src/features/persistence/FeaturesPersistence'
 import { LocalStorageFeaturesPersistence } from 'src/features/persistence/LocalStorageFeaturesPersistence'
 import IndexedDbNotesPersistence from 'src/notes/persistence/IndexedDbNotesPersistence'
@@ -33,6 +35,8 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
     featuresDb = new LocalStorageFeaturesPersistence(quasar)
   }
 
+  let pagesDb: CustomPagesPersistence = IndexedDbCustomPagesPersistence
+
   return {
     spacesDb,
     tabsetsDb,
@@ -43,5 +47,6 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
     thumbnailsDb,
     groupsIndexedDb,
     notesDb,
+    pagesDb,
   }
 }

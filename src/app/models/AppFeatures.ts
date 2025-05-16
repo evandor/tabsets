@@ -389,6 +389,15 @@ export class AppFeatures {
       '',
       ['all'],
     ),
+    new Feature(
+      FeatureIdent.PAGES,
+      'EXPERIMENTAL',
+      'Custom Pages',
+      'create a website page and treat it as any other tab',
+      'sym_o_article',
+      '',
+      ['all'],
+    ),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {

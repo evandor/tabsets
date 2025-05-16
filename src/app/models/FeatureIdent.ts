@@ -42,6 +42,7 @@ export enum FeatureIdent {
   REMINDER = 'REMINDER',
   MONITOR = 'MONITOR',
   PIN_TAB = 'PIN_TAB',
+  PAGES = 'PAGES',
 }
 
 export type FeatureType = 'RECOMMENDED' | 'OPTIONAL' | 'EXPERIMENTAL' | 'PLANNED' | 'DISABLED' | 'INTERNAL'
