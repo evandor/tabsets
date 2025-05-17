@@ -1,5 +1,17 @@
 <template>
-  <ul>
+  <div v-if="props.isHovered && props.editable" style="position: relative; width: 0; height: 0">
+    <cms-left-contextmenu
+      offset-top="15px"
+      :block="props.block"
+      :html-ref="htmlRef"
+      @delete-block="deleteBlock"
+      @convert-to="convertTo"
+      @set-class="(cssClass: string) => setClass(cssClass)"
+      @add-block="
+        (type: ContentBlockType, position: string, blockId: string) => emits('add-block', type, position, blockId)
+      " />
+  </div>
+  <ul @mouseover="hovered()">
     <li v-for="(line, index) in data.lines">
       <span
         ref="htmlRef"
@@ -10,17 +22,6 @@
       >
     </li>
   </ul>
-  <div v-if="props.isHovered && props.editable" style="position: relative; width: 0; height: 0">
-    <cms-left-contextmenu
-      :block="props.block"
-      :html-ref="htmlRef"
-      @delete-block="deleteBlock"
-      @convert-to="convertTo"
-      @set-class="(cssClass: string) => setClass(cssClass)"
-      @add-block="
-        (type: ContentBlockType, position: string, blockId: string) => emits('add-block', type, position, blockId)
-      " />
-  </div>
 </template>
 
 <script lang="ts" setup>

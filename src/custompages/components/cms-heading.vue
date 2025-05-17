@@ -1,15 +1,7 @@
 <template>
-  <div
-    :class="getClass('text-h3')"
-    ref="htmlRef"
-    @blur.stop="update()"
-    tabindex="0"
-    @mouseover="hovered()"
-    :contentEditable="props.editable">
-    {{ data.text }}
-  </div>
   <div v-if="props.isHovered && props.editable" style="position: relative; width: 0; height: 0">
     <cms-left-contextmenu
+      offset-top="10px"
       :block="props.block"
       :html-ref="htmlRef"
       @delete-block="deleteBlock"
@@ -18,6 +10,15 @@
       @add-block="
         (type: ContentBlockType, position: string, blockId: string) => emits('add-block', type, position, blockId)
       " />
+  </div>
+  <div
+    :class="getClass('text-h3')"
+    ref="htmlRef"
+    @blur.stop="update()"
+    tabindex="0"
+    @mouseover="hovered()"
+    :contentEditable="props.editable">
+    {{ data.text }}
   </div>
 </template>
 

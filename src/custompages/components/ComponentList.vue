@@ -1,8 +1,8 @@
 <template>
   <!--  <add-component-menu v-if="props.editable" blockId="root" position="before" />-->
-  <div v-for="c in props.page?.elements">
-    {{ getTypeFor(c) }}
-  </div>
+  <!--  <div v-for="c in props.page?.elements">-->
+  <!--    {{ getTypeFor(c) }}-->
+  <!--  </div>-->
   <template v-if="props.page">
     <component
       v-for="c in props.page.elements"

@@ -1,14 +1,7 @@
 <template>
-  <div class="doc-note doc-note--tip" @mouseover="hovered()" :contentEditable="props.editable">
-    <p class="doc-note__title">TIP</p>
-    <p>
-      If you’d like <strong>a simpler and more convenient way</strong> to offer an Ajax Bar to your users, have a look
-      at the <a href="/quasar-plugins/loading-bar" class="doc-link">Loading Bar Plugin</a>, which is actually
-      <strong>the recommended way</strong>.
-    </p>
-  </div>
   <div v-if="props.isHovered && props.editable" style="position: relative; width: 0; height: 0">
     <cms-left-contextmenu
+      offset-top="10px"
       :block="props.block"
       :html-ref="htmlRef"
       @delete-block="deleteBlock"
@@ -17,6 +10,14 @@
       @add-block="
         (type: ContentBlockType, position: string, blockId: string) => emits('add-block', type, position, blockId)
       " />
+  </div>
+  <div class="doc-note doc-note--tip" @mouseover="hovered()" :contentEditable="props.editable">
+    <p class="doc-note__title">TIP</p>
+    <p>
+      If you’d like <strong>a simpler and more convenient way</strong> to offer an Ajax Bar to your users, have a look
+      at the <a href="/quasar-plugins/loading-bar" class="doc-link">Loading Bar Plugin</a>, which is actually
+      <strong>the recommended way</strong>.
+    </p>
   </div>
 </template>
 

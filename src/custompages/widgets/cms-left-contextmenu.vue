@@ -1,5 +1,5 @@
 <template>
-  <div style="position: absolute; left: -50px; top: -35px">
+  <div :style="`position: absolute; left: -50px; top: ${props.offsetTop}`">
     <cms-add-menu
       :block-id="props.block.id"
       @add-block="
@@ -19,7 +19,7 @@ import CmsAddMenu from 'src/custompages/widgets/cms-add-menu.vue'
 import CmsAlterMenu from 'src/custompages/widgets/cms-alter-menu.vue'
 import { Ref } from 'vue'
 
-const props = defineProps<{ block: ContentBlock; htmlRef: Ref<any, any> }>()
+const props = defineProps<{ block: ContentBlock; htmlRef: Ref<any, any>; offsetTop: string }>()
 const emits = defineEmits<DefaultEmits>()
 const { deleteBlock, setClass, convertTo } = useComponent(props.block, props.htmlRef, emits)
 </script>
