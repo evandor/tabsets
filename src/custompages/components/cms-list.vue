@@ -1,22 +1,16 @@
 <template>
-  <!--  <q-input-->
-  <!--    v-model="props.content"-->
-  <!--    type="textarea"-->
-  <!--    :class="getClass('text-body1')"-->
+  <!--  <div-->
+  <!--    :class="getClass('text-h3')"-->
   <!--    ref="htmlRef"-->
   <!--    @blur.stop="update()"-->
   <!--    tabindex="0"-->
   <!--    @mouseover="hovered()"-->
   <!--    :contentEditable="props.editable">-->
-  <!--  </q-input>-->
-  <div
-    :class="getClass('text-body1')"
-    ref="htmlRef"
-    @blur.stop="update()"
-    tabindex="0"
-    @mouseover="hovered()"
-    :contentEditable="props.editable"
-    v-html="props.content" />
+  <!--    {{ props.content }}-->
+  <!--  </div>-->
+  <ul>
+    <li>hi</li>
+  </ul>
   <div v-if="props.isHovered && props.editable" style="position: relative; width: 0; height: 0">
     <cms-left-contextmenu
       :block="props.block"

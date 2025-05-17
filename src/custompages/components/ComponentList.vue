@@ -1,6 +1,4 @@
 <template>
-  <div v-for="c in props.page?.elements">{{ c }}</div>
-  <hr />
   <!--  <add-component-menu v-if="props.editable" blockId="root" position="before" />-->
   <template v-if="props.page">
     <component
@@ -11,18 +9,20 @@
       :editable="props.editable"
       :content="c.content"
       :isHovered="isHovered(c)"
-      @add-block="(v: object) => addBlock(v)"
+      @add-block="addBlock"
       @convert-to="(v: object) => convertTo(v)"
-      @hovered="(v: object) => setHovered(v)"
-      @delete-block="(b: object) => deleteBlock(b)"
+      @hovered="setHovered"
+      @delete-block="(blockId: string) => deleteBlock(blockId)"
       @content-changed="emits('content-changed')" />
   </template>
   <!--  <add-component-menu v-if="props.editable" blockId="root" position="after" />-->
+  <hr />
+  <div v-for="c in props.page?.elements">{{ c }}</div>
 </template>
 <script setup lang="ts">
 import { uid } from 'quasar'
 import { Page } from 'src/custompages/models/backend'
-import { ContentBlock } from 'src/custompages/models/frontend'
+import { ContentBlock, ContentBlockType } from 'src/custompages/models/frontend'
 import { usePagesStore } from 'src/custompages/stores/pagesStore'
 import { ref } from 'vue'
 
@@ -40,24 +40,24 @@ const getTypeFor = (c: ContentBlock): string => {
   return c.type
 }
 
-const addBlock = (v: object) => {
-  console.log('adding block', v, props.page)
+const addBlock = (type: ContentBlockType) => {
+  //console.log('adding block', type, props.page)
   if (props.page) {
-    props.page?.elements.push(new ContentBlock(uid(), v['type' as keyof object], 'hallo'))
+    props.page?.elements.push(new ContentBlock(uid(), type, 'hallo'))
     usePagesStore().updatePage(props.page)
   }
 }
 
 const convertTo = (v: object) => {}
-const setHovered = (h: object) => {
-  hovered.value = h['blockId' as keyof object]
+
+const setHovered = (blockId: string) => {
+  hovered.value = blockId
 }
 
-const deleteBlock = (b: object) => {
-  const toDeleteId = b['blockId' as keyof object]
-  console.log('toDeleteId', toDeleteId)
+const deleteBlock = (blockId: string) => {
+  console.log('toDeleteId', blockId)
   if (props.page) {
-    props.page.elements = props.page.elements.filter((b: ContentBlock) => b.id !== toDeleteId)
+    props.page.elements = props.page.elements.filter((b: ContentBlock) => b.id !== blockId)
     usePagesStore().updatePage(props.page)
   }
 }

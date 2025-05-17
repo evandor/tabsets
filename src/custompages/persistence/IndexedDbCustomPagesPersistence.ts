@@ -35,7 +35,7 @@ class IndexedDbCustomPagesPersistence implements CustomPagesPersistence {
 
   async addPage(page: Page): Promise<any> {
     var json = getMinimalJSON(page)
-    console.log('adding page', json)
+    // console.log('adding page', json)
     return await this.db.put(this.STORE_IDENT, JSON.parse(json) as Page, page.id).then(() => Promise.resolve())
   }
 
@@ -54,19 +54,6 @@ class IndexedDbCustomPagesPersistence implements CustomPagesPersistence {
   clear(name: string) {
     this.db.clear(name).catch((e) => console.warn(e))
   }
-
-  async deleteSpace(spaceId: string) {
-    return this.db.delete(this.STORE_IDENT, spaceId)
-  }
-
-  // async loadSpaces(): Promise<any> {
-  //   //console.debug(' ...loading spaces...')
-  //   const spaces = await this.db.getAll(this.STORE_IDENT)
-  //   spaces.forEach((s: Space) => {
-  //     useSpacesStore().putSpace(s)
-  //   })
-  //   return Promise.resolve()
-  // }
 
   async migrate() {}
 }

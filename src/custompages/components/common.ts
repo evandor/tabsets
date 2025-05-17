@@ -1,5 +1,22 @@
-import { ContentBlock } from 'src/custompages/models/frontend'
+import { ContentBlock, ContentBlockType } from 'src/custompages/models/frontend'
 import { PropType } from 'vue'
+
+export type DefaultProps = {
+  content: string
+  block: ContentBlock
+  editable: boolean
+  attributes?: object | undefined
+  elements?: ContentBlock[]
+  isHovered: Boolean
+}
+
+export type DefaultEmits = {
+  (e: 'add-block', type: ContentBlockType, position: string, blockId: string): void
+  (e: 'hovered', blockId: string): void
+  (e: 'delete-block', blockId: string): void
+  (e: 'content-changed'): void
+  (e: 'convert-to', type: ContentBlockType): void
+}
 
 const defaultElementProps = {
   content: {

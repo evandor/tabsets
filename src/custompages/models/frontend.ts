@@ -1,35 +1,3 @@
-export enum ChangeType {
-  Content = 'Content',
-  Attribute = 'Attribute',
-  Class = 'Class',
-  NewBlock = 'NewBlock',
-}
-
-export enum ViewMode {
-  Original = 'Original',
-  Current = 'Current',
-  CurrentNew = 'CurrentNew',
-  SourceDiff = 'SourceDiff',
-  MediaBrowser = 'MediaBrowser',
-  WebsiteConfiguration = 'WebsiteConfiguration',
-}
-
-export class Change {
-  contentId: string
-  changeType: ChangeType
-  oldValue: string
-  newValue: string
-  attributes: Object
-
-  constructor(contentId: string, changeType: ChangeType, newValue: string, oldValue: string, attributes?: Object) {
-    this.contentId = contentId
-    this.changeType = changeType
-    this.oldValue = oldValue
-    this.newValue = newValue
-    this.attributes = attributes || {}
-  }
-}
-
 //https://stackoverflow.com/questions/12710905/how-do-i-dynamically-assign-properties-to-an-object-in-typescript
 export interface AttributesType {
   [key: string]: any
@@ -42,38 +10,31 @@ export interface ClassesType {
 export enum ContentBlockType {
   ContentBlockHeading = 'CmsHeading',
   ContentBlockText = 'CmsText',
-  ContentBlockSpan = 'CmsSpan',
-  ContentBlockLink = 'CmsLink',
-  ContentBlockRuler = 'CmsRuler',
-  ContentBlockParagraph = 'CmsParagraph',
-  ContentBlockGrid = 'CmsGrid',
-  ContentBlockLayout = 'CmsLayout',
-  ContentBlockColumns = 'CmsColumns',
-  ContentBlockSimpleList = 'CmsSimpleList',
-  ContentBlockRows = 'CmsRows',
-  ContentBlockDroptarget = 'CmsDroptarget',
-  ContentBlockParallax = 'CmsParallax',
-  ContentBlockFooter = 'CmsFooter',
-  ContentBlockCmsRevealjs = 'CmsRevealjs',
-  ContentBlockCmsMainMenu = 'CmsMainMenu',
-  ContentBlockImg = 'CmsImg',
-  ContentBlockSection = 'CmsSection',
-  ContentBlockRssFeed = 'CmsRssFeed',
-  ContentBlockTwitterTimeline = 'CmsTwitterTimeline',
-  ContentBlockMarkdown = 'CmsMarkdown',
-  ContentBlockOpenhabApi = 'OpenhabApi',
-  ContentBlockTable = 'CmsTable',
-  ContentBlockHtml = 'CmsHtml',
+  ContentBlockList = 'CmsList',
 }
 
-// export class ContentBlockDef {}
-//
-// export const HeadingBlock = new ContentBlockDef(ContentBlockHeading)
+interface HeadingContentContainer {
+  kind: ContentBlockType.ContentBlockHeading
+  text: string
+}
+
+interface TextContentContainer {
+  kind: ContentBlockType.ContentBlockText
+  text: string
+}
+
+interface ListContentContainer {
+  kind: ContentBlockType.ContentBlockText
+  data: string[]
+  type: 'unordered' | 'ordered'
+}
+
+type ContentContainer = HeadingContentContainer | TextContentContainer | ListContentContainer
 
 export class ContentBlock {
   id: string
   type: ContentBlockType
-  content: string
+  content: string | string[]
   attributes: AttributesType
   classes: ClassesType
   elements: ContentBlock[]
@@ -82,7 +43,7 @@ export class ContentBlock {
   constructor(
     id: string,
     type: ContentBlockType,
-    content: string,
+    content: string | string[],
     attributes?: AttributesType,
     classes?: ClassesType,
     elements?: ContentBlock[],
