@@ -6,7 +6,7 @@
     tabindex="0"
     @mouseover="hovered()"
     :contentEditable="props.editable">
-    {{ props.content }}
+    {{ data.text }}
   </div>
   <div v-if="props.isHovered && props.editable" style="position: relative; width: 0; height: 0">
     <cms-left-contextmenu
@@ -24,12 +24,21 @@
 <script lang="ts" setup>
 import { DefaultEmits, DefaultProps } from 'src/custompages/components/common'
 import { useComponent } from 'src/custompages/components/useComponent'
-import { ContentBlockType } from 'src/custompages/models/frontend'
+import { ContentBlockType, HeadingContentContainer } from 'src/custompages/models/frontend'
 import CmsLeftContextmenu from 'src/custompages/widgets/cms-left-contextmenu.vue'
 import { ref } from 'vue'
 
 const props = defineProps<DefaultProps>()
 const emits = defineEmits<DefaultEmits>()
 const htmlRef = ref()
-const { getClass, update, hovered, deleteBlock, convertTo, setClass } = useComponent(props.block, htmlRef, emits)
+const { getClass, hovered, deleteBlock, convertTo, setClass } = useComponent(props.block, htmlRef, emits)
+
+const data = props.data as HeadingContentContainer
+
+function update() {
+  const newText = htmlRef.value.innerText
+  console.log('newtext', newText, props.block.id)
+  data.text = htmlRef.value.innerText.trim()
+  emits('content-changed')
+}
 </script>

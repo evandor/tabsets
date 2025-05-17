@@ -1,15 +1,12 @@
 <template>
-  <ul>
-    <li v-for="(line, index) in data.lines">
-      <span
-        ref="htmlRef"
-        :contentEditable="props.editable"
-        @keyup.delete="(e: any) => deletePressed(e, index)"
-        @keyup.enter="(e: any) => enterPressed(e, index)"
-        >{{ line }}</span
-      >
-    </li>
-  </ul>
+  <div class="doc-note doc-note--tip" @mouseover="hovered()" :contentEditable="props.editable">
+    <p class="doc-note__title">TIP</p>
+    <p>
+      If you’d like <strong>a simpler and more convenient way</strong> to offer an Ajax Bar to your users, have a look
+      at the <a href="/quasar-plugins/loading-bar" class="doc-link">Loading Bar Plugin</a>, which is actually
+      <strong>the recommended way</strong>.
+    </p>
+  </div>
   <div v-if="props.isHovered && props.editable" style="position: relative; width: 0; height: 0">
     <cms-left-contextmenu
       :block="props.block"

@@ -1,8 +1,8 @@
-import { ContentBlock, ContentBlockType } from 'src/custompages/models/frontend'
+import { ContentBlock, ContentBlockType, ContentContainer } from 'src/custompages/models/frontend'
 import { PropType } from 'vue'
 
 export type DefaultProps = {
-  content: string
+  data: ContentContainer
   block: ContentBlock
   editable: boolean
   attributes?: object | undefined

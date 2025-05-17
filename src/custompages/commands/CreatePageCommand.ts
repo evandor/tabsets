@@ -3,7 +3,7 @@ import BrowserApi from 'src/app/BrowserApi'
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { Page } from 'src/custompages/models/backend'
-import { ContentBlock, ContentBlockType } from 'src/custompages/models/frontend'
+import { ContentBlock, createHeading } from 'src/custompages/models/frontend'
 import { usePagesStore } from 'src/custompages/stores/pagesStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -28,9 +28,7 @@ export class CreatePageCommand implements Command<Tab> {
       )
       currentTs.tabs.push(pageTab)
       await usePagesStore().updatePage(
-        new Page(tabId, 'newPage', 1, new Date().getTime(), 0, 0, [
-          new ContentBlock(uid(), ContentBlockType.ContentBlockHeading, 'Headline'),
-        ]),
+        new Page(tabId, 'newPage', 1, new Date().getTime(), 0, 0, [new ContentBlock(uid(), createHeading('heading'))]),
       )
       await useTabsetsStore().saveTabset(currentTs)
       return Promise.resolve(new ExecutionResult(pageTab, 'doneMsg'))

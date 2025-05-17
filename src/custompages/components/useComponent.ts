@@ -11,13 +11,6 @@ export function useComponent(block: ContentBlock, htmlRef: Ref<any, any>, emits:
     return defaultClass
   }
 
-  function update() {
-    const newText = htmlRef.value.innerText
-    console.log('newtext', newText, block.id)
-    block.content = htmlRef.value.innerText.replaceAll('\n', '<br>').trim()
-    emits('content-changed')
-  }
-
   const hovered = () => {
     // if (editable) {
     console.log('emitting hovered', block.id)
@@ -40,5 +33,5 @@ export function useComponent(block: ContentBlock, htmlRef: Ref<any, any>, emits:
     emits('convert-to', type)
   }
 
-  return { getClass, update, hovered, deleteBlock, setClass, convertTo }
+  return { getClass, hovered, deleteBlock, setClass, convertTo }
 }

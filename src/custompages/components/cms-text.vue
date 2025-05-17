@@ -1,14 +1,4 @@
 <template>
-  <!--  <q-input-->
-  <!--    v-model="props.content"-->
-  <!--    type="textarea"-->
-  <!--    :class="getClass('text-body1')"-->
-  <!--    ref="htmlRef"-->
-  <!--    @blur.stop="update()"-->
-  <!--    tabindex="0"-->
-  <!--    @mouseover="hovered()"-->
-  <!--    :contentEditable="props.editable">-->
-  <!--  </q-input>-->
   <div
     :class="getClass('text-body1')"
     ref="htmlRef"
@@ -16,7 +6,7 @@
     tabindex="0"
     @mouseover="hovered()"
     :contentEditable="props.editable"
-    v-html="props.content" />
+    v-html="data.text" />
   <div v-if="props.isHovered && props.editable" style="position: relative; width: 0; height: 0">
     <cms-left-contextmenu
       :block="props.block"
@@ -33,12 +23,19 @@
 <script lang="ts" setup>
 import { DefaultEmits, DefaultProps } from 'src/custompages/components/common'
 import { useComponent } from 'src/custompages/components/useComponent'
-import { ContentBlockType } from 'src/custompages/models/frontend'
+import { ContentBlockType, TextContentContainer } from 'src/custompages/models/frontend'
 import CmsLeftContextmenu from 'src/custompages/widgets/cms-left-contextmenu.vue'
 import { ref } from 'vue'
 
 const props = defineProps<DefaultProps>()
 const emits = defineEmits<DefaultEmits>()
 const htmlRef = ref()
-const { getClass, update, hovered, deleteBlock, convertTo, setClass } = useComponent(props.block, htmlRef, emits)
+const { getClass, hovered, deleteBlock, convertTo, setClass } = useComponent(props.block, htmlRef, emits)
+
+const data = props.data as TextContentContainer
+
+function update() {
+  data.text = htmlRef.value.innerText.replaceAll('\n', '<br>').trim()
+  emits('content-changed')
+}
 </script>

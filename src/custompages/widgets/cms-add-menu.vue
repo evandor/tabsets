@@ -11,6 +11,9 @@
         <q-item dense clickable v-close-popup @click="addBlock(ContentBlockType.ContentBlockList)">
           <q-item-section>Add List</q-item-section>
         </q-item>
+        <q-item dense clickable v-close-popup @click="addBlock(ContentBlockType.ContentBlockBanner)">
+          <q-item-section>Add Banner</q-item-section>
+        </q-item>
       </q-list>
     </q-menu>
   </q-btn>

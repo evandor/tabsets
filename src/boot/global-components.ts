@@ -1,4 +1,5 @@
 import { defineBoot } from '#q-app/wrappers'
+import CmsBanner from 'src/custompages/components/cms-banner.vue'
 import CmsHeading from 'src/custompages/components/cms-heading.vue'
 import CmsList from 'src/custompages/components/cms-list.vue'
 import CmsText from 'src/custompages/components/cms-text.vue'
@@ -12,6 +13,7 @@ export default defineBoot(async ({ app } /* { app, router, ... } */) => {
   app.component('CmsText', CmsText)
   // app.component('component-list',  ComponentList)
   app.component('CmsList', CmsList)
+  app.component('CmsBanner', CmsBanner)
   // app.component('ComponentHtml',  ComponentHtml)
   // app.component('ComponentHeading',  ComponentHeading)
   // app.component('CmsLink',  CmsLink)

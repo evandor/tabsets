@@ -11,30 +11,55 @@ export enum ContentBlockType {
   ContentBlockHeading = 'CmsHeading',
   ContentBlockText = 'CmsText',
   ContentBlockList = 'CmsList',
+  ContentBlockBanner = 'CmsBanner',
 }
 
-interface HeadingContentContainer {
+export interface HeadingContentContainer {
   kind: ContentBlockType.ContentBlockHeading
   text: string
 }
 
-interface TextContentContainer {
+export function createHeading(heading: string): HeadingContentContainer {
+  return { text: heading, kind: ContentBlockType.ContentBlockHeading }
+}
+
+export interface TextContentContainer {
   kind: ContentBlockType.ContentBlockText
   text: string
 }
 
-interface ListContentContainer {
-  kind: ContentBlockType.ContentBlockText
-  data: string[]
+export function createText(text: string): TextContentContainer {
+  return { text, kind: ContentBlockType.ContentBlockText }
+}
+
+export interface ListContentContainer {
+  kind: ContentBlockType.ContentBlockList
+  lines: string[]
   type: 'unordered' | 'ordered'
 }
 
-type ContentContainer = HeadingContentContainer | TextContentContainer | ListContentContainer
+export function createList(firstLine: string): ListContentContainer {
+  return { lines: [firstLine], type: 'unordered', kind: ContentBlockType.ContentBlockList }
+}
+
+export interface BannerContentContainer {
+  kind: ContentBlockType.ContentBlockBanner
+  text: string
+}
+
+export function createBanner(text: string): BannerContentContainer {
+  return { text, kind: ContentBlockType.ContentBlockBanner }
+}
+
+export type ContentContainer =
+  | HeadingContentContainer
+  | TextContentContainer
+  | ListContentContainer
+  | BannerContentContainer
 
 export class ContentBlock {
   id: string
-  type: ContentBlockType
-  content: string | string[]
+  data: ContentContainer
   attributes: AttributesType
   classes: ClassesType
   elements: ContentBlock[]
@@ -42,64 +67,19 @@ export class ContentBlock {
 
   constructor(
     id: string,
-    type: ContentBlockType,
-    content: string | string[],
+    data: ContentContainer,
     attributes?: AttributesType,
     classes?: ClassesType,
     elements?: ContentBlock[],
     element?: ContentBlock,
   ) {
     this.id = id
-    this.type = type
-    this.content = content
+    this.data = data
     this.attributes = attributes || {}
     this.classes = classes || {}
     this.elements = elements || []
     this.element = element || (null as unknown as ContentBlock)
   }
-}
-
-export class ContentBlockDefinition {
-  private type: ContentBlockType
-
-  constructor(type: ContentBlockType) {
-    this.type = type
-  }
-
-  hasContent(): boolean {
-    return true
-  }
-
-  getActions(): Array<Object> {
-    return []
-  }
-
-  getSpecificAttributes(): Array<Object> {
-    return []
-  }
-}
-
-const openEditorAction = { label: 'open editor', key: 'openEditor', icon: 'edit', tooltip: 'open Editor' }
-const duplicateAction = { label: 'duplicate', key: 'duplicate', icon: 'content_copy', tooltip: 'make a copy' }
-const deleteAction = { label: 'delete', key: 'delete', icon: 'delete', tooltip: 'delete this element' }
-
-export enum ContentBlockPosition {
-  AFTER = 'AFTER',
-  BEFORE = 'BEFORE',
-  IN = 'IN',
-  FIRST = 'FIRST',
-}
-
-export enum AdminView {
-  PAGE = 'PAGE',
-  MEDIA = 'MEDIA',
-  ICONS = 'ICONS',
-}
-
-export enum PageTab {
-  CURRENT = 'CURRENT',
-  ORIGINAL = 'ORIGINAL',
-  SOURCE = 'SOURCE',
 }
 
 export enum LayoutPart {

@@ -1,5 +1,8 @@
 <template>
   <!--  <add-component-menu v-if="props.editable" blockId="root" position="before" />-->
+  <div v-for="c in props.page?.elements">
+    {{ getTypeFor(c) }}
+  </div>
   <template v-if="props.page">
     <component
       v-for="c in props.page.elements"
@@ -7,7 +10,7 @@
       :is="getTypeFor(c)"
       :block="c"
       :editable="props.editable"
-      :content="c.content"
+      :data="c.data"
       :isHovered="isHovered(c)"
       @add-block="addBlock"
       @convert-to="(v: object) => convertTo(v)"
@@ -22,7 +25,14 @@
 <script setup lang="ts">
 import { uid } from 'quasar'
 import { Page } from 'src/custompages/models/backend'
-import { ContentBlock, ContentBlockType } from 'src/custompages/models/frontend'
+import {
+  ContentBlock,
+  ContentBlockType,
+  createBanner,
+  createHeading,
+  createList,
+  createText,
+} from 'src/custompages/models/frontend'
 import { usePagesStore } from 'src/custompages/stores/pagesStore'
 import { ref } from 'vue'
 
@@ -37,13 +47,28 @@ const hovered = ref<string | undefined>(undefined)
 // const keyCounter = ref(0)
 
 const getTypeFor = (c: ContentBlock): string => {
-  return c.type
+  return c.data.kind
 }
 
 const addBlock = (type: ContentBlockType) => {
-  //console.log('adding block', type, props.page)
+  console.log('adding block', type, props.page)
   if (props.page) {
-    props.page?.elements.push(new ContentBlock(uid(), type, 'hallo'))
+    switch (type) {
+      case ContentBlockType.ContentBlockHeading:
+        props.page?.elements.push(new ContentBlock(uid(), createHeading('hallo')))
+        break
+      case ContentBlockType.ContentBlockText:
+        props.page?.elements.push(new ContentBlock(uid(), createText('hallo')))
+        break
+      case ContentBlockType.ContentBlockList:
+        props.page?.elements.push(new ContentBlock(uid(), createList('hallo')))
+        break
+      case ContentBlockType.ContentBlockBanner:
+        props.page?.elements.push(new ContentBlock(uid(), createBanner('hallo')))
+        break
+      default:
+        console.warn('unknown type', type)
+    }
     usePagesStore().updatePage(props.page)
   }
 }
