@@ -1,15 +1,14 @@
 import { QVueGlobals } from 'quasar'
-import CustomPagesPersistence from 'src/custompages/persistence/CustomPagesPersistence'
-import IndexedDbCustomPagesPersistence from 'src/custompages/persistence/IndexedDbCustomPagesPersistence'
 import FeaturesPersistence from 'src/features/persistence/FeaturesPersistence'
 import { LocalStorageFeaturesPersistence } from 'src/features/persistence/LocalStorageFeaturesPersistence'
-import IndexedDbNotesPersistence from 'src/notes/persistence/IndexedDbNotesPersistence'
 import IndexedDbSnapshotPersistence from 'src/snapshots/persistence/IndexedDbSnapshotPersistence'
 import SnapshotsPersistence from 'src/snapshots/persistence/SnapshotsPersistence'
 import IndexedDbSpacesStorage from 'src/spaces/persistence/IndexedDbSpacesPersistence'
 import SpacesPersistence from 'src/spaces/persistence/SpacesPersistence'
 import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
 import SuggestionsPersistence from 'src/suggestions/persistence/SuggestionsPersistence'
+import CustomPagesPersistence from 'src/tabsets/persistence/cms/CustomPagesPersistence'
+import IndexedDbCustomPagesPersistence from 'src/tabsets/persistence/cms/IndexedDbCustomPagesPersistence'
 import IndexedDbTabsetsGroupsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsGroupsPersistence'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import { LocalStorageTabsetsPersistence } from 'src/tabsets/persistence/LocalStorageTabsetsPersistence'
@@ -24,7 +23,6 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
 
   const snapshotsDb: SnapshotsPersistence = IndexedDbSnapshotPersistence
   const suggestionsDb: SuggestionsPersistence = IndexedDbSuggestionsPersistence
-  const notesDb = IndexedDbNotesPersistence
   const thumbnailsDb: ThumbnailsPersistence = IndexedDbThumbnailsPersistence
   const groupsIndexedDb: TabsetsGroupsPersistence = IndexedDbTabsetsGroupsPersistence
 
@@ -46,7 +44,6 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
     suggestionsDb,
     thumbnailsDb,
     groupsIndexedDb,
-    notesDb,
     pagesDb,
   }
 }

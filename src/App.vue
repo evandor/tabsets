@@ -20,8 +20,11 @@ import { useRouter } from 'vue-router'
 
 const version = import.meta.env.PACKAGE_VERSION
 
+const settingsStore = useSettingsStore()
+settingsStore.initialize()
+
 // console.log('===', useSettingsStore().isDisabled('noMonitoring'), process.env.GRAFANA_FARO_COLLECTOR_URL as string)
-if (useSettingsStore().isDisabled('noMonitoring')) {
+if (useSettingsStore().isDisabled('noMonitoring') && !process.env.DEV) {
   initializeFaro({
     url: process.env.GRAFANA_FARO_COLLECTOR_URL as string,
     app: {
@@ -52,9 +55,6 @@ LocalStorage.set('platform', platform)
 if (process.env.TABSETS_STAGE !== 'DEV') {
   setupConsoleInterceptor(useUiStore())
 }
-
-const settingsStore = useSettingsStore()
-settingsStore.initialize($q.localStorage)
 
 usePermissionsStore().initialize()
 

@@ -1,7 +1,6 @@
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import StatsUtils from 'src/core/utils/StatsUtils'
-import { usePagesStore } from 'src/custompages/stores/pagesStore'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { useMetrics } from 'src/services/Metrics'
 import { IgnoreUrlCommand } from 'src/tabsets/commands/IgnoreUrlCommand'
@@ -70,7 +69,7 @@ class AppEventDispatcher {
             .catch((err: any) => console.warn('error deleting thumbnail', params, err))
           return Promise.resolve({})
         case 'tab-deleted':
-          await usePagesStore().deletePage(params['tabId' as keyof object])
+          // TODO await usePagesStore().deletePage(params['tabId' as keyof object])
           const bookmarks = await useBookmarksStore().findBookmarksForUrl(params['url' as keyof object])
           return Promise.resolve({ name: 'bookmarks-found', bookmarks: bookmarks.length })
         case 'ignore_url':

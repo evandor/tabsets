@@ -51,13 +51,11 @@ export class SidePanelViews {
     useFeaturesStore().hasFeature(FeatureIdent.TABS_AS_TREE),
   )
 
-  static readonly NOTES_VIEW = new SidePanelViews('notesView', '/sidepanel/notesView', () =>
-    useFeaturesStore().hasFeature(FeatureIdent.NOTES),
-  )
+  // static readonly NOTES_VIEW = new SidePanelViews('notesView', '/sidepanel/notesView', () =>
+  //   useFeaturesStore().hasFeature(FeatureIdent.NOTES),
+  // )
 
-  static readonly SESSIONS = new SidePanelViews('sessions', '/sidepanel/sessions', () =>
-    useFeaturesStore().hasFeature(FeatureIdent.SESSIONS),
-  )
+  static readonly SESSIONS = new SidePanelViews('sessions', '/sidepanel/sessions')
 
   static readonly REMINDERS = new SidePanelViews('reminders', '/sidepanel/reminders', () =>
     useFeaturesStore().hasFeature(FeatureIdent.REMINDER),

@@ -57,7 +57,7 @@
       "default_path": "www/index.html"
     },
     "permissions": ["storage", "tabs", "activeTab", "alarms", "scripting", "sidePanel", "contextMenus", "bookmarks"],
-    "optional_permissions": ["pageCapture", "notifications", "webRequest", "tabGroups", "sessions"],
+    "optional_permissions": ["pageCapture", "notifications", "webRequest", "tabGroups"],
     "background": {
       "service_worker": "background.ts"
     }

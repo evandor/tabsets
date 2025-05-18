@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import { Page } from 'src/custompages/models/backend'
-import CustomPagesPersistence from 'src/custompages/persistence/CustomPagesPersistence'
+import { Page } from 'src/tabsets/models/cms/backend'
+import CustomPagesPersistence from 'src/tabsets/persistence/cms/CustomPagesPersistence'
 import { ref } from 'vue'
 
 export const usePagesStore = defineStore('pages', () => {
@@ -32,11 +32,17 @@ export const usePagesStore = defineStore('pages', () => {
     return storage.loadPage(pageId)
   }
 
+  const loadPages = (tabsetId: string): Promise<Page[]> => {
+    console.log('loading pages for tabset', tabsetId)
+    return storage.loadPages(tabsetId)
+  }
+
   return {
     initialize,
     updatePage,
     deletePage,
     loadPage,
+    loadPages,
     initialized,
   }
 })

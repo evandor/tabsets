@@ -1,8 +1,8 @@
 import { defineBoot } from '#q-app/wrappers'
-import CmsBanner from 'src/custompages/components/cms-banner.vue'
-import CmsHeading from 'src/custompages/components/cms-heading.vue'
-import CmsList from 'src/custompages/components/cms-list.vue'
-import CmsText from 'src/custompages/components/cms-text.vue'
+import CmsBanner from 'src/tabsets/components/cms/cms-banner.vue'
+import CmsHeading from 'src/tabsets/components/cms/cms-heading.vue'
+import CmsList from 'src/tabsets/components/cms/cms-list.vue'
+import CmsText from 'src/tabsets/components/cms/cms-text.vue'
 
 // "async" is optional;
 // more info on params: https://v2.quasar.dev/quasar-cli-vite/boot-files

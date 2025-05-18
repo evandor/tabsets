@@ -120,18 +120,18 @@ export class AppFeatures {
       ['bex', 'spa'],
     ),
 
-    new Feature(
-      FeatureIdent.SESSIONS,
-      'EXPERIMENTAL',
-      'Sessions',
-      'You want to start something in-between without losing your already opened tabs? Start a new session and come back to your old tabs whenever needed.',
-      'sym_o_new_window',
-      '',
-      ['all'],
-    ),
+    // new Feature(
+    //   FeatureIdent.SESSIONS,
+    //   'EXPERIMENTAL',
+    //   'Sessions',
+    //   'You want to start something in-between without losing your already opened tabs? Start a new session and come back to your old tabs whenever needed.',
+    //   'sym_o_new_window',
+    //   '',
+    //   ['all'],
+    // )
+    //   .setActivateCommands([new GrantPermissionCommand('sessions')])
+    //   .setDeactivateCommands([new RevokePermissionCommand('sessions')]),
 
-    // .setActivateCommands([new GrantPermissionCommand('sessions')])
-    // .setDeactivateCommands([new RevokePermissionCommand('sessions')])
     new Feature(
       FeatureIdent.SPACES,
       'OPTIONAL',
@@ -196,15 +196,15 @@ export class AppFeatures {
       .setActivateCommands([new GrantPermissionCommand('pageCapture')])
       .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
 
-    new Feature(
-      FeatureIdent.NOTES,
-      'EXPERIMENTAL',
-      'Notes Feature',
-      'CreateCreate notes and treat them like tabs',
-      'o_note',
-      '',
-      ['all'],
-    ),
+    // new Feature(
+    //   FeatureIdent.NOTES,
+    //   'EXPERIMENTAL',
+    //   'Notes Feature',
+    //   'CreateCreate notes and treat them like tabs',
+    //   'o_note',
+    //   '',
+    //   ['all'],
+    // ),
 
     new Feature(
       FeatureIdent.STANDALONE_APP,

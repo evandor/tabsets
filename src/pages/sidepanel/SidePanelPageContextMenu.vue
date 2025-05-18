@@ -156,19 +156,15 @@ import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
 import { CopyToClipboardCommand } from 'src/core/domain/commands/CopyToClipboard'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { NotificationType } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
-import { DeleteTabsetCommand } from 'src/tabsets/commands/DeleteTabsetCommand'
-import { MarkTabsetAsArchivedCommand } from 'src/tabsets/commands/MarkTabsetAsArchived'
 import { UnShareTabsetCommand } from 'src/tabsets/commands/UnShareTabsetCommand'
-import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
 import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
 import NewSubfolderDialog from 'src/tabsets/dialogues/NewSubfolderDialog.vue'
 import ShareTabsetDialog from 'src/tabsets/dialogues/ShareTabsetDialog.vue'
 import ShareTabsetPubliclyDialog from 'src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue'
-import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { PropType } from 'vue'
@@ -218,36 +214,8 @@ const openEditTabsetDialog = (tabset: Tabset) => {
   })
 }
 
-const openOverviewPage = (tabsetId: string) =>
-  NavigationService.openOrCreateTab([chrome.runtime.getURL(`www/index.html#/mainpanel/tabsets/overview/${tabsetId}`)])
-
-const showCreateNoteItem = () => useFeaturesStore().hasFeature(FeatureIdent.NOTES)
-
 const removePublicShare = (tabsetId: string, sharedId: string) =>
   useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId, sharedId))
-
-const archiveTabset = (tabset: Tabset) =>
-  useCommandExecutor().executeFromUi(new MarkTabsetAsArchivedCommand(tabset.id), NotificationType.NOTIFY)
-
-const deleteTabsetDialog = (tabset: Tabset): void => {
-  if (tabset.tabs.length === 0) {
-    useCommandExecutor().executeFromUi(new DeleteTabsetCommand(tabset.id))
-    return
-  }
-  $q.dialog({
-    component: DeleteTabsetDialog,
-    componentProps: {
-      tabsetId: tabset.id,
-      tabsetName: tabset.name,
-      tabsCount: tabset.tabs.length,
-    },
-  })
-}
-
-const convertToCollection = (tabset: Tabset) => {
-  tabset.type = TabsetType.DEFAULT
-  useTabsetsStore().saveTabset(tabset)
-}
 
 const shareTabsetPubliclyDialog = (tabset: Tabset, republish: boolean = false) => {
   $q.dialog({

@@ -36,10 +36,6 @@
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org skysail-dk --project tabsets ./dist && sentry-cli sourcemaps upload --org skysail-dk --project tabsets ./dist"
   },
   "dependencies": {
-    "@calumk/editorjs-columns": "^0.3.2",
-    "@codexteam/icons": "^0.3.3",
-    "@editorjs/editorjs": "^2.30.7",
-    "@editorjs/header": "^2.8.8",
     "@grafana/faro-web-sdk": "^1.17.1",
     "@grafana/faro-web-tracing": "^1.17.1",
     "@he-tree/vue": "^2.9.3",
@@ -91,12 +87,6 @@
     "vue-timeago3": "^2.3.2"
   },
   "devDependencies": {
-    "@editorjs/checklist": "^1.6.0",
-    "@editorjs/image": "^2.10.1",
-    "@editorjs/link": "^2.6.2",
-    "@editorjs/quote": "^2.7.6",
-    "@editorjs/raw": "^2.5.1",
-    "@editorjs/table": "^2.4.3",
     "@eslint/js": "^9.26.0",
     "@grafana/faro-rollup-plugin": "^0.5.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
@@ -111,8 +101,6 @@
     "@vue/eslint-config-typescript": "^14.5.0",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.20",
-    "editorjs-alert": "^1.1.4",
-    "editorjs-text-color-plugin": "^2.0.4",
     "eslint": "9",
     "eslint-plugin-vue": "^10.1.0",
     "fake-indexeddb": "^6.0.0",

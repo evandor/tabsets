@@ -7,7 +7,7 @@ export enum FeatureIdent {
   GROUP_BY_DOMAIN = 'GROUP_BY_DOMAIN',
   OPENTABS_THRESHOLD = 'OPENTABS_THRESHOLD',
   RSS = 'RSS',
-  SESSIONS = 'SESSIONS',
+  // SESSIONS = 'SESSIONS', -- replaced by "stash" functionality (active by default)
   SPACES = 'SPACES',
   HELP = 'HELP',
   TOP10 = 'TOP10',
@@ -16,7 +16,7 @@ export enum FeatureIdent {
   SCHEDULED = 'SCHEDULED',
   BACKUP = 'BACKUP',
   IGNORE = 'IGNORE',
-  NOTES = 'NOTES',
+ // NOTES = 'NOTES', -- replaced by pages functionality
   TAGS = 'TAGS',
   WEBSITE_CLIP = 'WEBSITE_CLIP',
   STANDALONE_APP = 'STANDALONE_APP',

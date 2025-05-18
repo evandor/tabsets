@@ -11,11 +11,9 @@ import { SpaceInfo } from 'src/core/models/SpaceInfo'
 import { TabsetInfo } from 'src/core/models/TabsetInfo'
 import { useAppStore } from 'src/core/stores/appStore'
 import { useEntityRegistryStore } from 'src/core/stores/entityRegistryStore'
-import { usePagesStore } from 'src/custompages/stores/pagesStore'
 import { useEventsStore } from 'src/events/stores/eventsStore'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useMessagesStore } from 'src/messages/stores/messagesStore'
-import { useNotesStore } from 'src/notes/stores/NotesStore'
 import IndexedDbRequestPersistence from 'src/requests/persistence/IndexedDbRequestPersistence'
 import { useRequestsService } from 'src/requests/services/RequestsService'
 import { useSearchStore } from 'src/search/stores/searchStore'
@@ -74,10 +72,6 @@ class AppService {
     // init services
     await useSuggestionsStore().init(useDB().suggestionsDb)
 
-    // Pages
-    await usePagesStore().initialize(useDB().pagesDb)
-    //await useSnapshotsService().init()
-
     await this.initCoreSerivces(quasar, this.router)
   }
 
@@ -96,8 +90,6 @@ class AppService {
 
     const localStorageTabsetsDb = useDB().localStorageTabsetsDb
     await useTabsetsUiStore().initialize(localStorageTabsetsDb)
-
-    await useNotesStore().initialize(useDB().notesDb)
 
     /**
      * Pattern: TODO
