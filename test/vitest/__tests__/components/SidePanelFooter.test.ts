@@ -9,6 +9,7 @@ import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useRoute } from 'vue-router'
 
 vi.mock('src/boot/firebase2.ts')
 
@@ -18,6 +19,8 @@ async function setupStores() {
   // useWindowsStore().initialize()
   //useWindowsStore().initListeners()
 }
+
+vi.mock('vue-router')
 
 describe('SidePanelFooter', () => {
   const skysailChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.skysail.io/some-subpage', 'favicon')
@@ -31,6 +34,13 @@ describe('SidePanelFooter', () => {
   const window100: chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [tab1])
 
   let currentWindows: any[]
+
+  // @ts-expect-error TODO
+  useRoute.mockReturnValue({
+    query: {
+      name,
+    },
+  })
 
   beforeAll(() => {
     // https://vitest.dev/guide/browser.html
