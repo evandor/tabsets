@@ -142,6 +142,17 @@ const routes: RouteRecordRaw[] = [
   },
 
   {
+    path: '/search',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{ path: '', component: () => import('src/core/pages/SearchPage.vue') }],
+  },
+  {
+    path: '/searchresult',
+    component: () => import('layouts/FullPageLayout.vue'),
+    children: [{ path: '', component: () => import('src/core/pages/SearchResultPage.vue') }],
+  },
+
+  {
     path: '/:catchAll(.*)*',
     component: () => import('src/app/pages/ErrorNotFound.vue'),
   },

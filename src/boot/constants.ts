@@ -5,7 +5,7 @@ const EXTENSION_NAME = 'tabsets'
 const INDEX_DB_VERSION = 23
 
 const CLEANUP_PERIOD_IN_MINUTES = 10 // in prod: 10
-const MONITORING_PERIOD_IN_MINUTES = 60 // in prod: 60
+const MONITORING_PERIOD_IN_MINUTES = process.env.DEV ? 1 : 60
 
 const SPECIAL_ID_FOR_NO_GROUP_ASSIGNED = 'no_group_assigned_identifier'
 

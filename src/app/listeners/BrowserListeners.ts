@@ -375,6 +375,10 @@ class BrowserListeners {
       useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
     } else if (request.name === 'show-ignored') {
       useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
+    } else if (request.name === 'start-spinner-save-snapshot') {
+      useUiStore().pageCaptureLoading = true
+    } else if (request.name === 'stop-spinner-save-snapshot') {
+      useUiStore().pageCaptureLoading = false
     } else {
       console.log('got unknown message', request)
     }

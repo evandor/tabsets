@@ -196,6 +196,18 @@ export class AppFeatures {
       .setActivateCommands([new GrantPermissionCommand('pageCapture')])
       .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
 
+    new Feature(
+      FeatureIdent.SAVE_MHTML,
+      'EXPERIMENTAL',
+      'Save Page Snapshot',
+      'Saves the content of a website as MHTML as a snapshot',
+      'o_save',
+      '',
+      ['bex'],
+    )
+      .setActivateCommands([new GrantPermissionCommand('pageCapture')])
+      .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
+
     // new Feature(
     //   FeatureIdent.NOTES,
     //   'EXPERIMENTAL',

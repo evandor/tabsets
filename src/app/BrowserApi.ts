@@ -527,16 +527,18 @@ class BrowserApi {
   async checkMonitors() {
     const allTabsets: Tabset[] = [...useTabsetsStore().tabsets.values()] as Tabset[]
     const checkedTabs: { url: string; newHash: string; tabId: string; tabsetId: string }[] = []
+    console.log(`running monitor for ${allTabsets.length} tabsets`)
     for (const ts of allTabsets) {
       for (const monitoredTab of ts.monitoredTabs || []) {
         const tabAndTabsetId: TabAndTabsetId | undefined = useTabsetsStore().getTabAndTabsetId(monitoredTab.tabId)
         if (tabAndTabsetId) {
           const url = tabAndTabsetId.tab.url
           if (url) {
-            console.log('monitoring for tabAndTabsetId', tabAndTabsetId, url)
+            console.debug(`checking ${url} (tabset ${tabAndTabsetId.tab.id})`)
             const res = await fetch(url)
             const html = await res.text()
             const tokens = ContentUtils.html2tokens(html)
+            console.log('got tokens', tokens)
             const hash = uuidv5([...tokens].join(' '), 'da42d8e8-2afd-446f-b72e-8b437aa03e46')
             console.log(`got hash ${hash} for ${url}`)
             checkedTabs.push({
@@ -556,6 +558,7 @@ class BrowserApi {
     console.log('checkedTabs', checkedTabs)
     for (const changedTab of checkedTabs) {
       const existingContent = await useContentService().getContentFor(changedTab.url)
+      console.log('existingcontent', existingContent)
       if (existingContent && existingContent.contentHash && existingContent.contentHash !== changedTab.newHash) {
         console.log('found change!!!', existingContent.contentHash, changedTab.newHash)
         useMessagesStore().addMessage(

@@ -136,10 +136,10 @@ bridge.on('open-viewport', ({ payload }) => {
     closeIFrame(name)
     // frames.get(name)!.style.setProperty('display', 'none')
   })
-  if (frames.has(name)) {
-    openIFrame(name)
-    return
-  }
+  // if (frames.has(name)) {
+  //   openIFrame(name)
+  //   return
+  // }
 
   const frame = document.createElement('iframe')
   frames.set(name, frame)
@@ -172,6 +172,13 @@ bridge.on('close-overlay', ({ payload }) => {
   console.log('close-overlay', payload)
   const name = payload.name
   closeIFrame(name)
+  return 'done'
+})
+
+bridge.on('start-spinner', ({ payload }) => {
+  console.log('start-spinner', payload)
+  // const name = payload.name
+  // closeIFrame(name)
   return 'done'
 })
 

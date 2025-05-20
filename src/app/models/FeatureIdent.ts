@@ -4,6 +4,7 @@ export enum FeatureIdent {
   STATS = 'STATS',
   SAVE_TAB_AS_PDF = 'SAVE_TAB_AS_PDF', // not active yet
   SAVE_TAB_AS_PNG = 'SAVE_TAB_AS_PNG',
+  SAVE_MHTML = 'SAVE_MHTML',
   GROUP_BY_DOMAIN = 'GROUP_BY_DOMAIN',
   OPENTABS_THRESHOLD = 'OPENTABS_THRESHOLD',
   RSS = 'RSS',
@@ -16,7 +17,7 @@ export enum FeatureIdent {
   SCHEDULED = 'SCHEDULED',
   BACKUP = 'BACKUP',
   IGNORE = 'IGNORE',
- // NOTES = 'NOTES', -- replaced by pages functionality
+  // NOTES = 'NOTES', -- replaced by pages functionality
   TAGS = 'TAGS',
   WEBSITE_CLIP = 'WEBSITE_CLIP',
   STANDALONE_APP = 'STANDALONE_APP',

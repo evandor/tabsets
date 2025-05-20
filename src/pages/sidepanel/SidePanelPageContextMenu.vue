@@ -158,15 +158,11 @@ import { CopyToClipboardCommand } from 'src/core/domain/commands/CopyToClipboard
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import NavigationService from 'src/services/NavigationService'
 import { UnShareTabsetCommand } from 'src/tabsets/commands/UnShareTabsetCommand'
-import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
-import NewSubfolderDialog from 'src/tabsets/dialogues/NewSubfolderDialog.vue'
 import ShareTabsetDialog from 'src/tabsets/dialogues/ShareTabsetDialog.vue'
 import ShareTabsetPubliclyDialog from 'src/tabsets/dialogues/ShareTabsetPubliclyDialog.vue'
 import { Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useUiStore } from 'src/ui/stores/uiStore'
 import { PropType } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -180,39 +176,6 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['editHeaderDescription'])
-
-const startTabsetNote = (tabset: Tabset) => {
-  const url =
-    chrome && chrome.runtime && chrome.runtime.getURL
-      ? chrome.runtime.getURL('www/index.html') + '#/mainpanel/notes/?tsId=' + tabset.id + '&edit=true'
-      : '#/mainpanel/notes/?tsId=' + tabset.id + '&edit=true'
-  NavigationService.openOrCreateTab([url])
-}
-
-const createSubfolder = (tabset: Tabset) => {
-  $q.dialog({
-    component: NewSubfolderDialog,
-    componentProps: {
-      tabsetId: tabset.id,
-      parentFolder: undefined,
-    },
-  })
-}
-
-const openEditTabsetDialog = (tabset: Tabset) => {
-  $q.dialog({
-    component: EditTabsetDialog,
-    //TODO switch to tabset: tabset?
-    componentProps: {
-      tabsetId: tabset.id,
-      tabsetName: tabset.name,
-      tabsetColor: tabset.color,
-      window: tabset.window,
-      details: tabset.details || useUiStore().listDetailLevel,
-      fromPanel: true,
-    },
-  })
-}
 
 const removePublicShare = (tabsetId: string, sharedId: string) =>
   useCommandExecutor().executeFromUi(new UnShareTabsetCommand(tabsetId, sharedId))
