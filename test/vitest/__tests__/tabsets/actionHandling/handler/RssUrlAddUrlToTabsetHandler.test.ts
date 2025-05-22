@@ -34,17 +34,14 @@ describe('RssAddUrlToTabsetHandler', () => {
   })
 
   it('matches only non-special url', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test(url)).toBeTruthy
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test('https://excalidraw.com/')).toBeFalsy
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test('https://skysail.io/')).toBeFalsy
+    expect(handler.tabMatcher(url, '', {})).toBe(true)
+    expect(handler.tabMatcher('https://excalidraw.com/', '', {})).toBe(false)
+    expect(handler.tabMatcher('', '', {})).toBe(false)
+    expect(handler.tabMatcher('https://skysail.io/', '', {})).toBe(false)
   })
 
-  it('matches any content', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.contentMatcher(content)).toBeTruthy
+  it('does not match content', () => {
+    expect(handler.tabMatcher('', '', {})).toBe(false)
   })
 
   // it('has specific actions', () => {

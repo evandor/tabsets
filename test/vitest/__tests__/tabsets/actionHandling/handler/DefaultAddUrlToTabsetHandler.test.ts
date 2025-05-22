@@ -34,24 +34,14 @@ describe('DefaultAddUrlToTabsetHandler', () => {
   })
 
   it('matches only non-special url', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test(url)).toBeTruthy
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test('https://excalidraw.com/')).toBeFalsy
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test('http://some.url.with/ending.rss')).toBeFalsy
+    expect(handler.tabMatcher(url, '', {})).toBe(true)
+    expect(handler.tabMatcher('http://excalidraw.com', '', {})).toBe(true)
+    expect(handler.tabMatcher('http://some.url.with/ending.rss', '', {})).toBe(true)
   })
 
   it('matches any content', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.contentMatcher(content)).toBeTruthy
+    expect(handler.tabMatcher('', content, {})).toBe(true)
   })
-
-  // it('has specific actions', () => {
-  //   const identifier = handler.actions('17').map((ac: ActionContext) => ac.identifier.toString())
-  //   expect(identifier).toContain('AddTab')
-  //   expect(identifier).toContainEqual('AddTab')
-  // })
 
   it('clicking addTab Button results in tab being added', async () => {
     const ts = new Tabset('tsId', 'tsName')

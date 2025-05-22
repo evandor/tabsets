@@ -32,29 +32,13 @@ describe('ImportFromChromeBookmarksManagerAddUrlToTabsetHandler', () => {
   })
 
   it('matches only non-special url', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test(url)).toBeTruthy
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test('https://excalidraw.com/')).toBeFalsy
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test('https://skysail.io/')).toBeFalsy
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test('http://some.url.with/ending.rss')).toBeFalsy
+    expect(handler.tabMatcher(url, content, {})).toBe(true)
+    expect(handler.tabMatcher('https://excalidraw.com/', content, {})).toBe(false)
+    expect(handler.tabMatcher('https://skysail.io/', content, {})).toBe(false)
+    expect(handler.tabMatcher('http://some.url.with/ending.rss', content, {})).toBe(false)
   })
 
   it('matches any content', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.contentMatcher(content)).toBeTruthy
+    expect(handler.tabMatcher('url', content, {})).toBe(false)
   })
-
-  // it('has specific actions', () => {
-  //   const identifier = handler.actions('17').map((ac: ActionContext) => ac.identifier.toString())
-  //   expect(identifier).toEqual(['ImportChromeBookmarks', 'AddTab'])
-  // })
-
-  // it('clicking addTab Button results in tab being added', async () => {
-  //   const ts = new Tabset('tsId', 'tsName')
-  //   await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts)
-  //   expect(ts.tabs.length).toBe(1)
-  // })
 })

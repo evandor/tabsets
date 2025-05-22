@@ -21,10 +21,10 @@
         name="archived"
         label="Archived Tabsets"
         v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)" />
-      <q-tab name="search" label="Search Engine" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
+      <q-tab name="search" label="Search Engine" v-if="useSettingsStore().has('DEV_MODE')" />
       <q-tab name="importExport" label="Import/Export" />
-      <q-tab name="backup" label="Backup" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
-      <q-tab name="internals" label="Internals" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
+      <q-tab name="backup" label="Backup" v-if="useSettingsStore().has('DEV_MODE')" />
+      <q-tab name="internals" label="Internals" v-if="useSettingsStore().has('DEV_MODE')" />
       <!--      <q-tab name="featureToggles" label="Feature Toggles"-->
       <!--             :class="useAuthStore().userMayAccess(AccessItem.FEATURE_TOGGLES) ? 'text-primary':'text-grey'"/>-->
       <q-tab name="featureToggles" label="Feature Toggles" />
@@ -181,6 +181,7 @@ import { useI18n } from 'vue-i18n'
 import VueJsonPretty from 'vue-json-pretty'
 import { useRoute } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
+import { SettingIdent } from 'src/app/models/SettingIdent'
 import ImportExportSettings from 'src/core/pages/helper/ImportExportSettings.vue'
 import InternalSettings from 'src/core/pages/helper/InternalSettings.vue'
 import AppearanceSettings from 'src/pages/helper/AppearanceSettings.vue'
@@ -272,8 +273,8 @@ const showIgnoredTabset = () => {
   sendMsg('show-ignored')
 }
 
-const updateSettings = (ident: string, val: boolean) => {
+const updateSettings = (ident: SettingIdent, val: boolean) => {
   console.log('settings updated to', ident, val)
-  settingsStore.setFeatureToggle(ident, val)
+  settingsStore.setToggle(ident, val)
 }
 </script>

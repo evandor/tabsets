@@ -39,7 +39,7 @@
 
         <SearchWidget
           style="position: absolute; left: 300px; top: 5px; max-width: 500px"
-          v-if="useTabsetsStore().tabsets.size > 1 || useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)" />
+          v-if="useTabsetsStore().tabsets.size > 1 || useSettingsStore().has('DEV_MODE')" />
 
         <Transition name="colorized-appear">
           <div
@@ -177,6 +177,7 @@ import DrawerRight from 'src/core/components/DrawerRight.vue'
 import FullpageNavigation from 'src/core/components/FullpageNavigation.vue'
 import ToolbarButton from 'src/core/components/widgets/ToolbarButton.vue'
 import { useUtils } from 'src/core/services/Utils'
+import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import OpenTabsThresholdWidget from 'src/opentabs/widgets/OpenTabsThresholdWidget.vue'
 import SearchWidget from 'src/search/widgets/SearchWidget.vue'

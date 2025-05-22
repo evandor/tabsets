@@ -53,29 +53,19 @@ describe('ExcalidrawAddUrlToTabsetHandler', () => {
   })
 
   it('matches excalidraw url', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test(url)).toBeTruthy
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test('https://skysail.io')).toBeFalsy
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.urlMatcher().test('http://some.url.with/ending.rss')).toBeFalsy
+    expect(handler.tabMatcher(url, content, {})).toBe(true)
+    expect(handler.tabMatcher('https://skysail.io', content, {})).toBe(false)
+    expect(handler.tabMatcher('http://some.url.with/ending.rss', content, {})).toBe(false)
   })
 
   it('matches any content', () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(handler.contentMatcher(content)).toBeTruthy
+    expect(handler.tabMatcher('url', content, {})).toBe(false)
   })
-
-  // it('has specific actions', async () => {
-  //   await useCommandExecutor().execute(new CreateTabsetCommand('tabsetName'))
-  //   const identifier = handler.actions('17').map((ac: ActionContext) => ac.identifier.toString())
-  //   expect(identifier).toContain('SaveAs')
-  // })
 
   it('clicking saveAs Button results ...', async () => {
     const ts = new Tabset('tsId', 'tsName')
     await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
-      dialog: { filename: 'excalitest' },
+      data: { filename: 'excalitest' },
     })
     expect(ts.tabs.length).toBe(1)
     expect(ts.tabs[0]!.storage?.excalidraw).toBe('{"a":"A"}')

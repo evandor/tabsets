@@ -6,15 +6,15 @@ import { Feature } from 'src/features/models/Feature'
 
 export class AppFeatures {
   features: Feature[] = [
-    new Feature(
-      FeatureIdent.DEV_MODE,
-      'INTERNAL',
-      'Developer Mode',
-      'A feature toggle to switch between dev mode on/off',
-      '',
-      '',
-      ['all'],
-    ),
+    // new Feature(
+    //   FeatureIdent.DEV_MODE,
+    //   'INTERNAL',
+    //   'Developer Mode',
+    //   'A feature toggle to switch between dev mode on/off',
+    //   '',
+    //   '',
+    //   ['all'],
+    // ),
 
     new Feature(
       FeatureIdent.BOOKMARKS,

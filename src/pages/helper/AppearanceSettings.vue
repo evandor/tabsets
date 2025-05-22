@@ -212,7 +212,7 @@
       </div>
     </div>
 
-    <!--    <div class="row items-baseline q-ma-md q-gutter-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">-->
+    <!--    <div class="row items-baseline q-ma-md q-gutter-md" v-if="useSettingsStore().has('DEV_MODE')">-->
     <!--      <div class="col-3">-->
     <!--        New Version Simulation-->
     <!--      </div>-->
@@ -224,7 +224,7 @@
     <!--      </div>-->
     <!--    </div>-->
 
-    <div class="row items-baseline" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+    <div class="row items-baseline" v-if="useSettingsStore().has('DEV_MODE')">
       <div class="col-3">New Suggestion Simulation</div>
       <div class="col-3">
         Simulate that there is a new suggestion to use a (new) feature (refresh sidebar for effects)
@@ -280,7 +280,7 @@ const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') 
 const fontsize = ref<FontSize>(LocalStorage.getItem('ui.fontsize') || FontSize.DEFAULT)
 const density = ref<UiDensity>(LocalStorage.getItem('ui.density') || 'thin')
 const folderAppearance = ref<FolderAppearance>(LocalStorage.getItem('ui.folder.style') || 'goInto')
-const toolbarIntegration = ref<ToolbarIntegration>(LocalStorage.getItem('ui.toolbar.integration') || 'none')
+const toolbarIntegration = ref<ToolbarIntegration>(LocalStorage.getItem('ui.toolbar.integration') || 'tabsets')
 const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const overlapIndicator = ref(LocalStorage.getItem('ui.overlapIndicator') || false)
 const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))

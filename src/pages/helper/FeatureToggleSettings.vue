@@ -12,48 +12,56 @@
 
     <div class="row q-pa-md">
       <div class="col-3"><b>Developer Mode</b></div>
-      <div class="col-3">
-        activates a couple of experimental features and debug insights. You should only use this if you can live with
-        loosing data.
+      <div class="col-6">
+        activates a couple of additional experimental features. You should only use them if you can live with loosing
+        data.
       </div>
       <div class="col-1"></div>
-      <div class="col-5">
-        <q-toggle v-model="devEnabled" @click="updateSettings(FeatureIdent.DEV_MODE.toString(), devEnabled)" />
+      <div class="col-2">
+        <q-toggle v-model="devEnabled" @click="updateSettings2('DEV_MODE', devEnabled)" />
+      </div>
+    </div>
+    <div class="row q-pa-md">
+      <div class="col-3"><b>Debug Mode</b></div>
+      <div class="col-6">activates a couple of additional debug insights for development.</div>
+      <div class="col-1"></div>
+      <div class="col-2">
+        <q-toggle v-model="debugEnabled" @click="updateSettings2('DEBUG_MODE', debugEnabled)" />
       </div>
     </div>
 
-    <div class="row q-pa-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+    <div class="row q-pa-md" v-if="useSettingsStore().has('DEV_MODE')">
       <div class="col-3"><b>Trigger CommandExecution Error Handler</b></div>
-      <div class="col-3">
+      <div class="col-6">
         this should initiate a sentry error message like the ones happening when running into a problem executing a
         command.
       </div>
       <div class="col-1"></div>
-      <div class="col-5">
+      <div class="col-2">
         <q-btn label="Trigger Error" no-caps @click="triggerErrorHandler()" />
       </div>
     </div>
-    <div class="row q-pa-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+    <div class="row q-pa-md" v-if="useSettingsStore().has('DEV_MODE')">
       <div class="col-3"><b>Trigger Catch-All Error Handler</b></div>
-      <div class="col-3">this should initiate a sentry error message from the vue error interceptor.</div>
+      <div class="col-6">this should initiate a sentry error message from the vue error interceptor.</div>
       <div class="col-1"></div>
-      <div class="col-5">
+      <div class="col-2">
         <q-btn label="Trigger Error" no-caps @click="triggerCatchAll()" />
       </div>
     </div>
-    <div class="row q-pa-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+    <div class="row q-pa-md" v-if="useSettingsStore().has('DEV_MODE')">
       <div class="col-3"><b>Collect User Feedback</b></div>
-      <div class="col-3"></div>
+      <div class="col-6"></div>
       <div class="col-1"></div>
-      <div class="col-5">
+      <div class="col-2">
         <q-btn label="User Feedback" no-caps @click="collectUserFeedback()" />
       </div>
     </div>
-    <div class="row q-pa-md" v-if="useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)">
+    <div class="row q-pa-md" v-if="useSettingsStore().has('DEV_MODE')">
       <div class="col-3"><b>Create a (dummy) suggestion</b></div>
-      <div class="col-3">Suggestions are shown to the user to let her decide if they are applicable</div>
+      <div class="col-6">Suggestions are shown to the user to let her decide if they are applicable</div>
       <div class="col-1"></div>
-      <div class="col-5">
+      <div class="col-2">
         <!--        <q-btn label="Tabset Shared" no-caps @click="createSuggestion('TABSET_SHARED')" />-->
         <!--        <q-btn label="Use Extension" no-caps @click="createSuggestion('USE_EXTENSION')" v-if="!inBexMode()" />-->
         <!--        <q-btn label="Spaces Feature" no-caps @click="createSuggestion('FEATURE')" />-->
@@ -66,33 +74,42 @@
 
 <script lang="ts" setup>
 import { captureFeedback, captureMessage } from '@sentry/vue'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { SettingIdent } from 'src/app/models/SettingIdent'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
-import { ActivateFeatureCommand } from 'src/features/commands/ActivateFeatureCommand'
-import { DeactivateFeatureCommand } from 'src/features/commands/DeactivateFeatureCommand'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { useUtils } from 'src/core/services/Utils'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { ref, watchEffect } from 'vue'
 
 const settingsStore = useSettingsStore()
 const { handleError } = useNotificationHandler()
+const { sendMsg } = useUtils()
 
-const devEnabled = ref<boolean>(useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE) || false)
+const devEnabled = ref<boolean>(useSettingsStore().has('DEV_MODE') || false)
+const debugEnabled = ref<boolean>(useSettingsStore().has('DEBUG_MODE') || false)
 
 watchEffect(() => {
-  devEnabled.value = useFeaturesStore().hasFeature(FeatureIdent.DEV_MODE)
+  devEnabled.value = useSettingsStore().has('DEV_MODE')
 })
+//
+// const updateSettings = (ident: string, val: boolean) => {
+//   console.log('settings updated to', ident, val)
+//   if (val) {
+//     useCommandExecutor().execute(new ActivateFeatureCommand(ident))
+//   } else {
+//     useCommandExecutor().execute(new DeactivateFeatureCommand(ident))
+//   }
+//   // TODO deprecated
+//   settingsStore.setFeatureToggle(ident, val)
+// }
 
-const updateSettings = (ident: string, val: boolean) => {
-  console.log('settings updated to', ident, val)
-  if (val) {
-    useCommandExecutor().execute(new ActivateFeatureCommand(ident))
+const updateSettings2 = (ident: SettingIdent, active: boolean) => {
+  console.log('settings2 updated to', ident, active)
+  settingsStore.setToggle(ident, active)
+  if (active) {
+    sendMsg('setting-activated', { setting: ident })
   } else {
-    useCommandExecutor().execute(new DeactivateFeatureCommand(ident))
+    sendMsg('setting-deactivated', { setting: ident })
   }
-  // TODO deprecated
-  settingsStore.setFeatureToggle(ident, val)
 }
 
 const triggerErrorHandler = () => handleError('an user-initiated error message from tabsets at ' + new Date().getTime())
