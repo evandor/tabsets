@@ -30,6 +30,19 @@ export class AppFeatures {
     ),
 
     new Feature(
+      FeatureIdent.FOLDER,
+      'RECOMMENDED',
+      'Folders and Subfolders',
+      'Use folders inside your tabsets to add another level of organisation',
+      'o_folder',
+      '',
+      ['all'],
+      [],
+      false,
+      'warning',
+    ),
+
+    new Feature(
       FeatureIdent.GALLERY,
       'RECOMMENDED',
       'Gallery View',

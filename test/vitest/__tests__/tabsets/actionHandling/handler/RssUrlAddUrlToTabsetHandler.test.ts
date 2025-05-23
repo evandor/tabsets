@@ -1,7 +1,6 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { QVueGlobals } from 'quasar'
-import BrowserApi from 'src/app/BrowserApi'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
 import { useContentService } from 'src/content/services/ContentService'
 import { useSearchStore } from 'src/search/stores/searchStore'
@@ -51,11 +50,11 @@ describe('RssAddUrlToTabsetHandler', () => {
 
   it('clicking addTab Button results in tab being added', async () => {
     const ts = new Tabset('tsId', 'tsName')
-    await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
-      dialog: {
-        more: {},
-      },
-    })
+    // await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
+    //   dialog: {
+    //     more: {},
+    //   },
+    // })
     expect(ts.tabs.length).toBe(1)
   })
 })

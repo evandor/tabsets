@@ -1,6 +1,7 @@
 export enum FeatureIdent {
   // DEV_MODE = 'DEV_MODE', -- handled as setting now
   BOOKMARKS = 'BOOKMARKS',
+  FOLDER = 'FOLDER',
   STATS = 'STATS',
   SAVE_TAB_AS_PDF = 'SAVE_TAB_AS_PDF', // not active yet
   SAVE_TAB_AS_PNG = 'SAVE_TAB_AS_PNG',
