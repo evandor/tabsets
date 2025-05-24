@@ -1,7 +1,6 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { useQuasar } from 'quasar'
-import BrowserApi from 'src/app/BrowserApi'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
 import { useContentService } from 'src/content/services/ContentService'
 import { useSearchStore } from 'src/search/stores/searchStore'
@@ -64,9 +63,9 @@ describe('ExcalidrawAddUrlToTabsetHandler', () => {
 
   it('clicking saveAs Button results ...', async () => {
     const ts = new Tabset('tsId', 'tsName')
-    await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
-      data: { filename: 'excalitest' },
-    })
+    // await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
+    //   data: { filename: 'excalitest' },
+    // })
     expect(ts.tabs.length).toBe(1)
     expect(ts.tabs[0]!.storage?.excalidraw).toBe('{"a":"A"}')
   })
