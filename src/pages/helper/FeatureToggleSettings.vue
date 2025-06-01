@@ -90,17 +90,6 @@ const debugEnabled = ref<boolean>(useSettingsStore().has('DEBUG_MODE') || false)
 watchEffect(() => {
   devEnabled.value = useSettingsStore().has('DEV_MODE')
 })
-//
-// const updateSettings = (ident: string, val: boolean) => {
-//   console.log('settings updated to', ident, val)
-//   if (val) {
-//     useCommandExecutor().execute(new ActivateFeatureCommand(ident))
-//   } else {
-//     useCommandExecutor().execute(new DeactivateFeatureCommand(ident))
-//   }
-//   // TODO deprecated
-//   settingsStore.setFeatureToggle(ident, val)
-// }
 
 const updateSettings2 = (ident: SettingIdent, active: boolean) => {
   console.log('settings2 updated to', ident, active)

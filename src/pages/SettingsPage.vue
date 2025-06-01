@@ -157,10 +157,6 @@
  *
  */
 
-/**
- * refactoring remark: uses many other modules, needs to be one-per-application
- *
- */
 import _ from 'lodash'
 import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'

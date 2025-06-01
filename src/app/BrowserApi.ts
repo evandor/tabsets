@@ -50,38 +50,40 @@ class BrowserApi {
     }
 
     // console.debug(' ...initializing ChromeApi')
-    try {
-      chrome.alarms
-        .create('housekeeping', { periodInMinutes: CLEANUP_PERIOD_IN_MINUTES })
-        .catch((err: any) => console.warn('could not start housekeeping alarm due to ', err))
+    if (chrome && chrome.alarms) {
+      try {
+        chrome.alarms
+          .create('housekeeping', { periodInMinutes: CLEANUP_PERIOD_IN_MINUTES })
+          .catch((err: any) => console.warn('could not start housekeeping alarm due to ', err))
 
-      chrome.alarms
-        .create('hourlyTasks', { periodInMinutes: 60 })
-        .catch((err: any) => console.warn('could not start hourlyTasks alarm due to ', err))
+        chrome.alarms
+          .create('hourlyTasks', { periodInMinutes: 60 })
+          .catch((err: any) => console.warn('could not start hourlyTasks alarm due to ', err))
 
-      chrome.alarms
-        .create('monitoring', { periodInMinutes: MONITORING_PERIOD_IN_MINUTES })
-        .catch((err: any) => console.warn('could not start monitoring alarm due to ', err))
+        chrome.alarms
+          .create('monitoring', { periodInMinutes: MONITORING_PERIOD_IN_MINUTES })
+          .catch((err: any) => console.warn('could not start monitoring alarm due to ', err))
 
-      chrome.alarms.onAlarm.addListener((alarm: chrome.alarms.Alarm) => {
-        if (alarm.name === 'housekeeping') {
-          runHousekeeping()
-          //runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
-          //runContentHousekeeping(useTabsetService().urlExistsInATabset)
-        } else if (alarm.name === 'monitoring') {
-          if (useFeaturesStore().hasFeature(FeatureIdent.MONITOR)) {
-            this.checkMonitors()
+        chrome.alarms.onAlarm.addListener((alarm: chrome.alarms.Alarm) => {
+          if (alarm.name === 'housekeeping') {
+            runHousekeeping()
+            //runThumbnailsHousekeeping(useTabsetService().urlExistsInATabset)
+            //runContentHousekeeping(useTabsetService().urlExistsInATabset)
+          } else if (alarm.name === 'monitoring') {
+            if (useFeaturesStore().hasFeature(FeatureIdent.MONITOR)) {
+              this.checkMonitors()
+            }
+          } else if (alarm.name === 'hourlyTasks') {
+            if (LocalStorage.getItem(GITHUB_AUTO_BACKUP) as boolean) {
+              useCommandExecutor().execute(new GithubBackupCommand())
+            }
+          } else {
+            console.log('unknown alarm', alarm)
           }
-        } else if (alarm.name === 'hourlyTasks') {
-          if (LocalStorage.getItem(GITHUB_AUTO_BACKUP) as boolean) {
-            useCommandExecutor().execute(new GithubBackupCommand())
-          }
-        } else {
-          console.log('unknown alarm', alarm)
-        }
-      })
-    } catch (err) {
-      console.log('ff issue with creating alarms, alarms deactivated')
+        })
+      } catch (err) {
+        console.log('ff issue with creating alarms, alarms deactivated')
+      }
     }
 
     chrome.runtime.onUpdateAvailable.addListener((details: any) => {
