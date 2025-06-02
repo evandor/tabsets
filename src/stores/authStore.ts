@@ -14,7 +14,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   // --- getters ---
   const isAuthenticated = computed(() => {
-    return false
+    return (): boolean => {
+      return false
+    }
   })
 
   const getUsername = computed(() => {
@@ -50,12 +52,17 @@ export const useAuthStore = defineStore('auth', () => {
     },
   )
 
+  function logout(): Promise<any> {
+    return Promise.resolve()
+  }
+
   return {
     initialize,
     user,
     isAuthenticated,
     getUsername,
     setUser,
+    logout,
     getAccount,
     getUserData,
     limitExceeded,

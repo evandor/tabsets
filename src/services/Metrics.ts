@@ -32,7 +32,7 @@ export function useMetrics() {
 
   const count = (key: string, value: number) => {
     //console.log('counting metrics', key, value)
-    if (useSettingsStore().isDisabled('noMonitoring')) {
+    if (useSettingsStore().isDisabled('noMonitoring') && !process.env.DEV) {
       log('count', key, value)
     }
   }

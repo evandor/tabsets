@@ -63,7 +63,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
 
-  /** MainPanel **/
+  /** MainPanel (chrome extension plus main screen) **/
   {
     path: '/mainpanel',
     component: () => import('layouts/PlainLayout.vue'),

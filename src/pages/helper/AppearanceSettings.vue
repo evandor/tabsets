@@ -273,7 +273,7 @@ const { sendMsg } = useUtils()
 const $q = useQuasar()
 const settingsStore = useSettingsStore()
 
-const darkMode = ref<string>(LocalStorage.getItem('darkMode') || 'auto')
+const darkMode = ref<string>(LocalStorage.getItem('darkMode') || 'false')
 const installationTitle = ref<string>((LocalStorage.getItem(TITLE_IDENT) as string) || 'My Tabsets')
 // const detailLevelPerTabset = ref(LocalStorage.getItem('ui.detailsPerTabset') || false)
 const detailLevel = ref<ListDetailLevel>(LocalStorage.getItem('ui.detailLevel') || 'MINIMAL')

@@ -132,7 +132,12 @@
         </div>
         <div class="col-1"></div>
         <div class="col-3">
-          <q-toggle v-model="monitoringEnabled" @click="updateSettings('noMonitoring', monitoringEnabled)" />
+          <q-toggle
+            v-model="monitoringDisabled"
+            :disable="optOutIsDisabled()"
+            @click="updateSettings('noMonitoring', monitoringDisabled)">
+            <q-tooltip class="tooltip-small">Disabled, running in development mode</q-tooltip>
+          </q-toggle>
         </div>
       </div>
     </div>
@@ -206,8 +211,8 @@ const state = reactive({
 })
 
 const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
-const monitoringEnabled = ref<boolean>(!settingsStore.isEnabled('noMonitoring'))
-//const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
+const monitoringDisabled = ref<boolean>(process.env.DEV ? true : settingsStore.isEnabled('noMonitoring'))
+const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
 
 const tab = ref<string>(route.query['tab'] ? (route.query['tab'] as string) : 'appearance')
 
@@ -225,7 +230,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  monitoringEnabled.value = settingsStore.isEnabled('noMonitoring')
+  monitoringDisabled.value = process.env.DEV ? true : settingsStore.isEnabled('noMonitoring')
 })
 
 watchEffect(() => {
@@ -273,4 +278,6 @@ const updateSettings = (ident: SettingIdent, val: boolean) => {
   console.log('settings updated to', ident, val)
   settingsStore.setToggle(ident, val)
 }
+
+const optOutIsDisabled = (): boolean => !!process.env.DEV
 </script>
