@@ -423,6 +423,15 @@ export class AppFeatures {
       '',
       ['all'],
     ),
+    new Feature(
+      FeatureIdent.STASHING,
+      'EXPERIMENTAL',
+      'Stashing',
+      'stash away (i.e. save and close) currently open tabs and have a fresh start',
+      'sym_o_play_circle',
+      '',
+      ['all'],
+    ),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {

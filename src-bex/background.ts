@@ -19,7 +19,7 @@ chrome.omnibox.onInputEntered.addListener((text) => {
 })
 
 if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
-  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch((error: any) => console.error(error))
+  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch((error: any) => console.error(error))
 }
 
 // if (useQuasar().platform.is.firefox) {

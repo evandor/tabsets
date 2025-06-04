@@ -21,8 +21,7 @@
 [submodule "src/features"]
 	path = src/features
 	url = https://github.com/evandor/submodule-features.git
-	branch = localstorage
-	update = merge
+	branch = main
 [submodule "src/tabsets"]
 	path = src/tabsets
 	url = https://github.com/evandor/submodule-tabsets.git

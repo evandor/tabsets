@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { Account } from 'src/core/models/Account'
 import { computed, ref } from 'vue'
 
 export type AccessItem = 'TABS' | 'TABSETS' | 'SPACES' | 'SYNC' | 'SHARE' | 'FEATURE_TOGGLES' | 'THUMBNAILS'
@@ -7,7 +8,9 @@ export type AccessItem = 'TABS' | 'TABSETS' | 'SPACES' | 'SYNC' | 'SHARE' | 'FEA
  * dummy store for submodules integration
  */
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<{ uid: string; email: string }>({ uid: '', email: '' })
+  const user = ref<{ uid: string; email: string; photoURL: string }>({ uid: '', email: '', photoURL: '' })
+  const products = ref<string[]>([])
+  const avatar = ref('https://www.gravatar.com/avatar/unknown')
 
   // --- init ---
   async function initialize() {}
@@ -24,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
   })
 
   const getAccount = computed(() => {
-    return (): undefined => undefined
+    return (): Account | undefined => undefined
   })
 
   // --- actions ---
@@ -66,5 +69,6 @@ export const useAuthStore = defineStore('auth', () => {
     getAccount,
     getUserData,
     limitExceeded,
+    avatar,
   }
 })

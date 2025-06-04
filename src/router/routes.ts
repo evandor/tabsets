@@ -9,6 +9,11 @@ const routes: RouteRecordRaw[] = [
         : //'/sidepanel' : // use case: ???
           '/sidepanel',
   },
+  {
+    path: '/popup',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('src/core/pages/PopupPage.vue') }],
+  },
 
   /** FullPage **/
   {
