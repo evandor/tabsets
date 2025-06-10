@@ -32,19 +32,19 @@ describe('FeaturesStore', () => {
 
   it('initializes correctly with local storage', async () => {
     const features = useFeaturesStore().activeFeatures
-    expect(features.length).toBe(0)
+    expect(features.value.length).toBe(0)
   })
 
   it('adds valid feature', async () => {
     useFeaturesStore().activateFeature('top10')
-    expect(useFeaturesStore().activeFeatures.length).toBe(1)
-    expect(useFeaturesStore().activeFeatures[0]).toBe('top10')
+    expect(useFeaturesStore().activeFeatures.value.length).toBe(1)
+    expect(useFeaturesStore().activeFeatures.value[0]).toBe('top10')
   })
 
   it('adds valid feature', async () => {
     useFeaturesStore().activateFeature('top10')
-    expect(useFeaturesStore().activeFeatures.length).toBe(1)
-    expect(useFeaturesStore().activeFeatures[0]).toBe('top10')
+    expect(useFeaturesStore().activeFeatures.value.length).toBe(1)
+    expect(useFeaturesStore().activeFeatures.value[0]).toBe('top10')
   })
 
   it('does not add invalid feature', async () => {
@@ -56,20 +56,20 @@ describe('FeaturesStore', () => {
   it('adds valid feature only once', async () => {
     useFeaturesStore().activateFeature('top10')
     useFeaturesStore().activateFeature('top10')
-    expect(useFeaturesStore().activeFeatures.length).toBe(1)
-    expect(useFeaturesStore().activeFeatures[0]).toBe('top10')
+    expect(useFeaturesStore().activeFeatures.value.length).toBe(1)
+    expect(useFeaturesStore().activeFeatures.value[0]).toBe('top10')
   })
 
   it('removes Feature again', async () => {
     useFeaturesStore().activateFeature('top10')
-    expect(useFeaturesStore().activeFeatures.length).toBe(1)
+    expect(useFeaturesStore().activeFeatures.value.length).toBe(1)
     useFeaturesStore().deactivateFeature('top10')
-    expect(useFeaturesStore().activeFeatures.length).toBe(0)
+    expect(useFeaturesStore().activeFeatures.value.length).toBe(0)
   })
 
   it('has added feature', async () => {
     useFeaturesStore().activateFeature('top10')
-    expect(useFeaturesStore().activeFeatures.length).toBe(1)
+    expect(useFeaturesStore().activeFeatures.value.length).toBe(1)
     expect(useFeaturesStore().hasFeature(FeatureIdent.TOP10)).toBe(true)
   })
 })

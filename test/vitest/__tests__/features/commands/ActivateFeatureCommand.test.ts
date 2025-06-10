@@ -19,14 +19,16 @@ describe('ActivateFeatureCommand', () => {
   })
 
   it('feature gets activated', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     const feature = new AppFeatures().features.find((f: Feature) => f.ident === FeatureIdent.TOP10)
     const cmd = new ActivateFeatureCommand(feature!.ident)
     const res = await cmd.execute()
     expect(res.message).toBe('Feature top10 was activated')
-    expect(useFeaturesStore().activeFeatures.indexOf(feature!.ident.toLowerCase())).toBeGreaterThanOrEqual(0)
+    expect(useFeaturesStore().activeFeatures.value.indexOf(feature!.ident.toLowerCase())).toBeGreaterThanOrEqual(0)
   })
 
   it('command has proper toString representation', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     const feature = new AppFeatures().features.find((f: Feature) => f.ident === FeatureIdent.TOP10)
     const cmd = new ActivateFeatureCommand(feature!.ident)
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
