@@ -106,6 +106,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'reload-entities' ||
     request.name === 'api-changed' ||
     request.name === 'refresh-store' ||
+    request.name === 'progress-indicator' ||
     request.name === 'tabsets.app.change.currentTabset' ||
     request.action === 'highlight-annotation'
   )

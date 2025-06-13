@@ -23,9 +23,9 @@ describe('DeactivateFeatureCommand', () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
     const feature = new AppFeatures().features.find((f: Feature) => f.ident === FeatureIdent.TOP10)
     await new ActivateFeatureCommand(feature!.ident).execute()
-    expect(useFeaturesStore().activeFeatures.value.indexOf(feature!.ident.toLowerCase())).toBeGreaterThanOrEqual(0)
+    expect(useFeaturesStore().activeFeatures.indexOf(feature!.ident.toLowerCase())).toBeGreaterThanOrEqual(0)
     await new DeactivateFeatureCommand(feature!.ident).execute()
-    expect(useFeaturesStore().activeFeatures.value.length).toBe(0)
+    expect(useFeaturesStore().activeFeatures.length).toBe(0)
   })
 
   it('command has proper toString representation', async () => {

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { DownloadAIModelsCommand } from 'src/core/domain/commands/DownloadAIModelsCommand'
 import { GrantPermissionCommand } from 'src/core/domain/commands/GrantPermissionCommand'
 import { RevokePermissionCommand } from 'src/core/domain/commands/RevokePermissionCommand'
 import { Feature } from 'src/features/models/Feature'
@@ -432,6 +433,15 @@ export class AppFeatures {
       '',
       ['all'],
     ),
+    new Feature(
+      FeatureIdent.AI,
+      'EXPERIMENTAL',
+      'AI Features',
+      'active additional AI Features like language detection, summaries etc.',
+      'sym_o_play_circle',
+      '',
+      ['all'],
+    ).setActivateCommands([new DownloadAIModelsCommand()]),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {

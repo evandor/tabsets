@@ -1,3 +1,4 @@
+import { pipeline, ProgressCallback } from '@huggingface/transformers'
 import { createBridge } from '#q-app/bex/background'
 import Analytics from 'src/core/utils/google-analytics'
 
@@ -20,6 +21,153 @@ chrome.omnibox.onInputEntered.addListener((text) => {
 
 if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch((error: any) => console.error(error))
+}
+
+class PipelineSingleton {
+  static task = 'text-classification' as const
+  static model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
+  static instance: any = null //TextClassificationPipeline = null as unknown as TextClassificationPipeline
+
+  static async getInstance(progress_callback: ProgressCallback | undefined = undefined) {
+    console.log('getting intance')
+    this.instance ??= pipeline(this.task, this.model, { progress_callback: (data: any) => console.log('data', data) })
+    console.log('got intance', this.instance)
+
+    return this.instance
+  }
+}
+
+// Create generic classify function, which will be reused for the different types of events.
+const classify = async (text: string) => {
+  // Get the pipeline instance. This will load and build the model when run for the first time.
+  let model = await PipelineSingleton.getInstance((data: any) => {
+    // You can track the progress of the pipeline creation here.
+    // e.g., you can send `data` back to the UI to indicate a progress bar
+    console.log('progress', data)
+  })
+
+  // Actually run the model on the input text
+  let result = await model(text)
+  return result
+}
+
+////////////////////// 2. Message Events /////////////////////
+//
+// Listen for messages from the UI, process it, and send the result back.
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action !== 'classify') return // Ignore messages that are not meant for classification.
+  console.log('sender', sender)
+  // Run model prediction asynchronously
+  ;(async function () {
+    console.log('Perform classification', message.text)
+    let result = await classify(message.text)
+
+    // Send response back to UI
+    sendResponse(result)
+  })()
+
+  // return true to indicate we will send a response asynchronously
+  // see https://stackoverflow.com/a/46628145 for more information
+  return true
+})
+//////////////////////////////////////////////////////////////
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  ;(async function () {
+    if (message.name === 'init-ai-module') {
+      console.log('got message init-ai-module!!')
+      try {
+        await loadAIModule()
+        sendResponse('ai module loaded')
+      } catch (err: any) {
+        sendResponse('error: ' + err)
+      }
+    } else if (message.name === 'zero-shot-classification') {
+      console.log(
+        'got zero-shot-classification message',
+        message.data.text,
+        typeof (message.data.candidates as string[]),
+      )
+
+      try {
+        await loadAIModule()
+        let model = await modelPromise
+        console.log('model', model)
+        let result = await model(message.data.text, message.data.candidates as string[])
+        console.log('result:', result)
+        //let reviewer2 = await pipeline('zero-shot-classification', 'Xenova/bart-large-mnli');
+        //let result3 = await model('View the latest news and breaking news today for, entertainment, politics and health at CNN.com.', ['News','Nachrichten','wasanderes']);
+        //console.log("result3", result3)
+        sendResponse(result)
+      } catch (err) {
+        console.log('got error', err)
+        sendResponse(err)
+      }
+    }
+  })()
+  // return true to indicate we will send a response asynchronously
+  // see https://stackoverflow.com/a/46628145
+  return true
+})
+
+let modelPromise: any = null
+
+async function loadAIModule() {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { pipeline, env } = require('@xenova/transformers')
+
+  console.log('initializing transformers....')
+
+  env.useBrowserCache = true
+  env.remoteModels = true //false;
+  //env.localModelPath = chrome.runtime.getURL('models/')
+  env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
+  env.backends.onnx.wasm.numThreads = 1
+
+  // const task = 'text-classification';
+  //const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
+  const task = 'zero-shot-classification'
+  const model = 'Xenova/bart-large-mnli'
+  //const model = 'Xenova/finbert';
+
+  try {
+    let start = 0
+
+    modelPromise = pipeline(task, model, {
+      progress_callback: (data: any) => {
+        if (data.status !== 'progress') {
+          console.log('got progress_callback', data)
+        }
+
+        // if (data.progress < start + 5) {
+        //   return
+        // }
+        start = data.progress
+
+        const msg = {
+          name: 'progress-indicator',
+          percent: data.progress / 100,
+          status: data.status,
+          label: 'AI Module ' + data.name,
+        }
+
+        //console.log('msg', msg)
+        //    useUiStore().setProgress(data.progress / 100, `AI Model... ${data.progress}%`)
+        //chrome.runtime.sendMessage(msg)
+        chrome.runtime.sendMessage(msg, (callback) => {
+          if (chrome.runtime.lastError) {
+            /* ignore */
+            // TODO we get tons of errors here
+            //console.log('runtime error encountered', chrome.runtime.lastError)
+          } else {
+            //console.log("cb", callback)
+          }
+        })
+      },
+    })
+  } catch (err) {
+    console.error('hier: error', JSON.stringify(err))
+  }
 }
 
 // if (useQuasar().platform.is.firefox) {

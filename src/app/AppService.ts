@@ -165,14 +165,16 @@ class AppService {
       !router.currentRoute.value.path.startsWith('/mainpanel') &&
       router.currentRoute.value.path !== '/'
     ) {
-      console.log('pushing to welcome page', router.currentRoute.value.path)
-      await router.push('/sidepanel/welcome')
+      // console.log('pushing to welcome page', router.currentRoute.value.path)
+      // await router.push('/sidepanel/welcome')
     }
 
     // set badge, text and color
     useTabsetsUiStore().updateExtensionIcon()
 
     ChromeApi.buildContextMenu('AppService')
+
+    //classification('this is the input text').then((res: any) => console.log('hier!!!', res))
   }
 }
 

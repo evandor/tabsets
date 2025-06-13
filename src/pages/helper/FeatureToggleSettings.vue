@@ -68,7 +68,14 @@
         <!--        <q-btn label="Clear all" no-caps @click="clearSuggestions()" />-->
       </div>
     </div>
-    <!--    </template>-->
+    <div class="row q-pa-md" v-if="useSettingsStore().has('DEV_MODE')">
+      <div class="col-3"><b>Create a zero-shot-classification message</b></div>
+      <div class="col-6">...</div>
+      <div class="col-1"></div>
+      <div class="col-2">
+        <q-btn label="Create" no-caps @click="createMessage()" />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -118,5 +125,26 @@ const collectUserFeedback = async () => {
     associatedEventId: eventId,
   }
   captureFeedback(userFeedback)
+}
+
+const createMessage = () => {
+  const data = {
+    text: 'some text',
+    candidates: ['some'],
+  }
+  console.log('about to apply KI logic on meta description...', data)
+
+  chrome.runtime.sendMessage(
+    {
+      name: 'zero-shot-classification',
+      data: data,
+    },
+    (callback: any) => {
+      console.log('got callback!', callback)
+      if (chrome.runtime.lastError) {
+        /* ignore */
+      }
+    },
+  )
 }
 </script>
