@@ -1,7 +1,6 @@
 import { LocalStorage, uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { useContentStore } from 'src/content/stores/contentStore'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
@@ -13,7 +12,6 @@ import { ChangeInfo } from 'src/tabsets/models/Tabset'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 
@@ -267,33 +265,32 @@ class BrowserListeners {
     //   console.log('stopping repetition in onUpdated')
     //   return
     // }
-    await setCurrentTab()
-    if (this.ignoreUrl(chromeTab.url) || info.status !== 'complete') {
-      return
-    }
-
-    if (
-      chromeTab.id &&
-      LocalStorage.getItem('ui.toolbar.integration') === 'all' &&
-      chromeTab.url?.startsWith('https://')
-    ) {
-      //if (this.injectList.filter((n: number) => n === chromeTab.id).length === 0) {
-      this.injectList.push(chromeTab.id)
-      console.log(`injecting into ${chromeTab.id}`, this.injectList, info)
-      chrome.scripting
-        .executeScript({
-          target: { tabId: chromeTab.id, allFrames: false },
-          files: ['tabsets-toolbar-contentscript.js'],
-          injectImmediately: true,
-        })
-        .catch((err) => console.log('executeScript error:', err))
-      //}
-    }
-    useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
-    useTabsetService().urlWasActivated(chromeTab.url)
-    useTabsetsUiStore().updateExtensionIcon(chromeTab.id)
-
-    await checkSwitchTabsetSuggestion(chromeTab.windowId)
+    //await setCurrentTab()
+    // if (this.ignoreUrl(chromeTab.url) || info.status !== 'complete') {
+    //   return
+    // }
+    // if (
+    //   chromeTab.id &&
+    //   LocalStorage.getItem('ui.toolbar.integration') === 'all' &&
+    //   chromeTab.url?.startsWith('https://')
+    // ) {
+    //   //if (this.injectList.filter((n: number) => n === chromeTab.id).length === 0) {
+    //   this.injectList.push(chromeTab.id)
+    //   console.log(`injecting into ${chromeTab.id}`, this.injectList, info)
+    //   chrome.scripting
+    //     .executeScript({
+    //       target: { tabId: chromeTab.id, allFrames: false },
+    //       files: ['tabsets-toolbar-contentscript.js'],
+    //       injectImmediately: true,
+    //     })
+    //     .catch((err) => console.log('executeScript error:', err))
+    //   //}
+    // }
+    // useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
+    // useTabsetService().urlWasActivated(chromeTab.url)
+    // useTabsetsUiStore().updateExtensionIcon(chromeTab.id)
+    //
+    // await checkSwitchTabsetSuggestion(chromeTab.windowId)
   }
 
   // #endregion snippet
@@ -332,28 +329,7 @@ class BrowserListeners {
 
   // #region snippet2
   async onActivated(info: chrome.tabs.TabActiveInfo) {
-    try {
-      const currentBrowserWindow = await chrome.windows.getCurrent()
-      console.debug(`tabActivated: ${JSON.stringify(info)}`, currentBrowserWindow.id === info.windowId)
-      if (info.windowId !== currentBrowserWindow.id) {
-        return
-      }
-      await setCurrentTab()
-      useTabsetsUiStore().updateExtensionIcon(info.tabId)
-      const tab: chrome.tabs.Tab = await chrome.tabs.get(info.tabId) //, (tab) => {
-      if (chrome.runtime.lastError) {
-        console.warn('got runtime error:', chrome.runtime.lastError)
-      }
-      // reset content store
-      await useContentStore().resetFor(tab)
-
-      useTabsetService().urlWasActivated(tab.url)
-      useTabsetsUiStore().setMatchingTabsFor(tab.url)
-
-      startTimer(tab.url)
-    } catch (err: any) {
-      console.log('got error in onActivated', err)
-    }
+    // no op
   }
 
   onWindowFocusChanged(windowId: number) {

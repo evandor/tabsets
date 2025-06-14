@@ -23,6 +23,8 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch((error: any) => console.error(error))
 }
 
+// https://github.com/huggingface/transformers.js/blob/main/examples/extension/src/background.js
+
 class PipelineSingleton {
   static task = 'text-classification' as const
   static model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
@@ -36,41 +38,38 @@ class PipelineSingleton {
     return this.instance
   }
 }
-
-// Create generic classify function, which will be reused for the different types of events.
-const classify = async (text: string) => {
-  // Get the pipeline instance. This will load and build the model when run for the first time.
-  let model = await PipelineSingleton.getInstance((data: any) => {
-    // You can track the progress of the pipeline creation here.
-    // e.g., you can send `data` back to the UI to indicate a progress bar
-    console.log('progress', data)
-  })
-
-  // Actually run the model on the input text
-  let result = await model(text)
-  return result
-}
-
-////////////////////// 2. Message Events /////////////////////
 //
-// Listen for messages from the UI, process it, and send the result back.
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action !== 'classify') return // Ignore messages that are not meant for classification.
-  console.log('sender', sender)
-  // Run model prediction asynchronously
-  ;(async function () {
-    console.log('Perform classification', message.text)
-    let result = await classify(message.text)
+// // Create generic classify function, which will be reused for the different types of events.
+// const classify = async (text: string) => {
+//   // Get the pipeline instance. This will load and build the model when run for the first time.
+//   let model = await PipelineSingleton.getInstance((data: any) => {
+//     // You can track the progress of the pipeline creation here.
+//     // e.g., you can send `data` back to the UI to indicate a progress bar
+//     console.log('progress', data)
+//   })
+//
+//   // Actually run the model on the input text
+//   let result = await model(text)
+//   return result
+// }
 
-    // Send response back to UI
-    sendResponse(result)
-  })()
-
-  // return true to indicate we will send a response asynchronously
-  // see https://stackoverflow.com/a/46628145 for more information
-  return true
-})
-//////////////////////////////////////////////////////////////
+// // Listen for messages from the UI, process it, and send the result back.
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//   if (message.action !== 'classify') return // Ignore messages that are not meant for classification.
+//   console.log('sender', sender)
+//   // Run model prediction asynchronously
+//   ;(async function () {
+//     console.log('Perform classification', message.text)
+//     let result = await classify(message.text)
+//
+//     // Send response back to UI
+//     sendResponse(result)
+//   })()
+//
+//   // return true to indicate we will send a response asynchronously
+//   // see https://stackoverflow.com/a/46628145 for more information
+//   return true
+// })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   ;(async function () {
@@ -90,6 +89,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       )
 
       try {
+        console.log('hier', modelPromise)
+
         await loadAIModule()
         let model = await modelPromise
         console.log('model', model)
