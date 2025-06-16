@@ -141,6 +141,7 @@ const createMessage = () => {
     },
     (callback: any) => {
       console.log('got callback!', callback)
+      alert(JSON.stringify(callback))
       if (chrome.runtime.lastError) {
         /* ignore */
       }

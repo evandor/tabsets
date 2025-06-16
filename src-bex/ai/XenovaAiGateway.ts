@@ -1,9 +1,10 @@
 import { env, pipeline } from '@xenova/transformers'
+import AiGateway from 'app/src-bex/ai/AiGateway'
 
-class Xenova {
+class XenovaAiGateway implements AiGateway {
   modelPromise: any = null
 
-  loadAIModule = async () => {
+  async loadModule(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { pipeline, env } = require('@xenova/transformers')
 
@@ -23,8 +24,8 @@ class Xenova {
 
     try {
       let start = 0
-
-      this.modelPromise = pipeline(task, model, {
+      console.log('hier', this.modelPromise)
+      this.modelPromise ??= pipeline(task, model, {
         progress_callback: (data: any) => {
           if (data.status !== 'progress') {
             console.log('got progress_callback', data)
@@ -61,15 +62,11 @@ class Xenova {
     }
   }
 
-  getModelPromise() {
-    return this.modelPromise
-  }
-
-  async zeroShotClassification(text: string, candidates: string[]) {
+  async zeroShotClassification(text: string, candidates: string[]): Promise<object> {
     console.log('got zero-shot-classification message', text, candidates)
 
-    await this.loadAIModule()
-    let model = await this.getModelPromise() //await modelPromise
+    await this.loadModule()
+    let model = await this.modelPromise //await modelPromise
     console.log('model', model)
     let result = await model(text, candidates)
     console.log('result:', result)
@@ -77,4 +74,4 @@ class Xenova {
   }
 }
 
-export default new Xenova()
+export default new XenovaAiGateway()

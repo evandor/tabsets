@@ -1,8 +1,7 @@
 import { env as henv, pipeline, ProgressCallback } from '@huggingface/transformers'
-import { env } from '@xenova/transformers'
 import { createBridge } from '#q-app/bex/background'
-import XenovaAi from 'app/src-bex/xenova.ai'
 import Analytics from 'src/core/utils/google-analytics'
+import { useAiService } from 'src/services/useAiService'
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -117,38 +116,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.name === 'init-ai-module') {
       console.log('got message init-ai-module!!')
       try {
-        // await PipelineSingleton.getInstance((data: any) => {
-        //   // You can track the progress of the pipeline creation here.
-        //   // e.g., you can send `data` back to the UI to indicate a progress bar
-        //   console.log('progress', data)
-        // })
-        await XenovaAi.loadAIModule()
+        //await XenovaAi.loadAIModule()
+
+        const ai = useAiService().xenova
+        await ai.loadModule()
+
         sendResponse('ai module loaded')
       } catch (err: any) {
         sendResponse('error: ' + err)
       }
     } else if (message.name === 'zero-shot-classification') {
-      console.log(
-        'got zero-shot-classification message',
-        message.data.text,
-        typeof (message.data.candidates as string[]),
-      )
-
       try {
         console.log('hier', modelPromise)
 
-        await XenovaAi.loadAIModule()
-        let model = await XenovaAi.getModelPromise() //await modelPromise
-        console.log('model', model)
-        let result = await model(message.data.text, message.data.candidates as string[])
-        console.log('result:', result)
-
+        // const result = await XenovaAi.zeroShotClassification(message.data.text, message.data.candidates as string[])
+        const ai = useAiService().xenova
+        const result = await ai.zeroShotClassification(message.data.text, message.data.candidates as string[])
         // const r = classify(message.data.text, message.data.candidates as string[])
         // console.log('r', r)
         //let reviewer2 = await pipeline('zero-shot-classification', 'Xenova/bart-large-mnli');
         //let result3 = await model('View the latest news and breaking news today for, entertainment, politics and health at CNN.com.', ['News','Nachrichten','wasanderes']);
         //console.log("result3", result3)
-        sendResponse('result')
+        sendResponse(result)
       } catch (err) {
         console.log('got error', err)
         sendResponse(err)
@@ -162,63 +151,63 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 let modelPromise: any = null
 
-async function loadAIModule() {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { pipeline, env } = require('@xenova/transformers')
-
-  console.log('initializing transformers....')
-
-  env.useBrowserCache = true
-  env.remoteModels = true //false;
-  //env.localModelPath = chrome.runtime.getURL('models/')
-  env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
-  env.backends.onnx.wasm.numThreads = 1
-
-  // const task = 'text-classification';
-  //const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
-  const task = 'zero-shot-classification'
-  const model = 'Xenova/bart-large-mnli'
-  //const model = 'Xenova/finbert';
-
-  try {
-    let start = 0
-
-    modelPromise = pipeline(task, model, {
-      progress_callback: (data: any) => {
-        if (data.status !== 'progress') {
-          console.log('got progress_callback', data)
-        }
-
-        // if (data.progress < start + 5) {
-        //   return
-        // }
-        start = data.progress
-
-        const msg = {
-          name: 'progress-indicator',
-          percent: data.progress / 100,
-          status: data.status,
-          label: 'AI Module ' + data.name,
-        }
-
-        //console.log('msg', msg)
-        //    useUiStore().setProgress(data.progress / 100, `AI Model... ${data.progress}%`)
-        //chrome.runtime.sendMessage(msg)
-        chrome.runtime.sendMessage(msg, (callback) => {
-          if (chrome.runtime.lastError) {
-            /* ignore */
-            // TODO we get tons of errors here
-            //console.log('runtime error encountered', chrome.runtime.lastError)
-          } else {
-            //console.log("cb", callback)
-          }
-        })
-      },
-    })
-  } catch (err) {
-    console.error('hier: error', JSON.stringify(err))
-  }
-}
+// async function loadAIModule() {
+//   // eslint-disable-next-line @typescript-eslint/no-require-imports
+//   const { pipeline, env } = require('@xenova/transformers')
+//
+//   console.log('initializing transformers....')
+//
+//   env.useBrowserCache = true
+//   env.remoteModels = true //false;
+//   //env.localModelPath = chrome.runtime.getURL('models/')
+//   env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
+//   env.backends.onnx.wasm.numThreads = 1
+//
+//   // const task = 'text-classification';
+//   //const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
+//   const task = 'zero-shot-classification'
+//   const model = 'Xenova/bart-large-mnli'
+//   //const model = 'Xenova/finbert';
+//
+//   try {
+//     let start = 0
+//
+//     modelPromise = pipeline(task, model, {
+//       progress_callback: (data: any) => {
+//         if (data.status !== 'progress') {
+//           console.log('got progress_callback', data)
+//         }
+//
+//         // if (data.progress < start + 5) {
+//         //   return
+//         // }
+//         start = data.progress
+//
+//         const msg = {
+//           name: 'progress-indicator',
+//           percent: data.progress / 100,
+//           status: data.status,
+//           label: 'AI Module ' + data.name,
+//         }
+//
+//         //console.log('msg', msg)
+//         //    useUiStore().setProgress(data.progress / 100, `AI Model... ${data.progress}%`)
+//         //chrome.runtime.sendMessage(msg)
+//         chrome.runtime.sendMessage(msg, (callback) => {
+//           if (chrome.runtime.lastError) {
+//             /* ignore */
+//             // TODO we get tons of errors here
+//             //console.log('runtime error encountered', chrome.runtime.lastError)
+//           } else {
+//             //console.log("cb", callback)
+//           }
+//         })
+//       },
+//     })
+//   } catch (err) {
+//     console.error('hier: error', JSON.stringify(err))
+//   }
+// }
 
 // if (useQuasar().platform.is.firefox) {
 chrome.action.onClicked.addListener((t: chrome.tabs.Tab) => {
