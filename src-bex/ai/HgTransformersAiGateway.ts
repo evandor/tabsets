@@ -1,4 +1,4 @@
-import { env, pipeline } from '@xenova/transformers'
+import { env as henv, pipeline } from '@huggingface/transformers'
 import AiGateway from 'app/src-bex/ai/AiGateway'
 
 class XenovaAiGateway implements AiGateway {
@@ -6,15 +6,17 @@ class XenovaAiGateway implements AiGateway {
 
   async loadModule(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { pipeline, env } = require('@xenova/transformers')
+    const { pipeline, env } = require('@huggingface/transformers')
+
+    await this.setupOnnxRuntime()
 
     console.log('initializing transformers....')
 
-    env.useBrowserCache = true
-    env.remoteModels = true //false;
+    henv.useBrowserCache = true
+    //henv.remoteModels = true //false;
     //env.localModelPath = chrome.runtime.getURL('models/')
-    env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
-    env.backends.onnx.wasm.numThreads = 1
+    henv.backends.onnx.wasm!.wasmPaths = chrome.runtime.getURL('www/wasm/')
+    henv.backends.onnx.wasm!.numThreads = 1
 
     // const task = 'text-classification';
     //const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
@@ -56,10 +58,32 @@ class XenovaAiGateway implements AiGateway {
             }
           })
         },
-        // device: 'webgpu',
       })
     } catch (err) {
       console.error('hier: error', JSON.stringify(err))
+    }
+  }
+
+  private async setupOnnxRuntime() {
+    try {
+      // Dynamically import onnxruntime-web
+      await import('onnxruntime-web')
+
+      // Configure the ONNX backend
+      henv.backends = {
+        ...henv.backends,
+        onnx: {
+          wasm: {
+            proxy: true,
+          },
+        },
+      }
+
+      console.log('ONNX Runtime initialized successfully')
+      return true
+    } catch (error) {
+      console.error('Failed to initialize ONNX Runtime:', error)
+      return false
     }
   }
 

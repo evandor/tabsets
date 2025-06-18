@@ -1,4 +1,3 @@
-import { env as henv, pipeline, ProgressCallback } from '@huggingface/transformers'
 import { createBridge } from '#q-app/bex/background'
 import Analytics from 'src/core/utils/google-analytics'
 import { useAiService } from 'src/services/useAiService'
@@ -26,72 +25,72 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 
 // https://github.com/huggingface/transformers.js/blob/main/examples/extension/src/background.js
 
-class PipelineSingleton {
-  // static task = 'text-classification' as const
-  // static model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
-  static task = 'zero-shot-classification' as const
-  static model = 'Xenova/bart-large-mnli'
-
-  // console.log('initializing transformers....')
-  //
-  // env.useBrowserCache = true
-  // env.remoteModels = true //false;
-  // //env.localModelPath = chrome.runtime.getURL('models/')
-  // env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
-  // env.backends.onnx.wasm.numThreads = 1
-  //
-  static instance: any = null //TextClassificationPipeline = null as unknown as TextClassificationPipeline
-
-  static async getInstance(progress_callback: ProgressCallback | undefined = undefined) {
-    henv.allowRemoteModels = true
-    // @ts-expect-error xxx
-    henv.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
-    // @ts-expect-error xxx
-    henv.backends.onnx.wasm.numThreads = 1
-    console.log('getting intance')
-    this.instance ??= pipeline(this.task, this.model, {
-      progress_callback: (data: any) => {
-        const msg = {
-          name: 'progress-indicator',
-          percent: data.progress / 100,
-          status: data.status,
-          label: 'AI Module ' + data.name,
-        }
-
-        //console.log('msg', msg)
-        //    useUiStore().setProgress(data.progress / 100, `AI Model... ${data.progress}%`)
-        //chrome.runtime.sendMessage(msg)
-        chrome.runtime.sendMessage(msg, (callback) => {
-          if (chrome.runtime.lastError) {
-            /* ignore */
-            // TODO we get tons of errors here
-            //console.log('runtime error encountered', chrome.runtime.lastError)
-          } else {
-            //console.log("cb", callback)
-          }
-        })
-      },
-    })
-    console.log('got intance', this.instance)
-
-    return this.instance
-  }
-}
+// class PipelineSingleton {
+//   // static task = 'text-classification' as const
+//   // static model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
+//   static task = 'zero-shot-classification' as const
+//   static model = 'Xenova/bart-large-mnli'
+//
+//   // console.log('initializing transformers....')
+//   //
+//   // env.useBrowserCache = true
+//   // env.remoteModels = true //false;
+//   // //env.localModelPath = chrome.runtime.getURL('models/')
+//   // env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
+//   // env.backends.onnx.wasm.numThreads = 1
+//   //
+//   static instance: any = null //TextClassificationPipeline = null as unknown as TextClassificationPipeline
+//
+//   static async getInstance(progress_callback: ProgressCallback | undefined = undefined) {
+//     henv.allowRemoteModels = true
+//     // @ts-expect-error xxx
+//     henv.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
+//     // @ts-expect-error xxx
+//     henv.backends.onnx.wasm.numThreads = 1
+//     console.log('getting intance')
+//     this.instance ??= pipeline(this.task, this.model, {
+//       progress_callback: (data: any) => {
+//         const msg = {
+//           name: 'progress-indicator',
+//           percent: data.progress / 100,
+//           status: data.status,
+//           label: 'AI Module ' + data.name,
+//         }
+//
+//         //console.log('msg', msg)
+//         //    useUiStore().setProgress(data.progress / 100, `AI Model... ${data.progress}%`)
+//         //chrome.runtime.sendMessage(msg)
+//         chrome.runtime.sendMessage(msg, (callback) => {
+//           if (chrome.runtime.lastError) {
+//             /* ignore */
+//             // TODO we get tons of errors here
+//             //console.log('runtime error encountered', chrome.runtime.lastError)
+//           } else {
+//             //console.log("cb", callback)
+//           }
+//         })
+//       },
+//     })
+//     console.log('got intance', this.instance)
+//
+//     return this.instance
+//   }
+// }
 
 //
 // Create generic classify function, which will be reused for the different types of events.
-const classify = async (text: string, candidates: string[]) => {
-  // Get the pipeline instance. This will load and build the model when run for the first time.
-  let model = await PipelineSingleton.getInstance((data: any) => {
-    // You can track the progress of the pipeline creation here.
-    // e.g., you can send `data` back to the UI to indicate a progress bar
-    console.log('progress', data)
-  })
-
-  // Actually run the model on the input text
-  let result = await model(text, candidates)
-  return result
-}
+// const classify = async (text: string, candidates: string[]) => {
+//   // Get the pipeline instance. This will load and build the model when run for the first time.
+//   let model = await PipelineSingleton.getInstance((data: any) => {
+//     // You can track the progress of the pipeline creation here.
+//     // e.g., you can send `data` back to the UI to indicate a progress bar
+//     console.log('progress', data)
+//   })
+//
+//   // Actually run the model on the input text
+//   let result = await model(text, candidates)
+//   return result
+// }
 
 // // Listen for messages from the UI, process it, and send the result back.
 // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -113,14 +112,11 @@ const classify = async (text: string, candidates: string[]) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   ;(async function () {
+    const aiGateway = useAiService().xenova
     if (message.name === 'init-ai-module') {
       console.log('got message init-ai-module!!')
       try {
-        //await XenovaAi.loadAIModule()
-
-        const ai = useAiService().xenova
-        await ai.loadModule()
-
+        await aiGateway.loadModule()
         sendResponse('ai module loaded')
       } catch (err: any) {
         sendResponse('error: ' + err)
@@ -128,15 +124,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.name === 'zero-shot-classification') {
       try {
         console.log('hier', modelPromise)
-
-        // const result = await XenovaAi.zeroShotClassification(message.data.text, message.data.candidates as string[])
-        const ai = useAiService().xenova
-        const result = await ai.zeroShotClassification(message.data.text, message.data.candidates as string[])
-        // const r = classify(message.data.text, message.data.candidates as string[])
-        // console.log('r', r)
-        //let reviewer2 = await pipeline('zero-shot-classification', 'Xenova/bart-large-mnli');
-        //let result3 = await model('View the latest news and breaking news today for, entertainment, politics and health at CNN.com.', ['News','Nachrichten','wasanderes']);
-        //console.log("result3", result3)
+        const result = await aiGateway.zeroShotClassification(message.data.text, message.data.candidates as string[])
         sendResponse(result)
       } catch (err) {
         console.log('got error', err)

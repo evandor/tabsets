@@ -5,9 +5,11 @@
       <router-view :key="$route.path" />
     </q-page-container>
 
-    <!--    <q-footer elevated>-->
-    <!--      <PopupFooter />-->
-    <!--    </q-footer>-->
+    <q-footer elevated>
+      <PopupFooter />
+    </q-footer>
   </q-layout>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import PopupFooter from 'src/core/components/PopupFooter.vue'
+</script>

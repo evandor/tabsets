@@ -144,12 +144,7 @@ class AppService {
     useMessagesStore().initialize()
     useEventsStore().initialize()
 
-    ChromeApi.init(router)
-
-    // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-    //   // await groupsStore.initialize(useDB(undefined).db)
-    //   groupsStore.initListeners()
-    // }
+    ChromeApi.init()
 
     useUiStore().appLoading = undefined
 
