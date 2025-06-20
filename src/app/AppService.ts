@@ -69,8 +69,8 @@ class AppService {
 
     if (inBexMode()) {
       chrome.tabs.query({ active: true, currentWindow: true }).then((currentTabs: chrome.tabs.Tab[]) => {
-        console.log('currentTab', currentTabs)
         if (currentTabs.length > 0 && currentTabs[0]!.id) {
+          //console.log('sending Message getExcerpt', currentTabs)
           chrome.tabs
             .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
             .then((payload) => {

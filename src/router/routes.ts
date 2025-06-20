@@ -25,6 +25,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupPage.vue') }],
   },
   {
+    path: '/popup/tabset',
+    component: () => import('layouts/PopupLayout.vue'),
+    children: [{ path: '', component: () => import('src/core/pages/popup/PopupCollectionPage.vue') }],
+  },
+  {
     path: '/popup/tabsets',
     component: () => import('layouts/PopupLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupCollectionsPage.vue') }],
@@ -75,11 +80,11 @@ const routes: RouteRecordRaw[] = [
       { path: 'tags', component: () => import('src/core/pages/sidepanel/SidePanelTagsPage.vue') },
       { path: 'tagslist', component: () => import('src/core/pages/sidepanel/SidePanelTagsListViewer.vue') },
       { path: 'top10List', component: () => import('src/core/pages/sidepanel/SidePanelTop10Page.vue') },
-      // {
-      //   path: 'welcome',
-      //   component: () => import('layouts/SidePanelWithoutLayout.vue'),
-      //   children: [{ path: '', component: () => import('src/core/pages/sidepanel/WelcomePage.vue') }],
-      // },
+      {
+        path: 'welcome',
+        component: () => import('layouts/SidePanelWithoutLayout.vue'),
+        children: [{ path: '', component: () => import('src/core/pages/sidepanel/WelcomePage.vue') }],
+      },
     ],
   },
 

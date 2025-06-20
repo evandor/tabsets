@@ -1,5 +1,6 @@
 import { createBridge } from '#q-app/bex/content'
-import { LocalStorage } from 'quasar' // The use of the bridge is optional.
+import { LocalStorage } from 'quasar'
+import { PageData } from 'src/tabsets/models/PageData' // The use of the bridge is optional.
 
 // The use of the bridge is optional.
 const bridge = createBridge({ debug: false })
@@ -31,7 +32,7 @@ bridge.on('some.event', ({ payload }) => {
   }
 })
 
-function getMetas(document: Document) {
+function getMetas(document: Document): { [k: string]: string } {
   //console.debug("tabsets: getting metas for document" )
   const result: { [k: string]: string } = {}
   //const res: string[] = []
@@ -51,7 +52,7 @@ function getMetas(document: Document) {
   return result
 }
 
-function getExcerptResponseMessage() {
+function getResponseData(): PageData {
   return {
     html: document.documentElement.outerHTML,
     metas: getMetas(document),
@@ -78,7 +79,7 @@ bridge
   .connectToBackground()
   .then(() => {
     console.log('[BEX-CT] Connected to background', bridge.portName)
-    const responseMessage = getExcerptResponseMessage()
+    const responseMessage = getResponseData()
     bridge.send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage }).catch((err: any) => {
       console.log('[BEX-CT] Failed to send message to app', err)
     })
@@ -91,7 +92,7 @@ bridge
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request === 'getExcerpt') {
     console.debug("tabsets: got request 'getExcerpt'")
-    const responseMessage = getExcerptResponseMessage()
+    const responseMessage = getResponseData()
     sendResponse(responseMessage)
   } else {
     sendResponse({ content: 'unknown request in tabsets-content-scripts: ' + request })
