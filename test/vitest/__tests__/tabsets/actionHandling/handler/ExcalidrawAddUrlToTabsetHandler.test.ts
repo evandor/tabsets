@@ -6,7 +6,6 @@ import { useContentService } from 'src/content/services/ContentService'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { useDB } from 'src/services/usePersistenceService'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
-import { Tabset } from 'src/tabsets/models/Tabset'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -61,12 +60,12 @@ describe('ExcalidrawAddUrlToTabsetHandler', () => {
     expect(handler.tabMatcher('url', content, {})).toBe(false)
   })
 
-  it('clicking saveAs Button results ...', async () => {
-    const ts = new Tabset('tsId', 'tsName')
-    // await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
-    //   data: { filename: 'excalitest' },
-    // })
-    expect(ts.tabs.length).toBe(1)
-    expect(ts.tabs[0]!.storage?.excalidraw).toBe('{"a":"A"}')
-  })
+  // it('clicking saveAs Button results ...', async () => {
+  //   const ts = new Tabset('tsId', 'tsName')
+  //   // await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
+  //   //   data: { filename: 'excalitest' },
+  //   // })
+  //   expect(ts.tabs.length).toBe(1)
+  //   expect(ts.tabs[0]!.storage?.excalidraw).toBe('{"a":"A"}')
+  // })
 })

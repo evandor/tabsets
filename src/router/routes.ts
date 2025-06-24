@@ -34,6 +34,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PopupLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupCollectionsPage.vue') }],
   },
+  {
+    path: '/popup/settings',
+    component: () => import('layouts/PopupLayout.vue'),
+    children: [{ path: '', component: () => import('src/core/pages/popup/PopupSettingsPage.vue') }],
+  },
 
   /** FullPage **/
   {

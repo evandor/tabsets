@@ -3,9 +3,9 @@ import { mount, VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { LocalStorage } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
-import SidePanelPage2 from 'src/core/pages/SidePanelPage2.vue'
+import PopupPage from 'src/core/pages/popup/PopupPage.vue'
 import { useDB } from 'src/services/usePersistenceService'
-import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
+import { Tabset } from 'src/tabsets/models/Tabset'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -17,7 +17,7 @@ installQuasarPlugin()
 
 vi.mock('vue-router')
 
-describe('SidePanelPage2', () => {
+describe('PopupPage', () => {
   vi.mock('vue-i18n', () => ({
     useI18n: () => ({
       t: (key: string) => (key === 'welcome_to_tabsets' ? 'Welcome to Tabsets' : key),
@@ -28,6 +28,10 @@ describe('SidePanelPage2', () => {
 
   let db = null as unknown as TabsetsPersistence
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
+
+  function getHtmlInputValue(testId: string) {
+    return (wrapper.find(`[data-testid=${testId}]`).element as HTMLInputElement).value
+  }
 
   beforeAll(() => {
     // https://vitest.dev/guide/browser.html
@@ -70,28 +74,42 @@ describe('SidePanelPage2', () => {
         onMessage: {
           addListener: vi.fn(() => {}),
         },
+        getContexts: vi.fn(() => {}),
       },
     }
 
     vi.stubGlobal('chrome', chromeMock)
-
-    wrapper = mount(SidePanelPage2)
   })
 
   it('should be mounted', async () => {
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
+    wrapper = mount(PopupPage)
     console.log('hier', wrapper.html())
-    expect(wrapper.text()).toContain('menuaddtab')
+    expect(wrapper.text()).toContain('Collection')
     expect(wrapper.text()).not.toContain('search')
   })
 
-  it('should show existing tabset', async () => {
-    await new CreateTabsetCommand('existing Tabset', []).execute()
+  it('shows the browsers current tab if not yet saved', async () => {
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
-    const wrapper = mount(SidePanelPage2)
-    console.log('hier', wrapper.html())
-    //console.log("hier2", wrapper.text())
-    expect(wrapper.html()).toContain('existing Tabset')
-    //expect(wrapper.html()).not.toContain("search");
+    const tabsetsMap = new Map<string, Tabset>()
+    tabsetsMap.set('id', new Tabset('id', 'dummy', []))
+    tabsetsMap.set('id2', new Tabset('id2', 'dummy2', []))
+    useTabsetsStore().tabsets = tabsetsMap
+    await useTabsetsStore().selectCurrentTabset('id')
+    wrapper = mount(PopupPage)
+    //console.log('hier', wrapper.html())
+    expect(getHtmlInputValue('pageModelTitle')).toBe('title')
+    expect(getHtmlInputValue('pageModelDescription')).toBe('')
+    expect(getHtmlInputValue('pageModelUrl')).toBe('https://www.skysail.io/some-subpage')
   })
+
+  // it('should show existing tabset', async () => {
+  //   await new CreateTabsetCommand('existing Tabset', []).execute()
+  //   useTabsStore2().setCurrentChromeTab(skysailChromeTab)
+  //   const wrapper = mount(SidePanelPage2)
+  //   console.log('hier', wrapper.html())
+  //   //console.log("hier2", wrapper.text())
+  //   expect(wrapper.html()).toContain('existing Tabset')
+  //   //expect(wrapper.html()).not.toContain("search");
+  // })
 })

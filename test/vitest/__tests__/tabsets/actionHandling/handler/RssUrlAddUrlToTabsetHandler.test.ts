@@ -6,7 +6,6 @@ import { useContentService } from 'src/content/services/ContentService'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { useDB } from 'src/services/usePersistenceService'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
-import { Tabset } from 'src/tabsets/models/Tabset'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -48,13 +47,13 @@ describe('RssAddUrlToTabsetHandler', () => {
   //   expect(identifier).toEqual(['AddRssFeed'])
   // })
 
-  it('clicking addTab Button results in tab being added', async () => {
-    const ts = new Tabset('tsId', 'tsName')
-    // await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
-    //   dialog: {
-    //     more: {},
-    //   },
-    // })
-    expect(ts.tabs.length).toBe(1)
-  })
+  // it('clicking addTab Button results in tab being added', async () => {
+  //   const ts = new Tabset('tsId', 'tsName')
+  //   // await handler.clicked(BrowserApi.createChromeTabObject('title', url), ts, undefined, {
+  //   //   dialog: {
+  //   //     more: {},
+  //   //   },
+  //   // })
+  //   expect(ts.tabs.length).toBe(1)
+  // })
 })

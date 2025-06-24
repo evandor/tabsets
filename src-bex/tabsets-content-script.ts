@@ -1,6 +1,6 @@
 import { createBridge } from '#q-app/bex/content'
 import { LocalStorage } from 'quasar'
-import { PageData } from 'src/tabsets/models/PageData' // The use of the bridge is optional.
+import { PageData } from 'src/tabsets/models/PageData'
 
 // The use of the bridge is optional.
 const bridge = createBridge({ debug: false })
@@ -78,11 +78,30 @@ function getResponseData(): PageData {
 bridge
   .connectToBackground()
   .then(() => {
-    console.log('[BEX-CT] Connected to background', bridge.portName)
-    const responseMessage = getResponseData()
-    bridge.send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage }).catch((err: any) => {
-      console.log('[BEX-CT] Failed to send message to app', err)
-    })
+    console.log(
+      `[BEX-CT] Connected to background (portName: ${bridge.portName}, portList: ${JSON.stringify(bridge.portList)})`,
+    )
+    if (bridge.portList.indexOf('background') >= 0) {
+      console.log('hier2')
+      bridge
+        .send({ event: 'update.indicator.icon', to: 'background', payload: { url: window.location.href } })
+        .catch((err: any) => {
+          console.log('[BEX-CT] Failed to send message to background', err)
+        })
+    }
+    // chrome.tabs.query({ active: true, lastFocusedWindow: true }).then((tabs: chrome.tabs.Tab[]) => {
+    //   console.log('got', tabs)
+    //   if (tabs.length > 0 && tabs[0]) {
+    //     useTabsetsUiStore().updateExtensionIcon(tabs[0])
+    //   }
+    // })
+
+    if (bridge.portList.indexOf('app') >= 0) {
+      const responseMessage = getResponseData()
+      bridge.send({ event: 'tabsets.bex.tab.excerpt', to: 'app', payload: responseMessage }).catch((err: any) => {
+        console.log('[BEX-CT] Failed to send message to app', err)
+      })
+    }
   })
   .catch((err) => {
     console.error('[BEX-CT] Failed to connect to background:', err)

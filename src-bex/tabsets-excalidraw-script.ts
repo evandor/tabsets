@@ -6,7 +6,7 @@ const bridge = createBridge({ debug: false })
 bridge
   .connectToBackground()
   .then(() => {
-    console.log('[BEX-CT] Connected to background', bridge.portName, window.location.href)
+    console.log('[BEX-CT] Connected to background...', bridge.portName, window.location.href)
     if (window.location.href === 'https://excalidraw.com/' || window.location.href === 'https://draw.kvb.local') {
       const responseMessage = {
         html: document.documentElement.outerHTML,
