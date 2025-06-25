@@ -165,7 +165,7 @@ class AppService {
     }
 
     // set badge, text and color
-    useTabsetsUiStore().updateExtensionIcon()
+    //useTabsetsUiStore().updateExtensionIcon()
 
     ChromeApi.buildContextMenu('AppService')
 

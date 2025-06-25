@@ -23,93 +23,6 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch((error: any) => console.error(error))
 }
 
-// https://github.com/huggingface/transformers.js/blob/main/examples/extension/src/background.js
-
-// class PipelineSingleton {
-//   // static task = 'text-classification' as const
-//   // static model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
-//   static task = 'zero-shot-classification' as const
-//   static model = 'Xenova/bart-large-mnli'
-//
-//   // console.log('initializing transformers....')
-//   //
-//   // env.useBrowserCache = true
-//   // env.remoteModels = true //false;
-//   // //env.localModelPath = chrome.runtime.getURL('models/')
-//   // env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
-//   // env.backends.onnx.wasm.numThreads = 1
-//   //
-//   static instance: any = null //TextClassificationPipeline = null as unknown as TextClassificationPipeline
-//
-//   static async getInstance(progress_callback: ProgressCallback | undefined = undefined) {
-//     henv.allowRemoteModels = true
-//     // @ts-expect-error xxx
-//     henv.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
-//     // @ts-expect-error xxx
-//     henv.backends.onnx.wasm.numThreads = 1
-//     console.log('getting intance')
-//     this.instance ??= pipeline(this.task, this.model, {
-//       progress_callback: (data: any) => {
-//         const msg = {
-//           name: 'progress-indicator',
-//           percent: data.progress / 100,
-//           status: data.status,
-//           label: 'AI Module ' + data.name,
-//         }
-//
-//         //console.log('msg', msg)
-//         //    useUiStore().setProgress(data.progress / 100, `AI Model... ${data.progress}%`)
-//         //chrome.runtime.sendMessage(msg)
-//         chrome.runtime.sendMessage(msg, (callback) => {
-//           if (chrome.runtime.lastError) {
-//             /* ignore */
-//             // TODO we get tons of errors here
-//             //console.log('runtime error encountered', chrome.runtime.lastError)
-//           } else {
-//             //console.log("cb", callback)
-//           }
-//         })
-//       },
-//     })
-//     console.log('got intance', this.instance)
-//
-//     return this.instance
-//   }
-// }
-
-//
-// Create generic classify function, which will be reused for the different types of events.
-// const classify = async (text: string, candidates: string[]) => {
-//   // Get the pipeline instance. This will load and build the model when run for the first time.
-//   let model = await PipelineSingleton.getInstance((data: any) => {
-//     // You can track the progress of the pipeline creation here.
-//     // e.g., you can send `data` back to the UI to indicate a progress bar
-//     console.log('progress', data)
-//   })
-//
-//   // Actually run the model on the input text
-//   let result = await model(text, candidates)
-//   return result
-// }
-
-// // Listen for messages from the UI, process it, and send the result back.
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   if (message.action !== 'classify') return // Ignore messages that are not meant for classification.
-//   console.log('sender', sender)
-//   // Run model prediction asynchronously
-//   ;(async function () {
-//     console.log('Perform classification', message.text)
-//     let result = await classify(message.text)
-//
-//     // Send response back to UI
-//     sendResponse(result)
-//   })()
-//
-//   // return true to indicate we will send a response asynchronously
-//   // see https://stackoverflow.com/a/46628145 for more information
-//   return true
-// })
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   ;(async function () {
     const aiGateway = useAiService().xenova
@@ -130,6 +43,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log('got error', err)
         sendResponse(err)
       }
+    } else if (message.name === 'tab-added') {
+      console.log('got message tab-added!!', message)
+      const currentTabs = await chrome.tabs.query({ url: message.data.url })
+      console.log('currentTabs', currentTabs)
+      currentTabs
+        .filter((tab: chrome.tabs.Tab) => tab.id)
+        .forEach((tab: chrome.tabs.Tab) => {
+          chrome.tabs.sendMessage(tab.id!, { name: 'tab-added', url: message.data.url }).catch((err) => {
+            console.log("could not handle 'tab-added'", err)
+          })
+        })
+    } else if (message.name === 'tab-deleted') {
+      console.log('got message tab-deleted!!', message)
+      // const currentTabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
+      // console.log('currentTabs', currentTabs)
+      // const currentTab = currentTabs[0]!
+      // if (currentTab.id) {
+      //   chrome.tabs.sendMessage(currentTab.id, 'tab-added', {}).catch((err) => {
+      //     console.log("could not handle 'tab-added'", err)
+      //   })
+      // }
+    } else {
+      console.log(`got unknown message '${message.name}' in background.ts`)
     }
   })()
   // return true to indicate we will send a response asynchronously
@@ -138,64 +74,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 })
 
 let modelPromise: any = null
-
-// async function loadAIModule() {
-//   // eslint-disable-next-line @typescript-eslint/no-require-imports
-//   const { pipeline, env } = require('@xenova/transformers')
-//
-//   console.log('initializing transformers....')
-//
-//   env.useBrowserCache = true
-//   env.remoteModels = true //false;
-//   //env.localModelPath = chrome.runtime.getURL('models/')
-//   env.backends.onnx.wasm.wasmPaths = chrome.runtime.getURL('www/wasm/')
-//   env.backends.onnx.wasm.numThreads = 1
-//
-//   // const task = 'text-classification';
-//   //const model = 'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
-//   const task = 'zero-shot-classification'
-//   const model = 'Xenova/bart-large-mnli'
-//   //const model = 'Xenova/finbert';
-//
-//   try {
-//     let start = 0
-//
-//     modelPromise = pipeline(task, model, {
-//       progress_callback: (data: any) => {
-//         if (data.status !== 'progress') {
-//           console.log('got progress_callback', data)
-//         }
-//
-//         // if (data.progress < start + 5) {
-//         //   return
-//         // }
-//         start = data.progress
-//
-//         const msg = {
-//           name: 'progress-indicator',
-//           percent: data.progress / 100,
-//           status: data.status,
-//           label: 'AI Module ' + data.name,
-//         }
-//
-//         //console.log('msg', msg)
-//         //    useUiStore().setProgress(data.progress / 100, `AI Model... ${data.progress}%`)
-//         //chrome.runtime.sendMessage(msg)
-//         chrome.runtime.sendMessage(msg, (callback) => {
-//           if (chrome.runtime.lastError) {
-//             /* ignore */
-//             // TODO we get tons of errors here
-//             //console.log('runtime error encountered', chrome.runtime.lastError)
-//           } else {
-//             //console.log("cb", callback)
-//           }
-//         })
-//       },
-//     })
-//   } catch (err) {
-//     console.error('hier: error', JSON.stringify(err))
-//   }
-// }
 
 // if (useQuasar().platform.is.firefox) {
 chrome.action.onClicked.addListener((t: chrome.tabs.Tab) => {
@@ -254,36 +132,44 @@ declare module '@quasar/app-vite' {
  */
 const bridge = createBridge({ debug: false })
 
-bridge.on('log', ({ from, payload }) => {
-  console.log(`[BEX] @log from "${from}"`, payload)
-})
-
-bridge.on('getTime', () => {
-  return Date.now()
-})
-
-bridge.on('storage.get', ({ payload: key }) => {
-  return new Promise((resolve) => {
-    if (key === void 0) {
-      chrome.storage.local.get(null, (items) => {
-        // Group the values up into an array to take advantage of the bridge's chunk splitting.
-        resolve(Object.values(items))
-      })
-    } else {
-      chrome.storage.local.get([key], (items) => {
-        resolve(items[key])
-      })
+bridge.on('update.indicator.icon', (payload: object) => {
+  console.log(`[BEX] message!"`, payload, bridge.portList)
+  chrome.tabs.query({ active: true, lastFocusedWindow: true }).then((tabs: chrome.tabs.Tab[]) => {
+    if (tabs.length > 0 && tabs[0]) {
+      const msg = payload['payload' as keyof object]
+      if (msg && msg['managed']) {
+        chrome.action.setBadgeText({ text: '✅' })
+        chrome.action.setTitle({ title: JSON.stringify(payload['payload' as keyof object]) })
+      } else {
+        chrome.action.setBadgeText({ text: '' })
+        chrome.action.setTitle({ title: 'none' })
+      }
     }
   })
 })
 
-bridge.on('storage.set', ({ payload: { key, value } }) => {
-  chrome.storage.local.set({ [key]: value })
-})
-
-bridge.on('storage.remove', ({ payload: key }) => {
-  chrome.storage.local.remove(key)
-})
+// bridge.on('log', ({ from, payload }) => {
+//   console.log(`[BEX] @log from "${from}"`, payload)
+// })
+//
+// bridge.on('getTime', () => {
+//   return Date.now()
+// })
+//
+// bridge.on('storage.get', ({ payload: key }) => {
+//   return new Promise((resolve) => {
+//     if (key === void 0) {
+//       chrome.storage.local.get(null, (items) => {
+//         // Group the values up into an array to take advantage of the bridge's chunk splitting.
+//         resolve(Object.values(items))
+//       })
+//     } else {
+//       chrome.storage.local.get([key], (items) => {
+//         resolve(items[key])
+//       })
+//     }
+//   })
+// })
 
 bridge.on('reload-current-tabset', async ({ payload }) => {
   // const ts = useTabsetsStore().getCurrentTabset
