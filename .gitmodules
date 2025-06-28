@@ -22,10 +22,6 @@
 	path = src/search
 	url = https://github.com/evandor/submodule-search.git
 	branch = main
-[submodule "src/opentabs"]
-	path = src/opentabs
-	url = https://github.com/evandor/submodule-opentabs.git
-	branch = main
 [submodule "src/snapshots"]
 	path = src/snapshots
 	url = https://github.com/evandor/submodule-snapshots.git
