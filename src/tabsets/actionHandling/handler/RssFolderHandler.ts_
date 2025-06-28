@@ -1,0 +1,122 @@
+import { parseFeed } from '@rowanmanning/feed-parser'
+import { FeedCategory } from '@rowanmanning/feed-parser/lib/feed/base'
+import * as cheerio from 'cheerio'
+import { QVueGlobals, uid } from 'quasar'
+import BrowserApi from 'src/app/BrowserApi'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useUtils } from 'src/core/services/Utils'
+import { DefaultActions } from 'src/tabsets/actionHandling/handler/DefaultActions'
+import { ActionContext } from 'src/tabsets/actionHandling/model/ActionContext'
+import {
+  AddUrlToTabsetHandlerAdditionalData,
+  ComponentWithContext,
+  TabActionMatcher,
+} from 'src/tabsets/actionHandling/TabActionMatcher'
+import { ActionProps } from 'src/tabsets/actions/models/ActionProps'
+import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
+import { Tab, UrlExtension } from 'src/tabsets/models/Tab'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+
+const { sanitizeAsPlainText } = useUtils()
+
+export class RssFolderHandler implements TabActionMatcher {
+  constructor(public $q: QVueGlobals | undefined) {}
+
+  tabMatcher(url: string, content: string, metas: object): boolean {
+    return url.match(/.*\.rss$/) !== null
+  }
+
+  injectScript(): Promise<void> {
+    return Promise.resolve()
+  }
+
+  defaultAction(): ActionContext {
+    return new ActionContext('(Re-)Load', 'o_refresh').onClicked(this.clicked)
+  }
+
+  actions(currentTabsetId: string | undefined, actionProps: ActionProps): ComponentWithContext[] {
+    const currentTabset = useTabsetsStore().getCurrentTabset
+    return DefaultActions.getDefaultActions(currentTabset, actionProps)
+  }
+
+  async clicked(
+    chromeTab: chrome.tabs.Tab,
+    ts: Tabset,
+    folder?: Tabset,
+    additionalData: AddUrlToTabsetHandlerAdditionalData = {},
+  ): Promise<ExecutionResult<any>> {
+    console.log('loading...', chromeTab.id, additionalData)
+    if (!folder || !folder.dynamicUrl) {
+      return Promise.reject('no folder or dynamic url set')
+    }
+    console.log('getting RSS feed from ', folder.dynamicUrl)
+
+    const response = await fetch(folder.dynamicUrl)
+    const responseText = await response.text()
+    //console.log("reponse", responseText)
+
+    const feed = parseFeed(responseText)
+    console.log(JSON.stringify(feed))
+
+    // const data: XMLDocument = new window.DOMParser().parseFromString(responseText, "text/xml")
+    // console.log(data)
+
+    // const is = document.evaluate("//item", document, null, XPathResult.ANY_TYPE, null)
+    // console.log("is", is.)
+
+    // const items = data.querySelectorAll("item");
+    // rss.value = {
+    //   items: Array.from(items)
+    // }
+    //console.log("items", items)
+    const itemsArray = Array.from(feed.items).splice(0, 20)
+    itemsArray.forEach((item: any) => {
+      console.log('item: ', item)
+      //const title = additionalData['feedname'] || 'no title' //this.getFromItem(item, "title", "no title")
+      const title = item.title
+      const url = item.url
+
+      const desc = sanitizeAsPlainText(item.description) || ''
+      const published = item.published //item.querySelector("pubDate")?.innerHTML || undefined
+      //const enclosure: Element | null = item.querySelector("enclosure")
+      let img = item.image?.url //enclosure ? enclosure.getAttribute("url") : undefined
+      console.log('img', img)
+      if (!img) {
+        const snippet = item.content || item.description || 'no content'
+        console.log('snippet', snippet)
+        var $ = cheerio.load(snippet)
+        img = $('img').attr('src')
+        console.log('img set to', img)
+      }
+
+      const newTab = new Tab(uid(), BrowserApi.createChromeTabObject(title || '', url || ''))
+      newTab.description = desc
+      newTab.image = img
+      newTab.extension = UrlExtension.RSS
+      Tab.setTags(
+        newTab,
+        item.categories.map((c: FeedCategory) => c.term),
+      )
+      if (published) {
+        newTab.created = new Date(published).getTime()
+      }
+      useCommandExecutor()
+        .execute(new AddTabToTabsetCommand(newTab, ts, folder?.id, false, true))
+        .catch((error: any) => {})
+    })
+    return Promise.resolve(new ExecutionResult('', ''))
+  }
+
+  updateInTabset(
+    chromeTab: chrome.tabs.Tab,
+    ts: Tabset,
+    folder?: Tabset,
+    additionalData?: AddUrlToTabsetHandlerAdditionalData,
+  ): Promise<ExecutionResult<any>> {
+    throw new Error('not implemented L')
+  }
+
+  handleOpenedTab(browserTab: chrome.tabs.Tab, tab: Tab) {}
+}

@@ -1,0 +1,112 @@
+<!-- TabsetsPage -->
+<template>
+  <br />
+  <div class="row">
+    <div class="col-2 q-mt-lg">
+      <Draggable v-if="treeData" class="mtl-tree q-pl-md" v-model="treeData" treeLine :tree-line-offset="0">
+        <template #default="{ node, stat }">
+          <OpenIcon
+            v-if="stat.children.length"
+            :open="stat.open"
+            class="mtl-mr"
+            @click.native="stat.open = !stat.open" />
+          <span class="mtl-ml cursor-pointer" @click="openSubNote(node)">{{ node.text }}</span>
+        </template>
+      </Draggable>
+    </div>
+    <div class="col-8">
+      <div class="editorx_body">
+        <!-- https://medium.com/code4mk-org/editorjs-vue-a78110c3fff8 -->
+        <div id="editorjs" ref="editorJsRef" />
+      </div>
+    </div>
+    <div class="col-2"></div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import EditorJS, { OutputData } from '@editorjs/editorjs'
+import { useSettingsStore } from 'src/core/stores/settingsStore'
+import Analytics from 'src/core/utils/google-analytics'
+import EditorJsConfig from 'src/notes/editorjs/EditorJsConfig'
+import { Notebook } from 'src/notes/models/Notebook'
+import { NotesPage } from 'src/notes/models/NotesPage'
+import useNotesServices from 'src/notes/services/notesServices'
+import { useNotesStore } from 'src/notes/stores/NotesStore'
+import { onMounted, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import '../../../src/notes/editorjs/linkTool.css'
+import '@he-tree/vue/style/default.css'
+import { Draggable, OpenIcon } from '@he-tree/vue'
+import _ from 'lodash'
+import useMainPanelNotePage from 'src/notes/pages/mainpanel/mainPanelNotePage'
+
+const route = useRoute()
+
+const { loadNotebookAndPage, getSubNote } = useNotesServices()
+
+const notebookId = ref<string>(route.params.notebookId as unknown as string)
+const notebook = ref<Notebook | undefined>(undefined)
+
+const subNoteId = ref<string | undefined>(route.params.subNoteId as unknown as string)
+const subNote = ref<NotesPage | undefined>(undefined)
+const title = ref('')
+
+const editorJsRef = ref(null)
+const treeData = ref<object[]>()
+
+let editorJS2: EditorJS = undefined as unknown as EditorJS
+
+const { treeNodeFromNote, executeOnSubPage } = useMainPanelNotePage()
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+watchEffect(async () => {
+  if (notebook.value) {
+    treeData.value = _.map(notebook.value.subPages, (n: NotesPage) => {
+      return treeNodeFromNote(n)
+    })
+  }
+})
+
+onMounted(() => {
+  Analytics.firePageViewEvent('PublicNotePage', document.location.href)
+})
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+watchEffect(async () => {
+  console.log('hier!', notebookId.value)
+  if (useNotesStore().loaded) {
+    // noteId.value = route.params.noteId as string
+    // const sharedById = useTabsetsStore().getTabset(sourceId)?.sharing.sharedById
+    const res = await loadNotebookAndPage(notebookId.value, subNoteId.value)
+    notebook.value = res.nb
+    title.value = res.title
+    subNote.value = res.subNote
+
+    if (!editorJS2) {
+      editorJS2 = new EditorJS({
+        holder: 'editorjs',
+        readOnly: true,
+        data: (subNote.value?.content || { blocks: [] }) as OutputData,
+        tools: useSettingsStore().isEnabled('localMode') ? EditorJsConfig.toolsconfigLocal : EditorJsConfig.toolsconfig,
+      })
+    } else {
+      if (editorJS2 && editorJS2.readOnly) {
+        //editorJS2.readOnly.toggle(!editMode.value)
+      }
+    }
+  }
+})
+
+const openSubNote = (n: { text: string; id: string; url: string; children: object[] }) => {
+  subNoteId.value = n.id
+  subNote.value = getSubNote(n.id, notebook.value)
+  if (subNote.value) {
+    var newContent = (subNote.value.content || { blocks: [] }) as OutputData
+    console.log('newContent', newContent)
+    //editorJS2.data = newContent
+    title.value = subNote.value.title
+    editorJS2.render(newContent)
+  }
+}
+</script>

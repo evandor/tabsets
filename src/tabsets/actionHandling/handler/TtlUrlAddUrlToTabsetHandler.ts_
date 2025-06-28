@@ -1,0 +1,95 @@
+import {DialogChainObject, QVueGlobals, uid} from "quasar";
+import {Tabset, TabsetType} from "src/tabsets/models/Tabset";
+import {ExecutionResult} from "src/core/domain/ExecutionResult";
+import {Tab} from "src/tabsets/models/Tab";
+import {AddUrlToTabsetHandler, ButtonActions} from "src/tabsets/actionHandling/AddUrlToTabsetHandler";
+import {ActionContext} from "src/tabsets/actionHandling/model/ActionContext";
+import AddRssFeedDialog from "src/tabsets/dialogues/actions/AddRssFeedDialog.vue";
+// @ts-expect-error TODO
+import N3 from "n3/browser/n3.min"
+
+export class TtlUrlAddUrlToTabsetHandler implements AddUrlToTabsetHandler {
+
+  constructor(public $q: QVueGlobals | undefined) {
+  }
+
+  urlMatcher(): RegExp {
+    return /.*\.ttl$/;
+  }
+
+  contentMatcher(content: string) {
+    return false
+  }
+
+  actions():  ActionContext[] {
+    return [new ActionContext("Add Turtle File", ButtonActions.AddRssFeed)]
+  }
+
+  withDialog(action: ButtonActions): DialogChainObject | undefined {
+    switch (action) {
+      case ButtonActions.AddRssFeed:
+        return this.storeAsFeed()
+      default:
+        console.log("no dialog for action", action)
+    }
+  }
+
+  async clicked(chromeTab: chrome.tabs.Tab, ts: Tabset, folder?: Tabset, additionalData: object = {}): Promise<ExecutionResult<any>> {
+    console.log("saving...", chromeTab.id, additionalData)
+    try {
+      const response = await fetch("https://dbpedia.org/data/Biology.ttl")
+      const responseText = await response.text()
+      const parser = new N3.Parser();
+
+      parser.parse(responseText,
+        (error:any, quad:any, prefixes:any) => {
+          if (quad)
+            console.log(quad);
+          else
+            console.log("# That's all, folks!", prefixes);
+        });
+
+
+      //   await useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(newTab, ts, ts.folderActive))
+      return Promise.resolve(new ExecutionResult("", "done"))
+    } catch (error: any) {
+      console.warn("error", error)
+      return Promise.reject("error creating RSS Feed")
+    }
+
+  }
+
+  updateInTabset(chromeTab: chrome.tabs.Tab, ts: Tabset, additionalData: object = {}): Promise<ExecutionResult<any>> {
+    throw new Error("not implemented")
+  }
+
+  handleOpenedTab(browserTab: chrome.tabs.Tab, tab: Tab) {
+
+  }
+
+  storeAsFeed(): DialogChainObject | undefined {
+    if (this.$q) {
+
+      return this.$q.dialog({
+        component: AddRssFeedDialog,
+        componentProps: {parentFolderId: "bookmarkId.value"}
+      })
+
+      // return this.$q!.dialog({
+      //   title: 'Display RSS Feed?',
+      //   message: 'This file seems to contain an RSS Feed',
+      //   options: {
+      //     type: 'checkbox',
+      //     model: [],
+      //     items: [
+      //       {label: 'Display Feed', value: 'displayFeed', color: 'secondary'},
+      //     ]
+      //   },
+      //   cancel: true,
+      //   persistent: true
+      // })
+    } else {
+      console.warn("could not display storeAsFeed, quasar not set")
+    }
+  }
+}

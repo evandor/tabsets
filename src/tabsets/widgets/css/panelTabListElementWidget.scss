@@ -1,0 +1,29 @@
+// line with text in middle
+// https://stackoverflow.com/questions/5214127/css-technique-for-a-horizontal-line-with-words-in-the-middle
+h6 {
+  overflow: hidden;
+  text-align: center;
+}
+
+h6::before,
+h6::after {
+  background-color: #bfbfbf;
+  content: '';
+  display: inline-block;
+  height: 1px;
+  position: relative;
+  vertical-align: middle;
+  width: 50%;
+}
+
+h6::before {
+  right: 0.5em;
+  margin-left: -50%;
+}
+
+h6::after {
+  left: 0.5em;
+  margin-right: -50%;
+}
+
+// line with text in middle - end
