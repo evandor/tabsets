@@ -1,0 +1,332 @@
+<template>
+  <div class="col-12 text-right">
+    <Transition name="bounceInLeft" appear>
+      <q-markup-table class="q-ma-none" dense flat>
+        <thead>
+          <tr>
+            <th class="text-left" style="min-width: 180px">Window Name</th>
+            <th class="text-right">#Tabs</th>
+            <th class="text-right q-pr-none" v-if="windowsToOpenOptions.length > 0">
+              <span class="cursor-pointer"><q-icon name="open_in_new" class="q-mr-xs" />Open Window </span>
+              <q-menu :offset="[0, 7]" fit>
+                <q-list dense style="min-width: 250px">
+                  <q-item clickable v-close-popup>
+                    <q-item-section @click="openNewWindow({ label: ' > open new Window', value: 'newWindow' })"
+                      >Open new Window
+                    </q-item-section>
+                  </q-item>
+                  <q-separator v-if="windowsToOpenOptions.length > 0" />
+                  <q-item clickable v-close-popup v-for="w in windowsToOpenOptions">
+                    <q-item-section @click="openNewWindow(w)">{{ w['label' as keyof object] }}</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </th>
+            <th class="text-right q-pr-none" v-else>
+              <span class="cursor-pointer" @click="openNewWindow({ label: ' > open new Window', value: 'newWindow' })"
+                ><q-icon name="open_in_new" class="q-mr-xs" />Open Window
+              </span>
+            </th>
+          </tr>
+        </thead>
+
+        <vue-draggable-next
+          class="q-ma-none"
+          tag="tbody"
+          :list="windowHolderRows"
+          :group="{ name: 'tabs', pull: 'clone' }"
+          @change="(event: any) => handleDragAndDrop(event)">
+          <tr
+            v-for="row in windowHolderRows"
+            :key="row.holderId"
+            @mouseover="hoveredWindow = row.holderId"
+            @mouseleave="hoveredWindow = undefined"
+            style="max-height: 15px">
+            <td
+              class="text-left"
+              :class="windowNameRowClass(row)"
+              @dblclick.stop="openRenameWindowDialog(row.holderId, row.getName(), row.getIndex())"
+              @click.prevent.stop="openWindow(row)">
+              <q-icon v-if="windowHolderRows.length > 1" name="drag_indicator" class="q-mr-sm" style="cursor: move">
+                <q-tooltip class="tooltip-small" v-if="devMode">{{ row.getIndex() }}</q-tooltip>
+              </q-icon>
+              <span class="cursor-pointer" :data-testid="'windowDataColumn_name_' + row.holderId">
+                {{ row.getName() }} {{ row.cw?.focused ? '*' : '' }}
+                <q-tooltip class="tooltip-small" v-if="devMode">{{ row.holderId }}</q-tooltip>
+              </span>
+            </td>
+            <td :data-testid="'windowDataColumn_tabsCount_' + row.holderId">
+              {{ row.getTabsCount() }}
+            </td>
+            <td>
+              <template v-if="hoveredWindow === row.holderId">
+                <q-icon
+                  v-if="'minimized' !== row['state' as keyof object]"
+                  name="visibility_off"
+                  :color="row.cw ? 'warning' : 'grey'"
+                  class="q-ml-sm"
+                  :class="row.cw ? 'cursor-pointer' : ''"
+                  @click="row.cw ? minimizeWindow(row.holderId) : ''">
+                  <q-tooltip :delay="500" class="tooltip-small">Hide Window</q-tooltip>
+                </q-icon>
+
+                <q-icon
+                  name="edit"
+                  class="q-ml-sm text-accent cursor-pointer"
+                  @click="openRenameWindowDialog(row.holderId, row.getName(), row.getIndex())">
+                  <q-tooltip :delay="500" class="tooltip-small">Edit Window Name</q-tooltip>
+                </q-icon>
+
+                <template v-for="item in row.additionalActions" :key="item.icon">
+                  <q-icon
+                    @click.stop="additionalActionWasClicked({ action: item.action, window: row })"
+                    :name="item.icon"
+                    :disable="item.disabled"
+                    size="xs"
+                    class="q-ml-sm"
+                    :class="item.disabled ? item.color : item.color + ' cursor-pointer'">
+                    <q-tooltip v-if="item.tooltip" :delay="500" class="tooltip-small"
+                      >{{ item.tooltip }}/{{ item.disabled }}
+                    </q-tooltip>
+                  </q-icon>
+                </template>
+
+                <q-icon
+                  v-if="useWindowsStore().currentBrowserWindows.length === 1 && row.cw"
+                  name="o_close"
+                  class="q-ml-sm text-red-8"
+                  :disabled="true">
+                  <q-tooltip :delay="500" class="tooltip-small">Last Window cannot be closed</q-tooltip>
+                </q-icon>
+                <q-icon v-else name="o_close" class="q-ml-sm text-red-8 cursor-pointer" @click="closeWindow(row)">
+                  <q-tooltip :delay="500" class="tooltip-small">Close this window</q-tooltip>
+                </q-icon>
+              </template>
+              <template v-else>
+                <div>&nbsp;</div>
+              </template>
+            </td>
+          </tr>
+        </vue-draggable-next>
+      </q-markup-table>
+    </Transition>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import _ from 'lodash'
+import { uid, useQuasar } from 'quasar'
+import AppEventDispatcher from 'src/app/AppEventDispatcher'
+import BrowserApi from 'src/app/BrowserApi'
+import ChromeApi from 'src/app/BrowserApi'
+import { useEntityRegistryStore } from 'src/core/stores/entityRegistryStore'
+import { useSettingsStore } from 'src/core/stores/settingsStore'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
+import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
+import { Tab } from 'src/tabsets/models/Tab'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import RenameWindowDialog from 'src/windows/dialogues/RenameWindowDialog.vue'
+import { WindowAction, WindowHolder } from 'src/windows/models/WindowHolder'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { ref, watch, watchEffect } from 'vue'
+import { VueDraggableNext } from 'vue-draggable-next'
+
+const emits = defineEmits(['wasClicked']) //, 'recalculateWindows'])
+
+const $q = useQuasar()
+
+const windowHolderRows = ref<WindowHolder[]>([])
+
+const currentWindowName = ref('---')
+
+const windowsToOpen = ref<string>('')
+const windowsToOpenOptions = ref<{ label: string; value: string }[]>([])
+const tabsetsMangedWindows = ref<object[]>([])
+const hoveredWindow = ref<number | undefined>(undefined)
+const devMode = ref<boolean>(useSettingsStore().has('DEV_MODE'))
+
+const windowIsManaged = (windowName: string) => {
+  return _.find(tabsetsMangedWindows.value, (tmw: any) => tmw['label' as keyof object] === windowName) !== undefined
+}
+
+const getAdditionalActions = (windowName: string) => {
+  const additionalActions: WindowAction[] = []
+  if (!windowIsManaged(windowName)) {
+    additionalActions.push(new WindowAction('o_bookmark_add', 'saveTabset', 'text-orange', 'Save as Tabset'))
+  } else {
+    additionalActions.push(new WindowAction('o_bookmark_add', undefined, 'text-grey', 'already a tabset', true))
+  }
+  return additionalActions
+}
+
+watch(
+  () => useWindowsStore().lastUpdate,
+  (n: number, o: number) => {
+    if (n > o) {
+      windowHolderRows.value = useWindowsStore().getWindowsForMarkupTable(getAdditionalActions)
+    }
+  },
+)
+
+chrome.tabs.onRemoved.addListener((tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) => {
+  if (removeInfo.isWindowClosing) {
+    return
+  }
+  useWindowsStore().setLastUpdate()
+})
+
+chrome.tabs.onCreated.addListener((tab: chrome.tabs.Tab) => {
+  useWindowsStore().setLastUpdate()
+})
+
+watchEffect(() => {
+  // adding potentially new windows from 'open in window' logic
+  windowsToOpenOptions.value = []
+  tabsetsMangedWindows.value = []
+  const registry = useEntityRegistryStore()
+  for (const ts of registry.tabsetRegistry) {
+    if (ts.window && ts.window !== 'current' && ts.window.trim() !== '') {
+      tabsetsMangedWindows.value.push({ label: ts.window, value: ts.id })
+      const found = _.find(windowHolderRows.value, (r: WindowHolder) => ts.window === r.name && r.window?.open)
+      if (!found) {
+        windowsToOpenOptions.value.push({ label: ts.window, value: ts.id })
+      }
+    }
+  }
+  windowsToOpenOptions.value = _.sortBy(windowsToOpenOptions.value, ['label'])
+})
+
+watchEffect(() => {
+  const currentWindow = useWindowsStore().currentBrowserWindow
+  const res =
+    currentWindow && currentWindow.id ? useWindowsStore().windowNameFor(currentWindow.id || 0) || 'n/a' : 'n/a'
+  currentWindowName.value = res
+})
+
+const saveAsTabset = (windowId: number, name: string) => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      windowId: windowId,
+      spaceId: useSpacesStore().space?.id,
+      name: name,
+      fromPanel: true,
+    },
+  })
+}
+
+const additionalActionWasClicked = (event: any) => {
+  if (event.action === 'saveTabset') {
+    saveAsTabset(event.window.id, event.window.name)
+  }
+}
+
+const openNewWindow = async (w: { label: string; value: string }) => {
+  //console.log('windows to open set to ', w)
+  const label = w.label
+  const tsId = w.value
+  if (tsId === 'newWindow') {
+    await chrome.windows.create()
+    windowsToOpen.value = ''
+  } else if (label && label.trim() !== '') {
+    AppEventDispatcher.dispatchEvent('restore-tabset', {
+      tabsetId: tsId,
+      label: label,
+    }).catch((err: any) => console.warn('got error', err))
+    windowsToOpen.value = ''
+  }
+}
+
+const openWindow = (window: WindowHolder) => {
+  // console.log('window', window)
+  if (useWindowsStore().currentBrowserWindow?.id !== window.holderId) {
+    if (window.holderId && window.holderId >= 0) {
+      chrome.windows.update(window.holderId, { drawAttention: true, focused: true }, (callback) => {
+        console.debug('window update - draw attention, focus', window)
+      })
+    } else {
+      const dummyTabs = _.map(window.hostList, (url: string) => {
+        return new Tab(uid(), BrowserApi.createChromeTabObject('', url))
+      })
+      const dummyTabset = new Tabset(uid(), 'dummy', dummyTabs)
+      ChromeApi.restore(dummyTabset, undefined, true)
+    }
+  }
+}
+
+const minimizeWindow = (windowId: number) => {
+  chrome.windows.update(windowId, { state: 'minimized' })
+  useWindowsStore().setLastUpdate()
+}
+
+const closeWindow = (windowHolder: WindowHolder) => {
+  console.log('closing', windowHolder)
+  if (windowHolder.cw && windowHolder.cw.id) {
+    chrome.windows.remove(windowHolder.cw.id)
+    useWindowsStore().refreshCurrentWindows('closeWindow')
+  } else if (!windowHolder.cw) {
+    useWindowsStore().removeWindow(windowHolder.holderId)
+  }
+}
+
+const handleDragAndDrop = async (event: any) => {
+  const { moved } = event
+
+  if (moved) {
+    console.log('moved', moved)
+    console.log(
+      `moved event: '${moved.element.id}' ${moved.oldIndex} -> ${moved.newIndex}`,
+      windowHolderRows.value,
+      event,
+    )
+    const windowIndex = moved.element.id
+
+    const oldIndex = moved.oldIndex
+    const newIndex = moved.newIndex
+
+    console.log('moving', windowIndex, oldIndex, newIndex)
+    if (oldIndex >= 0 && windowHolderRows.value.length > 0) {
+      const newOrder = _.map(windowHolderRows.value, (r: WindowHolder) => r.holderId)
+      const startIndex = windowHolderRows.value[0] ? windowHolderRows.value[0].index : 0
+      let index = 0 //
+      //console.log('newOrder', newOrder, startIndex)
+      for (const r of newOrder) {
+        await useWindowsStore().updateWindowIndex(r, index++)
+      }
+    }
+  } else {
+    console.log('unhandled event!', event)
+  }
+}
+
+const openRenameWindowDialog = (windowId: number, currentName: string, index: number) => {
+  $q.dialog({
+    component: RenameWindowDialog,
+    componentProps: { windowId, holderId: windowId, currentName, index },
+  }).onOk((name: string) => {
+    //emits('recalculateWindows')
+    useWindowsStore().setLastUpdate()
+  })
+}
+
+const windowNameRowClass = (row: WindowHolder) => {
+  if (!row.cw) {
+    return 'text-grey-8'
+  }
+  if (useWindowsStore().currentBrowserWindow?.id === row.holderId) {
+    return row['focused' as keyof object] ? 'text-bold text-italic' : 'text-bold'
+  }
+  if (row['focused' as keyof object]) {
+    return 'text-italic'
+  }
+  return ''
+}
+</script>
+
+<style scoped>
+.q-table th,
+.q-table td {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+</style>
