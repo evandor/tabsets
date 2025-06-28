@@ -54,7 +54,7 @@ function sendUpdateIndicatorIconMessage(show: boolean = true) {
         managed = true
       }
     }
-    console.log(`in 'update.indicator.icon': managed ${managed}`)
+    console.log(`update.indicator.icon: managed ${managed}`)
     bridge.send({ event: 'update.indicator.icon', to: 'background', payload: { managed } }).catch((err: any) => {
       console.log("[BEX-CT] Failed to send 'update.indicator.icon' message to background", err)
     })
@@ -63,10 +63,10 @@ function sendUpdateIndicatorIconMessage(show: boolean = true) {
 
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') {
-    console.log('Tab became visible/active')
+    //console.log('Tab became visible/active')
     setTimeout(() => sendUpdateIndicatorIconMessage(), 100)
   } else if (document.visibilityState === 'hidden') {
-    console.log('Tab became invisible')
+    //console.log('Tab became invisible')
     sendUpdateIndicatorIconMessage(false)
   }
 })
@@ -97,18 +97,26 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.debug("tabsets: got request 'getExcerpt'")
     const responseMessage = getResponseData()
     sendResponse(responseMessage)
-  } else if (request.name === 'tab-added') {
+  } else if (request.name === 'url-added') {
     const current: string[] = LocalStorage.getItem('tabsets.managed') || []
     if (current.indexOf(request.url) === -1) {
       current.push(request.url)
     }
     LocalStorage.setItem('tabsets.managed', current)
-    chrome.action.setBadgeText({ text: '✅' })
-  } else if (request === 'tab-removed') {
-    LocalStorage.removeItem('tabsets.managed')
+  } else if (request.name === 'url-deleted') {
+    const current: string[] = LocalStorage.getItem('tabsets.managed') || []
+    const index = current.indexOf(request.url)
+    if (index !== -1) {
+      current.splice(index, 1)
+    }
+    if (current.length === 0) {
+      LocalStorage.removeItem('tabsets.managed')
+    } else {
+      LocalStorage.setItem('tabsets.managed', current)
+    }
   } else {
-    const msg = 'unknown request in tabsets-content-scripts: ' + request
-    console.log('msg', msg)
+    const msg = 'unknown request in tabsets-content-scripts: ' + JSON.stringify(request)
+    console.log(msg)
     sendResponse({ content: msg })
   }
   return true

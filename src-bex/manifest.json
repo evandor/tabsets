@@ -38,7 +38,8 @@
         "suggested_key": {
           "default": "Ctrl+B",
           "mac": "Command+B"
-        }
+        },
+        "description": "Open Tabsets.net"
       },
       "search": {
         "description": "Open Search Box"

@@ -32,7 +32,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.FOLDER,
-      'RECOMMENDED',
+      'RECOMMENDED_POPUP',
       'Folders and Subfolders',
       'Use folders inside your tabsets to add another level of organisation',
       'o_folder',
@@ -45,7 +45,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.GALLERY,
-      'RECOMMENDED',
+      'RECOMMENDED_POPUP',
       'Gallery View',
       'View and organize your tabs in a Tabset Gallery',
       'calendar_view_month',
@@ -88,7 +88,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.OPEN_TABS,
-      'RECOMMENDED',
+      'RECOMMENDED_POPUP',
       'Open Tabs',
       'Quick access to all your open tabs of the current browsers window<br><br>' +
         'Adds quick navigation to jump back and forth to recently opened tabs.',
@@ -442,6 +442,9 @@ export class AppFeatures {
       '',
       ['all'],
     ).setActivateCommands([new DownloadAIModelsCommand()]),
+    new Feature(FeatureIdent.VISUALIZATIONS, 'EXPERIMENTAL', 'Visualizations', 'mind-map style', 'sym_o_graph_5', '', [
+      'all',
+    ]),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {

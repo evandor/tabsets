@@ -43,27 +43,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log('got error', err)
         sendResponse(err)
       }
-    } else if (message.name === 'tab-added') {
-      console.log('got message tab-added!!', message)
+    } else if (message.name === 'url-added') {
+      console.log('got message url-added!!', message)
+      chrome.action.setBadgeText({ text: '✅' })
       const currentTabs = await chrome.tabs.query({ url: message.data.url })
       console.log('currentTabs', currentTabs)
       currentTabs
         .filter((tab: chrome.tabs.Tab) => tab.id)
         .forEach((tab: chrome.tabs.Tab) => {
-          chrome.tabs.sendMessage(tab.id!, { name: 'tab-added', url: message.data.url }).catch((err) => {
-            console.log("could not handle 'tab-added'", err)
+          chrome.tabs.sendMessage(tab.id!, { name: 'url-added', url: message.data.url }).catch((err) => {
+            console.log("could not handle 'url-added'", err)
           })
         })
-    } else if (message.name === 'tab-deleted') {
-      console.log('got message tab-deleted!!', message)
-      // const currentTabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
-      // console.log('currentTabs', currentTabs)
-      // const currentTab = currentTabs[0]!
-      // if (currentTab.id) {
-      //   chrome.tabs.sendMessage(currentTab.id, 'tab-added', {}).catch((err) => {
-      //     console.log("could not handle 'tab-added'", err)
-      //   })
-      // }
+    } else if (message.name === 'url-deleted') {
+      console.log('got message url-deleted!!', message)
+      chrome.action.setBadgeText({ text: '' })
+      const currentTabs = await chrome.tabs.query({ url: message.data.url })
+      currentTabs
+        .filter((tab: chrome.tabs.Tab) => tab.id)
+        .forEach((tab: chrome.tabs.Tab) => {
+          chrome.tabs.sendMessage(tab.id!, { name: 'url-deleted', url: message.data.url }).catch((err) => {
+            console.log("could not handle 'url-deleted'", err)
+          })
+        })
     } else {
       console.log(`got unknown message '${message.name}' in background.ts`)
     }
@@ -102,18 +104,6 @@ chrome.runtime.onInstalled.addListener((details) => {
   }
 })
 
-// chrome.runtime.onInstalled.addListener(openExtension);
-// chrome.action.onClicked.addListener(openExtension);
-
-chrome.runtime.onConnect.addListener(function (port) {
-  if (port.name === 'tabsetsSidepanel') {
-    //console.log("[service-worker] port3", port)
-    // port.onDisconnect.addListener(async () => {
-    //   //alert('Sidepanel closed.');
-    // });
-  }
-})
-
 declare module '@quasar/app-vite' {
   interface BexEventMap {
     log: [{ message: string; data?: any[] }, void]
@@ -125,51 +115,23 @@ declare module '@quasar/app-vite' {
   }
 }
 
-/**
- * Call useBridge() to enable communication with the app & content scripts
- * (and between the app & content scripts), otherwise skip calling
- * useBridge() and use no bridge.
- */
 const bridge = createBridge({ debug: false })
 
 bridge.on('update.indicator.icon', (payload: object) => {
-  console.log(`[BEX] message!"`, payload, bridge.portList)
+  //console.log(`[BEX] message!"`, payload, bridge.portList)
   chrome.tabs.query({ active: true, lastFocusedWindow: true }).then((tabs: chrome.tabs.Tab[]) => {
     if (tabs.length > 0 && tabs[0]) {
       const msg = payload['payload' as keyof object]
       if (msg && msg['managed']) {
         chrome.action.setBadgeText({ text: '✅' })
-        chrome.action.setTitle({ title: JSON.stringify(payload['payload' as keyof object]) })
+        //chrome.action.setTitle({ title: JSON.stringify(payload['payload' as keyof object]) })
       } else {
         chrome.action.setBadgeText({ text: '' })
-        chrome.action.setTitle({ title: 'none' })
+        //chrome.action.setTitle({ title: 'none' })
       }
     }
   })
 })
-
-// bridge.on('log', ({ from, payload }) => {
-//   console.log(`[BEX] @log from "${from}"`, payload)
-// })
-//
-// bridge.on('getTime', () => {
-//   return Date.now()
-// })
-//
-// bridge.on('storage.get', ({ payload: key }) => {
-//   return new Promise((resolve) => {
-//     if (key === void 0) {
-//       chrome.storage.local.get(null, (items) => {
-//         // Group the values up into an array to take advantage of the bridge's chunk splitting.
-//         resolve(Object.values(items))
-//       })
-//     } else {
-//       chrome.storage.local.get([key], (items) => {
-//         resolve(items[key])
-//       })
-//     }
-//   })
-// })
 
 bridge.on('reload-current-tabset', async ({ payload }) => {
   // const ts = useTabsetsStore().getCurrentTabset
