@@ -23,7 +23,10 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
     if (tabset && this.folderId) {
       tabset.folderActive = this.folderId
       await useTabsetsStore().saveTabset(tabset)
-      useTabsetsUiStore().updateExtensionIcon()
+      const tabs: chrome.tabs.Tab[] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
+      if (tabs.length > 0 && tabs[0]) {
+        useTabsetsUiStore().updateExtensionIcon(tabs[0])
+      }
     }
 
     if (inBexMode()) {

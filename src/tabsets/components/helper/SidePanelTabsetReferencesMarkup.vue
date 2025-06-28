@@ -48,12 +48,9 @@
 </template>
 
 <script lang="ts" setup>
-import { doc, DocumentSnapshot, getDoc, setDoc } from 'firebase/firestore'
 import { useMessagesStore } from 'src/messages/stores/messagesStore'
-import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useAuthStore } from 'stores/authStore'
 import { ref, watchEffect } from 'vue'
 
 const tabset = ref<Tabset | undefined>(undefined)
@@ -69,36 +66,8 @@ watchEffect(() => {
     .then((tsId: string | undefined) => (currentTabsetId.value = tsId))
 })
 
-const updateSharedInfo = async () => {
-  if (currentTabsetId.value && useAuthStore().user?.uid) {
-    const fs = FirebaseServices.getFirestore()
-    tabset.value = useTabsetsStore().getCurrentTabset
-    sharedBy.value = tabset.value?.sharing?.sharedBy || ''
-    //console.log('updating shared info')
-    const theDoc = doc(fs, `users/${useAuthStore().user.uid}/tabset-shares/${currentTabsetId.value}`)
-    const sharedInfo: DocumentSnapshot = await getDoc(theDoc)
-    if (sharedInfo.data()) {
-      const data = sharedInfo.data() as object
-      // console.log('data', data)
-      shared.value = Object.values(data)
-        .filter((val: object) => val['status' as keyof object] !== 'deleted')
-        .map((val: object) => {
-          //const val = data[key as keyof object]
-          return {
-            email: val['email' as keyof object],
-            status: val['status' as keyof object],
-          }
-        })
-
-      // shared.value = sharedInfo.data()
-      if (data) {
-        let info = Object.keys(data).length + ' user(s)'
-        sharedWith.value = info
-      } else {
-        sharedWith.value = '???'
-      }
-    }
-  }
+const updateSharedInfo = () => {
+  // no op
 }
 
 watchEffect(() => {
@@ -114,30 +83,7 @@ watchEffect(() => {
 })
 
 const removeShare = async (email: string) => {
-  if (currentTabsetId.value) {
-    console.log('removing share', email, currentTabsetId)
-    const docRef = doc(
-      FirebaseServices.getFirestore(),
-      'users',
-      useAuthStore().user.uid,
-      'tabset-shares',
-      currentTabsetId.value,
-    )
-    const sharedDoc = await getDoc(docRef)
-    const data = sharedDoc.data() as object
-    console.log('got data', data)
-    //delete data[btoa(email) as keyof object]
-    const dataForEmail: { [k: string]: any } | undefined = data[btoa(email) as keyof object] as
-      | { [k: string]: any }
-      | undefined
-    if (dataForEmail) {
-      dataForEmail['status' as keyof object] = 'deleted'
-      dataForEmail['changed' as keyof object] = new Date().getTime()
-      dataForEmail['sharedWithId'] = ''
-    }
-    await setDoc(docRef, data)
-  }
-  updateSharedInfo()
+  // no op
 }
 
 const toggleShowDetails = () => (showDetails.value = !showDetails.value)

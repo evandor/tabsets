@@ -110,7 +110,7 @@ export const useBookmarksStore = defineStore('bookmarks', {
 
       const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
 
-      const nodes = nodesFrom(tree[0])
+      const nodes = nodesFrom(tree[0]!)
       if (nodes[0]) {
         this.bookmarksNodes2 = nodes[0].children
         let copy = JSON.parse(JSON.stringify(nodes[0]))

@@ -148,7 +148,11 @@ export class AddTabToTabsetCommand implements Command<any> {
       })
       info('tab created')
       localStorage.setItem('test.tabId', this.tab.id)
-      sendMsg('tab-added', { tabsetId: this.tabset!.id })
+
+      // badge indicator icon
+      sendMsg('url-added', { url: this.tab.url })
+
+      sendMsg('tab-added', { tabsetId: this.tabset!.id, url: this.tab.url })
 
       const req = useRequestsStore().getCurrentTabRequest
       if (req && req.url === this.tab.url) {

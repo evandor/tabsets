@@ -40,15 +40,15 @@ class AppEventDispatcher {
           useSearchStore().upsertObject(params)
           return Promise.resolve({})
         case 'delete-bookmark-by-url':
-          useBookmarksStore()
-            .deleteByUrl(params['url' as keyof object])
-            .then((count: number) => {
-              // TODO cannot call handle success here (problem in tests)
-              // handleSuccess(new ExecutionResult('', count + ' bookmark(s) deleted'))
-            })
+          // useBookmarksStore()
+          //   .deleteByUrl(params['url' as keyof object])
+          //   .then((count: number) => {
+          //     // TODO cannot call handle success here (problem in tests)
+          //     // handleSuccess(new ExecutionResult('', count + ' bookmark(s) deleted'))
+          //   })
           //.catch(() => handleError('problem encountered'))
 
-          return Promise.resolve({})
+          return Promise.reject('not implemented')
         case 'capture-screenshot':
           useThumbnailsService().handleCaptureCallback(
             params['tabId' as keyof object],

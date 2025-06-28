@@ -4,6 +4,7 @@
       props.level === 'root' &&
       props.tabset.tabs.length > 0 &&
       inBexMode() &&
+      props.element !== 'popup' &&
       (!props.tabset.window || props.tabset.window === 'current')
     ">
     <q-separator inset />

@@ -1,5 +1,4 @@
 import { DialogChainObject, QVueGlobals, uid } from 'quasar'
-import { useTabsStore } from 'src/bookmarks/stores/tabsStore'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { DefaultActions } from 'src/tabsets/actionHandling/handler/DefaultActions'
@@ -15,6 +14,7 @@ import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetComman
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 
 const urlMatcher = /^https:\/\/excalidraw\.com\/$/
 
@@ -26,7 +26,7 @@ export class ExcalidrawAddUrlToTabsetHandler implements TabActionMatcher {
   }
 
   async injectScript(): Promise<void> {
-    const currentBrowserTab = useTabsStore().currentChromeTab
+    const currentBrowserTab = useTabsStore2().currentChromeTab
     if (!currentBrowserTab || !currentBrowserTab.id) {
       return Promise.reject('no current browser tab found')
     }

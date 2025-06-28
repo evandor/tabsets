@@ -12,6 +12,7 @@ import { Message } from 'src/tabsets/models/Message'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
 const { addToTabset, deleteTab } = useTabsetService()
 const { sendMsg } = useUtils()
@@ -47,7 +48,16 @@ export class DeleteTabCommand implements Command<Tabset> {
     //   tabset.sharing.sharedAt = new Date().getTime()
     // }
     info('tab deleted')
-    sendMsg('tab-deleted', { tabsetId: tabset.id })
+
+    if (this.tab.url) {
+      const urlStillExists = useTabsetsStore().tabsForUrl(this.tab.url).length > 0
+      if (!urlStillExists) {
+        // to handle the badge indicator icon
+        sendMsg('url-deleted', { url: this.tab.url })
+      }
+    }
+
+    sendMsg('tab-deleted', { tabsetId: tabset.id, url: this.tab.url })
     const result = await AppEventDispatcher.dispatchEvent('tab-deleted', { url: this.tab.url, tabId: this.tab.id })
     console.log('bookmarksToDelete', result, result['bookmarks' as keyof object] as number)
     if (

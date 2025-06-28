@@ -1,15 +1,12 @@
-// ? expected diffs to localstorage
-// ? expected diffs to localstorage
-// ? expected diffs to localstorage
-// ? expected diffs to localstorage
 import _, { forEach } from 'lodash'
 import { defineStore } from 'pinia'
 import { uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
+import { useNavigationService } from 'src/core/services/NavigationService'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import NavigationService from 'src/services/NavigationService'
 import { useAuthStore } from 'src/stores/authStore'
+import { FolderNode } from 'src/tabsets/models/FolderNode'
 import { Tab, TabComment } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
 import { ChangeInfo, Tabset, TabsetSharing, TabsetStatus } from 'src/tabsets/models/Tabset'
@@ -17,6 +14,7 @@ import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
+// import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { computed, ref, watch } from 'vue'
 
 /**
@@ -117,11 +115,11 @@ export const useTabsetsStore = defineStore('tabsets', () => {
   ): Promise<Tabset> {
     const exceedInfo = useAuthStore().limitExceeded('TABSETS', tabsets.value.size + 1)
     if (exceedInfo.exceeded) {
-      await NavigationService.openOrCreateTab([
+      await useNavigationService().browserTabFor(
         chrome.runtime.getURL(
           `/www/index.html#/mainpanel/settings?tab=account&exceeded=tabsets&limit=${exceedInfo.limit}`,
         ),
-      ])
+      )
       return Promise.reject('tabsetLimitExceeded')
     }
 
@@ -167,12 +165,13 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     // are deprecated
     let foundSomething = false
     ts.tabs.forEach((t: Tab) => {
+      if (!t.comments) {
+        foundSomething = true
+        t.comments = []
+      }
       if (t.note && t.note.trim().length > 0) {
         foundSomething = true
         console.warn('deprecated property: found tab with note, turning into comment')
-        if (!t.comments) {
-          t.comments = []
-        }
         t.comments.push(new TabComment('', t.note))
         delete t['note' as keyof object]
       }
@@ -212,17 +211,16 @@ export const useTabsetsStore = defineStore('tabsets', () => {
   }
 
   async function selectCurrentTabset(tabsetId: string): Promise<Tabset | undefined> {
-    console.log('selectCurrentTabset', tabsetId, [...tabsets.value.values()].map((ts: Tabset) => ts.id).join(','))
+    //console.log('selectCurrentTabset', tabsetId)
+    await useSelectedTabsetService().setCurrentTabsetId(tabsetId)
 
-    const found = _.find([...tabsets.value.values()] as Tabset[], (k: Tabset) => {
-      console.log('checking tabset', k?.id)
+    const found = _.find([...tabsets.value.values()] as Tabset[], (k: any) => {
       const ts = k || new Tabset('', '', [])
       return ts.id === tabsetId
     })
     if (found) {
       currentTabsetId.value = found.id
       currentTabsetFolderId.value = found.folderActive
-      await useSelectedTabsetService().setCurrentTabsetId(tabsetId)
       return found
     } else {
       console.debug(`did not find tabset ${tabsetId}, not trying to reload`)
@@ -316,11 +314,11 @@ export const useTabsetsStore = defineStore('tabsets', () => {
   const tabsForUrl = computed((): ((url: string) => TabAndTabsetId[]) => {
     const placeholderPattern = /\${[^}]*}/gm
     return (url: string) => {
+      // console.log('---', url, [...tabsets.value.values()] as Tabset[])
       const tabsAndTabsetId: TabAndTabsetId[] = []
       forEach([...tabsets.value.values()] as Tabset[], (ts: Tabset) => {
-        //console.log(`checking ts ${Tabset.logIdent(ts)}:`)
+        // console.log(`checking ts ${Tabset.logIdent(ts)}:`)
         forEach(ts.tabs, (t: Tab) => {
-          // console.log('checking', t.url)
           if (t.url && t.url.replaceAll(placeholderPattern, '') === url) {
             // console.log('checking***', t.url)
             tabsAndTabsetId.push(new TabAndTabsetId(t, ts.id))
@@ -390,7 +388,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
 
   const getAllUrls = (): string[] => {
     return _.map(
-      _.flatMap([...useTabsetsStore().tabsets.values()] as Tabset[], (ts: Tabset) => ts.tabs),
+      _.flatMap([...tabsets.value.values()] as Tabset[], (ts: Tabset) => ts.tabs),
       (t: Tab) => {
         //console.log('t', t)
         return t.url || ''
@@ -444,7 +442,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       } else {
         if (f.folders.length > 0) {
           const subChain = getFolderChain(folderId, f.folders, chain, level + 1)
-          console.log('subchain', subChain)
+          //console.log('subchain', subChain)
           if (subChain.length > 0) {
             return subChain.concat(f.id)
           }
@@ -452,6 +450,20 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       }
     }
     return chain
+  }
+
+  function addFolders(f: FolderNode, folders: Tabset[]) {
+    for (const folder of folders) {
+      const child = new FolderNode(folder.name, folder.id, [])
+      f.children.push(child)
+      addFolders(child, folder.folders)
+    }
+  }
+
+  const getFolderTree = (tabset: Tabset): FolderNode => {
+    const f: FolderNode = new FolderNode('root', tabset.id, [])
+    addFolders(f, tabset.folders)
+    return f
   }
 
   const getPageTabs = (tabset: Tabset | undefined): Tab[] => {
@@ -523,6 +535,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     loadTabsets,
     getActiveFolder,
     getFolderChain,
+    getFolderTree,
     share,
     shareWith,
     loadPublicTabset,

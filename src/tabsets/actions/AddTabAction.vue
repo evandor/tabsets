@@ -4,8 +4,10 @@
   </template>
   <template v-else>
     <fab-like-btn
+      :disabled="props.disable"
       @button-clicked="clicked()"
       :color="alreadyInTabset ? 'grey-5' : containedInTsCount > 0 ? 'primary' : 'warning'"
+      :class="{ shakeWithColor: animateAddtabButton, 'cursor-pointer': !alreadyInTabset }"
       :icon="'add'" />
     <q-tooltip class="tooltip-small" v-if="alreadyInTabset">Already in current tabset</q-tooltip>
     <q-tooltip class="tooltip-small" v-else-if="containedInTsCount > 0">
@@ -28,6 +30,7 @@ import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watchEffect } from 'vue'
 
 const props = defineProps<ActionProps>()
@@ -37,6 +40,7 @@ const { handleError } = useNotificationHandler()
 const label = ref('Add Tab')
 const containedInTsCount = ref(0)
 const alreadyInTabset = ref(false)
+const animateAddtabButton = ref(false)
 
 const clicked = () => {
   console.log('clicked!')
@@ -52,6 +56,10 @@ watchEffect(() => {
     alreadyInTabset.value = useTabsetService().urlExistsInCurrentTabset(props.currentChromeTab.url)
     containedInTsCount.value = useTabsetService().tabsetsFor(props.currentChromeTab.url).length
   }
+})
+
+watchEffect(() => {
+  animateAddtabButton.value = useUiStore().animateAddtabButton
 })
 
 const activeFolderNameFor = (ts: Tabset, activeFolder: string) => {

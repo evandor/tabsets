@@ -1,6 +1,7 @@
 import { uid } from 'quasar'
 import { STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
+import { TagInfo } from 'src/core/models/TagInfo'
 import { useUtils } from 'src/core/services/Utils'
 import { ExcalidrawStorage } from 'src/tabsets/actionHandling/model/ExcalidrawStorage'
 import { Page } from 'src/tabsets/models/cms/backend'
@@ -127,6 +128,7 @@ export class Tab {
   longDescription: string | undefined
   keywords: string
   tags: string[] // Set<string> got issues in indexeddb
+  tagsInfo: TagInfo[] = []
   image: string
   date: string
   lastModified: string

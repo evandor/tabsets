@@ -24,86 +24,99 @@
                 : 'border-right:3px solid #F5F5F5;border-radius:3px'
             ">
             <slot name="actionPart">
-              <q-icon
-                v-if="(props.tab as Tab).placeholders"
-                name="sym_o_dynamic_feed"
-                size="16px"
-                class="q-ma-none q-pa-none"
-                color="primary"
-                @click.stop="toggleShowWith('placeholder')">
-                <q-tooltip class="tooltip-small">There are placeholders defined for this tab</q-tooltip>
-              </q-icon>
+              <template v-if="viewContext == 'popup'">
+                <TabListActionsItem
+                  :tabset="props.tabset!"
+                  :tab="tab"
+                  :detail-level="props.detailLevel"
+                  :view-context="'popup'" />
+              </template>
+              <template v-else>
+                <q-icon
+                  v-if="(props.tab as Tab).placeholders"
+                  name="sym_o_dynamic_feed"
+                  size="16px"
+                  class="q-ma-none q-pa-none"
+                  color="primary"
+                  @click.stop="toggleShowWith('placeholder')">
+                  <q-tooltip class="tooltip-small">There are placeholders defined for this tab</q-tooltip>
+                </q-icon>
 
-              <q-icon
-                v-if="showReadingMode()"
-                name="o_menu_book"
-                size="16px"
-                class="q-ma-none q-pa-none"
-                color="primary"
-                @click.stop="showInReadingMode()">
-                <q-tooltip class="tooltip-small">Click here to open in Reading Mode</q-tooltip>
-              </q-icon>
+                <q-icon
+                  v-if="showReadingMode()"
+                  name="o_menu_book"
+                  size="16px"
+                  class="q-ma-none q-pa-none"
+                  color="primary"
+                  @click.stop="showInReadingMode()">
+                  <q-tooltip class="tooltip-small">Click here to open in Reading Mode</q-tooltip>
+                </q-icon>
 
-              <q-btn
-                v-if="(props.tab as Tab).comments && (props.tab as Tab).comments.length > 0"
-                icon="o_chat"
-                flat
-                size="12px"
-                style="position: relative; top: 4px"
-                class="q-ma-none q-pa-none q-mx-xs"
-                @click.stop="toggleShowWith('comments')">
-                <q-badge floating color="warning" text-color="primary">{{ newCommentsCount() }}</q-badge>
-                <q-tooltip class="tooltip-small">There are comments for this tab</q-tooltip>
-              </q-btn>
+                <q-btn
+                  v-if="(props.tab as Tab).comments && (props.tab as Tab).comments.length > 0"
+                  icon="o_chat"
+                  flat
+                  size="12px"
+                  style="position: relative; top: 4px"
+                  class="q-ma-none q-pa-none q-mx-xs"
+                  @click.stop="toggleShowWith('comments')">
+                  <q-badge floating color="warning" text-color="primary">{{ newCommentsCount() }}</q-badge>
+                  <q-tooltip class="tooltip-small">There are comments for this tab</q-tooltip>
+                </q-btn>
 
-              <q-icon
-                v-if="props.tab.reminder"
-                color="primary"
-                name="o_alarm"
-                @click="openReminderDialog()"
-                size="16px">
-                <q-tooltip class="tooltip-small"
-                  >Reminder set to {{ date.formatDate(props.tab.reminder, 'DD.MM.YYYY') }}
-                  {{ props.tab.reminderComment ? ' - ' : '' }} {{ props.tab.reminderComment }}
-                </q-tooltip>
-              </q-icon>
+                <q-icon
+                  v-if="props.tab.reminder"
+                  color="primary"
+                  name="o_alarm"
+                  @click="openReminderDialog()"
+                  size="16px">
+                  <q-tooltip class="tooltip-small"
+                    >Reminder set to {{ date.formatDate(props.tab.reminder, 'DD.MM.YYYY') }}
+                    {{ props.tab.reminderComment ? ' - ' : '' }} {{ props.tab.reminderComment }}
+                  </q-tooltip>
+                </q-icon>
 
-              <q-icon
-                v-if="monitor"
-                :name="monitor.changed ? 'o_notifications_active' : 'o_notifications'"
-                :color="monitor.changed ? 'negative' : 'primary'"
-                size="16px">
-                <q-tooltip v-if="monitor.changed" class="tooltip-small"
-                  >Tab's content has changed, checked {{ date.formatDate(monitor.changed, 'DD.MM.YYYY hh:mm') }}
-                </q-tooltip>
-                <q-tooltip v-else class="tooltip-small">Tab is being monitored for content changes</q-tooltip>
-              </q-icon>
+                <q-icon
+                  v-if="monitor"
+                  :name="monitor.changed ? 'o_notifications_active' : 'o_notifications'"
+                  :color="monitor.changed ? 'negative' : 'primary'"
+                  size="16px">
+                  <q-tooltip v-if="monitor.changed" class="tooltip-small"
+                    >Tab's content has changed, checked {{ date.formatDate(monitor.changed, 'DD.MM.YYYY hh:mm') }}
+                  </q-tooltip>
+                  <q-tooltip v-else class="tooltip-small">Tab is being monitored for content changes</q-tooltip>
+                </q-icon>
 
-              <q-icon
-                v-if="props.tab.pinnedInList && useUiStore().folderStyle === 'goInto'"
-                name="sym_o_keep"
-                size="16px"
-                class="q-ma-none q-pa-none"
-                style="cursor: default"
-                color="primary">
-                <q-tooltip class="tooltip-small">This tab is pinned, i.e. it appears in all subfolders</q-tooltip>
-              </q-icon>
+                <q-icon
+                  v-if="props.tab.pinnedInList && useUiStore().folderStyle === 'goInto'"
+                  name="sym_o_keep"
+                  size="16px"
+                  class="q-ma-none q-pa-none"
+                  style="cursor: default"
+                  color="primary">
+                  <q-tooltip class="tooltip-small">This tab is pinned, i.e. it appears in all subfolders</q-tooltip>
+                </q-icon>
 
-              <q-icon
-                v-if="
-                  props.tab?.tabReferences.filter(
-                    (r: TabReference) => r.type === TabReferenceType.RSS && r.status !== 'IGNORED',
-                  ).length > 0
-                "
-                name="sym_o_rss_feed"
-                size="16px"
-                class="q-ma-none q-pa-none cursor-pointer"
-                color="warning"
-                @click.stop="toggleShowWith('rssfeed')">
-                <q-tooltip class="tooltip-small">This tab links to an RSS Feed</q-tooltip>
-              </q-icon>
+                <q-icon
+                  v-if="
+                    props.tab?.tabReferences?.filter(
+                      (r: TabReference) => r.type === TabReferenceType.RSS && r.status !== 'IGNORED',
+                    ).length > 0
+                  "
+                  name="sym_o_rss_feed"
+                  size="16px"
+                  class="q-ma-none q-pa-none cursor-pointer"
+                  color="warning"
+                  @click.stop="toggleShowWith('rssfeed')">
+                  <q-tooltip class="tooltip-small">This tab links to an RSS Feed</q-tooltip>
+                </q-icon>
 
-              <TabListActionsItem :tabset="props.tabset!" :tab="tab" :detail-level="props.detailLevel" />
+                <TabListActionsItem
+                  :tabset="props.tabset!"
+                  :tab="tab"
+                  :detail-level="props.detailLevel"
+                  :view-context="props.viewContext" />
+              </template>
             </slot>
           </div>
         </div>
@@ -306,7 +319,7 @@
     <!-- maximum details -->
     <div
       class="row fit"
-      v-if="showWithMinDetails('MAXIMAL') || props.tab?.details === 'MAXIMAL'"
+      v-if="showOpenSearchInput() && (showWithMinDetails('MAXIMAL') || props.tab?.details === 'MAXIMAL')"
       style="border: 0 solid red">
       <div class="col-1 q-ml-sm q-mt-xs"></div>
       <div class="col fit q-ml-sm" @click="gotoTab()">
@@ -411,6 +424,7 @@ import BrowserApi from 'src/app/BrowserApi'
 import TabListIconIndicatorsHook from 'src/app/hooks/tabsets/TabListIconIndicatorsHook.vue'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
+import { ViewContext } from 'src/core/models/ViewContext'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { NotificationType, useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useNavigationService } from 'src/core/services/NavigationService'
@@ -448,6 +462,7 @@ const props = defineProps({
   header: { type: String, required: false },
   filter: { type: String, required: false },
   detailLevel: { type: String as PropType<ListDetailLevel>, required: false },
+  viewContext: { type: String as PropType<ViewContext>, default: 'default' },
 })
 
 const $q = useQuasar()
@@ -686,6 +701,8 @@ const addComment = () => {
 
 const newCommentsCount = () =>
   props.tab.comments.filter((c: TabComment) => c.date > commentsUpdateThreshold.value).length
+
+const showOpenSearchInput = () => (props.tab ? hasReference(props.tab, TabReferenceType.OPEN_SEARCH) : false)
 </script>
 
 <style lang="scss" src="src/tabsets/widgets/css/panelTabListElementWidget.scss" />

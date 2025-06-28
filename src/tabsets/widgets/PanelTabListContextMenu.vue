@@ -6,121 +6,123 @@
         :tabset="props.tabset!"
         v-if="props.tabset!.type !== TabsetType.SPECIAL" />
 
-      <template v-if="showTabDetailsMenuEntry(props['tab' as keyof object])">
-        <q-item clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
-          <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-            <q-icon size="xs" name="o_info" color="accent" />
-          </q-item-section>
-          <q-item-section>Tab Details (dev)</q-item-section>
-        </q-item>
-        <q-item clickable v-close-popup @click.stop="showTabsJson(props['tab' as keyof object])">
-          <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-            <q-icon size="xs" name="o_info" color="accent" />
-          </q-item-section>
-          <q-item-section>Tab's JSON</q-item-section>
-        </q-item>
-      </template>
+      <template v-if="props.viewContext != 'popup'">
+        <template v-if="showTabDetailsMenuEntry(props['tab' as keyof object])">
+          <q-item clickable v-close-popup @click.stop="showTabDetails(props['tab' as keyof object])">
+            <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
+              <q-icon size="xs" name="o_info" color="accent" />
+            </q-item-section>
+            <q-item-section> Tab Details (dev)</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup @click.stop="showTabsJson(props['tab' as keyof object])">
+            <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
+              <q-icon size="xs" name="o_info" color="accent" />
+            </q-item-section>
+            <q-item-section>Tab's JSON</q-item-section>
+          </q-item>
+        </template>
 
-      <q-separator inset />
-      <q-item clickable v-close-popup @click.stop="editURL(props['tab' as keyof object])">
-        <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-          <q-icon size="xs" name="o_edit" color="info" />
-        </q-item-section>
-        <q-item-section> Edit Tab</q-item-section>
-      </q-item>
-
-      <template v-if="props.tabset?.type.toString() !== TabsetType.DYNAMIC.toString()">
-        <q-item clickable v-close-popup @click.stop="addCommentDialog()">
-          <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-            <q-icon size="xs" name="o_note" color="info" />
-          </q-item-section>
-          <q-item-section>Add Comment</q-item-section>
-        </q-item>
-      </template>
-
-      <template
-        v-if="
-          (useFeaturesStore().hasFeature(FeatureIdent.PIN_TAB) &&
-            hasSubfolder() &&
-            useUiStore().folderStyle === 'goInto') ||
-          props.tab?.pinnedInList
-        ">
         <q-separator inset />
-        <q-item clickable v-close-popup @click.stop="togglePin()">
+        <q-item clickable v-close-popup @click.stop="editURL(props['tab' as keyof object])">
           <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-            <q-icon size="xs" :name="props.tab?.pinnedInList ? 'sym_o_keep_off' : 'sym_o_keep'" color="warning" />
+            <q-icon size="xs" name="o_edit" color="info" />
           </q-item-section>
-          <q-item-section v-if="props.tab?.pinnedInList">Unpin Tab</q-item-section>
-          <q-item-section v-else>Pin Tab</q-item-section>
+          <q-item-section> Edit Tab</q-item-section>
         </q-item>
-      </template>
 
-      <template
-        v-if="
-          useFeaturesStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT) &&
-          props.tabset!.type !== TabsetType.SPECIAL &&
-          !fullpageView
-        ">
+        <template v-if="props.tabset?.type.toString() !== TabsetType.DYNAMIC.toString()">
+          <q-item clickable v-close-popup @click.stop="addCommentDialog()">
+            <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
+              <q-icon size="xs" name="o_note" color="info" />
+            </q-item-section>
+            <q-item-section>Add Comment</q-item-section>
+          </q-item>
+        </template>
+
+        <template
+          v-if="
+            (useFeaturesStore().hasFeature(FeatureIdent.PIN_TAB) &&
+              hasSubfolder() &&
+              useUiStore().folderStyle === 'goInto') ||
+            props.tab?.pinnedInList
+          ">
+          <q-separator inset />
+          <q-item clickable v-close-popup @click.stop="togglePin()">
+            <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
+              <q-icon size="xs" :name="props.tab?.pinnedInList ? 'sym_o_keep_off' : 'sym_o_keep'" color="warning" />
+            </q-item-section>
+            <q-item-section v-if="props.tab?.pinnedInList">Unpin Tab</q-item-section>
+            <q-item-section v-else>Pin Tab</q-item-section>
+          </q-item>
+        </template>
+
+        <template
+          v-if="
+            useFeaturesStore().hasFeature(FeatureIdent.ADVANCED_TAB_MANAGEMENT) &&
+            props.tabset!.type !== TabsetType.SPECIAL &&
+            !fullpageView
+          ">
+          <q-separator inset />
+          <q-item clickable v-close-popup @click.stop="assignTab(props['tab' as keyof object])">
+            <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
+              <q-icon size="xs" name="o_tab" color="info" />
+            </q-item-section>
+            <q-item-section> Tab Assignment</q-item-section>
+          </q-item>
+        </template>
+
+        <template
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.COLOR_TAGS) && props.tabset!.type !== TabsetType.SPECIAL">
+          <q-separator inset />
+          <q-item clickable v-close-popup @click.stop="setColor(props['tab' as keyof object])">
+            <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
+              <q-icon size="xs" name="o_colorize" color="blue" />
+            </q-item-section>
+            <q-item-section>
+              <div class="row q-pa-xs q-mt-none q-pl-sm q-gutter-sm">
+                <ColorSelector @colorSet="(color: string) => (theColor = color)" />
+              </div>
+            </q-item-section>
+          </q-item>
+        </template>
+
+        <!--      <template v-if="useAuthStore().isAuthenticated">-->
+        <!--        <q-separator inset/>-->
+        <!--        <q-item clickable v-close-popup @click.stop="openSimilar()">-->
+        <!--          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">-->
+        <!--            <q-icon size="xs" name="o_equal"/>-->
+        <!--          </q-item-section>-->
+        <!--          <q-item-section>-->
+        <!--            Open similar websites-->
+        <!--          </q-item-section>-->
+        <!--        </q-item>-->
+        <!--      </template>-->
+
+        <q-item
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.MONITOR) && props.tabset!.type !== TabsetType.SPECIAL"
+          clickable
+          v-close-popup
+          @click.stop="openMonitoringDialog()">
+          <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
+            <q-icon size="xs" name="o_notifications" color="accent" />
+          </q-item-section>
+          <q-item-section v-if="isMonitoring()">Stop Monitoring</q-item-section>
+          <q-item-section v-else>Monitor Changes</q-item-section>
+        </q-item>
+
+        <q-item
+          v-if="useFeaturesStore().hasFeature(FeatureIdent.REMINDER) && props.tabset!.type !== TabsetType.SPECIAL"
+          clickable
+          v-close-popup
+          @click.stop="openReminderDialog()">
+          <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
+            <q-icon size="xs" name="o_alarm" color="accent" />
+          </q-item-section>
+          <q-item-section> {{ props.tab.reminder ? 'Update' : 'Add' }} Reminder</q-item-section>
+        </q-item>
+
         <q-separator inset />
-        <q-item clickable v-close-popup @click.stop="assignTab(props['tab' as keyof object])">
-          <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-            <q-icon size="xs" name="o_tab" color="info" />
-          </q-item-section>
-          <q-item-section> Tab Assignment</q-item-section>
-        </q-item>
       </template>
-
-      <template
-        v-if="useFeaturesStore().hasFeature(FeatureIdent.COLOR_TAGS) && props.tabset!.type !== TabsetType.SPECIAL">
-        <q-separator inset />
-        <q-item clickable v-close-popup @click.stop="setColor(props['tab' as keyof object])">
-          <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-            <q-icon size="xs" name="o_colorize" color="blue" />
-          </q-item-section>
-          <q-item-section>
-            <div class="row q-pa-xs q-mt-none q-pl-sm q-gutter-sm">
-              <ColorSelector @colorSet="(color: string) => (theColor = color)" />
-            </div>
-          </q-item-section>
-        </q-item>
-      </template>
-
-      <!--      <template v-if="useAuthStore().isAuthenticated">-->
-      <!--        <q-separator inset/>-->
-      <!--        <q-item clickable v-close-popup @click.stop="openSimilar()">-->
-      <!--          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">-->
-      <!--            <q-icon size="xs" name="o_equal"/>-->
-      <!--          </q-item-section>-->
-      <!--          <q-item-section>-->
-      <!--            Open similar websites-->
-      <!--          </q-item-section>-->
-      <!--        </q-item>-->
-      <!--      </template>-->
-
-      <q-item
-        v-if="useFeaturesStore().hasFeature(FeatureIdent.MONITOR) && props.tabset!.type !== TabsetType.SPECIAL"
-        clickable
-        v-close-popup
-        @click.stop="openMonitoringDialog()">
-        <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-          <q-icon size="xs" name="o_notifications" color="accent" />
-        </q-item-section>
-        <q-item-section v-if="isMonitoring()">Stop Monitoring</q-item-section>
-        <q-item-section v-else>Monitor Changes</q-item-section>
-      </q-item>
-
-      <q-item
-        v-if="useFeaturesStore().hasFeature(FeatureIdent.REMINDER) && props.tabset!.type !== TabsetType.SPECIAL"
-        clickable
-        v-close-popup
-        @click.stop="openReminderDialog()">
-        <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-          <q-icon size="xs" name="o_alarm" color="accent" />
-        </q-item-section>
-        <q-item-section> {{ props.tab.reminder ? 'Update' : 'Add' }} Reminder</q-item-section>
-      </q-item>
-
-      <q-separator inset />
       <q-item clickable v-close-popup @click.stop="deleteTab()">
         <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
           <q-icon size="xs" name="o_delete" color="negative" />
@@ -138,6 +140,7 @@ import { useQuasar } from 'quasar'
 import PanelTabListContextMenuHook from 'src/app/hooks/tabsets/PanelTabListContextMenuHook.vue'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import ColorSelector from 'src/core/dialog/ColorSelector.vue'
+import { ViewContext } from 'src/core/models/ViewContext'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
@@ -161,6 +164,7 @@ const props = defineProps({
   tab: { type: Object as PropType<Tab>, required: true },
   tabset: { type: Object as PropType<Tabset>, required: false },
   tabsetId: { type: String, required: false },
+  viewContext: { type: String as PropType<ViewContext>, default: 'default' },
 })
 
 const emit = defineEmits(['toggleExpand'])

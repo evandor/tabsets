@@ -2,6 +2,7 @@ import _ from 'lodash'
 import { LocalStorage, uid } from 'quasar'
 import AppEventDispatcher from 'src/app/AppEventDispatcher'
 import ChromeApi from 'src/app/BrowserApi'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import {
   GITHUB_AUTO_SYNC,
   GITHUB_AUTO_SYNC_READONLY,
@@ -12,8 +13,10 @@ import { ContentItem } from 'src/content/models/ContentItem'
 import { useContentService } from 'src/content/services/ContentService'
 import { TabPredicate } from 'src/core/domain/Types'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useNavigationService } from 'src/core/services/NavigationService'
 import JsUtils from 'src/core/utils/JsUtils'
-import NavigationService from 'src/services/NavigationService'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
+// import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAuthStore } from 'src/stores/authStore'
 import { GithubWriteEventCommand, TabEvent, TabsetEvent } from 'src/tabsets/commands/github/GithubWriteEventCommand'
@@ -46,13 +49,13 @@ export function useTabsetService() {
     await useTabsetsStore().loadTabsets()
     const selectedTabsetId = await useSelectedTabsetService().getFromStorage()
     if (selectedTabsetId) {
-      console.debug(` ...config: setting selected tabset from storage: ${selectedTabsetId}`)
+      //console.debug(` ...config: setting selected tabset from storage: ${selectedTabsetId}`)
       const selectedTabset = await useTabsetsStore().selectCurrentTabset(selectedTabsetId)
       if (!selectedTabset) {
-        //selectFirstAvailableTabset()
+        selectFirstAvailableTabset()
       }
     } else {
-      //selectFirstAvailableTabset()
+      selectFirstAvailableTabset()
     }
     initialized.value = true
   }
@@ -318,9 +321,59 @@ export function useTabsetService() {
     if (!tab || !tab.url) {
       return Promise.resolve('done')
     }
-    //console.debug('saving text for', tab.id, tab.url, metas)
+    console.debug('saving text for', tab.id, tab.url, metas)
     const title = tab.title || ''
     const tabsetIds: string[] = tabsetsFor(tab.url)
+
+    const candidates = _.map(
+      _.filter(
+        [...useTabsetsStore().tabsets.values()],
+        (ts: Tabset) => ts.type === TabsetType.DEFAULT || ts.type === TabsetType.SESSION,
+      ),
+      (ts: Tabset) => {
+        return { name: ts.name, id: ts.id }
+      },
+    )
+
+    // try to apply AI logic
+    if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
+      const matchAgainst = title + '; ' + tab.url + '; ' + text || ''
+      const data = {
+        text: matchAgainst,
+        candidates: _.map(candidates, (c: any) => c.name),
+      }
+      console.log('about to apply KI logic on meta description...', data)
+      //sendMsg('zero-shot-classification', data)
+
+      chrome.runtime.sendMessage(
+        {
+          name: 'zero-shot-classification',
+          data: data,
+        },
+        (callback: any) => {
+          console.log('got callback!', callback)
+          if (chrome.runtime.lastError) {
+            /* ignore */
+          }
+          const tabsetScores: object[] = []
+          // if (callback.scores) {
+          //   callback.scores.forEach((score: number, index: number) => {
+          //     console.log("got score", score)
+          //     if (score > .1) {
+          //       tabsetScores.push({
+          //         score: score,
+          //         candidateName: candidates[index].name,
+          //         candidateId: candidates[index].id
+          //       })
+          //     }
+          //   })
+          //   // force reload in other pages (like CurrentTabElementHelper)
+          //   // TODO check
+          //   //useTabsStore().setCurrentChromeTab(tab)
+          // }
+        },
+      )
+    }
 
     useContentService()
       .saveContent(tab.id, tab.url, text, metas, title, tabsetIds)
@@ -962,11 +1015,11 @@ export function useTabsetService() {
   const limitExceeded = async () => {
     const exceedInfo = useAuthStore().limitExceeded('TABS', useTabsetsStore().allTabsCount)
     if (exceedInfo.exceeded) {
-      await NavigationService.openOrCreateTab([
+      await useNavigationService().browserTabFor(
         chrome.runtime.getURL(
           `/www/index.html#/mainpanel/settings?tab=account&exceeded=tabs&limit=${exceedInfo.limit}`,
         ),
-      ])
+      )
       return true
     }
     return false

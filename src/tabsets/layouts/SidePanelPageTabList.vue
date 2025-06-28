@@ -7,6 +7,7 @@
           v-for="(tab, index) in pinnedTabs"
           :key="index"
           v-once
+          :view-context="props.viewContext"
           :tab="tab.tab as Tab"
           :index="tab.index"
           :tabset="props.tabset!"
@@ -24,6 +25,7 @@
           v-for="(tab, index) in tabs"
           :key="index"
           v-once
+          :view-context="props.viewContext"
           :tab="tab.tab as Tab"
           :index="tab.index"
           :tabset="props.tabset!"
@@ -55,6 +57,7 @@
 
 <script lang="ts" setup>
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { ViewContext } from 'src/core/models/ViewContext'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import SidePanelTabListHelper from 'src/tabsets/layouts/SidePanelTabListHelper.vue'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
@@ -76,6 +79,7 @@ const props = defineProps({
   tabsCount: { type: Number, default: -1 },
   activeFolder: { type: String, required: false },
   filter: { type: String, required: false },
+  viewContext: { type: String as PropType<ViewContext>, default: 'default' },
 })
 
 const emits = defineEmits(['tabs-found'])

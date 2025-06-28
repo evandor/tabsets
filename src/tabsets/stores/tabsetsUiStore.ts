@@ -5,7 +5,6 @@ import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
 import { LocalStorageTabsetsPersistence } from 'src/tabsets/persistence/LocalStorageTabsetsPersistence'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { ref } from 'vue'
 
 export const useTabsetsUiStore = defineStore('tabsetsUi', () => {
@@ -82,18 +81,22 @@ export const useTabsetsUiStore = defineStore('tabsetsUi', () => {
     lastUsedTabsets.value = _.union(lastUsedTabsets.value, favorites.value)
   }
 
-  function updateExtensionIcon(tabId?: number) {
-    const currentBrowserTab = useTabsStore2().currentChromeTab
-    const currentUrl = currentBrowserTab?.url
-    if (currentUrl) {
-      // console.log('updating extension icon', currentUrl, tabId)
-      chrome.action.setBadgeText({ text: '' })
-      chrome.action.setTitle({ title: 'Tabsets' })
-      setMatchingTabsFor(currentUrl)
+  async function updateExtensionIcon(currentBrowserTab: chrome.tabs.Tab) {
+    if (currentBrowserTab.url) {
+      // console.log('updating extension icon', currentBrowserTab.url, tabId)
+
+      // TODO setBadgeText is managed in background/content script! - other stuff as well?
+      //chrome.action.setBadgeText({ text: '' })
+      //chrome.action.setTitle({ title: 'Tabsets' })
+      setMatchingTabsFor(currentBrowserTab.url)
       if (matchingTabs.value.length > 0) {
-        chrome.action.setBadgeText({ tabId, text: '' + matchingTabs.value.length })
-        chrome.action.setBadgeBackgroundColor({ tabId, color: 'orange' })
-        chrome.action.setTitle({ tabId, title: `The current tab is contained in ${matchingTabs.value.length} tabsets` })
+        //console.log('matching tabs', matchingTabs.value)
+        //chrome.action.setBadgeText({ tabId: currentBrowserTab.id, text: '' + matchingTabs.value.length })
+        chrome.action.setBadgeBackgroundColor({ tabId: currentBrowserTab.id, color: 'orange' })
+        chrome.action.setTitle({
+          tabId: currentBrowserTab.id,
+          title: `The current tab is contained in ${matchingTabs.value.length} tabsets`,
+        })
         useTabsetsStore()
           .getCurrentTabsetId()
           .then((currentTabsetId: string | undefined) => {
@@ -101,9 +104,9 @@ export const useTabsetsUiStore = defineStore('tabsetsUi', () => {
               // console.log('updating extension icon II', currentTabsetId, matchingTabs.value)
               if (matchingTabs.value.map((ts: TabAndTabsetId) => ts.tabsetId).indexOf(currentTabsetId || '') >= 0) {
                 // console.log('updating extension icon III', tabId)
-                chrome.action.setBadgeBackgroundColor({ tabId, color: 'green' })
+                chrome.action.setBadgeBackgroundColor({ tabId: currentBrowserTab.id, color: 'green' })
                 chrome.action.setTitle({
-                  tabId,
+                  tabId: currentBrowserTab.id,
                   title: `The current tab is contained in ${matchingTabs.value.length} tabsets, including the current one (${useTabsetsStore().currentTabsetName}).`,
                 })
               }
@@ -111,7 +114,7 @@ export const useTabsetsUiStore = defineStore('tabsetsUi', () => {
           })
       } else {
         if (process.env.TABSETS_STAGE === 'DEV') {
-          chrome.action.setBadgeText({ tabId, text: 'D' })
+          //chrome.action.setBadgeText({ tabId: currentBrowserTab.id, text: 'D' })
         }
       }
     }

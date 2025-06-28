@@ -42,12 +42,12 @@
 <script lang="ts" setup>
 import { useDialogPluginComponent } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { useTabsStore } from 'src/bookmarks/stores/tabsStore'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { MonitorCommand } from 'src/tabsets/commands/MonitorCommand'
 import { Tab } from 'src/tabsets/models/Tab'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { ref } from 'vue'
 
 defineEmits([...useDialogPluginComponent.emits])
@@ -67,7 +67,7 @@ const wrongPage = ref(false)
 if (useFeaturesStore().hasFeature(FeatureIdent.SAVE_MHTML)) {
   snapshotDisabled.value = false
 }
-if (props.tab.url !== useTabsStore().currentChromeTab?.url) {
+if (props.tab.url !== useTabsStore2().currentChromeTab?.url) {
   snapshotDisabled.value = true
   wrongPage.value = true
 }

@@ -10,6 +10,7 @@
     :key="'paneltablist_' + tab.id">
     <PanelTabListElementWidget2
       :key="'ptlew__' + tab.id"
+      :view-context="props.viewContext"
       :tab="tab"
       :tabset="props.tabset!"
       :filter="props.filter || ''">
@@ -40,6 +41,7 @@
 
 <script setup lang="ts">
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { ViewContext } from 'src/core/models/ViewContext'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
@@ -52,6 +54,7 @@ const props = defineProps({
   index: { type: Number, required: true },
   tabset: { type: Object as PropType<Tabset>, required: false },
   filter: { type: String, required: false },
+  viewContext: { type: String as PropType<ViewContext>, default: 'default' },
 })
 
 const startDrag = (evt: any, tab: Tab) => {

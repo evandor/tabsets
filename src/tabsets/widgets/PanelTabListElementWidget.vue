@@ -64,7 +64,11 @@
           <q-tooltip class="tooltip-small">There are comments for this tab</q-tooltip>
         </q-icon>
 
-        <TabListActionsItem :tabset="props.tabset!" :tab="tab" :detail-level="props.detailLevel" />
+        <TabListActionsItem
+          :tabset="props.tabset!"
+          :tab="tab"
+          :detail-level="props.detailLevel"
+          :view-context="'default'" />
       </span>
     </q-item-section>
   </slot>

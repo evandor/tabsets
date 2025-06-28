@@ -5,5 +5,6 @@ export type ActionProps = {
   folder?: Tabset | undefined
   currentChromeTab?: chrome.tabs.Tab
   level: 'root' | 'folder'
-  element: 'contextmenu' | 'btn'
+  disable?: boolean | undefined
+  element: 'contextmenu' | 'btn' | 'popup'
 }

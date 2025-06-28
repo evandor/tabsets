@@ -4,6 +4,7 @@
   <!--      @click.stop="emits('buttonClicked', new ActionHandlerButtonClickedHolder2(actions[0]!))"-->
   <template v-if="actions.length === 1">
     <component
+      :disable="props.disable"
       :key="actions[0]!.component.name"
       :is="actions[0]!.component"
       :tabset="props.tabset"
@@ -135,6 +136,7 @@ const props = defineProps<{
   currentChromeTab: chrome.tabs.Tab
   tabset: Tabset
   folder?: Tabset
+  disable?: boolean
 }>()
 
 const emits = defineEmits(['buttonClicked', 'asNewFile'])

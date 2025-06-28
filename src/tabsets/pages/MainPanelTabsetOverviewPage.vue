@@ -44,7 +44,7 @@ import TabsetPageCards from 'src/tabsets/pages/pwa/TabsetPageCards.vue'
 import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -70,24 +70,18 @@ onMounted(() => {
   if (!route || !route.params) {
     return
   }
+  // initial setup from route params
+  tabsetId.value = route?.params.tabsetId as string
+  tabset.value = useTabsetsStore().getTabset(tabsetId.value) || new Tabset(uid(), 'empty', [])
+  tab.value = tabset.value.view || 'grid'
+  folderId.value = tabset.value.folderActive
+  tabsetFolder.value = useTabsetsStore().getActiveFolder(tabset.value, folderId.value) || tabset.value
 })
 
 onUnmounted(() => {
   console.log('--- removing message listener ---')
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   chrome.runtime.onMessage.removeListener(onMessageListener)
-})
-
-watchEffect(() => {
-  if (useTabsetsStore().loaded) {
-    // initial setup from route params
-    tabsetId.value = route?.params.tabsetId as string
-    console.log('got tabsetId', tabsetId.value)
-    tabset.value = useTabsetsStore().getTabset(tabsetId.value) || new Tabset(uid(), 'empty', [])
-    tab.value = tabset.value.view || 'grid'
-    folderId.value = tabset.value.folderActive
-    tabsetFolder.value = useTabsetsStore().getActiveFolder(tabset.value, folderId.value) || tabset.value
-  }
 })
 
 const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
