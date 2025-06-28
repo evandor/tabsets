@@ -10,10 +10,6 @@
 	path = src/thumbnails
 	url = https://github.com/evandor/submodule-thumbnails.git
 	branch = main
-[submodule "src/content"]
-	path = src/content
-	url = https://github.com/evandor/submodule-content.git
-	branch = main
 [submodule "src/tabsets"]
 	path = src/tabsets
 	url = https://github.com/evandor/submodule-tabsets.git
