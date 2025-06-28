@@ -1,0 +1,38 @@
+---
+title: Features Main Classes and Interfaces
+---
+classDiagram
+  class FeaturesStore {
+    persistence: FeaturesPersistence
+    +String[] activeFeatures
+    +initialize()
+    +hasFeature(string)
+    +activateFeature()
+    +deactivateFeature()
+  }
+
+  class FeaturesPersistence {
+    <<interface>>
+  }
+
+  class Command {
+    <<interface>>
+  }
+
+  class IndexedDbFeaturesPersistence {
+  }
+
+  class LocalStorageFeaturesPersistence {
+  }
+
+  class ActivateFeatureCommand {
+  }
+  class DeactivateFeatureCommand {
+  }
+
+  Command <|-- ActivateFeatureCommand
+  Command <|-- DeactivateFeatureCommand
+
+  FeaturesPersistence <|-- LocalStorageFeaturesPersistence
+  FeaturesPersistence <|-- IndexedDbFeaturesPersistence
+  FeaturesStore -- FeaturesPersistence
