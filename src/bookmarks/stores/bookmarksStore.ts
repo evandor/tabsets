@@ -1,15 +1,24 @@
-import {defineStore} from 'pinia';
-import _ from "lodash";
-import {Bookmark} from "src/bookmarks/models/Bookmark";
-import {TreeNode} from "src/bookmarks/models/Tree";
+import _ from 'lodash'
+import { defineStore } from 'pinia'
+import { Bookmark } from 'src/bookmarks/models/Bookmark'
+import { TreeNode } from 'src/bookmarks/models/Tree'
 
 function nodesFrom(
   parent: chrome.bookmarks.BookmarkTreeNode,
   allFoldersCount = 0,
   allBookmarksCount = 0,
-  level: number = 1): [TreeNode | undefined, number, number] {
-
-  const parentNode = new TreeNode(parent.id, parent.title, parent.title, parent.url, parent.url ? 'o_article' : 'o_folder', [], 0, 0)
+  level: number = 1,
+): [TreeNode | undefined, number, number] {
+  const parentNode = new TreeNode(
+    parent.id,
+    parent.title,
+    parent.title,
+    parent.url,
+    parent.url ? 'o_article' : 'o_folder',
+    [],
+    0,
+    0,
+  )
 
   level++
   let subNodes: TreeNode[] = []
@@ -36,10 +45,7 @@ function nodesFrom(
   return [parentNode, allFoldersCount + foldersCount, allBookmarksCount + leavesCount]
 }
 
-function nodesWithoutLeaves(
-  parent: TreeNode,
-): TreeNode | undefined {
-
+function nodesWithoutLeaves(parent: TreeNode): TreeNode | undefined {
   if (parent.header !== 'node') {
     return undefined
   }
@@ -58,7 +64,6 @@ function nodesWithoutLeaves(
 }
 
 export const useBookmarksStore = defineStore('bookmarks', {
-
   state: () => ({
     bookmarksTree: [] as unknown as object[],
     //bookmarksNodes: [] as unknown as object[],
@@ -74,44 +79,41 @@ export const useBookmarksStore = defineStore('bookmarks', {
     bookmarksForFolder: null as unknown as Bookmark[],
 
     bookmarksCount: 0,
-    foldersCount: 0
+    foldersCount: 0,
   }),
 
   getters: {
     findBookmarksForUrl: (state) => {
       return async (url: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> => {
-        const res = await chrome.bookmarks.search({url: url})
+        const res = await chrome.bookmarks.search({ url: url })
         return res
       }
-    }
+    },
   },
 
   actions: {
-
     init() {
-      console.debug(" ...initializing bookmarkStore")
+      console.debug(' ...initializing bookmarkStore')
       this.initListeners()
     },
 
     async loadBookmarks(): Promise<void> {
       //useUiStore().bookmarksLoading = true
       this.bookmarksTree = []
-     // this.bookmarksNodes = []
+      // this.bookmarksNodes = []
       this.bookmarksNodes2 = []
       this.nonLeafNodes = []
       this.bookmarksLeaves = []
-      console.debug(" ...loading bookmarks")//, (new Error()).stack)
-      // @ts-ignore
-      const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.search({})//, async (bookmarks) => {
+      console.debug(' ...loading bookmarks') //, (new Error()).stack)
+      const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.search({}) //, async (bookmarks) => {
       this.bookmarksLeaves = bookmarks
 
-      // @ts-ignore
       const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
 
       const nodes = nodesFrom(tree[0])
       if (nodes[0]) {
         this.bookmarksNodes2 = nodes[0].children
-        let copy = (JSON.parse(JSON.stringify(nodes[0])));
+        let copy = JSON.parse(JSON.stringify(nodes[0]))
         this.nonLeafNodes = nodesWithoutLeaves(copy)?.children || []
       }
       this.foldersCount = nodes[1]
@@ -130,14 +132,13 @@ export const useBookmarksStore = defineStore('bookmarks', {
     },
 
     updateUrl(from: string, to: string) {
-      chrome.bookmarks.search({url: from}, (results: chrome.bookmarks.BookmarkTreeNode[]) => {
+      chrome.bookmarks.search({ url: from }, (results: chrome.bookmarks.BookmarkTreeNode[]) => {
         results.forEach((r: chrome.bookmarks.BookmarkTreeNode) => {
-          chrome.bookmarks.update(r.id, {url: to}, updateResult => {
-            console.log("updated bookmark", updateResult)
+          chrome.bookmarks.update(r.id, { url: to }, (updateResult) => {
+            console.log('updated bookmark', updateResult)
           })
         })
       })
-    }
-
-  }
-});
+    },
+  },
+})

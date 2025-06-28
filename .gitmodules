@@ -14,10 +14,6 @@
 	path = src/tabsets
 	url = https://github.com/evandor/submodule-tabsets.git
 	branch = main
-[submodule "src/spaces"]
-	path = src/spaces
-	url = https://github.com/evandor/submodule-spaces.git
-	branch = main
 [submodule "src/ui"]
 	path = src/ui
 	url = https://github.com/evandor/submodule-ui.git
