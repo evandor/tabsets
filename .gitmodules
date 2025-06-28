@@ -18,10 +18,6 @@
 	path = src/spaces
 	url = https://github.com/evandor/submodule-spaces.git
 	branch = main
-[submodule "src/snapshots"]
-	path = src/snapshots
-	url = https://github.com/evandor/submodule-snapshots.git
-	branch = main
 [submodule "src/ui"]
 	path = src/ui
 	url = https://github.com/evandor/submodule-ui.git
