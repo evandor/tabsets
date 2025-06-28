@@ -30,7 +30,3 @@
 	path = src/ui
 	url = https://github.com/evandor/submodule-ui.git
 	branch = main
-[submodule "src/requests"]
-	path = src/requests
-	url = https://github.com/evandor/submodule-requests.git
-	branch = main
