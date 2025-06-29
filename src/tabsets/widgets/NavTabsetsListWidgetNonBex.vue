@@ -44,6 +44,7 @@
           </q-item-label>
         </q-item-section>
         <q-item-section
+          v-if="!useAuthStore().user?.isAnonymous"
           class="text-right cursor-pointer"
           @mouseover="hoveredTab = tabset.id"
           @mouseleave="hoveredTab = undefined"
@@ -79,6 +80,7 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
 import TabsetListContextMenu from 'src/tabsets/widgets/TabsetListContextMenu.vue'
 import { useUiStore } from 'src/ui/stores/uiStore'
+import { useAuthStore } from 'stores/authStore'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 

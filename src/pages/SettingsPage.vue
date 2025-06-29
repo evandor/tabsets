@@ -15,6 +15,8 @@
   <div class="justify-start items-start greyBorderTop">
     <q-tabs align="left" inline-label v-model="tab" no-caps>
       <q-tab name="appearance" :label="t('appearance')" />
+      <q-tab name="account" label="Account" />
+      <q-tab name="sharing" label="Sharing" />
       <q-tab name="thirdparty" label="Third Party Services" />
       <q-tab name="ignored" label="Ignored Urls" v-if="showIgnored()" />
       <q-tab
@@ -33,6 +35,25 @@
 
   <div v-if="tab === 'appearance'">
     <AppearanceSettings />
+  </div>
+
+  <div v-if="tab === 'account'">
+    <div class="q-pa-md q-gutter-sm">
+      <SubscriptionSettings />
+
+      <q-banner rounded style="border: 1px solid orange">
+        TODO: Caution! The user will be deleted immediately
+      </q-banner>
+
+      <q-btn label="delete account" class="bg-red-1" @click="deleteAccount()" />
+    </div>
+  </div>
+
+  <div v-if="tab === 'sharing'">
+    <div class="q-pa-md q-gutter-sm">
+      <SharingSettings v-if="useAuthStore().isAuthenticated()" />
+      <q-banner v-else rounded> To use sharing, you need to have a (free) account. </q-banner>
+    </div>
   </div>
 
   <div v-if="tab === 'internals'">
@@ -162,26 +183,36 @@
  *
  */
 
+/**
+ * refactoring remark: uses many other modules, needs to be one-per-application
+ *
+ */
+import { getAuth } from 'firebase/auth/web-extension'
 import _ from 'lodash'
-import { useQuasar } from 'quasar'
+import FeatureToggleSettings from 'pages/helper/FeatureToggleSettings.vue'
+import SubscriptionSettings from 'pages/helper/SubscriptionSettings.vue'
+import { LocalStorage, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { Account } from 'src/core/models/Account'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import Analytics from 'src/core/utils/google-analytics'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import FeatureToggleSettings from 'src/pages/helper/FeatureToggleSettings.vue'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { MarkTabsetAsDefaultCommand } from 'src/tabsets/commands/MarkTabsetAsDefault'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
 import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { DrawerTabs, useUiStore } from 'src/ui/stores/uiStore'
+import { useAuthStore } from 'stores/authStore'
 import { onMounted, reactive, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import VueJsonPretty from 'vue-json-pretty'
 import { useRoute } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
+import SharingSettings from 'pages/helper/SharingSettings.vue'
+import DeleteAccountCommand from 'src/account/commands/DeleteAccountCommand'
 import { SettingIdent } from 'src/app/models/SettingIdent'
 import ImportExportSettings from 'src/core/pages/helper/ImportExportSettings.vue'
 import InternalSettings from 'src/core/pages/helper/InternalSettings.vue'
@@ -214,10 +245,15 @@ const ddgEnabled = ref<boolean>(!settingsStore.isEnabled('noDDG'))
 const monitoringDisabled = ref<boolean>(process.env.DEV ? true : settingsStore.isEnabled('noMonitoring'))
 const ignoreExtensionsEnabled = ref<boolean>(!settingsStore.isEnabled('extensionsAsTabs'))
 
+const account = ref<Account | undefined>(undefined)
+
 const tab = ref<string>(route.query['tab'] ? (route.query['tab'] as string) : 'appearance')
+
+const autoSwitcherOption = ref<number>((localStorage.getItem('ui.tabSwitcher') as number) || 5000)
 
 onMounted(() => {
   Analytics.firePageViewEvent('SettingsPage', document.location.href)
+  account.value = useAuthStore().getAccount()
 })
 
 watchEffect(() => {
@@ -239,6 +275,10 @@ watchEffect(() => {
 
 watchEffect(() => {
   indexSize.value = searchStore?.getIndex()?.size()
+})
+
+watchEffect(() => {
+  LocalStorage.set('ui.tabSwitcher', autoSwitcherOption.value)
 })
 
 const downloadIndex = () => {
@@ -277,6 +317,14 @@ const showIgnoredTabset = () => {
 const updateSettings = (ident: SettingIdent, val: boolean) => {
   console.log('settings updated to', ident, val)
   settingsStore.setToggle(ident, val)
+}
+
+const deleteAccount = () => {
+  const auth = getAuth()
+  const user2 = auth.currentUser
+  if (user2) {
+    useCommandExecutor().executeFromUi(new DeleteAccountCommand())
+  }
 }
 
 const optOutIsDisabled = (): boolean => !!process.env.DEV

@@ -55,13 +55,13 @@
                 <q-btn
                   v-if="(props.tab as Tab).comments && (props.tab as Tab).comments.length > 0"
                   icon="o_chat"
-                  flat
+                flat
                   size="12px"
                   style="position: relative; top: 4px"
                   class="q-ma-none q-pa-none q-mx-xs"
                   @click.stop="toggleShowWith('comments')">
                   <q-badge floating color="warning" text-color="primary">{{ newCommentsCount() }}</q-badge>
-                  <q-tooltip class="tooltip-small">There are comments for this tab</q-tooltip>
+                <q-tooltip class="tooltip-small">There are comments for this tab</q-tooltip>
                 </q-btn>
 
                 <q-icon

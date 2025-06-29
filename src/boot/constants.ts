@@ -1,6 +1,6 @@
 import { boot } from 'quasar/wrappers'
 
-const EXTENSION_NAME = 'tabsets'
+const EXTENSION_NAME = 'tabsets-pro'
 
 const INDEX_DB_VERSION = 23
 

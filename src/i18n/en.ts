@@ -16,7 +16,7 @@ export default {
   dark_mode: 'Dark Mode',
   disabled: 'Disabled',
   documentation: 'Documentation',
-  enabled: 'On',
+  enabled: 'Enabled',
   experimental: 'experimental',
   individually_per_tabset: 'Adjust individually per tabset',
   keyboard_shortcuts: 'Keyboard Shortcuts',

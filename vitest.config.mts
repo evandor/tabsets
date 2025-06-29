@@ -1,4 +1,5 @@
 import path from 'path'
+import faroUploader from '@grafana/faro-rollup-plugin'
 import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
 import vue from '@vitejs/plugin-vue'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -49,5 +50,15 @@ export default defineConfig({
       sassVariables: 'src/quasar-variables.scss',
     }),
     tsconfigPaths(),
+    faroUploader({
+      appName: 'pwa.dev.tabsets.net',
+      endpoint: 'https://faro-api-prod-eu-west-2.grafana.net/faro/api/v1',
+      appId: '2824',
+      stackId: '1230533',
+      // instructions on how to obtain your API key are in the documentation
+      // https://grafana.com/docs/grafana-cloud/monitor-applications/frontend-observability/sourcemap-upload-plugins/#obtain-an-api-key
+      apiKey: '714d7d9e-d008-425e-9eb4-e7a943adfe31',
+      gzipContents: true,
+    }),
   ],
 })
