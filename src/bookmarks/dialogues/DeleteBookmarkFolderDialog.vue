@@ -5,18 +5,14 @@
 </template>
 
 <script lang="ts" setup>
+import { useDialogPluginComponent } from 'quasar'
+import DeleteBookmarkFolderDialogBody from 'src/bookmarks/dialogues/DeleteBookmarkFolderDialogBody.vue'
 
-import {useDialogPluginComponent} from "quasar";
-import DeleteBookmarkFolderDialogBody from "src/bookmarks/dialogues/DeleteBookmarkFolderDialogBody.vue";
-
-defineEmits([
-  ...useDialogPluginComponent.emits
-])
+defineEmits([...useDialogPluginComponent.emits])
 
 const props = defineProps({
-  folderId: {type: String, required: true}
+  folderId: { type: String, required: true },
 })
 
-const {dialogRef, onDialogHide} = useDialogPluginComponent()
-
+const { dialogRef, onDialogHide } = useDialogPluginComponent()
 </script>

@@ -1,6 +1,6 @@
-import Command from "src/core/domain/Command";
-import {ExecutionResult} from "src/core/domain/ExecutionResult";
-import BookmarksService from "src/bookmarks/services/BookmarksService";
+import BookmarksService from 'src/bookmarks/services/BookmarksService'
+import Command from 'src/core/domain/Command'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 
 // class UndoCreateTabsetCommand implements Command<object> {
 //
@@ -16,13 +16,12 @@ import BookmarksService from "src/bookmarks/services/BookmarksService";
 // }
 
 export class CreateBookmarkFolderCommand implements Command<object> {
-
   public merge: boolean = true
 
   constructor(
     public folderName: string,
-    public parentFolderId: string) {
-  }
+    public parentFolderId: string,
+  ) {}
 
   async execute(): Promise<ExecutionResult<object>> {
     try {
@@ -31,11 +30,11 @@ export class CreateBookmarkFolderCommand implements Command<object> {
       const executionResult = new ExecutionResult(result, doneMsg)
       return Promise.resolve(executionResult)
     } catch (err) {
-      return Promise.reject("err")
+      return Promise.reject('err')
     }
   }
 }
 
 CreateBookmarkFolderCommand.prototype.toString = function cmdToString() {
-  return `CreateBookmarkFolderCommand: {folderName=${this.folderName}, parentId=${this.parentFolderId}}`;
-};
+  return `CreateBookmarkFolderCommand: {folderName=${this.folderName}, parentId=${this.parentFolderId}}`
+}

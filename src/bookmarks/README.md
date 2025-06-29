@@ -2,9 +2,9 @@
 
 used as submodule in
 
-* tabsets
-* bookmrkx
+- tabsets
+- bookmrkx
 
 tests implemented in
 
-* bookmrkx
+- bookmrkx

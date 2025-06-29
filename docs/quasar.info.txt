@@ -1,6 +1,6 @@
 
 Operating System - Darwin(24.5.0) - darwin/arm64
-NodeJs - 22.15.0
+NodeJs - 22.16.0
 
 Global packages
   NPM - 10.9.2
@@ -8,20 +8,20 @@ Global packages
   pnpm - Not installed
   bun - Not installed
   @quasar/cli - undefined
-  @quasar/icongenie - 4.0.0
+  @quasar/icongenie - Not installed
   cordova - 12.0.0 (cordova-lib@12.0.1)
 
 Important local packages
   quasar - 2.18.1 -- Build high-performance VueJS user interfaces (SPA, PWA, SSR, Mobile and Desktop) in record time
-  @quasar/app-vite - 2.2.0 -- Quasar Framework App CLI with Vite
+  @quasar/app-vite - 2.2.1 -- Quasar Framework App CLI with Vite
   @quasar/extras - 1.17.0 -- Quasar Framework fonts, icons and animations
   eslint-plugin-quasar - Not installed
-  vue - 3.5.16 -- The progressive JavaScript framework for building modern web UI.
+  vue - 3.5.17 -- The progressive JavaScript framework for building modern web UI.
   vue-router - 4.5.1
   pinia - 3.0.3 -- Intuitive, type safe and flexible Store for Vue
   vite - 6.3.5 -- Native-ESM powered web dev build tool
   vite-plugin-checker - Not installed
-  eslint - 9.28.0 -- An AST-based pattern checker for JavaScript.
+  eslint - 9.30.0 -- An AST-based pattern checker for JavaScript.
   esbuild - 0.25.5 -- An extremely fast JavaScript and CSS bundler and minifier.
   typescript - 5.5.4 -- TypeScript is a language for application scale JavaScript development
   workbox-build - 7.3.0 -- A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.
@@ -38,6 +38,6 @@ Quasar App Extensions
   @quasar/quasar-app-extension-testing-unit-vitest - 1.2.3 -- A Quasar App Extension for running tests with Vitest
 
 Networking
-  Host - Carstens-MacBook-Pro.fritz.box
-  en0 - 192.168.178.81
+  Host - 62feb785-a9b2-4c3f-9e36-a44562a8a503.fritz.box
+  en0 - 192.168.178.104
 

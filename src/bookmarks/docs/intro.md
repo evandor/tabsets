@@ -2,6 +2,6 @@
 
 used as submodule in
 
-* tabsets
-* bookmrkx
-* ...
+- tabsets
+- bookmrkx
+- ...

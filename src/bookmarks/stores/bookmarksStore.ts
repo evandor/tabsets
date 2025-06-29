@@ -2,13 +2,14 @@ import _ from 'lodash'
 import { defineStore } from 'pinia'
 import { Bookmark } from 'src/bookmarks/models/Bookmark'
 import { TreeNode } from 'src/bookmarks/models/Tree'
+import { TreeNodeInfo } from 'src/bookmarks/models/TreeNodeInfo'
 
 function nodesFrom(
   parent: chrome.bookmarks.BookmarkTreeNode,
   allFoldersCount = 0,
   allBookmarksCount = 0,
-  level: number = 1,
-): [TreeNode | undefined, number, number] {
+  level: number = 0,
+): TreeNodeInfo {
   const parentNode = new TreeNode(
     parent.id,
     parent.title,
@@ -16,37 +17,43 @@ function nodesFrom(
     parent.url,
     parent.url ? 'o_article' : 'o_folder',
     [],
+    level,
     0,
     0,
   )
 
   level++
-  let subNodes: TreeNode[] = []
+  const subNodes: TreeNode[] = []
   let foldersCount = 0
   let leavesCount = 0
   if (parent.children) {
     for (const c of parent.children) {
-      const [allNodes, fCount, bCount] = nodesFrom(c, allFoldersCount, allBookmarksCount)
-      foldersCount += fCount
-      leavesCount += bCount
-      if (allNodes && allNodes.url) {
+      //const [allNodes, fCount, bCount] = nodesFrom(c, allFoldersCount, allBookmarksCount, level)
+      const treeNodeInfo: TreeNodeInfo = nodesFrom(c, allFoldersCount, allBookmarksCount, level)
+      foldersCount += treeNodeInfo.folderCount
+      leavesCount += treeNodeInfo.leafCount
+      if (treeNodeInfo.treeNode && treeNodeInfo.treeNode.url) {
         leavesCount++
       } else {
         foldersCount++
       }
-      if (allNodes) {
-        subNodes.push(allNodes)
+      if (treeNodeInfo.treeNode) {
+        subNodes.push(treeNodeInfo.treeNode)
       }
     }
   }
   parentNode.children = subNodes
   parentNode.subFoldersCount = foldersCount
   parentNode.subNodesCount = leavesCount
-  return [parentNode, allFoldersCount + foldersCount, allBookmarksCount + leavesCount]
+  parentNode.header = parentNode.getHeader()
+  return new TreeNodeInfo(parentNode, allFoldersCount + foldersCount, allBookmarksCount + leavesCount)
 }
 
 function nodesWithoutLeaves(parent: TreeNode): TreeNode | undefined {
-  if (parent.header !== 'node') {
+  // if (parent.getHeader() !== 'node' && parent.getHeader() !== 'root') {
+  //   return undefined
+  // }
+  if (parent.url) {
     return undefined
   }
   if (parent.children) {
@@ -85,15 +92,17 @@ export const useBookmarksStore = defineStore('bookmarks', {
   getters: {
     findBookmarksForUrl: (state) => {
       return async (url: string): Promise<chrome.bookmarks.BookmarkTreeNode[]> => {
-        const res = await chrome.bookmarks.search({ url: url })
-        return res
+        if (chrome.bookmarks) {
+          return await chrome.bookmarks.search({ url: url })
+        }
+        return Promise.resolve([])
       }
     },
   },
 
   actions: {
     init() {
-      console.debug(' ...initializing bookmarkStore')
+      // console.debug(' ...initializing bookmarkStore', '✅')
       this.initListeners()
     },
 
@@ -104,20 +113,21 @@ export const useBookmarksStore = defineStore('bookmarks', {
       this.bookmarksNodes2 = []
       this.nonLeafNodes = []
       this.bookmarksLeaves = []
-      console.debug(' ...loading bookmarks') //, (new Error()).stack)
+      //console.debug(" ...loading bookmarks")//, (new Error()).stack)
       const bookmarks: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.search({}) //, async (bookmarks) => {
       this.bookmarksLeaves = bookmarks
 
       const tree: chrome.bookmarks.BookmarkTreeNode[] = await chrome.bookmarks.getTree()
 
-      const nodes = nodesFrom(tree[0]!)
-      if (nodes[0]) {
-        this.bookmarksNodes2 = nodes[0].children
-        let copy = JSON.parse(JSON.stringify(nodes[0]))
+      const tni: TreeNodeInfo = nodesFrom(tree[0]!)
+      if (tni.treeNode) {
+        this.bookmarksNodes2 = tni.treeNode.children
+        const copy: TreeNode = JSON.parse(JSON.stringify(tni.treeNode))
+        //console.log("copy", copy)
         this.nonLeafNodes = nodesWithoutLeaves(copy)?.children || []
       }
-      this.foldersCount = nodes[1]
-      this.bookmarksCount = nodes[2]
+      this.foldersCount = tni.folderCount
+      this.bookmarksCount = tni.leafCount
 
       //useUiStore().bookmarksLoading = false
       return Promise.resolve()
@@ -139,6 +149,15 @@ export const useBookmarksStore = defineStore('bookmarks', {
           })
         })
       })
+    },
+
+    async deleteByUrl(url: string): Promise<number> {
+      const bms = await this.findBookmarksForUrl(url)
+      bms.forEach((treeNode: chrome.bookmarks.BookmarkTreeNode) => {
+        console.log('about to delete', treeNode)
+        chrome.bookmarks.remove(treeNode.id)
+      })
+      return bms.length
     },
   },
 })

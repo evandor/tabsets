@@ -9,7 +9,6 @@ persistence to store the feature states permanently.
 
 There's an interface "FeaturesPersistence"
 
-
 ```typescript
 <!-- @include: ../../../src/features/persistence/FeaturesPersistence.ts -->
 ```

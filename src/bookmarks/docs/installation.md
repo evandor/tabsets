@@ -13,4 +13,4 @@ git submodule add -b \<branch\> https://github.com/evandor/submodule-bookmarks.g
 
 ## Branches
 
-For "branch", substitute it with "chrome-extension" or "firefox-extension"
+Currently, only 'main'

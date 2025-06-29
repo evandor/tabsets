@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "Features Submodule"
-  text: "submodule documentation"
+  name: 'Features Submodule'
+  text: 'submodule documentation'
   tagline: My great project tagline
   actions:
     - theme: brand

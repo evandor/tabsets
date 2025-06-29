@@ -10,46 +10,40 @@
 
       <q-card-section class="q-pt-none">
         <div class="text-body">Name:</div>
-        <q-input dense v-model="folderName"
-                 data-testid="add_folder_input"
-                 autofocus @keyup.enter="createNewFolder()"/>
+        <q-input dense v-model="folderName" data-testid="add_folder_input" autofocus @keyup.enter="createNewFolder()" />
       </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat label="Add Folder"
-               data-testid="add_folder_submit"
-               :disable="folderName.trim().length === 0" v-close-popup
-               @click="createNewFolder()"/>
+        <q-btn flat label="Cancel" v-close-popup />
+        <q-btn
+          flat
+          label="Add Folder"
+          data-testid="add_folder_submit"
+          :disable="folderName.trim().length === 0"
+          v-close-popup
+          @click="createNewFolder()" />
       </q-card-actions>
     </q-card>
-
   </q-dialog>
-
 </template>
 
 <script lang="ts" setup>
+import { useDialogPluginComponent } from 'quasar'
+import { CreateBookmarkFolderCommand } from 'src/bookmarks/commands/CreateBookmarkFolderCommand'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { ref } from 'vue'
 
-import {ref, watchEffect} from "vue";
-
-import {useDialogPluginComponent} from 'quasar'
-import {useCommandExecutor} from "src/core/services/CommandExecutor";
-import {CreateBookmarkFolderCommand} from "src/bookmarks/commands/CreateBookmarkFolderCommand";
-
-defineEmits([
-  ...useDialogPluginComponent.emits
-])
+defineEmits([...useDialogPluginComponent.emits])
 
 const props = defineProps({
-  parentFolderId: {type: String, required: true}
+  parentFolderId: { type: String, required: true },
 })
 
-const {dialogRef, onDialogHide, onDialogOK, onDialogCancel} = useDialogPluginComponent()
+const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 const folderName = ref('')
 
 const createNewFolder = () => {
   useCommandExecutor().execute(new CreateBookmarkFolderCommand(folderName.value, props.parentFolderId))
   onDialogOK()
 }
-
 </script>

@@ -6,58 +6,58 @@
 ├─ @algolia/autocomplete-preset-algolia@1.17.7
 │  └─ @algolia/autocomplete-shared@1.17.7
 ├─ @algolia/autocomplete-shared@1.17.7
-├─ @algolia/client-abtesting@5.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
-├─ @algolia/client-analytics@5.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
-├─ @algolia/client-common@5.27.0
-├─ @algolia/client-insights@5.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
-├─ @algolia/client-personalization@5.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
-├─ @algolia/client-query-suggestions@5.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
-├─ @algolia/client-search@5.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
-├─ @algolia/ingestion@1.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
-├─ @algolia/monitoring@1.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
-├─ @algolia/recommend@5.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
-├─ @algolia/requester-browser-xhr@5.27.0
-│  └─ @algolia/client-common@5.27.0
-├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/client-common@5.27.0
-├─ @algolia/requester-node-http@5.27.0
-│  └─ @algolia/client-common@5.27.0
+├─ @algolia/client-abtesting@5.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
+├─ @algolia/client-analytics@5.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
+├─ @algolia/client-common@5.29.0
+├─ @algolia/client-insights@5.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
+├─ @algolia/client-personalization@5.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
+├─ @algolia/client-query-suggestions@5.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
+├─ @algolia/client-search@5.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
+├─ @algolia/ingestion@1.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
+├─ @algolia/monitoring@1.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
+├─ @algolia/recommend@5.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
+├─ @algolia/requester-browser-xhr@5.29.0
+│  └─ @algolia/client-common@5.29.0
+├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/client-common@5.29.0
+├─ @algolia/requester-node-http@5.29.0
+│  └─ @algolia/client-common@5.29.0
 ├─ @ampproject/remapping@2.3.0
 │  ├─ @jridgewell/gen-mapping@^0.3.5
 │  └─ @jridgewell/trace-mapping@^0.3.24
@@ -75,18 +75,18 @@
 │  ├─ js-tokens@^4.0.0
 │  ├─ js-tokens@4.0.0
 │  └─ picocolors@^1.1.1
-├─ @babel/compat-data@7.27.5
-├─ @babel/core@7.27.4
+├─ @babel/compat-data@7.27.7
+├─ @babel/core@7.27.7
 │  ├─ @ampproject/remapping@^2.2.0
 │  ├─ @babel/code-frame@^7.27.1
-│  ├─ @babel/generator@^7.27.3
+│  ├─ @babel/generator@^7.27.5
 │  ├─ @babel/helper-compilation-targets@^7.27.2
 │  ├─ @babel/helper-module-transforms@^7.27.3
-│  ├─ @babel/helpers@^7.27.4
-│  ├─ @babel/parser@^7.27.4
+│  ├─ @babel/helpers@^7.27.6
+│  ├─ @babel/parser@^7.27.7
 │  ├─ @babel/template@^7.27.2
-│  ├─ @babel/traverse@^7.27.4
-│  ├─ @babel/types@^7.27.3
+│  ├─ @babel/traverse@^7.27.7
+│  ├─ @babel/types@^7.27.7
 │  ├─ convert-source-map@^2.0.0
 │  ├─ debug@^4.1.0
 │  ├─ gensync@^1.0.0-beta.2
@@ -125,12 +125,12 @@
 │  ├─ regexpu-core@^6.2.0
 │  ├─ semver@^6.3.1
 │  └─ semver@6.3.1
-├─ @babel/helper-define-polyfill-provider@0.6.4
-│  ├─ @babel/helper-compilation-targets@^7.22.6
-│  ├─ @babel/helper-plugin-utils@^7.22.5
-│  ├─ debug@^4.1.1
+├─ @babel/helper-define-polyfill-provider@0.6.5
+│  ├─ @babel/helper-compilation-targets@^7.27.2
+│  ├─ @babel/helper-plugin-utils@^7.27.1
+│  ├─ debug@^4.4.1
 │  ├─ lodash.debounce@^4.0.8
-│  └─ resolve@^1.14.2
+│  └─ resolve@^1.22.10
 ├─ @babel/helper-member-expression-to-functions@7.27.1
 │  ├─ @babel/traverse@^7.27.1
 │  └─ @babel/types@^7.27.1
@@ -165,8 +165,8 @@
 ├─ @babel/helpers@7.27.6
 │  ├─ @babel/template@^7.27.2
 │  └─ @babel/types@^7.27.6
-├─ @babel/parser@7.27.5
-│  └─ @babel/types@^7.27.3
+├─ @babel/parser@7.27.7
+│  └─ @babel/types@^7.27.7
 ├─ @babel/plugin-bugfix-firefox-class-in-computed-class-key@7.27.1
 │  ├─ @babel/helper-plugin-utils@^7.27.1
 │  └─ @babel/traverse@^7.27.1
@@ -209,19 +209,20 @@
 ├─ @babel/plugin-transform-class-static-block@7.27.1
 │  ├─ @babel/helper-create-class-features-plugin@^7.27.1
 │  └─ @babel/helper-plugin-utils@^7.27.1
-├─ @babel/plugin-transform-classes@7.27.1
-│  ├─ @babel/helper-annotate-as-pure@^7.27.1
-│  ├─ @babel/helper-compilation-targets@^7.27.1
+├─ @babel/plugin-transform-classes@7.27.7
+│  ├─ @babel/helper-annotate-as-pure@^7.27.3
+│  ├─ @babel/helper-compilation-targets@^7.27.2
 │  ├─ @babel/helper-plugin-utils@^7.27.1
 │  ├─ @babel/helper-replace-supers@^7.27.1
-│  ├─ @babel/traverse@^7.27.1
+│  ├─ @babel/traverse@^7.27.7
 │  ├─ globals@^11.1.0
 │  └─ globals@11.12.0
 ├─ @babel/plugin-transform-computed-properties@7.27.1
 │  ├─ @babel/helper-plugin-utils@^7.27.1
 │  └─ @babel/template@^7.27.1
-├─ @babel/plugin-transform-destructuring@7.27.3
-│  └─ @babel/helper-plugin-utils@^7.27.1
+├─ @babel/plugin-transform-destructuring@7.27.7
+│  ├─ @babel/helper-plugin-utils@^7.27.1
+│  └─ @babel/traverse@^7.27.7
 ├─ @babel/plugin-transform-dotall-regex@7.27.1
 │  ├─ @babel/helper-create-regexp-features-plugin@^7.27.1
 │  └─ @babel/helper-plugin-utils@^7.27.1
@@ -274,11 +275,12 @@
 │  └─ @babel/helper-plugin-utils@^7.27.1
 ├─ @babel/plugin-transform-numeric-separator@7.27.1
 │  └─ @babel/helper-plugin-utils@^7.27.1
-├─ @babel/plugin-transform-object-rest-spread@7.27.3
+├─ @babel/plugin-transform-object-rest-spread@7.27.7
 │  ├─ @babel/helper-compilation-targets@^7.27.2
 │  ├─ @babel/helper-plugin-utils@^7.27.1
-│  ├─ @babel/plugin-transform-destructuring@^7.27.3
-│  └─ @babel/plugin-transform-parameters@^7.27.1
+│  ├─ @babel/plugin-transform-destructuring@^7.27.7
+│  ├─ @babel/plugin-transform-parameters@^7.27.7
+│  └─ @babel/traverse@^7.27.7
 ├─ @babel/plugin-transform-object-super@7.27.1
 │  ├─ @babel/helper-plugin-utils@^7.27.1
 │  └─ @babel/helper-replace-supers@^7.27.1
@@ -287,7 +289,7 @@
 ├─ @babel/plugin-transform-optional-chaining@7.27.1
 │  ├─ @babel/helper-plugin-utils@^7.27.1
 │  └─ @babel/helper-skip-transparent-expression-wrappers@^7.27.1
-├─ @babel/plugin-transform-parameters@7.27.1
+├─ @babel/plugin-transform-parameters@7.27.7
 │  └─ @babel/helper-plugin-utils@^7.27.1
 ├─ @babel/plugin-transform-private-methods@7.27.1
 │  ├─ @babel/helper-create-class-features-plugin@^7.27.1
@@ -407,21 +409,21 @@
 │  ├─ @babel/code-frame@^7.27.1
 │  ├─ @babel/parser@^7.27.2
 │  └─ @babel/types@^7.27.1
-├─ @babel/traverse@7.27.4
+├─ @babel/traverse@7.27.7
 │  ├─ @babel/code-frame@^7.27.1
-│  ├─ @babel/generator@^7.27.3
-│  ├─ @babel/parser@^7.27.4
+│  ├─ @babel/generator@^7.27.5
+│  ├─ @babel/parser@^7.27.7
 │  ├─ @babel/template@^7.27.2
-│  ├─ @babel/types@^7.27.3
+│  ├─ @babel/types@^7.27.7
 │  ├─ debug@^4.3.1
 │  ├─ globals@^11.1.0
 │  └─ globals@11.12.0
-├─ @babel/types@7.27.6
+├─ @babel/types@7.27.7
 │  ├─ @babel/helper-string-parser@^7.27.1
 │  └─ @babel/helper-validator-identifier@^7.27.1
 ├─ @bcoe/v8-coverage@1.0.2
 ├─ @braintree/sanitize-url@7.1.1
-├─ @bufbuild/protobuf@2.5.2
+├─ @bufbuild/protobuf@2.6.0
 ├─ @chevrotain/cst-dts-gen@11.0.3
 │  ├─ @chevrotain/gast@11.0.3
 │  ├─ @chevrotain/types@11.0.3
@@ -441,6 +443,8 @@
 │  ├─ @algolia/autocomplete-preset-algolia@1.17.7
 │  ├─ @docsearch/css@3.8.2
 │  └─ algoliasearch@^5.14.2
+├─ @emnapi/runtime@1.4.3
+│  └─ tslib@^2.4.0
 ├─ @esbuild/aix-ppc64@0.25.5
 ├─ @esbuild/android-arm@0.25.5
 ├─ @esbuild/android-arm64@0.25.5
@@ -469,11 +473,11 @@
 ├─ @eslint-community/eslint-utils@4.7.0
 │  └─ eslint-visitor-keys@^3.4.3
 ├─ @eslint-community/regexpp@4.12.1
-├─ @eslint/config-array@0.20.0
+├─ @eslint/config-array@0.21.0
 │  ├─ @eslint/object-schema@^2.1.6
 │  ├─ debug@^4.3.1
 │  └─ minimatch@^3.1.2
-├─ @eslint/config-helpers@0.2.2
+├─ @eslint/config-helpers@0.3.0
 ├─ @eslint/core@0.14.0
 │  └─ @types/json-schema@^7.0.15
 ├─ @eslint/eslintrc@3.3.1
@@ -487,10 +491,12 @@
 │  ├─ js-yaml@^4.1.0
 │  ├─ minimatch@^3.1.2
 │  └─ strip-json-comments@^3.1.1
-├─ @eslint/js@9.28.0
+├─ @eslint/js@9.30.0
 ├─ @eslint/object-schema@2.1.6
-├─ @eslint/plugin-kit@0.3.1
-│  ├─ @eslint/core@^0.14.0
+├─ @eslint/plugin-kit@0.3.3
+│  ├─ @eslint/core@^0.15.1
+│  ├─ @eslint/core@0.15.1
+│  │  └─ @types/json-schema@^7.0.15
 │  └─ levn@^0.4.1
 ├─ @grafana/faro-bundlers-shared@0.4.1
 │  ├─ ansis@^3.2.0
@@ -533,6 +539,53 @@
 │  ├─ @virtual-list/vue@^1.2.1
 │  ├─ helper-js@^3.1.2
 │  └─ vue-demi@latest
+├─ @huggingface/jinja@0.2.2
+├─ @huggingface/transformers@3.6.0
+│  ├─ @huggingface/jinja@^0.4.1
+│  ├─ @huggingface/jinja@0.4.1
+│  ├─ flatbuffers@25.2.10
+│  ├─ long@5.3.2
+│  ├─ onnxruntime-common@1.21.0
+│  ├─ onnxruntime-node@1.21.0
+│  ├─ onnxruntime-node@1.21.0
+│  │  ├─ global-agent@^3.0.0
+│  │  ├─ onnxruntime-common@1.21.0
+│  │  └─ tar@^7.0.1
+│  ├─ onnxruntime-web@1.22.0-dev.20250409-89f8206ba4
+│  ├─ onnxruntime-web@1.22.0-dev.20250409-89f8206ba4
+│  │  ├─ flatbuffers@^25.1.24
+│  │  ├─ guid-typescript@^1.0.9
+│  │  ├─ long@^5.2.3
+│  │  ├─ onnxruntime-common@1.22.0-dev.20250409-89f8206ba4
+│  │  ├─ onnxruntime-common@1.22.0-dev.20250409-89f8206ba4
+│  │  ├─ platform@^1.3.6
+│  │  └─ protobufjs@^7.2.4
+│  ├─ sharp@^0.34.1
+│  └─ sharp@0.34.2
+│     ├─ @img/sharp-darwin-arm64@0.34.2
+│     ├─ @img/sharp-darwin-x64@0.34.2
+│     ├─ @img/sharp-libvips-darwin-arm64@1.1.0
+│     ├─ @img/sharp-libvips-darwin-x64@1.1.0
+│     ├─ @img/sharp-libvips-linux-arm@1.1.0
+│     ├─ @img/sharp-libvips-linux-arm64@1.1.0
+│     ├─ @img/sharp-libvips-linux-ppc64@1.1.0
+│     ├─ @img/sharp-libvips-linux-s390x@1.1.0
+│     ├─ @img/sharp-libvips-linux-x64@1.1.0
+│     ├─ @img/sharp-libvips-linuxmusl-arm64@1.1.0
+│     ├─ @img/sharp-libvips-linuxmusl-x64@1.1.0
+│     ├─ @img/sharp-linux-arm@0.34.2
+│     ├─ @img/sharp-linux-arm64@0.34.2
+│     ├─ @img/sharp-linux-s390x@0.34.2
+│     ├─ @img/sharp-linux-x64@0.34.2
+│     ├─ @img/sharp-linuxmusl-arm64@0.34.2
+│     ├─ @img/sharp-linuxmusl-x64@0.34.2
+│     ├─ @img/sharp-wasm32@0.34.2
+│     ├─ @img/sharp-win32-arm64@0.34.2
+│     ├─ @img/sharp-win32-ia32@0.34.2
+│     ├─ @img/sharp-win32-x64@0.34.2
+│     ├─ color@^4.2.3
+│     ├─ detect-libc@^2.0.4
+│     └─ semver@^7.7.2
 ├─ @humanfs/core@0.19.1
 ├─ @humanfs/node@0.16.6
 │  ├─ @humanfs/core@^0.19.1
@@ -546,7 +599,7 @@
 │  ├─ @babel/traverse@^7.25.9
 │  ├─ @babel/types@^7.26.0
 │  └─ semver@^7.5.2
-├─ @iconify-json/simple-icons@1.2.38
+├─ @iconify-json/simple-icons@1.2.40
 │  └─ @iconify/types@*
 ├─ @iconify/types@2.0.0
 ├─ @iconify/utils@2.3.0
@@ -559,6 +612,36 @@
 │  ├─ kolorist@^1.8.0
 │  ├─ local-pkg@^1.0.0
 │  └─ mlly@^1.7.4
+├─ @img/sharp-darwin-arm64@0.34.2
+│  └─ @img/sharp-libvips-darwin-arm64@1.1.0
+├─ @img/sharp-darwin-x64@0.34.2
+│  └─ @img/sharp-libvips-darwin-x64@1.1.0
+├─ @img/sharp-libvips-darwin-arm64@1.1.0
+├─ @img/sharp-libvips-darwin-x64@1.1.0
+├─ @img/sharp-libvips-linux-arm@1.1.0
+├─ @img/sharp-libvips-linux-arm64@1.1.0
+├─ @img/sharp-libvips-linux-ppc64@1.1.0
+├─ @img/sharp-libvips-linux-s390x@1.1.0
+├─ @img/sharp-libvips-linux-x64@1.1.0
+├─ @img/sharp-libvips-linuxmusl-arm64@1.1.0
+├─ @img/sharp-libvips-linuxmusl-x64@1.1.0
+├─ @img/sharp-linux-arm@0.34.2
+│  └─ @img/sharp-libvips-linux-arm@1.1.0
+├─ @img/sharp-linux-arm64@0.34.2
+│  └─ @img/sharp-libvips-linux-arm64@1.1.0
+├─ @img/sharp-linux-s390x@0.34.2
+│  └─ @img/sharp-libvips-linux-s390x@1.1.0
+├─ @img/sharp-linux-x64@0.34.2
+│  └─ @img/sharp-libvips-linux-x64@1.1.0
+├─ @img/sharp-linuxmusl-arm64@0.34.2
+│  └─ @img/sharp-libvips-linuxmusl-arm64@1.1.0
+├─ @img/sharp-linuxmusl-x64@0.34.2
+│  └─ @img/sharp-libvips-linuxmusl-x64@1.1.0
+├─ @img/sharp-wasm32@0.34.2
+│  └─ @emnapi/runtime@^1.4.3
+├─ @img/sharp-win32-arm64@0.34.2
+├─ @img/sharp-win32-ia32@0.34.2
+├─ @img/sharp-win32-x64@0.34.2
 ├─ @inquirer/figures@1.0.12
 ├─ @interactjs/actions@1.10.27
 │  └─ @interactjs/interact@1.10.27
@@ -594,13 +677,13 @@
 │  ├─ mlly@^1.2.0
 │  ├─ source-map-js@^1.0.1
 │  └─ yaml-eslint-parser@^1.2.2
-├─ @intlify/core-base@11.1.5
-│  ├─ @intlify/message-compiler@11.1.5
-│  └─ @intlify/shared@11.1.5
-├─ @intlify/message-compiler@11.1.5
-│  ├─ @intlify/shared@11.1.5
+├─ @intlify/core-base@11.1.7
+│  ├─ @intlify/message-compiler@11.1.7
+│  └─ @intlify/shared@11.1.7
+├─ @intlify/message-compiler@11.1.7
+│  ├─ @intlify/shared@11.1.7
 │  └─ source-map-js@^1.0.2
-├─ @intlify/shared@11.1.5
+├─ @intlify/shared@11.1.7
 ├─ @intlify/unplugin-vue-i18n@6.0.8
 │  ├─ @eslint-community/eslint-utils@^4.4.0
 │  ├─ @intlify/bundle-utils@^10.0.1
@@ -687,7 +770,7 @@
 │  ├─ d3@^7.0.0
 │  ├─ khroma@^2.0.0
 │  └─ non-layered-tidy-tree-layout@^2.0.2
-├─ @mermaid-js/parser@0.4.0
+├─ @mermaid-js/parser@0.5.0
 │  └─ langium@3.3.1
 ├─ @miketako3/cloki@0.1.16
 ├─ @mozilla/readability@0.6.0
@@ -757,8 +840,8 @@
 ├─ @opentelemetry/semantic-conventions@1.34.0
 ├─ @pkgjs/parseargs@0.11.0
 ├─ @pkgr/core@0.2.7
-├─ @playwright/test@1.52.0
-│  └─ playwright@1.52.0
+├─ @playwright/test@1.53.1
+│  └─ playwright@1.53.1
 ├─ @polka/url@1.0.0-next.29
 ├─ @protobufjs/aspromise@1.1.2
 ├─ @protobufjs/base64@1.1.2
@@ -772,7 +855,7 @@
 ├─ @protobufjs/path@1.1.2
 ├─ @protobufjs/pool@1.1.0
 ├─ @protobufjs/utf8@1.1.0
-├─ @quasar/app-vite@2.2.0
+├─ @quasar/app-vite@2.2.1
 │  ├─ @quasar/render-ssr-error@^1.0.3
 │  ├─ @quasar/ssl-certificate@^1.0.0
 │  ├─ @quasar/vite-plugin@^1.9.0
@@ -809,6 +892,14 @@
 │  ├─ tinyglobby@^0.2.10
 │  ├─ ts-essentials@^9.4.2
 │  ├─ vite@^6.1.0
+│  ├─ vite@6.3.5
+│  │  ├─ esbuild@^0.25.0
+│  │  ├─ fdir@^6.4.4
+│  │  ├─ fsevents@~2.3.3
+│  │  ├─ picomatch@^4.0.2
+│  │  ├─ postcss@^8.5.3
+│  │  ├─ rollup@^4.34.9
+│  │  └─ tinyglobby@^0.2.13
 │  └─ webpack-merge@^6.0.1
 ├─ @quasar/extras@1.17.0
 ├─ @quasar/quasar-app-extension-testing-unit-vitest@1.2.3
@@ -857,53 +948,53 @@
 │  ├─ serialize-javascript@^6.0.1
 │  ├─ smob@^1.0.0
 │  └─ terser@^5.17.4
-├─ @rollup/pluginutils@5.1.4
+├─ @rollup/pluginutils@5.2.0
 │  ├─ @types/estree@^1.0.0
 │  ├─ estree-walker@^2.0.2
 │  └─ picomatch@^4.0.2
-├─ @rollup/rollup-android-arm-eabi@4.42.0
-├─ @rollup/rollup-android-arm64@4.42.0
-├─ @rollup/rollup-darwin-arm64@4.42.0
-├─ @rollup/rollup-darwin-x64@4.42.0
-├─ @rollup/rollup-freebsd-arm64@4.42.0
-├─ @rollup/rollup-freebsd-x64@4.42.0
-├─ @rollup/rollup-linux-arm-gnueabihf@4.42.0
-├─ @rollup/rollup-linux-arm-musleabihf@4.42.0
-├─ @rollup/rollup-linux-arm64-gnu@4.42.0
-├─ @rollup/rollup-linux-arm64-musl@4.42.0
-├─ @rollup/rollup-linux-loongarch64-gnu@4.42.0
-├─ @rollup/rollup-linux-powerpc64le-gnu@4.42.0
-├─ @rollup/rollup-linux-riscv64-gnu@4.42.0
-├─ @rollup/rollup-linux-riscv64-musl@4.42.0
-├─ @rollup/rollup-linux-s390x-gnu@4.42.0
-├─ @rollup/rollup-linux-x64-gnu@4.42.0
-├─ @rollup/rollup-linux-x64-musl@4.42.0
-├─ @rollup/rollup-win32-arm64-msvc@4.42.0
-├─ @rollup/rollup-win32-ia32-msvc@4.42.0
-├─ @rollup/rollup-win32-x64-msvc@4.42.0
+├─ @rollup/rollup-android-arm-eabi@4.44.1
+├─ @rollup/rollup-android-arm64@4.44.1
+├─ @rollup/rollup-darwin-arm64@4.44.1
+├─ @rollup/rollup-darwin-x64@4.44.1
+├─ @rollup/rollup-freebsd-arm64@4.44.1
+├─ @rollup/rollup-freebsd-x64@4.44.1
+├─ @rollup/rollup-linux-arm-gnueabihf@4.44.1
+├─ @rollup/rollup-linux-arm-musleabihf@4.44.1
+├─ @rollup/rollup-linux-arm64-gnu@4.44.1
+├─ @rollup/rollup-linux-arm64-musl@4.44.1
+├─ @rollup/rollup-linux-loongarch64-gnu@4.44.1
+├─ @rollup/rollup-linux-powerpc64le-gnu@4.44.1
+├─ @rollup/rollup-linux-riscv64-gnu@4.44.1
+├─ @rollup/rollup-linux-riscv64-musl@4.44.1
+├─ @rollup/rollup-linux-s390x-gnu@4.44.1
+├─ @rollup/rollup-linux-x64-gnu@4.44.1
+├─ @rollup/rollup-linux-x64-musl@4.44.1
+├─ @rollup/rollup-win32-arm64-msvc@4.44.1
+├─ @rollup/rollup-win32-ia32-msvc@4.44.1
+├─ @rollup/rollup-win32-x64-msvc@4.44.1
 ├─ @rowanmanning/feed-parser@1.1.1
 │  ├─ fast-xml-parser@^4.0.8
 │  └─ html-entities@^2.3.3
 ├─ @selderee/plugin-htmlparser2@0.11.0
 │  ├─ domhandler@^5.0.3
 │  └─ selderee@^0.11.0
-├─ @sentry-internal/browser-utils@9.27.0
-│  └─ @sentry/core@9.27.0
-├─ @sentry-internal/feedback@9.27.0
-│  └─ @sentry/core@9.27.0
-├─ @sentry-internal/replay-canvas@9.27.0
-│  ├─ @sentry-internal/replay@9.27.0
-│  └─ @sentry/core@9.27.0
-├─ @sentry-internal/replay@9.27.0
-│  ├─ @sentry-internal/browser-utils@9.27.0
-│  └─ @sentry/core@9.27.0
+├─ @sentry-internal/browser-utils@9.33.0
+│  └─ @sentry/core@9.33.0
+├─ @sentry-internal/feedback@9.33.0
+│  └─ @sentry/core@9.33.0
+├─ @sentry-internal/replay-canvas@9.33.0
+│  ├─ @sentry-internal/replay@9.33.0
+│  └─ @sentry/core@9.33.0
+├─ @sentry-internal/replay@9.33.0
+│  ├─ @sentry-internal/browser-utils@9.33.0
+│  └─ @sentry/core@9.33.0
 ├─ @sentry/babel-plugin-component-annotate@3.5.0
-├─ @sentry/browser@9.27.0
-│  ├─ @sentry-internal/browser-utils@9.27.0
-│  ├─ @sentry-internal/feedback@9.27.0
-│  ├─ @sentry-internal/replay-canvas@9.27.0
-│  ├─ @sentry-internal/replay@9.27.0
-│  └─ @sentry/core@9.27.0
+├─ @sentry/browser@9.33.0
+│  ├─ @sentry-internal/browser-utils@9.33.0
+│  ├─ @sentry-internal/feedback@9.33.0
+│  ├─ @sentry-internal/replay-canvas@9.33.0
+│  ├─ @sentry-internal/replay@9.33.0
+│  └─ @sentry/core@9.33.0
 ├─ @sentry/bundler-plugin-core@3.5.0
 │  ├─ @babel/core@^7.18.5
 │  ├─ @sentry/babel-plugin-component-annotate@3.5.0
@@ -965,13 +1056,13 @@
 │  ├─ progress@^2.0.3
 │  ├─ proxy-from-env@^1.1.0
 │  └─ which@^2.0.2
-├─ @sentry/core@9.27.0
+├─ @sentry/core@9.33.0
 ├─ @sentry/vite-plugin@3.5.0
 │  ├─ @sentry/bundler-plugin-core@3.5.0
 │  └─ unplugin@1.0.1
-├─ @sentry/vue@9.27.0
-│  ├─ @sentry/browser@9.27.0
-│  └─ @sentry/core@9.27.0
+├─ @sentry/vue@9.33.0
+│  ├─ @sentry/browser@9.33.0
+│  └─ @sentry/core@9.33.0
 ├─ @shikijs/core@2.5.0
 │  ├─ @shikijs/engine-javascript@2.5.0
 │  ├─ @shikijs/engine-oniguruma@2.5.0
@@ -1007,7 +1098,7 @@
 ├─ @types/body-parser@1.19.6
 │  ├─ @types/connect@*
 │  ├─ @types/node@*
-│  ├─ @types/node@24.0.0
+│  ├─ @types/node@24.0.7
 │  │  └─ undici-types@~7.8.0
 │  └─ undici-types@7.8.0
 ├─ @types/chai@5.2.2
@@ -1027,12 +1118,12 @@
 │  │  ├─ @types/express-serve-static-core@^5.0.0
 │  │  └─ @types/serve-static@*
 │  ├─ @types/node@*
-│  ├─ @types/node@24.0.0
+│  ├─ @types/node@24.0.7
 │  │  └─ undici-types@~7.8.0
 │  └─ undici-types@7.8.0
 ├─ @types/connect@3.4.38
 │  ├─ @types/node@*
-│  ├─ @types/node@24.0.0
+│  ├─ @types/node@24.0.7
 │  │  └─ undici-types@~7.8.0
 │  └─ undici-types@7.8.0
 ├─ @types/cordova@11.0.3
@@ -1119,7 +1210,7 @@
 ├─ @types/estree@1.0.8
 ├─ @types/express-serve-static-core@4.19.6
 │  ├─ @types/node@*
-│  ├─ @types/node@24.0.0
+│  ├─ @types/node@24.0.7
 │  │  └─ undici-types@~7.8.0
 │  ├─ @types/qs@*
 │  ├─ @types/range-parser@*
@@ -1133,14 +1224,26 @@
 ├─ @types/filesystem@0.0.36
 │  └─ @types/filewriter@*
 ├─ @types/filewriter@0.0.33
+├─ @types/fs-extra@8.1.5
+│  ├─ @types/node@*
+│  ├─ @types/node@24.0.7
+│  │  └─ undici-types@~7.8.0
+│  └─ undici-types@7.8.0
 ├─ @types/geojson@7946.0.16
+├─ @types/glob@7.2.0
+│  ├─ @types/minimatch@*
+│  ├─ @types/node@*
+│  ├─ @types/node@24.0.7
+│  │  └─ undici-types@~7.8.0
+│  └─ undici-types@7.8.0
 ├─ @types/har-format@1.2.16
 ├─ @types/hast@3.0.4
 │  └─ @types/unist@*
 ├─ @types/http-errors@2.0.5
 ├─ @types/json-schema@7.0.15
 ├─ @types/linkify-it@5.0.0
-├─ @types/lodash@4.17.17
+├─ @types/lodash@4.17.19
+├─ @types/long@4.0.2
 ├─ @types/markdown-it@14.1.2
 │  ├─ @types/linkify-it@^5
 │  └─ @types/mdurl@^2
@@ -1148,17 +1251,18 @@
 │  └─ @types/unist@*
 ├─ @types/mdurl@2.0.0
 ├─ @types/mime@1.3.5
+├─ @types/minimatch@5.1.2
 ├─ @types/ms@2.1.0
 ├─ @types/node-forge@1.3.11
 │  ├─ @types/node@*
-│  ├─ @types/node@24.0.0
+│  ├─ @types/node@24.0.7
 │  │  └─ undici-types@~7.8.0
 │  └─ undici-types@7.8.0
-├─ @types/node@20.19.0
+├─ @types/node@20.19.2
 │  └─ undici-types@~6.21.0
 ├─ @types/pngjs@6.0.5
 │  ├─ @types/node@*
-│  ├─ @types/node@24.0.0
+│  ├─ @types/node@24.0.7
 │  │  └─ undici-types@~7.8.0
 │  └─ undici-types@7.8.0
 ├─ @types/qs@6.14.0
@@ -1169,13 +1273,13 @@
 ├─ @types/send@0.17.5
 │  ├─ @types/mime@^1
 │  ├─ @types/node@*
-│  ├─ @types/node@24.0.0
+│  ├─ @types/node@24.0.7
 │  │  └─ undici-types@~7.8.0
 │  └─ undici-types@7.8.0
 ├─ @types/serve-static@1.15.8
 │  ├─ @types/http-errors@*
 │  ├─ @types/node@*
-│  ├─ @types/node@24.0.0
+│  ├─ @types/node@24.0.7
 │  │  └─ undici-types@~7.8.0
 │  ├─ @types/send@*
 │  └─ undici-types@7.8.0
@@ -1185,42 +1289,42 @@
 ├─ @types/trusted-types@2.0.7
 ├─ @types/unist@3.0.3
 ├─ @types/web-bluetooth@0.0.21
-├─ @typescript-eslint/eslint-plugin@8.34.0
+├─ @typescript-eslint/eslint-plugin@8.35.0
 │  ├─ @eslint-community/regexpp@^4.10.0
-│  ├─ @typescript-eslint/scope-manager@8.34.0
-│  ├─ @typescript-eslint/type-utils@8.34.0
-│  ├─ @typescript-eslint/utils@8.34.0
-│  ├─ @typescript-eslint/visitor-keys@8.34.0
+│  ├─ @typescript-eslint/scope-manager@8.35.0
+│  ├─ @typescript-eslint/type-utils@8.35.0
+│  ├─ @typescript-eslint/utils@8.35.0
+│  ├─ @typescript-eslint/visitor-keys@8.35.0
 │  ├─ graphemer@^1.4.0
 │  ├─ ignore@^7.0.0
 │  ├─ ignore@7.0.5
 │  ├─ natural-compare@^1.4.0
 │  └─ ts-api-utils@^2.1.0
-├─ @typescript-eslint/parser@8.34.0
-│  ├─ @typescript-eslint/scope-manager@8.34.0
-│  ├─ @typescript-eslint/types@8.34.0
-│  ├─ @typescript-eslint/typescript-estree@8.34.0
-│  ├─ @typescript-eslint/visitor-keys@8.34.0
+├─ @typescript-eslint/parser@8.35.0
+│  ├─ @typescript-eslint/scope-manager@8.35.0
+│  ├─ @typescript-eslint/types@8.35.0
+│  ├─ @typescript-eslint/typescript-estree@8.35.0
+│  ├─ @typescript-eslint/visitor-keys@8.35.0
 │  └─ debug@^4.3.4
-├─ @typescript-eslint/project-service@8.34.0
-│  ├─ @typescript-eslint/tsconfig-utils@^8.34.0
-│  ├─ @typescript-eslint/types@^8.34.0
+├─ @typescript-eslint/project-service@8.35.0
+│  ├─ @typescript-eslint/tsconfig-utils@^8.35.0
+│  ├─ @typescript-eslint/types@^8.35.0
 │  └─ debug@^4.3.4
-├─ @typescript-eslint/scope-manager@8.34.0
-│  ├─ @typescript-eslint/types@8.34.0
-│  └─ @typescript-eslint/visitor-keys@8.34.0
-├─ @typescript-eslint/tsconfig-utils@8.34.0
-├─ @typescript-eslint/type-utils@8.34.0
-│  ├─ @typescript-eslint/typescript-estree@8.34.0
-│  ├─ @typescript-eslint/utils@8.34.0
+├─ @typescript-eslint/scope-manager@8.35.0
+│  ├─ @typescript-eslint/types@8.35.0
+│  └─ @typescript-eslint/visitor-keys@8.35.0
+├─ @typescript-eslint/tsconfig-utils@8.35.0
+├─ @typescript-eslint/type-utils@8.35.0
+│  ├─ @typescript-eslint/typescript-estree@8.35.0
+│  ├─ @typescript-eslint/utils@8.35.0
 │  ├─ debug@^4.3.4
 │  └─ ts-api-utils@^2.1.0
-├─ @typescript-eslint/types@8.34.0
-├─ @typescript-eslint/typescript-estree@8.34.0
-│  ├─ @typescript-eslint/project-service@8.34.0
-│  ├─ @typescript-eslint/tsconfig-utils@8.34.0
-│  ├─ @typescript-eslint/types@8.34.0
-│  ├─ @typescript-eslint/visitor-keys@8.34.0
+├─ @typescript-eslint/types@8.35.0
+├─ @typescript-eslint/typescript-estree@8.35.0
+│  ├─ @typescript-eslint/project-service@8.35.0
+│  ├─ @typescript-eslint/tsconfig-utils@8.35.0
+│  ├─ @typescript-eslint/types@8.35.0
+│  ├─ @typescript-eslint/visitor-keys@8.35.0
 │  ├─ debug@^4.3.4
 │  ├─ fast-glob@^3.3.2
 │  ├─ is-glob@^4.0.3
@@ -1229,21 +1333,21 @@
 │  │  └─ brace-expansion@^2.0.1
 │  ├─ semver@^7.6.0
 │  └─ ts-api-utils@^2.1.0
-├─ @typescript-eslint/utils@8.34.0
+├─ @typescript-eslint/utils@8.35.0
 │  ├─ @eslint-community/eslint-utils@^4.7.0
-│  ├─ @typescript-eslint/scope-manager@8.34.0
-│  ├─ @typescript-eslint/types@8.34.0
-│  └─ @typescript-eslint/typescript-estree@8.34.0
-├─ @typescript-eslint/visitor-keys@8.34.0
-│  ├─ @typescript-eslint/types@8.34.0
-│  ├─ eslint-visitor-keys@^4.2.0
+│  ├─ @typescript-eslint/scope-manager@8.35.0
+│  ├─ @typescript-eslint/types@8.35.0
+│  └─ @typescript-eslint/typescript-estree@8.35.0
+├─ @typescript-eslint/visitor-keys@8.35.0
+│  ├─ @typescript-eslint/types@8.35.0
+│  ├─ eslint-visitor-keys@^4.2.1
 │  └─ eslint-visitor-keys@4.2.1
 ├─ @ungap/structured-clone@1.3.0
 ├─ @virtual-list/vue@1.2.1
 │  ├─ helper-js@^3.1.2
 │  └─ vue-demi@latest
 ├─ @vitejs/plugin-vue@5.2.4
-├─ @vitest/coverage-v8@3.2.3
+├─ @vitest/coverage-v8@3.2.4
 │  ├─ @ampproject/remapping@^2.3.0
 │  ├─ @bcoe/v8-coverage@^1.0.2
 │  ├─ ast-v8-to-istanbul@^0.3.3
@@ -1257,93 +1361,108 @@
 │  ├─ std-env@^3.9.0
 │  ├─ test-exclude@^7.0.1
 │  └─ tinyrainbow@^2.0.0
-├─ @vitest/expect@3.2.3
+├─ @vitest/expect@3.2.4
 │  ├─ @types/chai@^5.2.2
-│  ├─ @vitest/spy@3.2.3
-│  ├─ @vitest/utils@3.2.3
+│  ├─ @vitest/spy@3.2.4
+│  ├─ @vitest/utils@3.2.4
 │  ├─ chai@^5.2.0
 │  └─ tinyrainbow@^2.0.0
-├─ @vitest/mocker@3.2.3
-│  ├─ @vitest/spy@3.2.3
+├─ @vitest/mocker@3.2.4
+│  ├─ @vitest/spy@3.2.4
 │  ├─ estree-walker@^3.0.3
 │  ├─ estree-walker@3.0.3
 │  │  └─ @types/estree@^1.0.0
 │  └─ magic-string@^0.30.17
-├─ @vitest/pretty-format@3.2.3
+├─ @vitest/pretty-format@3.2.4
 │  └─ tinyrainbow@^2.0.0
-├─ @vitest/runner@3.2.3
-│  ├─ @vitest/utils@3.2.3
+├─ @vitest/runner@3.2.4
+│  ├─ @vitest/utils@3.2.4
 │  ├─ pathe@^2.0.3
 │  └─ strip-literal@^3.0.0
-├─ @vitest/snapshot@3.2.3
-│  ├─ @vitest/pretty-format@3.2.3
+├─ @vitest/snapshot@3.2.4
+│  ├─ @vitest/pretty-format@3.2.4
 │  ├─ magic-string@^0.30.17
 │  └─ pathe@^2.0.3
-├─ @vitest/spy@3.2.3
+├─ @vitest/spy@3.2.4
 │  └─ tinyspy@^4.0.3
-├─ @vitest/ui@3.2.3
-│  ├─ @vitest/utils@3.2.3
+├─ @vitest/ui@3.2.4
+│  ├─ @vitest/utils@3.2.4
 │  ├─ fflate@^0.8.2
 │  ├─ flatted@^3.3.3
 │  ├─ pathe@^2.0.3
 │  ├─ sirv@^3.0.1
 │  ├─ tinyglobby@^0.2.14
 │  └─ tinyrainbow@^2.0.0
-├─ @vitest/utils@3.2.3
-│  ├─ @vitest/pretty-format@3.2.3
-│  ├─ loupe@^3.1.3
+├─ @vitest/utils@3.2.4
+│  ├─ @vitest/pretty-format@3.2.4
+│  ├─ loupe@^3.1.4
 │  └─ tinyrainbow@^2.0.0
-├─ @volar/language-core@2.4.14
-│  └─ @volar/source-map@2.4.14
-├─ @volar/source-map@2.4.14
-├─ @volar/typescript@2.4.14
-│  ├─ @volar/language-core@2.4.14
+├─ @volar/language-core@2.4.15
+│  └─ @volar/source-map@2.4.15
+├─ @volar/source-map@2.4.15
+├─ @volar/typescript@2.4.15
+│  ├─ @volar/language-core@2.4.15
 │  ├─ path-browserify@^1.0.1
 │  └─ vscode-uri@^3.0.8
-├─ @vue/compiler-core@3.5.16
-│  ├─ @babel/parser@^7.27.2
-│  ├─ @vue/shared@3.5.16
+├─ @vue-flow/core@1.45.0
+│  ├─ @types/web-bluetooth@0.0.20
+│  ├─ @vueuse/core@^10.5.0
+│  ├─ @vueuse/core@10.11.1
+│  │  ├─ @types/web-bluetooth@^0.0.20
+│  │  ├─ @vueuse/metadata@10.11.1
+│  │  ├─ @vueuse/shared@10.11.1
+│  │  └─ vue-demi@>=0.14.8
+│  ├─ @vueuse/metadata@10.11.1
+│  ├─ @vueuse/shared@10.11.1
+│  │  └─ vue-demi@>=0.14.8
+│  ├─ d3-drag@^3.0.0
+│  ├─ d3-interpolate@^3.0.1
+│  ├─ d3-selection@^3.0.0
+│  └─ d3-zoom@^3.0.0
+├─ @vue/compiler-core@3.5.17
+│  ├─ @babel/parser@^7.27.5
+│  ├─ @vue/shared@3.5.17
 │  ├─ entities@^4.5.0
 │  ├─ estree-walker@^2.0.2
 │  └─ source-map-js@^1.2.1
-├─ @vue/compiler-dom@3.5.16
-│  ├─ @vue/compiler-core@3.5.16
-│  └─ @vue/shared@3.5.16
-├─ @vue/compiler-sfc@3.5.16
-│  ├─ @babel/parser@^7.27.2
-│  ├─ @vue/compiler-core@3.5.16
-│  ├─ @vue/compiler-dom@3.5.16
-│  ├─ @vue/compiler-ssr@3.5.16
-│  ├─ @vue/shared@3.5.16
+├─ @vue/compiler-dom@3.5.17
+│  ├─ @vue/compiler-core@3.5.17
+│  └─ @vue/shared@3.5.17
+├─ @vue/compiler-sfc@3.5.17
+│  ├─ @babel/parser@^7.27.5
+│  ├─ @vue/compiler-core@3.5.17
+│  ├─ @vue/compiler-dom@3.5.17
+│  ├─ @vue/compiler-ssr@3.5.17
+│  ├─ @vue/shared@3.5.17
 │  ├─ estree-walker@^2.0.2
 │  ├─ magic-string@^0.30.17
-│  ├─ postcss@^8.5.3
+│  ├─ postcss@^8.5.6
 │  └─ source-map-js@^1.2.1
-├─ @vue/compiler-ssr@3.5.16
-│  ├─ @vue/compiler-dom@3.5.16
-│  └─ @vue/shared@3.5.16
+├─ @vue/compiler-ssr@3.5.17
+│  ├─ @vue/compiler-dom@3.5.17
+│  └─ @vue/shared@3.5.17
 ├─ @vue/compiler-vue2@2.7.16
 │  ├─ de-indent@^1.0.2
 │  └─ he@^1.2.0
 ├─ @vue/devtools-api@6.6.4
-├─ @vue/devtools-kit@7.7.6
-│  ├─ @vue/devtools-shared@^7.7.6
+├─ @vue/devtools-kit@7.7.7
+│  ├─ @vue/devtools-shared@^7.7.7
 │  ├─ birpc@^2.3.0
 │  ├─ hookable@^5.5.3
 │  ├─ mitt@^3.0.1
 │  ├─ perfect-debounce@^1.0.0
 │  ├─ speakingurl@^14.0.1
 │  └─ superjson@^2.2.2
-├─ @vue/devtools-shared@7.7.6
+├─ @vue/devtools-shared@7.7.7
 │  └─ rfdc@^1.4.1
 ├─ @vue/eslint-config-prettier@10.2.0
 │  ├─ eslint-config-prettier@^10.0.1
 │  └─ eslint-plugin-prettier@^5.2.2
-├─ @vue/eslint-config-typescript@14.5.0
-│  ├─ @typescript-eslint/utils@^8.26.0
+├─ @vue/eslint-config-typescript@14.5.1
+│  ├─ @typescript-eslint/utils@^8.34.1
 │  ├─ fast-glob@^3.3.3
-│  ├─ typescript-eslint@^8.26.0
-│  └─ vue-eslint-parser@^10.1.1
+│  ├─ typescript-eslint@^8.34.1
+│  └─ vue-eslint-parser@^10.1.3
 ├─ @vue/language-core@2.2.10
 │  ├─ @volar/language-core@~2.4.11
 │  ├─ @vue/compiler-dom@^3.5.0
@@ -1355,20 +1474,20 @@
 │  │  └─ brace-expansion@^2.0.1
 │  ├─ muggle-string@^0.4.1
 │  └─ path-browserify@^1.0.1
-├─ @vue/reactivity@3.5.16
-│  └─ @vue/shared@3.5.16
-├─ @vue/runtime-core@3.5.16
-│  ├─ @vue/reactivity@3.5.16
-│  └─ @vue/shared@3.5.16
-├─ @vue/runtime-dom@3.5.16
-│  ├─ @vue/reactivity@3.5.16
-│  ├─ @vue/runtime-core@3.5.16
-│  ├─ @vue/shared@3.5.16
+├─ @vue/reactivity@3.5.17
+│  └─ @vue/shared@3.5.17
+├─ @vue/runtime-core@3.5.17
+│  ├─ @vue/reactivity@3.5.17
+│  └─ @vue/shared@3.5.17
+├─ @vue/runtime-dom@3.5.17
+│  ├─ @vue/reactivity@3.5.17
+│  ├─ @vue/runtime-core@3.5.17
+│  ├─ @vue/shared@3.5.17
 │  └─ csstype@^3.1.3
-├─ @vue/server-renderer@3.5.16
-│  ├─ @vue/compiler-ssr@3.5.16
-│  └─ @vue/shared@3.5.16
-├─ @vue/shared@3.5.16
+├─ @vue/server-renderer@3.5.17
+│  ├─ @vue/compiler-ssr@3.5.17
+│  └─ @vue/shared@3.5.17
+├─ @vue/shared@3.5.17
 ├─ @vue/test-utils@2.4.6
 │  ├─ js-beautify@^1.14.9
 │  └─ vue-component-type-helpers@^2.0.0
@@ -1384,6 +1503,11 @@
 ├─ @vueuse/metadata@12.8.2
 ├─ @vueuse/shared@12.8.2
 │  └─ vue@^3.5.13
+├─ @xenova/transformers@2.17.2
+│  ├─ @huggingface/jinja@^0.2.2
+│  ├─ onnxruntime-node@1.14.0
+│  ├─ onnxruntime-web@1.14.0
+│  └─ sharp@^0.32.0
 ├─ abab@2.0.6
 ├─ abbrev@2.0.0
 ├─ abort-controller@3.0.0
@@ -1407,20 +1531,20 @@
 │  ├─ fast-json-stable-stringify@^2.0.0
 │  ├─ json-schema-traverse@^0.4.1
 │  └─ uri-js@^4.2.2
-├─ algoliasearch@5.27.0
-│  ├─ @algolia/client-abtesting@5.27.0
-│  ├─ @algolia/client-analytics@5.27.0
-│  ├─ @algolia/client-common@5.27.0
-│  ├─ @algolia/client-insights@5.27.0
-│  ├─ @algolia/client-personalization@5.27.0
-│  ├─ @algolia/client-query-suggestions@5.27.0
-│  ├─ @algolia/client-search@5.27.0
-│  ├─ @algolia/ingestion@1.27.0
-│  ├─ @algolia/monitoring@1.27.0
-│  ├─ @algolia/recommend@5.27.0
-│  ├─ @algolia/requester-browser-xhr@5.27.0
-│  ├─ @algolia/requester-fetch@5.27.0
-│  └─ @algolia/requester-node-http@5.27.0
+├─ algoliasearch@5.29.0
+│  ├─ @algolia/client-abtesting@5.29.0
+│  ├─ @algolia/client-analytics@5.29.0
+│  ├─ @algolia/client-common@5.29.0
+│  ├─ @algolia/client-insights@5.29.0
+│  ├─ @algolia/client-personalization@5.29.0
+│  ├─ @algolia/client-query-suggestions@5.29.0
+│  ├─ @algolia/client-search@5.29.0
+│  ├─ @algolia/ingestion@1.29.0
+│  ├─ @algolia/monitoring@1.29.0
+│  ├─ @algolia/recommend@5.29.0
+│  ├─ @algolia/requester-browser-xhr@5.29.0
+│  ├─ @algolia/requester-fetch@5.29.0
+│  └─ @algolia/requester-node-http@5.29.0
 ├─ alien-signals@1.0.13
 ├─ ansi-escapes@4.3.2
 │  ├─ type-fest@^0.21.3
@@ -1467,6 +1591,7 @@
 │  └─ is-array-buffer@^3.0.5
 ├─ array-equal@1.0.2
 ├─ array-flatten@1.1.1
+├─ array-union@2.1.0
 ├─ arraybuffer.prototype.slice@1.0.4
 │  ├─ array-buffer-byte-length@^1.0.1
 │  ├─ call-bind@^1.0.8
@@ -1510,30 +1635,39 @@
 │  └─ possible-typed-array-names@^1.0.0
 ├─ aws-sign2@0.7.0
 ├─ aws4@1.13.2
-├─ axios@1.9.0
+├─ axios@1.10.0
 │  ├─ follow-redirects@^1.15.6
 │  ├─ form-data@^4.0.0
 │  └─ proxy-from-env@^1.1.0
 ├─ b4a@1.6.7
-├─ babel-plugin-polyfill-corejs2@0.4.13
-│  ├─ @babel/compat-data@^7.22.6
-│  ├─ @babel/helper-define-polyfill-provider@^0.6.4
+├─ babel-plugin-polyfill-corejs2@0.4.14
+│  ├─ @babel/compat-data@^7.27.7
+│  ├─ @babel/helper-define-polyfill-provider@^0.6.5
 │  ├─ semver@^6.3.1
 │  └─ semver@6.3.1
 ├─ babel-plugin-polyfill-corejs3@0.11.1
 │  ├─ @babel/helper-define-polyfill-provider@^0.6.3
 │  └─ core-js-compat@^3.40.0
-├─ babel-plugin-polyfill-regenerator@0.6.4
-│  └─ @babel/helper-define-polyfill-provider@^0.6.4
+├─ babel-plugin-polyfill-regenerator@0.6.5
+│  └─ @babel/helper-define-polyfill-provider@^0.6.5
 ├─ balanced-match@1.0.2
 ├─ bare-events@2.5.4
+├─ bare-fs@4.1.5
+│  ├─ bare-events@^2.5.4
+│  ├─ bare-path@^3.0.0
+│  └─ bare-stream@^2.6.4
+├─ bare-os@3.6.1
+├─ bare-path@3.0.0
+│  └─ bare-os@^3.0.1
+├─ bare-stream@2.6.5
+│  └─ streamx@^2.21.0
 ├─ base-64@0.1.0
 ├─ base64-js@1.5.1
 ├─ batch-processor@1.0.0
 ├─ bcrypt-pbkdf@1.0.2
 │  └─ tweetnacl@^0.14.3
 ├─ binary-extensions@2.3.0
-├─ birpc@2.3.0
+├─ birpc@2.4.0
 ├─ bl@4.1.0
 │  ├─ buffer@^5.5.0
 │  ├─ buffer@5.7.1
@@ -1559,7 +1693,8 @@
 │  ├─ type-is@~1.6.18
 │  └─ unpipe@1.0.0
 ├─ boolbase@1.0.0
-├─ brace-expansion@2.0.1
+├─ boolean@3.2.0
+├─ brace-expansion@2.0.2
 │  └─ balanced-match@^1.0.0
 ├─ braces@3.0.3
 │  └─ fill-range@^7.1.1
@@ -1615,9 +1750,9 @@
 │     └─ safe-buffer@5.1.2
 ├─ browserify-zlib@0.2.0
 │  └─ pako@~1.0.5
-├─ browserslist@4.25.0
-│  ├─ caniuse-lite@^1.0.30001718
-│  ├─ electron-to-chromium@^1.5.160
+├─ browserslist@4.25.1
+│  ├─ caniuse-lite@^1.0.30001726
+│  ├─ electron-to-chromium@^1.5.173
 │  ├─ node-releases@^2.0.19
 │  └─ update-browserslist-db@^1.1.3
 ├─ buffer-builder@0.2.0
@@ -1648,7 +1783,7 @@
 │  ├─ pascal-case@^3.1.2
 │  └─ tslib@^2.0.3
 ├─ camelcase@5.3.1
-├─ caniuse-lite@1.0.30001721
+├─ caniuse-lite@1.0.30001726
 ├─ caseless@0.12.0
 ├─ ccount@2.0.1
 ├─ chai@5.2.0
@@ -1664,7 +1799,7 @@
 ├─ character-entities-legacy@3.0.0
 ├─ character-entities@2.0.2
 ├─ chardet@0.7.0
-├─ chart.js@4.4.9
+├─ chart.js@4.5.0
 │  └─ @kurkle/color@^0.3.0
 ├─ chartjs-chart-wordcloud@4.4.4
 │  ├─ @types/d3-cloud@^1.2.9
@@ -1740,6 +1875,13 @@
 ├─ color-convert@2.0.1
 │  └─ color-name@~1.1.4
 ├─ color-name@1.1.4
+├─ color-string@1.9.1
+│  ├─ color-name@^1.0.0
+│  └─ simple-swizzle@^0.2.2
+├─ color@4.2.3
+│  ├─ color-convert@^2.0.1
+│  └─ color-string@^1.9.0
+├─ colorette@1.4.0
 ├─ colorjs.io@0.5.2
 ├─ combined-stream@1.0.8
 │  └─ delayed-stream@~1.0.0
@@ -1839,13 +1981,13 @@
 │  ├─ randombytes@^2.1.0
 │  └─ randomfill@^1.0.4
 ├─ crypto-random-string@2.0.0
-├─ css-select@5.1.0
+├─ css-select@5.2.2
 │  ├─ boolbase@^1.0.0
 │  ├─ css-what@^6.1.0
 │  ├─ domhandler@^5.0.2
 │  ├─ domutils@^3.0.1
 │  └─ nth-check@^2.0.1
-├─ css-what@6.1.0
+├─ css-what@6.2.2
 ├─ cssesc@3.0.0
 ├─ cssom@0.4.4
 ├─ cssstyle@2.3.0
@@ -2003,9 +2145,12 @@
 ├─ debug@4.4.1
 │  └─ ms@^2.1.3
 ├─ decamelize@1.2.0
-├─ decode-named-character-reference@1.1.0
+├─ decode-named-character-reference@1.2.0
 │  └─ character-entities@^2.0.0
+├─ decompress-response@6.0.0
+│  └─ mimic-response@^3.1.0
 ├─ deep-eql@5.0.2
+├─ deep-extend@0.6.0
 ├─ deep-is@0.1.4
 ├─ deepmerge@4.3.1
 ├─ default-browser-id@5.0.0
@@ -2032,6 +2177,8 @@
 │  ├─ inherits@^2.0.1
 │  └─ minimalistic-assert@^1.0.0
 ├─ destroy@1.2.0
+├─ detect-libc@2.0.4
+├─ detect-node@2.1.0
 ├─ devlop@1.1.0
 │  └─ dequal@^2.0.0
 ├─ diff@7.0.0
@@ -2039,6 +2186,8 @@
 │  ├─ bn.js@^4.1.0
 │  ├─ miller-rabin@^4.0.0
 │  └─ randombytes@^2.0.0
+├─ dir-glob@3.0.1
+│  └─ path-type@^4.0.0
 ├─ dom-serializer@2.0.0
 │  ├─ domelementtype@^2.3.0
 │  ├─ domhandler@^5.0.2
@@ -2063,7 +2212,7 @@
 │  └─ type-fest@4.41.0
 ├─ dotenv-expand@11.0.7
 │  └─ dotenv@^16.4.5
-├─ dotenv@16.5.0
+├─ dotenv@16.6.1
 ├─ drag-event-service@2.0.0
 │  ├─ @babel/runtime@^7.7.7
 │  └─ helper-js@^3.0.0
@@ -2085,7 +2234,7 @@
 ├─ ee-first@1.1.1
 ├─ ejs@3.1.10
 │  └─ jake@^10.8.5
-├─ electron-to-chromium@1.5.166
+├─ electron-to-chromium@1.5.177
 ├─ element-resize-detector@1.2.4
 │  └─ batch-processor@1.0.0
 ├─ elementtree@0.1.7
@@ -2108,6 +2257,8 @@
 │  ├─ whatwg-encoding@^3.1.1
 │  └─ whatwg-encoding@3.1.1
 │     └─ iconv-lite@0.6.3
+├─ end-of-stream@1.4.5
+│  └─ once@^1.4.0
 ├─ entities@4.5.0
 ├─ es-abstract@1.24.0
 │  ├─ array-buffer-byte-length@^1.0.2
@@ -2178,6 +2329,7 @@
 │  ├─ is-callable@^1.2.7
 │  ├─ is-date-object@^1.0.5
 │  └─ is-symbol@^1.0.4
+├─ es6-error@4.1.1
 ├─ esbuild@0.25.5
 │  ├─ @esbuild/aix-ppc64@0.25.5
 │  ├─ @esbuild/android-arm@0.25.5
@@ -2225,7 +2377,7 @@
 │  │  └─ word-wrap@~1.2.3
 │  └─ source-map@~0.6.1
 ├─ eslint-config-prettier@10.1.5
-├─ eslint-plugin-prettier@5.4.1
+├─ eslint-plugin-prettier@5.5.1
 │  ├─ prettier-linter-helpers@^1.0.0
 │  └─ synckit@^0.11.7
 ├─ eslint-plugin-vue@10.2.0
@@ -2240,14 +2392,14 @@
 │  ├─ esrecurse@^4.3.0
 │  └─ estraverse@^5.2.0
 ├─ eslint-visitor-keys@3.4.3
-├─ eslint@9.28.0
+├─ eslint@9.30.0
 │  ├─ @eslint-community/eslint-utils@^4.2.0
 │  ├─ @eslint-community/regexpp@^4.12.1
-│  ├─ @eslint/config-array@^0.20.0
-│  ├─ @eslint/config-helpers@^0.2.1
+│  ├─ @eslint/config-array@^0.21.0
+│  ├─ @eslint/config-helpers@^0.3.0
 │  ├─ @eslint/core@^0.14.0
 │  ├─ @eslint/eslintrc@^3.3.1
-│  ├─ @eslint/js@9.28.0
+│  ├─ @eslint/js@9.30.0
 │  ├─ @eslint/plugin-kit@^0.3.1
 │  ├─ @humanfs/node@^0.16.6
 │  ├─ @humanwhocodes/module-importer@^1.0.1
@@ -2259,10 +2411,10 @@
 │  ├─ cross-spawn@^7.0.6
 │  ├─ debug@^4.3.2
 │  ├─ escape-string-regexp@^4.0.0
-│  ├─ eslint-scope@^8.3.0
-│  ├─ eslint-visitor-keys@^4.2.0
+│  ├─ eslint-scope@^8.4.0
+│  ├─ eslint-visitor-keys@^4.2.1
 │  ├─ eslint-visitor-keys@4.2.1
-│  ├─ espree@^10.3.0
+│  ├─ espree@^10.4.0
 │  ├─ esquery@^1.5.0
 │  ├─ esutils@^2.0.2
 │  ├─ fast-deep-equal@^3.1.3
@@ -2298,6 +2450,7 @@
 ├─ evp_bytestokey@1.0.3
 │  ├─ md5.js@^1.3.4
 │  └─ safe-buffer@^5.1.1
+├─ expand-template@2.0.3
 ├─ expect-type@1.2.1
 ├─ express@4.21.2
 │  ├─ accepts@~1.3.8
@@ -2334,7 +2487,7 @@
 │  ├─ type-is@~1.6.18
 │  ├─ utils-merge@1.0.1
 │  └─ vary@~1.1.2
-├─ exsolve@1.0.5
+├─ exsolve@1.0.7
 ├─ extend@3.0.2
 ├─ external-editor@3.1.0
 │  ├─ chardet@^0.7.0
@@ -2358,7 +2511,7 @@
 │  └─ strnum@^1.1.1
 ├─ fastq@1.19.1
 │  └─ reusify@^1.0.4
-├─ fdir@6.4.5
+├─ fdir@6.4.6
 ├─ fflate@0.8.2
 ├─ file-entry-cache@8.0.0
 │  └─ flat-cache@^4.0.0
@@ -2386,6 +2539,7 @@
 │  ├─ flatted@^3.2.9
 │  └─ keyv@^4.5.4
 ├─ flat@5.0.2
+├─ flatbuffers@1.12.0
 ├─ flatted@3.3.3
 ├─ focus-trap@7.6.5
 │  └─ tabbable@^6.2.0
@@ -2405,6 +2559,7 @@
 ├─ forwarded@0.2.0
 ├─ fraction.js@4.3.7
 ├─ fresh@0.5.2
+├─ fs-constants@1.0.0
 ├─ fs-extra@11.3.0
 │  ├─ graceful-fs@^4.2.0
 │  ├─ jsonfile@^6.0.1
@@ -2444,6 +2599,7 @@
 │  └─ get-intrinsic@^1.2.6
 ├─ getpass@0.1.7
 │  └─ assert-plus@^1.0.0
+├─ github-from-package@0.0.0
 ├─ glob-parent@5.1.2
 │  └─ is-glob@^4.0.1
 ├─ glob@10.4.5
@@ -2455,14 +2611,38 @@
 │  ├─ minipass@^7.1.2
 │  ├─ package-json-from-dist@^1.0.0
 │  └─ path-scurry@^1.11.1
+├─ global-agent@3.0.0
+│  ├─ boolean@^3.0.1
+│  ├─ es6-error@^4.1.1
+│  ├─ matcher@^3.0.0
+│  ├─ roarr@^2.15.3
+│  ├─ semver@^7.3.2
+│  └─ serialize-error@^7.0.1
 ├─ globals@16.2.0
 ├─ globalthis@1.0.4
 │  ├─ define-properties@^1.2.1
 │  └─ gopd@^1.0.1
+├─ globby@10.0.1
+│  ├─ @types/glob@^7.1.1
+│  ├─ array-union@^2.1.0
+│  ├─ dir-glob@^3.0.1
+│  ├─ fast-glob@^3.0.3
+│  ├─ glob@^7.1.3
+│  ├─ glob@7.2.3
+│  │  ├─ fs.realpath@^1.0.0
+│  │  ├─ inflight@^1.0.4
+│  │  ├─ inherits@2
+│  │  ├─ minimatch@^3.1.1
+│  │  ├─ once@^1.3.0
+│  │  └─ path-is-absolute@^1.0.0
+│  ├─ ignore@^5.1.1
+│  ├─ merge2@^1.2.3
+│  └─ slash@^3.0.0
 ├─ globrex@0.1.2
 ├─ gopd@1.2.0
 ├─ graceful-fs@4.2.11
 ├─ graphemer@1.4.0
+├─ guid-typescript@1.0.9
 ├─ hachure-fill@0.5.2
 ├─ happy-dom@15.11.7
 │  ├─ entities@^4.5.0
@@ -2557,11 +2737,11 @@
 ├─ idb@8.0.3
 ├─ ieee754@1.2.1
 ├─ ignore@5.3.2
-├─ immutable@5.1.2
+├─ immutable@5.1.3
 ├─ import-fresh@3.3.1
 │  ├─ parent-module@^1.0.0
 │  └─ resolve-from@^4.0.0
-├─ import-in-the-middle@1.14.0
+├─ import-in-the-middle@1.14.2
 │  ├─ acorn-import-attributes@^1.9.5
 │  ├─ acorn@^8.14.0
 │  ├─ cjs-module-lexer@^1.2.2
@@ -2599,6 +2779,7 @@
 │  ├─ call-bind@^1.0.8
 │  ├─ call-bound@^1.0.3
 │  └─ get-intrinsic@^1.2.6
+├─ is-arrayish@0.3.2
 ├─ is-async-function@2.1.1
 │  ├─ async-function@^1.0.0
 │  ├─ call-bound@^1.0.3
@@ -2649,7 +2830,7 @@
 │  └─ has-tostringtag@^1.0.2
 ├─ is-number@7.0.0
 ├─ is-obj@1.0.1
-├─ is-plain-object@5.0.0
+├─ is-plain-object@3.0.1
 ├─ is-regex@1.2.1
 │  ├─ call-bound@^1.0.2
 │  ├─ gopd@^1.2.0
@@ -2823,9 +3004,9 @@
 │  ├─ confbox@0.2.2
 │  ├─ mlly@^1.7.4
 │  ├─ pkg-types@^2.0.1
-│  ├─ pkg-types@2.1.0
-│  │  ├─ confbox@^0.2.1
-│  │  ├─ exsolve@^1.0.1
+│  ├─ pkg-types@2.1.1
+│  │  ├─ confbox@^0.2.2
+│  │  ├─ exsolve@^1.0.7
 │  │  └─ pathe@^2.0.3
 │  └─ quansync@^0.2.8
 ├─ locate-path@6.0.0
@@ -2843,8 +3024,8 @@
 ├─ log-symbols@4.1.0
 │  ├─ chalk@^4.1.0
 │  └─ is-unicode-supported@^0.1.0
-├─ long@5.3.2
-├─ loupe@3.1.3
+├─ long@4.0.0
+├─ loupe@3.1.4
 ├─ lower-case@2.0.2
 │  └─ tslib@^2.0.3
 ├─ lru-cache@10.4.3
@@ -2858,6 +3039,8 @@
 │  └─ semver@^7.5.3
 ├─ mark.js@8.11.1
 ├─ marked@15.0.12
+├─ matcher@3.0.0
+│  └─ escape-string-regexp@^4.0.0
 ├─ math-intrinsics@1.1.0
 ├─ md5.js@1.3.5
 │  ├─ hash-base@^3.0.0
@@ -2895,10 +3078,10 @@
 ├─ media-typer@0.3.0
 ├─ merge-descriptors@1.0.3
 ├─ merge2@1.4.1
-├─ mermaid@11.6.0
+├─ mermaid@11.7.0
 │  ├─ @braintree/sanitize-url@^7.0.4
 │  ├─ @iconify/utils@^2.1.33
-│  ├─ @mermaid-js/parser@^0.4.0
+│  ├─ @mermaid-js/parser@^0.5.0
 │  ├─ @types/d3@^7.4.3
 │  ├─ cytoscape-cose-bilkent@^4.1.0
 │  ├─ cytoscape-fcose@^2.2.0
@@ -2907,7 +3090,7 @@
 │  ├─ d3@^7.9.0
 │  ├─ dagre-d3-es@7.0.11
 │  ├─ dayjs@^1.11.13
-│  ├─ dompurify@^3.2.4
+│  ├─ dompurify@^3.2.5
 │  ├─ katex@^0.16.9
 │  ├─ khroma@^2.1.0
 │  ├─ lodash-es@^4.17.21
@@ -3027,11 +3210,12 @@
 │  └─ mime-db@1.52.0
 ├─ mime@1.6.0
 ├─ mimic-fn@2.1.0
+├─ mimic-response@3.1.0
 ├─ minimalistic-assert@1.0.1
 ├─ minimalistic-crypto-utils@1.0.1
 ├─ minimatch@3.1.2
 │  ├─ brace-expansion@^1.1.7
-│  └─ brace-expansion@1.1.11
+│  └─ brace-expansion@1.1.12
 │     ├─ balanced-match@^1.0.0
 │     └─ concat-map@0.0.1
 ├─ minimist@1.2.8
@@ -3040,6 +3224,7 @@
 ├─ minizlib@3.0.2
 │  └─ minipass@^7.1.2
 ├─ mitt@3.0.1
+├─ mkdirp-classic@0.5.3
 ├─ mkdirp@3.0.1
 ├─ mlly@1.7.4
 │  ├─ acorn@^8.14.0
@@ -3052,11 +3237,15 @@
 ├─ muggle-string@0.4.1
 ├─ mute-stream@1.0.0
 ├─ nanoid@3.3.11
+├─ napi-build-utils@2.0.0
 ├─ natural-compare@1.4.0
 ├─ negotiator@0.6.4
 ├─ no-case@3.0.4
 │  ├─ lower-case@^2.0.2
 │  └─ tslib@^2.0.3
+├─ node-abi@3.75.0
+│  └─ semver@^7.3.5
+├─ node-addon-api@6.1.0
 ├─ node-fetch@2.7.0
 │  ├─ tr46@0.0.3
 │  ├─ webidl-conversions@3.0.1
@@ -3134,6 +3323,35 @@
 │  ├─ emoji-regex-xs@^1.0.0
 │  ├─ regex-recursion@^6.0.2
 │  └─ regex@^6.0.1
+├─ onnx-proto@4.0.4
+│  ├─ @types/node@24.0.7
+│  │  └─ undici-types@~7.8.0
+│  ├─ protobufjs@^6.8.8
+│  ├─ protobufjs@6.11.4
+│  │  ├─ @protobufjs/aspromise@^1.1.2
+│  │  ├─ @protobufjs/base64@^1.1.2
+│  │  ├─ @protobufjs/codegen@^2.0.4
+│  │  ├─ @protobufjs/eventemitter@^1.1.0
+│  │  ├─ @protobufjs/fetch@^1.1.0
+│  │  ├─ @protobufjs/float@^1.0.2
+│  │  ├─ @protobufjs/inquire@^1.1.0
+│  │  ├─ @protobufjs/path@^1.1.2
+│  │  ├─ @protobufjs/pool@^1.1.0
+│  │  ├─ @protobufjs/utf8@^1.1.0
+│  │  ├─ @types/long@^4.0.1
+│  │  ├─ @types/node@>=13.7.0
+│  │  └─ long@^4.0.0
+│  └─ undici-types@7.8.0
+├─ onnxruntime-common@1.14.0
+├─ onnxruntime-node@1.14.0
+│  └─ onnxruntime-common@~1.14.0
+├─ onnxruntime-web@1.14.0
+│  ├─ flatbuffers@^1.12.0
+│  ├─ guid-typescript@^1.0.9
+│  ├─ long@^4.0.0
+│  ├─ onnx-proto@^4.0.4
+│  ├─ onnxruntime-common@~1.14.0
+│  └─ platform@^1.3.6
 ├─ open@10.1.2
 │  ├─ default-browser@^5.2.1
 │  ├─ define-lazy-prop@^3.0.0
@@ -3211,14 +3429,33 @@
 │  ├─ lru-cache@^10.2.0
 │  └─ minipass@^5.0.0 || ^6.0.2 || ^7.0.0
 ├─ path-to-regexp@0.1.12
+├─ path-type@4.0.0
 ├─ pathe@2.0.3
-├─ pathval@2.0.0
-├─ pbkdf2@3.1.2
-│  ├─ create-hash@^1.1.2
-│  ├─ create-hmac@^1.1.4
-│  ├─ ripemd160@^2.0.1
-│  ├─ safe-buffer@^5.0.1
-│  └─ sha.js@^2.4.8
+├─ pathval@2.0.1
+├─ pbkdf2@3.1.3
+│  ├─ create-hash@~1.1.3
+│  ├─ create-hash@1.1.3
+│  │  ├─ cipher-base@^1.0.1
+│  │  ├─ hash-base@3.1.0
+│  │  │  ├─ inherits@^2.0.4
+│  │  │  ├─ readable-stream@^3.6.0
+│  │  │  └─ safe-buffer@^5.2.0
+│  │  ├─ inherits@^2.0.1
+│  │  ├─ ripemd160@^2.0.0
+│  │  ├─ ripemd160@2.0.2
+│  │  │  ├─ hash-base@^3.0.0
+│  │  │  └─ inherits@^2.0.1
+│  │  └─ sha.js@^2.4.0
+│  ├─ create-hmac@^1.1.7
+│  ├─ hash-base@2.0.2
+│  │  └─ inherits@^2.0.1
+│  ├─ ripemd160@=2.0.1
+│  ├─ ripemd160@2.0.1
+│  │  ├─ hash-base@^2.0.0
+│  │  └─ inherits@^2.0.1
+│  ├─ safe-buffer@^5.2.1
+│  ├─ sha.js@^2.4.11
+│  └─ to-buffer@^1.2.0
 ├─ peberminta@0.9.0
 ├─ perfect-debounce@1.0.0
 ├─ performance-now@2.1.0
@@ -3226,19 +3463,20 @@
 ├─ picomatch@4.0.2
 ├─ pinia@3.0.3
 │  ├─ @vue/devtools-api@^7.7.2
-│  └─ @vue/devtools-api@7.7.6
-│     └─ @vue/devtools-kit@^7.7.6
+│  └─ @vue/devtools-api@7.7.7
+│     └─ @vue/devtools-kit@^7.7.7
 ├─ pkg-dir@5.0.0
 │  └─ find-up@^5.0.0
 ├─ pkg-types@1.3.1
 │  ├─ confbox@^0.1.8
 │  ├─ mlly@^1.7.4
 │  └─ pathe@^2.0.1
-├─ playwright-core@1.52.0
-├─ playwright@1.52.0
+├─ platform@1.3.6
+├─ playwright-core@1.53.1
+├─ playwright@1.53.1
 │  ├─ fsevents@2.3.2
 │  ├─ fsevents@2.3.2
-│  └─ playwright-core@1.52.0
+│  └─ playwright-core@1.53.1
 ├─ pn@1.1.0
 ├─ pngjs@7.0.0
 ├─ points-on-curve@0.2.0
@@ -3250,15 +3488,40 @@
 │  ├─ cssesc@^3.0.0
 │  └─ util-deprecate@^1.0.2
 ├─ postcss-value-parser@4.2.0
-├─ postcss@8.5.4
+├─ postcss@8.5.6
 │  ├─ nanoid@^3.3.11
 │  ├─ picocolors@^1.1.1
 │  └─ source-map-js@^1.2.1
-├─ preact@10.26.8
+├─ preact@10.26.9
+├─ prebuild-install@7.1.3
+│  ├─ chownr@1.1.4
+│  ├─ detect-libc@^2.0.0
+│  ├─ expand-template@^2.0.3
+│  ├─ github-from-package@0.0.0
+│  ├─ minimist@^1.2.3
+│  ├─ mkdirp-classic@^0.5.3
+│  ├─ napi-build-utils@^2.0.0
+│  ├─ node-abi@^3.3.0
+│  ├─ pump@^3.0.0
+│  ├─ rc@^1.2.7
+│  ├─ simple-get@^4.0.0
+│  ├─ tar-fs@^2.0.0
+│  ├─ tar-fs@2.1.3
+│  │  ├─ chownr@^1.1.1
+│  │  ├─ mkdirp-classic@^0.5.2
+│  │  ├─ pump@^3.0.0
+│  │  └─ tar-stream@^2.1.4
+│  ├─ tar-stream@2.2.0
+│  │  ├─ bl@^4.0.3
+│  │  ├─ end-of-stream@^1.4.1
+│  │  ├─ fs-constants@^1.0.0
+│  │  ├─ inherits@^2.0.3
+│  │  └─ readable-stream@^3.1.1
+│  └─ tunnel-agent@^0.6.0
 ├─ prelude-ls@1.1.2
 ├─ prettier-linter-helpers@1.0.0
 │  └─ fast-diff@^1.1.2
-├─ prettier@3.5.3
+├─ prettier@3.6.2
 ├─ pretty-bytes@5.6.0
 ├─ process-nextick-args@2.0.1
 ├─ process@0.11.10
@@ -3277,9 +3540,10 @@
 │  ├─ @protobufjs/pool@^1.1.0
 │  ├─ @protobufjs/utf8@^1.1.0
 │  ├─ @types/node@>=13.7.0
-│  ├─ @types/node@24.0.0
+│  ├─ @types/node@24.0.7
 │  │  └─ undici-types@~7.8.0
 │  ├─ long@^5.0.0
+│  ├─ long@5.3.2
 │  └─ undici-types@7.8.0
 ├─ proxy-addr@2.0.7
 │  ├─ forwarded@0.2.0
@@ -3294,6 +3558,9 @@
 │  ├─ parse-asn1@^5.0.0
 │  ├─ randombytes@^2.0.1
 │  └─ safe-buffer@^5.1.2
+├─ pump@3.0.3
+│  ├─ end-of-stream@^1.1.0
+│  └─ once@^1.3.1
 ├─ punycode@2.3.1
 ├─ qs@6.13.0
 │  └─ side-channel@^1.0.6
@@ -3314,6 +3581,12 @@
 │  ├─ http-errors@2.0.0
 │  ├─ iconv-lite@0.4.24
 │  └─ unpipe@1.0.0
+├─ rc@1.2.8
+│  ├─ deep-extend@^0.6.0
+│  ├─ ini@~1.3.0
+│  ├─ minimist@^1.2.0
+│  ├─ strip-json-comments@~2.0.1
+│  └─ strip-json-comments@2.0.1
 ├─ readable-stream@3.6.2
 │  ├─ inherits@^2.0.3
 │  ├─ string_decoder@^1.1.1
@@ -3420,7 +3693,27 @@
 │  │  ├─ readable-stream@^3.6.0
 │  │  └─ safe-buffer@^5.2.0
 │  └─ inherits@^2.0.1
+├─ roarr@2.15.4
+│  ├─ boolean@^3.0.1
+│  ├─ detect-node@^2.0.4
+│  ├─ globalthis@^1.0.1
+│  ├─ json-stringify-safe@^5.0.1
+│  ├─ semver-compare@^1.0.0
+│  └─ sprintf-js@^1.1.2
 ├─ robust-predicates@3.0.2
+├─ rollup-plugin-copy@3.5.0
+│  ├─ @types/fs-extra@^8.0.1
+│  ├─ colorette@^1.1.0
+│  ├─ fs-extra@^8.1.0
+│  ├─ fs-extra@8.1.0
+│  │  ├─ graceful-fs@^4.2.0
+│  │  ├─ jsonfile@^4.0.0
+│  │  └─ universalify@^0.1.0
+│  ├─ globby@10.0.1
+│  ├─ is-plain-object@^3.0.0
+│  ├─ jsonfile@4.0.0
+│  │  └─ graceful-fs@^4.1.6
+│  └─ universalify@0.1.2
 ├─ rollup-plugin-visualizer@5.14.0
 │  ├─ cliui@8.0.1
 │  │  ├─ string-width@^4.2.0
@@ -3452,29 +3745,28 @@
 │     ├─ string-width@^4.2.3
 │     ├─ y18n@^5.0.5
 │     └─ yargs-parser@^21.1.1
-├─ rollup@4.42.0
-│  ├─ @rollup/rollup-android-arm-eabi@4.42.0
-│  ├─ @rollup/rollup-android-arm64@4.42.0
-│  ├─ @rollup/rollup-darwin-arm64@4.42.0
-│  ├─ @rollup/rollup-darwin-x64@4.42.0
-│  ├─ @rollup/rollup-freebsd-arm64@4.42.0
-│  ├─ @rollup/rollup-freebsd-x64@4.42.0
-│  ├─ @rollup/rollup-linux-arm-gnueabihf@4.42.0
-│  ├─ @rollup/rollup-linux-arm-musleabihf@4.42.0
-│  ├─ @rollup/rollup-linux-arm64-gnu@4.42.0
-│  ├─ @rollup/rollup-linux-arm64-musl@4.42.0
-│  ├─ @rollup/rollup-linux-loongarch64-gnu@4.42.0
-│  ├─ @rollup/rollup-linux-powerpc64le-gnu@4.42.0
-│  ├─ @rollup/rollup-linux-riscv64-gnu@4.42.0
-│  ├─ @rollup/rollup-linux-riscv64-musl@4.42.0
-│  ├─ @rollup/rollup-linux-s390x-gnu@4.42.0
-│  ├─ @rollup/rollup-linux-x64-gnu@4.42.0
-│  ├─ @rollup/rollup-linux-x64-musl@4.42.0
-│  ├─ @rollup/rollup-win32-arm64-msvc@4.42.0
-│  ├─ @rollup/rollup-win32-ia32-msvc@4.42.0
-│  ├─ @rollup/rollup-win32-x64-msvc@4.42.0
-│  ├─ @types/estree@1.0.7
-│  ├─ @types/estree@1.0.7
+├─ rollup@4.44.1
+│  ├─ @rollup/rollup-android-arm-eabi@4.44.1
+│  ├─ @rollup/rollup-android-arm64@4.44.1
+│  ├─ @rollup/rollup-darwin-arm64@4.44.1
+│  ├─ @rollup/rollup-darwin-x64@4.44.1
+│  ├─ @rollup/rollup-freebsd-arm64@4.44.1
+│  ├─ @rollup/rollup-freebsd-x64@4.44.1
+│  ├─ @rollup/rollup-linux-arm-gnueabihf@4.44.1
+│  ├─ @rollup/rollup-linux-arm-musleabihf@4.44.1
+│  ├─ @rollup/rollup-linux-arm64-gnu@4.44.1
+│  ├─ @rollup/rollup-linux-arm64-musl@4.44.1
+│  ├─ @rollup/rollup-linux-loongarch64-gnu@4.44.1
+│  ├─ @rollup/rollup-linux-powerpc64le-gnu@4.44.1
+│  ├─ @rollup/rollup-linux-riscv64-gnu@4.44.1
+│  ├─ @rollup/rollup-linux-riscv64-musl@4.44.1
+│  ├─ @rollup/rollup-linux-s390x-gnu@4.44.1
+│  ├─ @rollup/rollup-linux-x64-gnu@4.44.1
+│  ├─ @rollup/rollup-linux-x64-musl@4.44.1
+│  ├─ @rollup/rollup-win32-arm64-msvc@4.44.1
+│  ├─ @rollup/rollup-win32-ia32-msvc@4.44.1
+│  ├─ @rollup/rollup-win32-x64-msvc@4.44.1
+│  ├─ @types/estree@1.0.8
 │  └─ fsevents@~2.3.2
 ├─ roughjs@4.6.6
 │  ├─ hachure-fill@^0.5.2
@@ -3508,6 +3800,7 @@
 │  ├─ escape-string-regexp@^4.0.0
 │  ├─ htmlparser2@^8.0.0
 │  ├─ is-plain-object@^5.0.0
+│  ├─ is-plain-object@5.0.0
 │  ├─ parse-srcset@^1.0.2
 │  └─ postcss@^8.3.11
 ├─ sass-embedded-android-arm@1.89.2
@@ -3561,6 +3854,7 @@
 ├─ selfsigned@2.4.1
 │  ├─ @types/node-forge@^1.3.0
 │  └─ node-forge@^1
+├─ semver-compare@1.0.0
 ├─ semver@7.7.2
 ├─ send@0.19.0
 │  ├─ debug@2.6.9
@@ -3580,6 +3874,9 @@
 │  ├─ on-finished@2.4.1
 │  ├─ range-parser@~1.2.1
 │  └─ statuses@2.0.1
+├─ serialize-error@7.0.1
+│  ├─ type-fest@^0.13.1
+│  └─ type-fest@0.13.1
 ├─ serialize-javascript@6.0.2
 │  └─ randombytes@^2.1.0
 ├─ serve-static@1.16.2
@@ -3611,6 +3908,15 @@
 │  └─ safe-buffer@^5.0.1
 ├─ shallow-clone@3.0.1
 │  └─ kind-of@^6.0.2
+├─ sharp@0.32.6
+│  ├─ color@^4.2.3
+│  ├─ detect-libc@^2.0.2
+│  ├─ node-addon-api@^6.1.0
+│  ├─ prebuild-install@^7.1.1
+│  ├─ semver@^7.5.4
+│  ├─ simple-get@^4.0.1
+│  ├─ tar-fs@^3.0.4
+│  └─ tunnel-agent@^0.6.0
 ├─ shebang-command@2.0.0
 │  └─ shebang-regex@^3.0.0
 ├─ shebang-regex@3.0.0
@@ -3646,10 +3952,18 @@
 │  └─ side-channel-weakmap@^1.0.2
 ├─ siginfo@2.0.0
 ├─ signal-exit@4.1.0
+├─ simple-concat@1.0.1
+├─ simple-get@4.0.1
+│  ├─ decompress-response@^6.0.0
+│  ├─ once@^1.3.1
+│  └─ simple-concat@^1.0.0
+├─ simple-swizzle@0.2.2
+│  └─ is-arrayish@^0.3.1
 ├─ sirv@3.0.1
 │  ├─ @polka/url@^1.0.0-next.24
 │  ├─ mrmime@^2.0.0
 │  └─ totalist@^3.0.0
+├─ slash@3.0.0
 ├─ smob@1.5.0
 ├─ source-map-js@1.2.1
 ├─ source-map-support@0.5.21
@@ -3659,6 +3973,7 @@
 ├─ sourcemap-codec@1.4.8
 ├─ space-separated-tokens@2.0.2
 ├─ speakingurl@14.0.1
+├─ sprintf-js@1.1.3
 ├─ sshpk@1.18.0
 │  ├─ asn1@~0.2.3
 │  ├─ assert-plus@^1.0.0
@@ -3759,6 +4074,11 @@
 ├─ synckit@0.11.8
 │  └─ @pkgr/core@^0.2.4
 ├─ tabbable@6.2.0
+├─ tar-fs@3.0.10
+│  ├─ bare-fs@^4.0.1
+│  ├─ bare-path@^3.0.0
+│  ├─ pump@^3.0.0
+│  └─ tar-stream@^3.1.5
 ├─ tar-stream@3.1.7
 │  ├─ b4a@^1.6.4
 │  ├─ fast-fifo@^1.2.0
@@ -3776,7 +4096,7 @@
 │  ├─ temp-dir@^2.0.0
 │  ├─ type-fest@^0.16.0
 │  └─ unique-string@^2.0.0
-├─ terser@5.42.0
+├─ terser@5.43.1
 │  ├─ @jridgewell/source-map@^0.3.3
 │  ├─ acorn@^8.14.0
 │  ├─ commander@^2.20.0
@@ -3799,11 +4119,15 @@
 ├─ tinyglobby@0.2.14
 │  ├─ fdir@^6.4.4
 │  └─ picomatch@^4.0.2
-├─ tinypool@1.1.0
+├─ tinypool@1.1.1
 ├─ tinyrainbow@2.0.0
 ├─ tinyspy@4.0.3
 ├─ tmp@0.0.33
 │  └─ os-tmpdir@~1.0.2
+├─ to-buffer@1.2.1
+│  ├─ isarray@^2.0.5
+│  ├─ safe-buffer@^5.2.1
+│  └─ typed-array-buffer@^1.0.3
 ├─ to-json-schema@0.2.5
 │  ├─ lodash.isequal@^4.5.0
 │  ├─ lodash.keys@^4.2.0
@@ -3861,10 +4185,10 @@
 │  ├─ is-typed-array@^1.1.13
 │  ├─ possible-typed-array-names@^1.0.0
 │  └─ reflect.getprototypeof@^1.0.6
-├─ typescript-eslint@8.34.0
-│  ├─ @typescript-eslint/eslint-plugin@8.34.0
-│  ├─ @typescript-eslint/parser@8.34.0
-│  └─ @typescript-eslint/utils@8.34.0
+├─ typescript-eslint@8.35.0
+│  ├─ @typescript-eslint/eslint-plugin@8.35.0
+│  ├─ @typescript-eslint/parser@8.35.0
+│  └─ @typescript-eslint/utils@8.35.0
 ├─ typescript@5.5.4
 ├─ ua-parser-js@1.0.40
 ├─ ufo@1.6.1
@@ -3874,7 +4198,7 @@
 │  ├─ has-symbols@^1.1.0
 │  └─ which-boxed-primitive@^1.1.1
 ├─ undici-types@6.21.0
-├─ undici@7.10.0
+├─ undici@7.11.0
 ├─ unicode-canonical-property-names-ecmascript@2.0.1
 ├─ unicode-match-property-ecmascript@2.0.0
 │  ├─ unicode-canonical-property-names-ecmascript@^2.0.0
@@ -3940,7 +4264,7 @@
 ├─ vfile@6.0.3
 │  ├─ @types/unist@^3.0.0
 │  └─ vfile-message@^4.0.0
-├─ vite-node@3.2.3
+├─ vite-node@3.2.4
 │  ├─ cac@^6.7.14
 │  ├─ debug@^4.4.1
 │  ├─ es-module-lexer@^1.7.0
@@ -3970,14 +4294,14 @@
 │  ├─ debug@^4.1.1
 │  ├─ globrex@^0.1.2
 │  └─ tsconfck@^3.0.3
-├─ vite@6.3.5
+├─ vite@7.0.0
 │  ├─ esbuild@^0.25.0
-│  ├─ fdir@^6.4.4
+│  ├─ fdir@^6.4.6
 │  ├─ fsevents@~2.3.3
 │  ├─ picomatch@^4.0.2
-│  ├─ postcss@^8.5.3
-│  ├─ rollup@^4.34.9
-│  └─ tinyglobby@^0.2.13
+│  ├─ postcss@^8.5.6
+│  ├─ rollup@^4.40.0
+│  └─ tinyglobby@^0.2.14
 ├─ vitepress-plugin-mermaid@2.0.17
 │  └─ @mermaid-js/mermaid-mindmap@^9.3.0
 ├─ vitepress@1.6.3
@@ -4013,8 +4337,8 @@
 │  ├─ @types/markdown-it@^14.1.2
 │  ├─ @vitejs/plugin-vue@^5.2.1
 │  ├─ @vue/devtools-api@^7.7.0
-│  ├─ @vue/devtools-api@7.7.6
-│  │  └─ @vue/devtools-kit@^7.7.6
+│  ├─ @vue/devtools-api@7.7.7
+│  │  └─ @vue/devtools-kit@^7.7.7
 │  ├─ @vue/shared@^3.5.13
 │  ├─ @vueuse/core@^12.4.0
 │  ├─ @vueuse/integrations@^12.4.0
@@ -4053,15 +4377,15 @@
 │  │  ├─ postcss@^8.4.43
 │  │  └─ rollup@^4.20.0
 │  └─ vue@^3.5.13
-├─ vitest@3.2.3
+├─ vitest@3.2.4
 │  ├─ @types/chai@^5.2.2
-│  ├─ @vitest/expect@3.2.3
-│  ├─ @vitest/mocker@3.2.3
-│  ├─ @vitest/pretty-format@^3.2.3
-│  ├─ @vitest/runner@3.2.3
-│  ├─ @vitest/snapshot@3.2.3
-│  ├─ @vitest/spy@3.2.3
-│  ├─ @vitest/utils@3.2.3
+│  ├─ @vitest/expect@3.2.4
+│  ├─ @vitest/mocker@3.2.4
+│  ├─ @vitest/pretty-format@^3.2.4
+│  ├─ @vitest/runner@3.2.4
+│  ├─ @vitest/snapshot@3.2.4
+│  ├─ @vitest/spy@3.2.4
+│  ├─ @vitest/utils@3.2.4
 │  ├─ chai@^5.2.0
 │  ├─ debug@^4.4.1
 │  ├─ expect-type@^1.2.1
@@ -4072,9 +4396,9 @@
 │  ├─ tinybench@^2.9.0
 │  ├─ tinyexec@^0.3.2
 │  ├─ tinyglobby@^0.2.14
-│  ├─ tinypool@^1.1.0
+│  ├─ tinypool@^1.1.1
 │  ├─ tinyrainbow@^2.0.0
-│  ├─ vite-node@3.2.3
+│  ├─ vite-node@3.2.4
 │  ├─ vite@^5.0.0 || ^6.0.0 || ^7.0.0-0
 │  └─ why-is-node-running@^2.3.0
 ├─ vm-browserify@1.1.2
@@ -4091,7 +4415,7 @@
 ├─ vue-component-type-helpers@2.2.10
 ├─ vue-demi@0.14.10
 ├─ vue-draggable-next@2.2.1
-├─ vue-eslint-parser@10.1.3
+├─ vue-eslint-parser@10.1.4
 │  ├─ debug@^4.4.0
 │  ├─ eslint-scope@^8.2.0
 │  ├─ eslint-visitor-keys@^4.2.0
@@ -4111,11 +4435,11 @@
 │  └─ mitt@^3.0.1
 ├─ vue-highlight-words@3.0.1
 │  └─ highlight-words-core@^1.2.2
-├─ vue-i18n@11.1.5
-│  ├─ @intlify/core-base@11.1.5
-│  ├─ @intlify/shared@11.1.5
+├─ vue-i18n@11.1.7
+│  ├─ @intlify/core-base@11.1.7
+│  ├─ @intlify/shared@11.1.7
 │  └─ @vue/devtools-api@^6.5.0
-├─ vue-json-pretty@2.4.0
+├─ vue-json-pretty@2.5.0
 ├─ vue-router@4.5.1
 │  └─ @vue/devtools-api@^6.6.4
 ├─ vue-timeago3@2.3.2
@@ -4125,12 +4449,12 @@
 ├─ vue-tsc@2.2.10
 │  ├─ @volar/typescript@~2.4.11
 │  └─ @vue/language-core@2.2.10
-├─ vue@3.5.16
-│  ├─ @vue/compiler-dom@3.5.16
-│  ├─ @vue/compiler-sfc@3.5.16
-│  ├─ @vue/runtime-dom@3.5.16
-│  ├─ @vue/server-renderer@3.5.16
-│  └─ @vue/shared@3.5.16
+├─ vue@3.5.17
+│  ├─ @vue/compiler-dom@3.5.17
+│  ├─ @vue/compiler-sfc@3.5.17
+│  ├─ @vue/runtime-dom@3.5.17
+│  ├─ @vue/server-renderer@3.5.17
+│  └─ @vue/shared@3.5.17
 ├─ w3c-hr-time@1.0.2
 │  └─ browser-process-hrtime@^1.0.0
 ├─ w3c-xmlserializer@1.1.2
@@ -4145,7 +4469,7 @@
 │  ├─ clone-deep@^4.0.1
 │  ├─ flat@^5.0.2
 │  └─ wildcard@^2.0.1
-├─ webpack-sources@3.3.2
+├─ webpack-sources@3.3.3
 ├─ webpack-virtual-modules@0.5.0
 ├─ whatwg-encoding@1.0.5
 │  └─ iconv-lite@0.4.24
