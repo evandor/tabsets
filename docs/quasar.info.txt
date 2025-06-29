@@ -19,7 +19,7 @@ Important local packages
   vue - 3.5.17 -- The progressive JavaScript framework for building modern web UI.
   vue-router - 4.5.1
   pinia - 3.0.3 -- Intuitive, type safe and flexible Store for Vue
-  vite - 6.3.5 -- Native-ESM powered web dev build tool
+  vite - 7.0.0 -- Native-ESM powered web dev build tool
   vite-plugin-checker - Not installed
   eslint - 9.30.0 -- An AST-based pattern checker for JavaScript.
   esbuild - 0.25.5 -- An extremely fast JavaScript and CSS bundler and minifier.
@@ -38,6 +38,6 @@ Quasar App Extensions
   @quasar/quasar-app-extension-testing-unit-vitest - 1.2.3 -- A Quasar App Extension for running tests with Vitest
 
 Networking
-  Host - 62feb785-a9b2-4c3f-9e36-a44562a8a503.fritz.box
+  Host - 9572be53-e07e-440d-8d05-850e11d58175.fritz.box
   en0 - 192.168.178.104
 

@@ -214,7 +214,8 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     //console.log('selectCurrentTabset', tabsetId)
     await useSelectedTabsetService().setCurrentTabsetId(tabsetId)
 
-    const found = _.find([...tabsets.value.values()] as Tabset[], (k: any) => {
+    const found = _.find([...tabsets.value.values()] as Tabset[], (k: Tabset) => {
+      console.log('checking tabset', k?.id)
       const ts = k || new Tabset('', '', [])
       return ts.id === tabsetId
     })

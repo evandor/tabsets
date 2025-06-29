@@ -1,8 +1,6 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-// Configuration for your app
-// https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from '#q-app/wrappers'
 import 'dotenv/config.js'
