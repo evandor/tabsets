@@ -212,7 +212,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.SAVE_MHTML,
-      'EXPERIMENTAL',
+      'RECOMMENDED_POPUP',
       'Save Page Snapshot',
       'Saves the content of a website as MHTML as a snapshot',
       'o_save',
@@ -365,7 +365,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.READING_MODE,
-      'EXPERIMENTAL',
+      'RECOMMENDED_POPUP',
       'Reading Mode',
       'Analyse tab contents and use the distraction-free Reading Mode if applicable',
       'sym_o_menu_book',

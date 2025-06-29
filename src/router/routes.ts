@@ -134,7 +134,6 @@ const routes: RouteRecordRaw[] = [
       { path: 'pdf/:snapshotId', component: () => import('src/snapshots/pages/MainPanelPdfPage.vue') },
       { path: 'pdf/:tabId/:blobId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },
       { path: 'png/:snapshotId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },
-      // { path: 'readingmode', component: () => import('src/core/pages/mainpanel/MainPanelReadingModePage.vue') },
       { path: 'readingmode/:tabId', component: () => import('src/core/pages/mainpanel/MainPanelReadingModePage.vue') },
       { path: 'restapi/:api', component: () => import('src/core/pages/RestCallResultPage.vue') },
       {
@@ -174,6 +173,8 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+
+  /** TODOS **/
 
   {
     path: '/features/:feature',

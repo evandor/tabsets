@@ -32,6 +32,7 @@ import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { useAuthStore } from 'stores/authStore'
 import { watch } from 'vue'
 import { Router } from 'vue-router'
 
@@ -70,7 +71,6 @@ class AppService {
     if (inBexMode()) {
       chrome.tabs.query({ active: true, currentWindow: true }).then((currentTabs: chrome.tabs.Tab[]) => {
         if (currentTabs.length > 0 && currentTabs[0]!.id) {
-          //console.log('sending Message getExcerpt', currentTabs)
           chrome.tabs
             .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
             .then((payload) => {
@@ -97,6 +97,8 @@ class AppService {
 
   private async initCoreSerivces(quasar: QVueGlobals, router: Router) {
     //console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
+
+    const authenticated = useAuthStore().isAuthenticated()
 
     await useWindowsStore().initialize()
     useWindowsStore().initListeners()
@@ -132,7 +134,7 @@ class AppService {
       )
       useEntityRegistryStore().tabsetRegistry = tsInfo
     })
-    await tabsetsStore.initialize(useDB().tabsetsDb)
+    await tabsetsStore.initialize(authenticated ? useDB().tabsetsDb : useDB().tabsetsDb)
     await useTabsetService().init()
 
     await useTabsStore2().initialize()
@@ -168,8 +170,6 @@ class AppService {
     //useTabsetsUiStore().updateExtensionIcon()
 
     ChromeApi.buildContextMenu('AppService')
-
-    //classification('this is the input text').then((res: any) => console.log('hier!!!', res))
   }
 }
 
