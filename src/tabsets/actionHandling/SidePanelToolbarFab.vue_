@@ -66,6 +66,7 @@
                 currentChromeTab: props.currentChromeTab,
                 element: 'contextmenu',
               })">
+              <!--              <div>{{ l }}</div>-->
               <template v-if="'context' in l">
                 <component
                   :key="l.component.name"

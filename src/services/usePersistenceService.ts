@@ -1,49 +1,45 @@
 import { QVueGlobals } from 'quasar'
+import FirestoreFeaturesPersistence from 'src/ext/features/FirestoreFeaturesPersistence'
 import FeaturesPersistence from 'src/features/persistence/FeaturesPersistence'
-import { LocalStorageFeaturesPersistence } from 'src/features/persistence/LocalStorageFeaturesPersistence'
-import IndexedDbSnapshotPersistence from 'src/snapshots/persistence/IndexedDbSnapshotPersistence'
+import PersistenceService from 'src/services/PersistenceService'
+import FirestoreSnapshotsPersistence from 'src/snapshots/persistence/FirestoreSnapshotsPersistence'
 import SnapshotsPersistence from 'src/snapshots/persistence/SnapshotsPersistence'
-import IndexedDbSpacesStorage from 'src/spaces/persistence/IndexedDbSpacesPersistence'
+import FirestoreSpacesPersistence from 'src/spaces/persistence/FirestoreSpacesPersistence'
 import SpacesPersistence from 'src/spaces/persistence/SpacesPersistence'
-import IndexedDbSuggestionsPersistence from 'src/suggestions/persistence/IndexedDbSuggestionsPersistence'
+import FirestoreSuggestionsPersistence from 'src/suggestions/persistence/FirestoreSuggestionsPersistence'
 import SuggestionsPersistence from 'src/suggestions/persistence/SuggestionsPersistence'
-import CustomPagesPersistence from 'src/tabsets/persistence/cms/CustomPagesPersistence'
-import IndexedDbCustomPagesPersistence from 'src/tabsets/persistence/cms/IndexedDbCustomPagesPersistence'
-import IndexedDbTabsetsGroupsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsGroupsPersistence'
+import FirestoreTabsetsPersistence from 'src/tabsets/persistence/FirestoreTabsetsPersistence'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import { LocalStorageTabsetsPersistence } from 'src/tabsets/persistence/LocalStorageTabsetsPersistence'
-import TabsetsGroupsPersistence from 'src/tabsets/persistence/TabsetsGroupsPersistence'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
-import IndexedDbThumbnailsPersistence from 'src/thumbnails/persistence/IndexedDbThumbnailsPersistence'
+import FirestoreThumbnailsPersistence from 'src/thumbnails/persistence/FirestoreThumbnailsPersistence'
 import ThumbnailsPersistence from 'src/thumbnails/persistence/ThumbnailsPersistence'
 
 export function useDB(quasar: QVueGlobals | undefined = undefined) {
-  const spacesDb: SpacesPersistence = IndexedDbSpacesStorage
-  const tabsetsDb: TabsetsPersistence = IndexedDbTabsetsPersistence
+  const spacesDb: SpacesPersistence = FirestoreSpacesPersistence
+  const tabsetsDb: TabsetsPersistence = FirestoreTabsetsPersistence
+  const localTabsetsDb: TabsetsPersistence = IndexedDbTabsetsPersistence
 
-  const snapshotsDb: SnapshotsPersistence = IndexedDbSnapshotPersistence
-  const suggestionsDb: SuggestionsPersistence = IndexedDbSuggestionsPersistence
-  const thumbnailsDb: ThumbnailsPersistence = IndexedDbThumbnailsPersistence
-  const groupsIndexedDb: TabsetsGroupsPersistence = IndexedDbTabsetsGroupsPersistence
+  const featuresDb: FeaturesPersistence = FirestoreFeaturesPersistence
+
+  const snapshotsDb: SnapshotsPersistence = FirestoreSnapshotsPersistence
+  const suggestionsDb: SuggestionsPersistence = FirestoreSuggestionsPersistence
+  const thumbnailsDb: ThumbnailsPersistence = FirestoreThumbnailsPersistence
+
+  let localDb = undefined as unknown as PersistenceService
 
   let localStorageTabsetsDb: LocalStorageTabsetsPersistence = new LocalStorageTabsetsPersistence()
 
-  let featuresDb: FeaturesPersistence = undefined as unknown as FeaturesPersistence
-  if (quasar) {
-    featuresDb = new LocalStorageFeaturesPersistence(quasar)
-  }
-
-  let pagesDb: CustomPagesPersistence = IndexedDbCustomPagesPersistence
-
   return {
+    //db,
+    localDb,
     spacesDb,
     tabsetsDb,
+    localTabsetsDb,
     localStorageTabsetsDb,
-    featuresDb,
     snapshotsDb,
-    suggestionsDb,
     thumbnailsDb,
-    groupsIndexedDb,
-    pagesDb,
+    featuresDb,
+    suggestionsDb,
   }
 }

@@ -65,7 +65,7 @@ watchEffect(() => {
 
   const sortedMap = new Map<string, Tab[]>()
   for (let i in r) {
-    sortedMap.set(i, r[i]!)
+    sortedMap.set(i, r[i])
   }
   const map3 = new Map([...sortedMap.entries()].sort((a, b) => b[1].length - a[1].length))
   //groupedTabs.value = new Map([...map3.entries()].filter((a) => a[1].length > 1))

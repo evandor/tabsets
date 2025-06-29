@@ -68,11 +68,15 @@
 </template>
 
 <script lang="ts" setup>
+import { doc, DocumentSnapshot, getDoc } from 'firebase/firestore'
 import { LocalStorage, useDialogPluginComponent, useQuasar } from 'quasar'
 import { SHARING_AUTHOR_IDENT } from 'src/boot/constants'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import HelpWidget from 'src/core/widget/HelpWidget.vue'
+import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { ShareWithTabsetCommand } from 'src/tabsets/commands/ShareWithTabsetCommand'
-import { ref } from 'vue'
+import { useAuthStore } from 'stores/authStore'
+import { onMounted, ref } from 'vue'
 
 defineEmits([...useDialogPluginComponent.emits])
 
@@ -92,6 +96,33 @@ const readonly = ref(false)
 const shareWithEmail = ref<string>('')
 const activeInvitations = ref<object[]>([])
 const pendingInvitations = ref<object[]>([])
+
+onMounted(async () => {
+  console.log('checking existing invitations and shares...')
+  const sharingDoc: DocumentSnapshot = await getDoc(
+    doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, 'tabset-shares', props.tabsetId),
+  )
+  activeInvitations.value = []
+  pendingInvitations.value = []
+  const data = sharingDoc.data()
+  if (data) {
+    const sharedWithEmails: string[] = []
+    const keys = Object.keys(data)
+    console.log('data', data, keys)
+    for (const key of keys) {
+      const d = data[key]
+      if (sharedWithEmails.indexOf(d['email']) < 0) {
+        console.log('got doc', d)
+        if (d['status'] === 'pending') {
+          pendingInvitations.value.push(d)
+        } else if (d['status'] !== 'deleted') {
+          activeInvitations.value.push(d)
+        }
+        sharedWithEmails.push(d['email'])
+      }
+    }
+  }
+})
 
 const shareTabset = () => {
   $q.localStorage.set(SHARING_AUTHOR_IDENT, author.value)
