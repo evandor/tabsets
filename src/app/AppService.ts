@@ -44,13 +44,10 @@ class AppService {
   router: Router = null as unknown as Router
   initialized = false
 
-  async init(quasar: QVueGlobals, router: Router, forceRestart = false, user: User | undefined = undefined) {
-    console.log(
-      `%cinitializing AppService: initialized=${this.initialized}, router set=${router !== undefined}`,
-      forceRestart ? 'font-weight:bold' : '',
-    )
+  async init(quasar: QVueGlobals, router: Router, user: User | undefined = undefined) {
+    console.log(`initializing AppService: initialized=${this.initialized}, router set=${router !== undefined}`)
 
-    if (this.initialized && !forceRestart) {
+    if (this.initialized) {
       console.debug('stopping AppService initialization; already initialized and not forcing restart')
       return Promise.resolve()
     }
@@ -165,7 +162,7 @@ class AppService {
     useMessagesStore().initialize()
     useEventsStore().initialize()
 
-    ChromeApi.init(router)
+    ChromeApi.init()
 
     // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
     //   // await groupsStore.initialize(useDB(undefined).db)
@@ -201,7 +198,7 @@ class AppService {
     }
 
     // set badge, text and color
-    useTabsetsUiStore().updateExtensionIcon()
+    //useTabsetsUiStore().updateExtensionIcon()
 
     ChromeApi.buildContextMenu('AppService')
   }

@@ -37,15 +37,18 @@
 </template>
 
 <script lang="ts" setup>
+import { doc, setDoc } from 'firebase/firestore'
 import { useDialogPluginComponent } from 'quasar'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
+import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import NavigationService from 'src/services/NavigationService'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useAuthStore } from 'stores/authStore'
 import { PropType } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -95,6 +98,11 @@ const applySuggestion = async () => {
       if (res.url.startsWith('invitations://')) {
         await useSuggestionsStore().updateSuggestionState(res.id, 'CHECKED')
         const invitationId = res.url.split('invitations://')[1]
+        await setDoc(
+          doc(FirebaseServices.getFirestore(), `users/${useAuthStore().user.uid}/invitations/${invitationId}`),
+          { state: 'accepted' },
+          { merge: true },
+        )
       }
       break
     case 'SWITCH_TABSET':

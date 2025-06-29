@@ -156,22 +156,6 @@ if (inBexMode()) {
   onBeforeUnmount(() => {
     $q.bex.off('reload-current-tabset', BexFunctions.handleReload)
   })
-
-  //   setTimeout(() => {
-  //     chrome.tabs.query({ active: true, currentWindow: true }).then((currentTabs: chrome.tabs.Tab[]) => {
-  //       console.log('currentTab', currentTabs)
-  //       if (currentTabs.length > 0 && currentTabs[0]!.id) {
-  //         chrome.tabs
-  //           .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
-  //           .then((payload) => {
-  //             BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload })
-  //           })
-  //           .catch((err) => {
-  //             console.log('could not handle tab excerpt', err)
-  //           })
-  //       }
-  //     })
-  //   }, 1)
 }
 
 // newtab extension installed?
