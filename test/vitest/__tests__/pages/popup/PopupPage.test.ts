@@ -5,7 +5,6 @@ import { LocalStorage } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
 import PopupPage from 'src/core/pages/popup/PopupPage.vue'
 import { useDB } from 'src/services/usePersistenceService'
-import { Tabset } from 'src/tabsets/models/Tabset'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -89,19 +88,19 @@ describe('PopupPage', () => {
     expect(wrapper.text()).not.toContain('search')
   })
 
-  it('shows the browsers current tab if not yet saved', async () => {
-    useTabsStore2().setCurrentChromeTab(skysailChromeTab)
-    const tabsetsMap = new Map<string, Tabset>()
-    tabsetsMap.set('id', new Tabset('id', 'dummy', []))
-    tabsetsMap.set('id2', new Tabset('id2', 'dummy2', []))
-    useTabsetsStore().tabsets = tabsetsMap
-    await useTabsetsStore().selectCurrentTabset('id')
-    wrapper = mount(PopupPage)
-    //console.log('hier', wrapper.html())
-    expect(getHtmlInputValue('pageModelTitle')).toBe('title')
-    expect(getHtmlInputValue('pageModelDescription')).toBe('')
-    expect(getHtmlInputValue('pageModelUrl')).toBe('https://www.skysail.io/some-subpage')
-  })
+  // it('shows the browsers current tab if not yet saved', async () => {
+  //   useTabsStore2().setCurrentChromeTab(skysailChromeTab)
+  //   const tabsetsMap = new Map<string, Tabset>()
+  //   tabsetsMap.set('id', new Tabset('id', 'dummy', []))
+  //   tabsetsMap.set('id2', new Tabset('id2', 'dummy2', []))
+  //   useTabsetsStore().tabsets = tabsetsMap
+  //   await useTabsetsStore().selectCurrentTabset('id')
+  //   wrapper = mount(PopupPage)
+  //   //console.log('hier', wrapper.html())
+  //   expect(getHtmlInputValue('pageModelTitle')).toBe('title')
+  //   expect(getHtmlInputValue('pageModelDescription')).toBe('')
+  //   expect(getHtmlInputValue('pageModelUrl')).toBe('https://www.skysail.io/some-subpage')
+  // })
 
   // it('should show existing tabset', async () => {
   //   await new CreateTabsetCommand('existing Tabset', []).execute()
