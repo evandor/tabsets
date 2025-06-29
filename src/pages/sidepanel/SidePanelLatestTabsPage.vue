@@ -89,9 +89,7 @@ import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import { onMounted, ref, watchEffect } from 'vue'
 
 const tab = ref('latest_by_access')
-// @ts-expect-error unknown property
 const byAccess = ref<_.Dictionary<Tab[]> | undefined>(undefined)
-// @ts-expect-error unknown property
 const byCreation = ref<_.Dictionary<Tab[]> | undefined>(undefined)
 
 const dateRanges = [
@@ -136,7 +134,6 @@ watchEffect(() => {
 const formatDate = (timestamp: number | undefined) =>
   timestamp ? formatDistance(timestamp, new Date(), { addSuffix: true }) : '?'
 
-// @ts-expect-error unknown property
 const filterDate = (base: _.Dictionary<Tab[]> | undefined, starting: number, ending: number): Tab[] => {
   if (!base) {
     return []

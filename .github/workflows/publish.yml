@@ -24,7 +24,6 @@ jobs:
           touch .env
           echo STAGE=PRD >> .env
           echo LOCALE="en" >> .env
-          echo BACKEND_URL="https://tabsets-72089.web.app" >> .env
           echo TABSETS_PWA_URL="https://pwa.tabsets.net" >> .env
           echo SENTRY_PROJECT_NAME="tabsets" >> .env
           echo SENTRY_DSN="${{ secrets.SENTRY_DNS }}" >> .env

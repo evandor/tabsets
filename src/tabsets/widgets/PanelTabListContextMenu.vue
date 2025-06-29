@@ -12,7 +12,7 @@
             <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
               <q-icon size="xs" name="o_info" color="accent" />
             </q-item-section>
-            <q-item-section>Tab Details (dev)</q-item-section>
+            <q-item-section> Tab Details (dev)</q-item-section>
           </q-item>
           <q-item clickable v-close-popup @click.stop="showTabsJson(props['tab' as keyof object])">
             <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
@@ -20,13 +20,7 @@
             </q-item-section>
             <q-item-section>Tab's JSON</q-item-section>
           </q-item>
-        <q-item clickable v-close-popup @click.stop="showTabsJson(props['tab' as keyof object])">
-          <q-item-section style="padding-right: 0; min-width: 25px; max-width: 25px">
-            <q-icon size="xs" name="o_info" color="accent" />
-          </q-item-section>
-          <q-item-section>Tab's JSON</q-item-section>
-        </q-item>
-      </template>
+        </template>
 
         <q-separator inset />
         <q-item clickable v-close-popup @click.stop="editURL(props['tab' as keyof object])">

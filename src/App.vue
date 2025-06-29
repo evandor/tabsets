@@ -5,21 +5,18 @@
 <script setup lang="ts">
 import { getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk'
 import { TracingInstrumentation } from '@grafana/faro-web-tracing'
-import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth/web-extension'
 import { LocalStorage, setCssVar, useQuasar } from 'quasar'
 import AppService from 'src/app/AppService'
 import { EXTENSION_NAME, NEW_TAB_EXTENSION_ID } from 'src/boot/constants'
 import BexFunctions from 'src/core/communication/BexFunctions'
-import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useLogger } from 'src/core/services/Logger'
 import { useUtils } from 'src/core/services/Utils'
 import { useAppStore } from 'src/core/stores/appStore'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
-import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const version = import.meta.env.PACKAGE_VERSION
 
@@ -50,15 +47,12 @@ if (useSettingsStore().isDisabled('noMonitoring') && !process.env.DEV) {
 
 const $q = useQuasar()
 const router = useRouter()
-const route = useRoute()
 const { inBexMode, setupConsoleInterceptor } = useUtils()
 const platform = $q.platform
 LocalStorage.set('platform', platform)
 
-const { handleError } = useNotificationHandler()
-
 // TODO only in prod?
-if (process.env.TABSETS_STAGE !== 'EMULATOR') {
+if (process.env.TABSETS_STAGE !== 'DEV') {
   setupConsoleInterceptor(useUiStore())
 }
 
@@ -68,50 +62,9 @@ useAppStore().init()
 
 const { info } = useLogger()
 
-FirebaseServices.init()
-
-const auth = FirebaseServices.getAuth()
-
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    console.log('%conAuthStateChanged: about to log in', 'border:1px solid green', user?.email)
-
-    try {
-      await AppService.init($q, router, true, user)
-      // info(`tabsets-pro started: mode=${process.env.MODE}, version=${import.meta.env.PACKAGE_VERSION}`)
-      //FirebaseServices.startRealtimeDbListeners(user.uid)
-    } catch (error: any) {
-      console.log('%ccould not initialize appService due to ' + error, 'background-color:orangered')
-      console.error('error', error, typeof error, error.code, error.message)
-      handleError(error.code)
-      return Promise.resolve()
-    }
-  } else {
-    // User is signed out
-    console.log('%conAuthStateChanged: logged out', 'border:1px solid green')
-    if (inBexMode()) {
-      if (!(route.fullPath.startsWith('/pwa/imp/') || route.fullPath.startsWith('/mainpanel/login'))) {
-        const welcomePageHasBeenShown = LocalStorage.getItem('ui.welcomepro.shown') as boolean
-        if (welcomePageHasBeenShown) {
-          await router.push('/sidepanel/login')
-        } else {
-          console.log('redirecting to /sidepanel/welcomepro')
-          await router.push('/sidepanel/welcomepro')
-        }
-      }
-    } else {
-      const auth = getAuth()
-      signInAnonymously(auth)
-        .then((user: any) => {
-          console.log('logged in anonymously', user)
-        })
-        .catch((err: any) => {
-          console.warn('error logging ')
-        })
-    }
-  }
-})
+// // https://stackoverflow.com/questions/9768444/possible-eventemitter-memory-leak-detected
+// const emitter = new EventEmitter()
+// emitter.setMaxListeners(12)
 
 let useDarkMode: string = $q.localStorage.getItem('darkMode') || ('auto' as string)
 
@@ -131,7 +84,7 @@ if (useDarkMode === 'true') {
 if (useDarkMode === 'true') {
   setCssVar('primary', '#D9E8F5')
   setCssVar('secondary', '#26A69A')
-  setCssVar('accent', '#9C27B0')
+  setCssVar('accent', '#aab9df')
   setCssVar('dark', '#1d1d1d')
   setCssVar('positive', '#21BA45')
   setCssVar('negative', '#C10015')
@@ -156,22 +109,6 @@ if (inBexMode()) {
   onBeforeUnmount(() => {
     $q.bex.off('reload-current-tabset', BexFunctions.handleReload)
   })
-
-  //   setTimeout(() => {
-  //     chrome.tabs.query({ active: true, currentWindow: true }).then((currentTabs: chrome.tabs.Tab[]) => {
-  //       console.log('currentTab', currentTabs)
-  //       if (currentTabs.length > 0 && currentTabs[0]!.id) {
-  //         chrome.tabs
-  //           .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
-  //           .then((payload) => {
-  //             BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload })
-  //           })
-  //           .catch((err) => {
-  //             console.log('could not handle tab excerpt', err)
-  //           })
-  //       }
-  //     })
-  //   }, 1)
 }
 
 // newtab extension installed?

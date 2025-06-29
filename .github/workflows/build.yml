@@ -1,6 +1,6 @@
 name: 'build'
 on:
-#  pull_request:
+  pull_request:
 #    branches:
 #      - master
 #      - main
@@ -27,19 +27,31 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+      - name: 'Create env file'
+        run: |
+          touch .env
+          echo STAGE=PRD >> .env
+          echo TABSETS_PWA_URL="https://pwa.tabsets.net" >> .env
+          echo SENTRY_PROJECT_NAME="tabsets" >> .env
+          echo SENTRY_DSN="${{ secrets.SENTRY_DNS }}" >> .env
+          echo HOST="chrome.extension" >> .env
+          echo LOCALE="en" >> .env
+          echo GRAFANA_LOKI_USER="1188330" >> .env
+          echo GRAFANA_METRICS_USER="2385306" >> .env
+          echo GRAFANA_LOKI_TOKEN="${{ secrets.GRAFANA_LOKI_TOKEN }}" >> .env
+          echo GRAFANA_METRICS_KEY="${{ secrets.GRAFANA_METRICS_KEY }}" >> .env
+          echo GRAFANA_FARO_COLLECTOR_URL="https://faro-collector-prod-eu-west-2.grafana.net/collect/937ed141737572b1e1823cfbe9895c7b" >> .env
       - name: 'Install Deps'
         run: yarn install
-#      - name: 'Test'
-#        run: npx vitest --coverage
-#      - name: 'Report Coverage'
-#        if: always() # Also generate the report if tests are failing
-#        uses:  davelosert/vitest-coverage-report-action@v2
+      - name: 'Test'
+        run: npx vitest --coverage
+      - name: 'Report Coverage'
+        if: always() # Also generate the report if tests are failing
+        uses:  davelosert/vitest-coverage-report-action@v2
 
-      - run: npm run "build bex (publish)"
-#      - run: npx playwright install
-#      - run: npm run test:e2e
+      - run: npm run "build bex chrome"
+
 #      - uses: actions/upload-artifact@v4
-##        if: ${{ !cancelled() }}
 #        with:
 #          name: playwright-report
 #          path: playwright-report/

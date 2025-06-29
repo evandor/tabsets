@@ -445,17 +445,6 @@ export class AppFeatures {
     new Feature(FeatureIdent.VISUALIZATIONS, 'EXPERIMENTAL', 'Visualizations', 'mind-map style', 'sym_o_graph_5', '', [
       'all',
     ]),
-    new Feature(
-      FeatureIdent.TABSETS_SHARING,
-      'OPTIONAL',
-      'Sharing Tabsets',
-      'Share tabsets publicly.',
-      'o_ios_share',
-      '',
-      ['all'],
-      [],
-      true,
-    ),
   ]
 
   getFeature(f: FeatureIdent): Feature | undefined {

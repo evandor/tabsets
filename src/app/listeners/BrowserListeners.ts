@@ -1,62 +1,20 @@
-import { LocalStorage, uid } from 'quasar'
+import { uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { useContentStore } from 'src/content/stores/contentStore'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
-import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Tab } from 'src/tabsets/models/Tab'
-import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
-import { ChangeInfo } from 'src/tabsets/models/Tabset'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 
 const { addToTabsetId } = useTabsetService()
 
 const { inBexMode, addListenerOnce } = useUtils()
-
-let timer: { time: number; start: number; url: string } = { time: 0, start: new Date().getTime(), url: '' }
-
-async function stopTimer(url: string) {
-  const duration = new Date().getTime() - timer.start
-  //console.log(`stopping timer for ${url}: ${timer.time} + ${duration}`)
-  const tabsForUrl: TabAndTabsetId[] = useTabsetsStore().tabsForUrl(url)
-  for (const tabWithTsId of tabsForUrl) {
-    //console.log('found', tabWithTsId)
-    tabWithTsId.tab.readingTime += Math.min(duration, 60000)
-    const ts = useTabsetsStore().getTabset(tabWithTsId.tabsetId)
-    if (ts) {
-      //console.log('saving', ts)
-      await useTabsetService().saveTabset(ts, new ChangeInfo('tab', 'edited', tabWithTsId.tab.id, tabWithTsId.tab.url))
-    }
-  }
-  if (tabsForUrl.length === 0) {
-    timers.set(url, timer.time + duration)
-  }
-  //console.log('timers', timers)
-}
-
-function startTimer(url: string | undefined) {
-  if (url) {
-    if (timer.url !== url) {
-      stopTimer(timer.url) // stop 'old' timer
-    }
-    timer = { start: new Date().getTime(), url: url, time: timers.get(url) || 0 }
-    //console.log('started timer', timer)
-  }
-}
-
-function stopTimers() {
-  timer = { time: 0, start: new Date().getTime(), url: '' }
-}
-
-const timers = new Map<string, number>()
 
 async function setCurrentTab() {
   const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
@@ -106,6 +64,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'reload-entities' ||
     request.name === 'api-changed' ||
     request.name === 'refresh-store' ||
+    request.name === 'progress-indicator' ||
     request.name === 'tabsets.app.change.currentTabset' ||
     request.action === 'highlight-annotation'
   )
@@ -125,31 +84,6 @@ function runOnNotificationClick(notificationId: string, buttonIndex: number) {
       default: // ignore
         useSuggestionsStore().updateSuggestionState(notificationId, 'IGNORED')
     }
-  }
-}
-
-async function checkSwitchTabsetSuggestion(windowId: number) {
-  if (!LocalStorage.getItem('ui.overlapIndicator')) {
-    return Promise.resolve()
-  }
-  const suggestedTabsetAndFolder = await useTabsStore2().suggestTabsetAndFolder(0.6)
-  if (suggestedTabsetAndFolder) {
-    console.log('suggestedTabsetAndFolder', suggestedTabsetAndFolder)
-    const suggestion = new Suggestion(
-      uid(), //'SWITCH_TABSET',
-      'Switch Tabset?',
-      'Your currently open tabs match a different tabset: ' +
-        suggestedTabsetAndFolder?.tabsetName +
-        '. Do you want to switch to this tabset?',
-      'tabset://' + suggestedTabsetAndFolder?.tabsetId + '/' + suggestedTabsetAndFolder?.folder,
-      'SWITCH_TABSET',
-    )
-    //  .setImage('o_tab')
-    // .setState('PRIO')
-    //  .setWindowId(windowId)
-    suggestion.applyLabel = 'switch'
-    suggestion.windowId = windowId
-    await useSuggestionsStore().addSuggestion(suggestion)
   }
 }
 
@@ -182,16 +116,16 @@ class BrowserListeners {
 
   private lastTabUpdates = new Queue<[number, chrome.tabs.TabChangeInfo]>(10)
 
-  private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) =>
-    this.onUpdated(number, info, tab)
-  private onMovedListener = (number: number, info: chrome.tabs.TabMoveInfo) => this.onMoved(number, info)
-  private onRemovedListener = (number: number, info: chrome.tabs.TabRemoveInfo) => this.onRemoved(number, info)
-  private onReplacedListener = (n1: number, n2: number) => this.onReplaced(n1, n2)
-  private onActivatedListener = (info: chrome.tabs.TabActiveInfo) => this.onActivated(info)
+  // private onUpdatedListener = (number: number, info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) =>
+  //   this.onUpdated(number, info, tab)
+  // private onMovedListener = (number: number, info: chrome.tabs.TabMoveInfo) => this.onMoved(number, info)
+  // private onRemovedListener = (number: number, info: chrome.tabs.TabRemoveInfo) => this.onRemoved(number, info)
+  // private onReplacedListener = (n1: number, n2: number) => this.onReplaced(n1, n2)
+  // private onActivatedListener = (info: chrome.tabs.TabActiveInfo) => this.onActivated(info)
   private onMessageListener = (request: any, sender: chrome.runtime.MessageSender, sendResponse: any) =>
     this.onMessage(request, sender, sendResponse)
 
-  private onWindowFocusChangedListener = (windowId: number) => this.onWindowFocusChanged(windowId)
+  // private onWindowFocusChangedListener = (windowId: number) => this.onWindowFocusChanged(windowId)
   private onWindowRemovedListener = (windowId: number) => this.onWindowRemoved(windowId)
 
   private onCommandListener = (command: string) => {
@@ -221,17 +155,14 @@ class BrowserListeners {
 
       // --- tab listeners ---
       //chrome.tabs.onCreated.addListener(this.onCreatedListener)
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      addListenerOnce(chrome.tabs.onUpdated, this.onUpdatedListener)
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      addListenerOnce(chrome.tabs.onActivated, this.onActivatedListener)
-      addListenerOnce(chrome.tabs.onMoved, this.onMovedListener)
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      addListenerOnce(chrome.tabs.onRemoved, this.onRemovedListener)
-      addListenerOnce(chrome.tabs.onReplaced, this.onReplacedListener)
+      // addListenerOnce(chrome.tabs.onUpdated, this.onUpdatedListener)
+      // addListenerOnce(chrome.tabs.onActivated, this.onActivatedListener)
+      // addListenerOnce(chrome.tabs.onMoved, this.onMovedListener)
+      // addListenerOnce(chrome.tabs.onRemoved, this.onRemovedListener)
+      // addListenerOnce(chrome.tabs.onReplaced, this.onReplacedListener)
 
       // --- window listeners ---
-      addListenerOnce(chrome.windows.onFocusChanged, this.onWindowFocusChangedListener)
+      // addListenerOnce(chrome.windows.onFocusChanged, this.onWindowFocusChangedListener)
       addListenerOnce(chrome.windows.onRemoved, this.onWindowRemovedListener)
 
       // --- other listeners ---
@@ -258,63 +189,6 @@ class BrowserListeners {
     }
   }
 
-  // #region snippet
-  async onUpdated(number: number, info: chrome.tabs.TabChangeInfo, chromeTab: chrome.tabs.Tab) {
-    //console.debug(`tabUpdate: ${chromeTab.id} - ${chromeTab.url?.substring(0, 30)}`, info)
-    //this.lastTabUpdates.add([number, info])
-    // if (this.lastTabUpdates.hasRepetition([number, info])) {
-    //   console.log('stopping repetition in onUpdated')
-    //   return
-    // }
-    await setCurrentTab()
-    if (this.ignoreUrl(chromeTab.url) || info.status !== 'complete') {
-      return
-    }
-
-    if (
-      chromeTab.id &&
-      LocalStorage.getItem('ui.toolbar.integration') === 'all' &&
-      chromeTab.url?.startsWith('https://')
-    ) {
-      //if (this.injectList.filter((n: number) => n === chromeTab.id).length === 0) {
-      this.injectList.push(chromeTab.id)
-      console.log(`injecting into ${chromeTab.id}`, this.injectList, info)
-      chrome.scripting
-        .executeScript({
-          target: { tabId: chromeTab.id, allFrames: false },
-          files: ['tabsets-toolbar-contentscript.js'],
-          injectImmediately: true,
-        })
-        .catch((err) => console.log('executeScript error:', err))
-      //}
-    }
-    useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
-    useTabsetService().urlWasActivated(chromeTab.url)
-    useTabsetsUiStore().updateExtensionIcon(chromeTab.id)
-
-    await checkSwitchTabsetSuggestion(chromeTab.windowId)
-  }
-
-  // #endregion snippet
-
-  // handle existing tabs - contained in onTabUpdate before
-  // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-  //   const matchingTabs = useTabsetsStore().tabsForUrl(chromeTab.url || '')
-  //   for (const tabAndTabsetId of matchingTabs) {
-  //     // we care only about actually setting a group, not about removal
-  //     if (info.groupId && info.groupId >= 0) {
-  //       console.log(' --- updating existing tabs for url: ', chromeTab.url, tabAndTabsetId, info)
-  //       tabAndTabsetId.tab.groupId = info.groupId
-  //       tabAndTabsetId.tab.groupName = useGroupsStore().currentGroupForId(info.groupId)?.title || '???'
-  //       tabAndTabsetId.tab.updated = new Date().getTime()
-  //       const tabset = useTabsetsStore().tabsetFor(tabAndTabsetId.tab.id)
-  //       if (tabset) {
-  //         await useTabsetService().saveTabset(tabset)
-  //       }
-  //     }
-  //   }
-  // }
-
   async onRemoved(number: number, info: chrome.tabs.TabRemoveInfo) {
     if (info.isWindowClosing) {
       // ignore single closing of tab if the whole window is about to be closed.
@@ -322,43 +196,6 @@ class BrowserListeners {
     }
     //console.debug(`==> tabRemoved: window ${info.windowId}`)
     // await checkSwitchTabsetSuggestion(info.windowId)
-  }
-
-  onReplaced(n1: number, n2: number) {
-    console.log(`onTabReplaced: tab ${n1} replaced with ${n2}`)
-    // useTabsStore2().loadTabs('onReplaced')
-  }
-
-  // #region snippet2
-  async onActivated(info: chrome.tabs.TabActiveInfo) {
-    try {
-      const currentBrowserWindow = await chrome.windows.getCurrent()
-      console.debug(`tabActivated: ${JSON.stringify(info)}`, currentBrowserWindow.id === info.windowId)
-      if (info.windowId !== currentBrowserWindow.id) {
-        return
-      }
-      await setCurrentTab()
-      useTabsetsUiStore().updateExtensionIcon(info.tabId)
-      const tab: chrome.tabs.Tab = await chrome.tabs.get(info.tabId) //, (tab) => {
-      if (chrome.runtime.lastError) {
-        console.warn('got runtime error:', chrome.runtime.lastError)
-      }
-      // reset content store
-      await useContentStore().resetFor(tab)
-
-      useTabsetService().urlWasActivated(tab.url)
-      useTabsetsUiStore().setMatchingTabsFor(tab.url)
-
-      startTimer(tab.url)
-    } catch (err: any) {
-      console.log('got error in onActivated', err)
-    }
-  }
-
-  onWindowFocusChanged(windowId: number) {
-    if (windowId === chrome.windows.WINDOW_ID_NONE) {
-      stopTimers()
-    }
   }
 
   onWindowRemoved(windowId: number) {

@@ -126,29 +126,16 @@
         <!--          tooltip="Show tags viewer"-->
         <!--          :restricted="$q.platform.is.chrome" />-->
 
-        <div v-if="useAuthStore().user">
-          <!--          <q-icon name="person" />-->
-          <span class="cursor-pointer">{{ useAuthStore().user.email }}</span>
-          <q-menu :offset="[0, 7]">
-            <q-list style="min-width: 200px">
-              <q-item clickable @click="logout()">Logout</q-item>
-            </q-list>
-          </q-menu>
-        </div>
-
         <div>
-          <q-btn @click="toggleSettings" flat size="12px" class="q-mr-md" icon="o_settings"></q-btn>
+          <q-btn @click="toggleSettings" flat size="12px" class="q-mr-md" icon="o_settings"> </q-btn>
           <q-menu :offset="[0, 7]">
             <q-list style="min-width: 200px">
               <q-item clickable @click="router.push('/mainpanel/settings')">Settings</q-item>
               <!--              <q-item clickable @click="tabsClicked(DrawerTabs.FEATURES)" v-close-popup>-->
               <!--                Activate more Features-->
               <!--              </q-item>-->
-              <q-item v-if="browserExtensionAvailable()" clickable @click="openBrowserExtensionPage()" v-close-popup
-                >Install Browser Extension
-              </q-item>
-              <q-item clickable @click="showImportDialog" v-close-popup> Import Tabsets</q-item>
-              <q-item clickable @click="showExportDialog" v-close-popup> Export Tabsets</q-item>
+              <q-item clickable @click="showImportDialog" v-close-popup> Import Tabsets </q-item>
+              <q-item clickable @click="showExportDialog" v-close-popup> Export Tabsets </q-item>
             </q-list>
           </q-menu>
         </div>
@@ -183,7 +170,7 @@
 
 <script setup lang="ts">
 import _ from 'lodash'
-import { openURL, useMeta, useQuasar } from 'quasar'
+import { useMeta, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { EXTENSION_NAME } from 'src/boot/constants'
 import DrawerRight from 'src/core/components/DrawerRight.vue'
@@ -204,7 +191,6 @@ import ExportDialog from 'src/tabsets/dialogues/ExportDialog.vue'
 import ImportDialog from 'src/tabsets/dialogues/ImportDialog.vue'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { DrawerTabs, useUiStore } from 'src/ui/stores/uiStore'
-import { useAuthStore } from 'stores/authStore'
 import { ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -282,35 +268,4 @@ const suggestionsLabel = () => {
 }
 
 const toggleSettings = () => (settingsClicked.value = !settingsClicked.value)
-
-const login = () => router.push('/mainpanel/login')
-
-const logout = () => {
-  useAuthStore()
-    .logout()
-    .then(() => {
-      // router.push("/refresh/sidepanel")
-    })
-    .catch((err: any) => {
-      console.log('error logging out', err)
-    })
-}
-
-const browserExtensionAvailable = () => {
-  if ($q.platform.is.chrome || $q.platform.is.firefox) {
-    return true
-  }
-  return false
-}
-
-const openBrowserExtensionPage = () => {
-  if ($q.platform.is.chrome) {
-    openURL('https://chromewebstore.google.com/detail/tabsets-pro-alpha/ecbacdfmckaodmhiliabojgkpkdikiac')
-  }
-  if ($q.platform.is.firefox) {
-    openURL(
-      'https://addons.mozilla.org/en-US/firefox/addon/tabsets/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search',
-    )
-  }
-}
 </script>

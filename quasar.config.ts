@@ -64,15 +64,12 @@ export default defineConfig((ctx) => {
       // analyze: true,
       env: {
         BUILD_TIMESTAMP: new Date().toISOString().split('T')[0],
-        //BACKEND_URL: process.env.BACKEND_URL,
-        PWA_BACKEND_URL: process.env.PWA_BACKEND_URL,
         HOST: process.env.HOST,
 
         //TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
         TABSETS_STAGE: process.env.STAGE,
         LOCALE: process.env.LOCALE,
         SENTRY_DSN: process.env.SENTRY_DSN,
-        STRIPE_CUSTOMER_PORTAL: process.env.STRIPE_CUSTOMER_PORTAL,
         GRAFANA_LOKI_USER: process.env.GRAFANA_LOKI_USER,
         GRAFANA_LOKI_TOKEN: process.env.GRAFANA_LOKI_TOKEN,
         GRAFANA_METRICS_USER: process.env.GRAFANA_METRICS_USER,
@@ -153,7 +150,7 @@ export default defineConfig((ctx) => {
             authToken: process.env.SENTRY_AUTH_TOKEN,
             org: 'skysail-dk',
             disable: ctx.dev,
-            project: 'tabsets-pro',
+            project: 'tabsets',
           },
         ],
       ],
@@ -276,7 +273,7 @@ export default defineConfig((ctx) => {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'tabsets-pro',
+        appId: 'quasar-project',
       },
     },
 

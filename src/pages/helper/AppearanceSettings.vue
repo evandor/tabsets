@@ -4,7 +4,7 @@
       {{ $t('settings_adjust_general_appearance') }}
     </q-banner>
 
-    <div class="row">
+    <div class="row" v-if="props.dense">
       <InfoLine :label="$t('dark_mode')">
         <q-radio v-model="darkMode" val="auto" :label="$t('Auto')" />
         <q-radio v-model="darkMode" val="true" :label="$t('enabled')" />
@@ -13,234 +13,226 @@
       </InfoLine>
     </div>
 
-    <div class="row">
-      <div class="col-3"></div>
-      <div class="col-9">
-        <hr />
-      </div>
-    </div>
-
-    <div class="row">
-      <InfoLine :label="$t('keyboard_shortcuts')">
-        <div
-          class="text-accent cursor-pointer"
-          @click="NavigationService.openSingleTab('chrome://extensions/shortcuts')">
-          {{ $t('click_here') }}
+    <template v-if="!dense">
+      <div class="row">
+        <div class="col-3"></div>
+        <div class="col-9">
+          <hr />
         </div>
-      </InfoLine>
-
-      <div class="col-3">{{ $t('language') }} ({{ $t('experimental') }})</div>
-      <div class="col-7">
-        <!--        <q-select-->
-        <!--          v-model="locale"-->
-        <!--          :options="localeOptions"-->
-        <!--          dense-->
-        <!--          borderless-->
-        <!--          emit-value-->
-        <!--          map-options-->
-        <!--          options-dense-->
-        <!--          style="min-width: 150px" />-->
       </div>
-      <div class="col"></div>
-    </div>
 
-    <div class="row">
-      <div class="col-3"></div>
-      <div class="col-9">
-        <hr />
+      <div class="row" v-if="!dense">
+        <InfoLine :label="$t('keyboard_shortcuts')">
+          <div
+            class="text-accent cursor-pointer"
+            @click="NavigationService.openSingleTab('chrome://extensions/shortcuts')">
+            {{ $t('click_here') }}
+          </div>
+        </InfoLine>
+
+        <div class="col-3">{{ $t('language') }} ({{ $t('experimental') }})</div>
+        <div class="col-7"></div>
+        <div class="col"></div>
       </div>
-    </div>
 
-    <div class="row items-baseline">
-      <InfoLine label="UI Density">
-        <q-radio v-model="density" :val="'dense'" label="Dense" />
-        <q-radio v-model="density" :val="'thin'" label="Light (Default)" />
-      </InfoLine>
-    </div>
-
-    <div class="row">
-      <div class="col-3"></div>
-      <div class="col-9">
-        <hr />
+      <div class="row">
+        <div class="col-3"></div>
+        <div class="col-9">
+          <hr />
+        </div>
       </div>
-    </div>
 
-    <div class="row items-baseline">
-      <InfoLine label="Quick Access Menu">
-        <q-checkbox v-model="quickAccessSearch" label="Search" />
-      </InfoLine>
-    </div>
-
-    <div class="row">
-      <div class="col-3"></div>
-      <div class="col-9">
-        <hr />
+      <div class="row items-baseline">
+        <InfoLine label="UI Density">
+          <q-radio v-model="density" :val="'dense'" label="Dense" />
+          <q-radio v-model="density" :val="'thin'" label="Light (Default)" />
+        </InfoLine>
       </div>
-    </div>
 
-    <div class="row items-baseline">
-      <InfoLine label="Font Size">
-        <q-radio v-model="fontsize" :val="FontSize.SMALLER" label="Smaller" />
-        <q-radio v-model="fontsize" :val="FontSize.SMALL" label="Small" />
-        <q-radio v-model="fontsize" :val="FontSize.DEFAULT" label="Default Size" />
-        <q-radio v-model="fontsize" :val="FontSize.LARGE" label="Large" />
-        <q-radio v-model="fontsize" :val="FontSize.LARGER" label="Larger" />
-      </InfoLine>
+      <!--    <div class="row">-->
+      <!--      <div class="col-3"></div>-->
+      <!--      <div class="col-9">-->
+      <!--        <hr />-->
+      <!--      </div>-->
+      <!--    </div>-->
 
-      <InfoLine label="Toolbar Integration" helpLink="https://docs.tabsets.net/tabsets-toolbar">
-        <q-radio v-model="toolbarIntegration" val="none" label="None" />
-        <q-radio v-model="toolbarIntegration" val="tabsets" label="Tabsets (default)" />
-        <q-radio v-model="toolbarIntegration" val="all" label="All Websites" />
-      </InfoLine>
-
-      <InfoLine label="Folder Appearance">
-        <q-radio v-model="folderAppearance" val="expand" label="Expand (experimental)" />
-        <q-radio v-model="folderAppearance" val="goInto" label="Go into (Default)" />
-      </InfoLine>
-    </div>
-
-    <div class="row">
-      <div class="col-3"></div>
-      <div class="col-9">
-        <hr />
-      </div>
-    </div>
-
-    <div class="row items-baseline">
-      <InfoLine label="Tab Detail Level (default)">
-        <q-radio v-model="detailLevel" :val="'MINIMAL'" label="Minimal Details" />
-        <q-radio v-model="detailLevel" :val="'SOME'" label="Some Details" />
-        <q-radio v-model="detailLevel" :val="'MAXIMAL'" label="All Details" />
-      </InfoLine>
-
-      <!--      <InfoLine label="">-->
-      <!--        <q-checkbox v-model="detailLevelPerTabset" :label="$t('individually_per_tabset')" />-->
+      <!--    <div class="row items-baseline">-->
+      <!--      <InfoLine label="Quick Access Menu">-->
+      <!--        <q-checkbox v-model="quickAccessSearch" label="Search" />-->
       <!--      </InfoLine>-->
+      <!--    </div>-->
 
-      <InfoLine label="URLs">
-        <q-checkbox v-model="fullUrls" :label="$t('show_full_url')" />
-      </InfoLine>
-    </div>
+      <div class="row">
+        <div class="col-3"></div>
+        <div class="col-9">
+          <hr />
+        </div>
+      </div>
 
-    <div class="row items-baseline">
-      <div class="col-3"></div>
-      <div class="col-9">
-        <hr />
-      </div>
-    </div>
+      <div class="row items-baseline">
+        <InfoLine label="Font Size">
+          <q-radio v-model="fontsize" :val="FontSize.SMALLER" label="Smaller" />
+          <q-radio v-model="fontsize" :val="FontSize.SMALL" label="Small" />
+          <q-radio v-model="fontsize" :val="FontSize.DEFAULT" label="Default Size" />
+          <q-radio v-model="fontsize" :val="FontSize.LARGE" label="Large" />
+          <q-radio v-model="fontsize" :val="FontSize.LARGER" label="Larger" />
+        </InfoLine>
 
-    <div class="row items-baseline">
-      <InfoLine label="Show Recent Tabsets list">
-        <q-checkbox
-          v-model="showRecentTabsetsList"
-          label="The last couple of tabsets you opened will be displayed for quick access" />
-      </InfoLine>
+        <InfoLine label="Toolbar Integration" helpLink="https://docs.tabsets.net/tabsets-toolbar">
+          <q-radio v-model="toolbarIntegration" val="none" label="None" />
+          <q-radio v-model="toolbarIntegration" val="tabsets" label="Tabsets (default)" />
+          <q-radio v-model="toolbarIntegration" val="all" label="All Websites" />
+        </InfoLine>
 
-      <InfoLine label="Overlap Indicator">
-        <q-checkbox
-          v-model="overlapIndicator"
-          label="Display how similar the current tabset and your current tabs are" />
-      </InfoLine>
-    </div>
+        <InfoLine label="Folder Appearance">
+          <q-radio v-model="folderAppearance" val="expand" label="Expand (experimental)" />
+          <q-radio v-model="folderAppearance" val="goInto" label="Go into (Default)" />
+        </InfoLine>
+      </div>
 
-    <!--    <div-->
-    <!--      class="row items-baseline q-ma-md q-gutter-md"-->
-    <!--      v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">-->
-    <!--      <div class="col-3">-->
-    <!--        {{ $t('tab_switching_time') }}-->
-    <!--      </div>-->
-    <!--      <div class="col-9">-->
-    <!--        <q-select-->
-    <!--          :label="$t('tab_switcher_settings')"-->
-    <!--          filled-->
-    <!--          v-model="autoSwitcherOption"-->
-    <!--          :options="autoSwitcherOptions"-->
-    <!--          map-options-->
-    <!--          emit-value-->
-    <!--          style="width: 250px" />-->
-    <!--      </div>-->
-    <!--    </div>-->
+      <div class="row">
+        <div class="col-3"></div>
+        <div class="col-9">
+          <hr />
+        </div>
+      </div>
 
-    <div class="row">
-      <div class="col-3"></div>
-      <div class="col-9">
-        <hr />
-      </div>
-    </div>
+      <div class="row items-baseline">
+        <InfoLine label="Tab Detail Level (default)">
+          <q-radio v-model="detailLevel" :val="'MINIMAL'" label="Minimal Details" />
+          <q-radio v-model="detailLevel" :val="'SOME'" label="Some Details" />
+          <q-radio v-model="detailLevel" :val="'MAXIMAL'" label="All Details" />
+        </InfoLine>
 
-    <div class="row">
-      <div class="col-3">
-        {{ $t('restore_info_msg') }}
-      </div>
-      <div class="col-3">
-        {{ $t('accidentally_closed_info_msgs') }}
-      </div>
-      <div class="col-1"></div>
-      <div class="col">
-        <q-btn :label="$t('restore_hints')" @click.stop="restoreHints" />
-      </div>
-    </div>
+        <!--      <InfoLine label="">-->
+        <!--        <q-checkbox v-model="detailLevelPerTabset" :label="$t('individually_per_tabset')" />-->
+        <!--      </InfoLine>-->
 
-    <div class="row items-baseline" v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
-      <div class="col-3">
-        {{ $t('warning_thresholds') }}
+        <InfoLine label="URLs">
+          <q-checkbox v-model="fullUrls" :label="$t('show_full_url')" />
+        </InfoLine>
       </div>
-      <div class="col-3">
-        {{ $t('warnings_info') }}
-      </div>
-      <div class="col q-ma-xl">
-        <q-range v-model="settingsStore.thresholds" :step="10" marker-labels :min="0" :max="100" />
-      </div>
-    </div>
 
-    <div class="row items-baseline">
-      <div class="col-3">
-        {{ $t('thumbnail_quality') }}
+      <div class="row items-baseline">
+        <div class="col-3"></div>
+        <div class="col-9">
+          <hr />
+        </div>
       </div>
-      <div class="col-3">
-        {{ $t('larger_thumbs_info') }}
-      </div>
-      <div class="col q-ma-xl">
-        <q-slider
-          v-model="settingsStore.thumbnailQuality"
-          marker-labels
-          :min="0"
-          :max="100"
-          :inner-min="10"
-          :inner-max="100"
-          :step="10"></q-slider>
-      </div>
-    </div>
 
-    <!--    <div class="row items-baseline q-ma-md q-gutter-md" v-if="useSettingsStore().has('DEV_MODE')">-->
-    <!--      <div class="col-3">-->
-    <!--        New Version Simulation-->
-    <!--      </div>-->
-    <!--      <div class="col-3">-->
-    <!--        Simulate that there is a new version available-->
-    <!--      </div>-->
-    <!--      <div class="col q-ma-xl">-->
-    <!--        <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.2.12')">Simulate</span>-->
-    <!--      </div>-->
-    <!--    </div>-->
+      <div class="row items-baseline">
+        <InfoLine label="Show Recent Tabsets list">
+          <q-checkbox
+            v-model="showRecentTabsetsList"
+            label="The last couple of tabsets you opened will be displayed for quick access" />
+        </InfoLine>
 
-    <div class="row items-baseline" v-if="useSettingsStore().has('DEV_MODE')">
-      <div class="col-3">New Suggestion Simulation</div>
-      <div class="col-3">
-        Simulate that there is a new suggestion to use a (new) feature (refresh sidebar for effects)
+        <InfoLine label="Overlap Indicator">
+          <q-checkbox
+            v-model="overlapIndicator"
+            label="Display how similar the current tabset and your current tabs are" />
+        </InfoLine>
       </div>
-      <div class="col q-ma-xl">
-        <span class="text-blue cursor-pointer" @click="simulateStaticSuggestion()">Simulate</span>
-      </div>
-    </div>
 
-    <div class="row items-baseline">
-      <div class="col-3">Sidebar not opened?</div>
-      <div class="col-3">CLick here to open the Side Panel</div>
-      <div class="col q-ma-xl">
-        <span class="text-blue cursor-pointer" id="openSidePanelSpan" @click="openSidePanel()">Open Side Panel</span>
+      <!--    <div-->
+      <!--      class="row items-baseline q-ma-md q-gutter-md"-->
+      <!--      v-if="useFeaturesStore().hasFeature(FeatureIdent.AUTO_TAB_SWITCHER)">-->
+      <!--      <div class="col-3">-->
+      <!--        {{ $t('tab_switching_time') }}-->
+      <!--      </div>-->
+      <!--      <div class="col-9">-->
+      <!--        <q-select-->
+      <!--          :label="$t('tab_switcher_settings')"-->
+      <!--          filled-->
+      <!--          v-model="autoSwitcherOption"-->
+      <!--          :options="autoSwitcherOptions"-->
+      <!--          map-options-->
+      <!--          emit-value-->
+      <!--          style="width: 250px" />-->
+      <!--      </div>-->
+      <!--    </div>-->
+
+      <div class="row">
+        <div class="col-3"></div>
+        <div class="col-9">
+          <hr />
+        </div>
       </div>
-    </div>
+
+      <div class="row">
+        <div class="col-3">
+          {{ $t('restore_info_msg') }}
+        </div>
+        <div class="col-3">
+          {{ $t('accidentally_closed_info_msgs') }}
+        </div>
+        <div class="col-1"></div>
+        <div class="col">
+          <q-btn :label="$t('restore_hints')" @click.stop="restoreHints" />
+        </div>
+      </div>
+
+      <div class="row items-baseline" v-if="useFeaturesStore().hasFeature(FeatureIdent.OPENTABS_THRESHOLD)">
+        <div class="col-3">
+          {{ $t('warning_thresholds') }}
+        </div>
+        <div class="col-3">
+          {{ $t('warnings_info') }}
+        </div>
+        <div class="col q-ma-xl">
+          <q-range v-model="settingsStore.thresholds" :step="10" marker-labels :min="0" :max="100" />
+        </div>
+      </div>
+
+      <div class="row items-baseline">
+        <div class="col-3">
+          {{ $t('thumbnail_quality') }}
+        </div>
+        <div class="col-3">
+          {{ $t('larger_thumbs_info') }}
+        </div>
+        <div class="col q-ma-xl">
+          <q-slider
+            v-model="settingsStore.thumbnailQuality"
+            marker-labels
+            :min="0"
+            :max="100"
+            :inner-min="10"
+            :inner-max="100"
+            :step="10"></q-slider>
+        </div>
+      </div>
+
+      <!--    <div class="row items-baseline q-ma-md q-gutter-md" v-if="useSettingsStore().has('DEV_MODE')">-->
+      <!--      <div class="col-3">-->
+      <!--        New Version Simulation-->
+      <!--      </div>-->
+      <!--      <div class="col-3">-->
+      <!--        Simulate that there is a new version available-->
+      <!--      </div>-->
+      <!--      <div class="col q-ma-xl">-->
+      <!--        <span class="text-blue cursor-pointer" @click="simulateNewVersion('0.2.12')">Simulate</span>-->
+      <!--      </div>-->
+      <!--    </div>-->
+
+      <div class="row items-baseline" v-if="useSettingsStore().has('DEV_MODE')">
+        <div class="col-3">New Suggestion Simulation</div>
+        <div class="col-3">
+          Simulate that there is a new suggestion to use a (new) feature (refresh sidebar for effects)
+        </div>
+        <div class="col q-ma-xl">
+          <span class="text-blue cursor-pointer" @click="simulateStaticSuggestion()">Simulate</span>
+        </div>
+      </div>
+
+      <div class="row items-baseline">
+        <div class="col-3">Sidebar not opened?</div>
+        <div class="col-3">CLick here to open the Side Panel</div>
+        <div class="col q-ma-xl">
+          <span class="text-blue cursor-pointer" id="openSidePanelSpan" @click="openSidePanel()">Open Side Panel</span>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -270,6 +262,8 @@ import { ref, watch, watchEffect } from 'vue'
 
 const { sendMsg } = useUtils()
 
+const props = defineProps<{ dense?: boolean }>()
+
 const $q = useQuasar()
 const settingsStore = useSettingsStore()
 
@@ -289,27 +283,7 @@ const quickAccessSearch = ref(useUiStore().quickAccessFor('search'))
 
 let suggestionsCounter = 0
 
-//const { locale } = useI18n({ locale: navigator.language, useScope: 'global' })
-
-const localeOptions = ref([
-  { value: 'en', label: 'English' },
-  { value: 'de', label: 'German' },
-  { value: 'bg', label: 'Bulgarian' },
-])
-
 const autoSwitcherOption = ref<number>((LocalStorage.getItem('ui.tabSwitcher') as number) || 5000)
-
-const autoSwitcherOptions = [
-  { label: '1 sec.', value: 1000 },
-  { label: '2 sec.', value: 2000 },
-  { label: '3 sec.', value: 3000 },
-  { label: '5 sec.', value: 5000 },
-  { label: '10 sec.', value: 10000 },
-  { label: '30 sec.', value: 30000 },
-  { label: '1 min.', value: 60000 },
-  { label: '2 min.', value: 120000 },
-  { label: '5 min.', value: 300000 },
-]
 
 watchEffect(() => {
   useUiStore().setQuickAccess('search', quickAccessSearch.value)

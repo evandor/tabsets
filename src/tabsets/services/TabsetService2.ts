@@ -49,13 +49,13 @@ export function useTabsetService() {
     await useTabsetsStore().loadTabsets()
     const selectedTabsetId = await useSelectedTabsetService().getFromStorage()
     if (selectedTabsetId) {
-      console.debug(` ...config: setting selected tabset from storage: ${selectedTabsetId}`)
+      //console.debug(` ...config: setting selected tabset from storage: ${selectedTabsetId}`)
       const selectedTabset = await useTabsetsStore().selectCurrentTabset(selectedTabsetId)
       if (!selectedTabset) {
-        //selectFirstAvailableTabset()
+        selectFirstAvailableTabset()
       }
     } else {
-      //selectFirstAvailableTabset()
+      selectFirstAvailableTabset()
     }
     initialized.value = true
   }

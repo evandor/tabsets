@@ -1,8 +1,6 @@
-import { User } from 'firebase/auth/web-extension'
 import _ from 'lodash'
-import { LocalStorage, QVueGlobals } from 'quasar'
+import { QVueGlobals } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
-import FirebaseListener from 'src/app/FirebaseListener'
 import BrowserListeners from 'src/app/listeners/BrowserListeners'
 import BookmarksService from 'src/bookmarks/services/BookmarksService'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
@@ -26,7 +24,6 @@ import { useDB } from 'src/services/usePersistenceService'
 import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { useAuthStore } from 'src/stores/authStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -42,26 +39,10 @@ const { inBexMode } = useUtils()
 
 class AppService {
   router: Router = null as unknown as Router
-  initialized = false
+  //initialized = false
 
-  async init(quasar: QVueGlobals, router: Router, forceRestart = false, user: User | undefined = undefined) {
-    console.log(
-      `%cinitializing AppService: initialized=${this.initialized}, router set=${router !== undefined}`,
-      forceRestart ? 'font-weight:bold' : '',
-    )
-
-    if (this.initialized && !forceRestart) {
-      console.debug('stopping AppService initialization; already initialized and not forcing restart')
-      return Promise.resolve()
-    }
-
-    if (this.initialized) {
-      //await ChromeListeners.resetListeners()
-      useWindowsStore().resetListeners()
-    }
-
-    this.initialized = true
-    await useAuthStore().setUser(user)
+  async init(quasar: QVueGlobals, router: Router) {
+    console.log(`%cinitializing AppService`, 'font-weight:bold')
 
     this.router = router
 
@@ -88,8 +69,8 @@ class AppService {
 
     if (inBexMode()) {
       chrome.tabs.query({ active: true, currentWindow: true }).then((currentTabs: chrome.tabs.Tab[]) => {
-        console.log('currentTab', currentTabs)
         if (currentTabs.length > 0 && currentTabs[0]!.id) {
+          //console.log('sending Message getExcerpt', currentTabs)
           chrome.tabs
             .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
             .then((payload) => {
@@ -116,8 +97,6 @@ class AppService {
 
   private async initCoreSerivces(quasar: QVueGlobals, router: Router) {
     //console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
-
-    const authenticated = useAuthStore().isAuthenticated()
 
     await useWindowsStore().initialize()
     useWindowsStore().initListeners()
@@ -153,7 +132,7 @@ class AppService {
       )
       useEntityRegistryStore().tabsetRegistry = tsInfo
     })
-    await tabsetsStore.initialize(authenticated ? useDB().tabsetsDb : useDB().localTabsetsDb)
+    await tabsetsStore.initialize(useDB().tabsetsDb)
     await useTabsetService().init()
 
     await useTabsStore2().initialize()
@@ -165,12 +144,7 @@ class AppService {
     useMessagesStore().initialize()
     useEventsStore().initialize()
 
-    ChromeApi.init(router)
-
-    // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-    //   // await groupsStore.initialize(useDB(undefined).db)
-    //   groupsStore.initListeners()
-    // }
+    ChromeApi.init()
 
     useUiStore().appLoading = undefined
 
@@ -186,24 +160,16 @@ class AppService {
       !router.currentRoute.value.path.startsWith('/mainpanel') &&
       router.currentRoute.value.path !== '/'
     ) {
-      console.log('pushing to welcome (pro) page', router.currentRoute.value.path)
-      const welcomePageHasBeenShown = LocalStorage.getItem('ui.welcomepro.shown') as boolean
-      if (welcomePageHasBeenShown) {
-        await router.push('/sidepanel/welcome')
-        return
-      }
-      await router.push('/sidepanel/welcomepro')
-      return
-    }
-
-    if (useAuthStore().user?.uid) {
-      FirebaseListener.startListening()
+      // console.log('pushing to welcome page', router.currentRoute.value.path)
+      // await router.push('/sidepanel/welcome')
     }
 
     // set badge, text and color
-    useTabsetsUiStore().updateExtensionIcon()
+    //useTabsetsUiStore().updateExtensionIcon()
 
     ChromeApi.buildContextMenu('AppService')
+
+    //classification('this is the input text').then((res: any) => console.log('hier!!!', res))
   }
 }
 

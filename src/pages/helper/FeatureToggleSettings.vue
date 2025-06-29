@@ -80,21 +80,13 @@
 </template>
 
 <script lang="ts" setup>
-import { captureFeedback, captureMessage } from '@sentry/browser'
-import { doc, setDoc } from 'firebase/firestore'
-import { uid } from 'quasar'
+import { captureFeedback, captureMessage } from '@sentry/vue'
 import { SettingIdent } from 'src/app/models/SettingIdent'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
-import FirebaseServices from 'src/services/firebase/FirebaseServices'
-import { Suggestion, SuggestionType } from 'src/suggestions/domain/models/Suggestion'
-import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import { Message } from 'src/tabsets/models/Message'
-import { useAuthStore } from 'stores/authStore'
 import { ref, watchEffect } from 'vue'
 
-const { inBexMode } = useUtils()
 const settingsStore = useSettingsStore()
 const { handleError } = useNotificationHandler()
 const { sendMsg } = useUtils()
@@ -114,51 +106,12 @@ const updateSettings2 = (ident: SettingIdent, active: boolean) => {
   } else {
     sendMsg('setting-deactivated', { setting: ident })
   }
-  // TODO deprecated
-  //settingsStore.setFeatureToggle(ident, val)
-}
-
-const triggerMessage = (msg: string) => {
-  const message = new Message(uid(), new Date().getTime(), 0, 'new', msg)
-  setDoc(
-    doc(FirebaseServices.getFirestore(), `users/${useAuthStore().user.uid}/messages/${message.id}`),
-    JSON.parse(JSON.stringify(message)),
-  )
 }
 
 const triggerErrorHandler = () => handleError('an user-initiated error message from tabsets at ' + new Date().getTime())
 
 const triggerCatchAll = () => {
   throw new Error('user triggered catch-all-Error at' + new Date().getTime())
-}
-
-const clearSuggestions = () => {
-  useSuggestionsStore().clearAll()
-}
-
-const createSuggestion = async (type: SuggestionType) => {
-  switch (type) {
-    case 'TABSET_SHARED':
-      const s = new Suggestion(
-        uid(),
-        'New Shared Tabset',
-        'Carsten wants to share a new tabset with you',
-        uid(),
-        'TABSET_SHARED',
-      )
-      s.setImage('o_tabs')
-      s.applyLabel = 'accept'
-      await useSuggestionsStore().addSuggestion(s)
-      break
-    // case 'USE_EXTENSION':
-    //   await useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion('USE_EXTENSION_SUGGESTION'))
-    //   break
-    case 'FEATURE':
-      await useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion('TRY_SPACES_FEATURE'))
-      break
-    default:
-      console.warn(`unknown type ${type}`)
-  }
 }
 
 const collectUserFeedback = async () => {
