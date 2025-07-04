@@ -14,6 +14,7 @@ import { useContentService } from 'src/content/services/ContentService'
 import { TabPredicate } from 'src/core/domain/Types'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
+import { useUtils } from 'src/core/services/Utils'
 import JsUtils from 'src/core/utils/JsUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 // import NavigationService from 'src/services/NavigationService'
@@ -36,6 +37,8 @@ export function useTabsetService() {
   const throttleOne50Millis = throttledQueue(1, 50, true)
 
   const initialized = ref(false)
+
+  const { extractSecondLevelDomain } = useUtils()
 
   const init = async () => {
     function selectFirstAvailableTabset() {
@@ -63,7 +66,7 @@ export function useTabsetService() {
   function updateTags(chromeTabs: chrome.tabs.Tab[], name: string) {
     return _.map(chromeTabs, (t: chrome.tabs.Tab) => {
       const tab = new Tab(uid(), t)
-      Tab.addTags(tab, [name])
+      Tab.addTags(tab, [{ label: name.trim(), type: 'manual', score: 1 }])
       return tab
     })
   }
@@ -397,26 +400,31 @@ export function useTabsetService() {
             if (metas && metas['tabsets:longDescription' as keyof object]) {
               t.longDescription = metas['tabsets:longDescription' as keyof object]
             }
-            if (metas && metas['keywords' as keyof object]) {
-              t.keywords = metas['keywords' as keyof object]
-              if (t.keywords) {
-                const blankSeparated = t.keywords.split(' ')
-                const commaSeparated = t.keywords.split(',')
-                const splits = t.keywords.indexOf(',') >= 0 ? commaSeparated : blankSeparated
-                if (!t.tags) {
-                  t.tags = []
-                }
-                Tab.addTags(t, splits)
-                // t.tags = t.tags.concat(
-                //   _.union(
-                //     _.filter(
-                //       _.map(splits, (split: any) => split.trim()),
-                //       (split: string) => split.length > 0,
-                //     ),
-                //   ),
-                // )
-              }
-            }
+            // if (metas && metas['keywords' as keyof object]) {
+            //   t.keywords = metas['keywords' as keyof object]
+            //   if (t.keywords) {
+            //     const blankSeparated = t.keywords.split(' ')
+            //     const commaSeparated = t.keywords.split(',')
+            //     const splits = t.keywords.indexOf(',') >= 0 ? commaSeparated : blankSeparated
+            //     if (!t.tags) {
+            //       t.tags = []
+            //     }
+            //     Tab.addTags(
+            //       t,
+            //       splits.map((split: string) => {
+            //         return { label: split, type: 'keyword', score: 1 }
+            //       }),
+            //     )
+            //     // t.tags = t.tags.concat(
+            //     //   _.union(
+            //     //     _.filter(
+            //     //       _.map(splits, (split: any) => split.trim()),
+            //     //       (split: string) => split.length > 0,
+            //     //     ),
+            //     //   ),
+            //     // )
+            //   }
+            // }
             const author = getIfAvailable(metas, 'author')
             if (author) {
               t.author = author
@@ -501,7 +509,7 @@ export function useTabsetService() {
       return Promise.reject(reject)
     }
 
-    handleTags(ts, tab)
+    //handleTags(ts, tab)
     addToTabsetWithIndex(ts, tab, useIndex)
 
     if (LocalStorage.getItem(GITHUB_AUTO_SYNC) && !LocalStorage.getItem(GITHUB_AUTO_SYNC_READONLY)) {
@@ -1045,14 +1053,20 @@ export function useTabsetService() {
     return Promise.resolve(undefined)
   }
 
-  const handleTags = (ts: Tabset, tab: Tab) => {
-    Tab.addTags(tab, [ts.name])
-    try {
-      Tab.addTags(tab, [new URL(tab.url!).hostname.replace('www.', '')])
-    } catch (err) {
-      // ignore
-    }
-  }
+  // done before adding tab
+  // const handleTags = (ts: Tabset, tab: Tab) => {
+  //   Tab.addTags(tab, [{ label: ts.name, type: 'manual', score: 1 }])
+  //   try {
+  //     if (tab.url) {
+  //       const domain = extractSecondLevelDomain(tab.url)
+  //       if (domain) {
+  //         Tab.addTags(tab, [{ label: domain, type: 'manual', score: 1 }])
+  //       }
+  //     }
+  //   } catch (err) {
+  //     // ignore
+  //   }
+  // }
 
   const addToTabsetWithIndex = (ts: Tabset, tab: Tab, useIndex: number | undefined) => {
     if (useIndex !== undefined && useIndex >= 0) {

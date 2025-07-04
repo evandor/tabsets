@@ -50,6 +50,7 @@ import { Chart, LinearScale } from 'chart.js'
 import { WordCloudController, WordElement } from 'chartjs-chart-wordcloud'
 import _ from 'lodash'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import { TagInfo } from 'src/core/models/TagInfo'
 import ViewToolbarHelper from 'src/core/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
@@ -84,9 +85,9 @@ watchEffect(() => {
       (tabset.status === TabsetStatus.DEFAULT || tabset.status === TabsetStatus.FAVORITE)
     ) {
       _.forEach(tabset.tabs, (tab: Tab) => {
-        _.forEach(tab.tags, (tag: string) => {
-          const newCount = (t.get(tag) || 0) + 1
-          t.set(tag, newCount)
+        _.forEach(tab.tagsInfo, (tagInfo: TagInfo) => {
+          const newCount = (t.get(tagInfo.label) || 0) + 1
+          t.set(tagInfo.label, newCount)
           if (newCount > max) {
             max = newCount
           }

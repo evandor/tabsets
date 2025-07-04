@@ -201,7 +201,11 @@ watchEffect(() => {
 })
 
 function inIgnoredMessages(message: any) {
-  return message.msg === 'captureThumbnail' || message.name === 'reload-spaces'
+  return (
+    message.msg === 'captureThumbnail' ||
+    message.name === 'reload-spaces' ||
+    message.name === 'zero-shot-classification'
+  )
 }
 
 const onMessageListener = (message: any) => {

@@ -453,6 +453,30 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     return chain
   }
 
+  const getFolder = (ts: Tabset, folderId: string): Tabset | undefined => {
+    if (ts.id === folderId) {
+      return ts
+    }
+    for (const folder of ts.folders) {
+      const match = getFolder(folder, folderId)
+      if (match) {
+        return match
+      }
+    }
+    return undefined
+  }
+
+  const getFolderNameChain = (tabset: Tabset, folderId: string, result: string[] = []): string[] => {
+    const folder = getFolder(tabset, folderId)
+    if (folder) {
+      result.push(folder.name)
+      if (folder.folderParent) {
+        return getFolderNameChain(tabset, folder.folderParent, result)
+      }
+    }
+    return result
+  }
+
   function addFolders(f: FolderNode, folders: Tabset[]) {
     for (const folder of folders) {
       const child = new FolderNode(folder.name, folder.id, [])
@@ -536,6 +560,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     loadTabsets,
     getActiveFolder,
     getFolderChain,
+    getFolderNameChain,
     getFolderTree,
     share,
     shareWith,

@@ -56,7 +56,10 @@
     </PopupInputLine>
 
     <!-- Tags -->
-    <PopupInputLine title="Tags">
+    <PopupInputLine
+      v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)"
+      :loading="loading"
+      :title="pageModel.tagsInfo.length > 1 ? pageModel.tagsInfo.length + ' Tags' : 'Tags'">
       <q-select
         input-class="q-ma-none q-pa-none"
         borderless
@@ -77,11 +80,23 @@
             @remove="removeTag(info)"
             dense
             square
+            outline
             removable
-            :color="info.type == 'manual' ? 'white' : 'grey-2'"
+            :color="
+              info.type == 'manual'
+                ? 'primary'
+                : info.type == 'url'
+                  ? 'orange-8'
+                  : info.type == 'classification'
+                    ? 'green-8'
+                    : 'grey-8'
+            "
             text-color="primary"
-            class="q-my-none q-ml-xs q-mr-none">
+            class="q-my-xs q-ml-xs q-mr-none">
             {{ info.label }}
+            <q-tooltip class="tooltip-small" :delay="500">
+              {{ tooltipFor(info) }}
+            </q-tooltip>
           </q-chip>
         </template>
       </q-select>
@@ -197,17 +212,20 @@
 </template>
 
 <script lang="ts" setup>
+import { TAGS_CATEGORIES } from 'boot/constants'
 import { date, LocalStorage, uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useContentStore } from 'src/content/stores/contentStore'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
-import { TagInfo } from 'src/core/models/TagInfo'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { CategoryInfo, TagInfo } from 'src/core/models/TagInfo'
 import AutogrowInput from 'src/core/pages/popup/helper/AutogrowInput.vue'
 import PopupCollectionSelector from 'src/core/pages/popup/PopupCollectionSelector.vue'
 import PopupFolderSelector from 'src/core/pages/popup/PopupFolderSelector.vue'
 import PopupInputLine from 'src/core/pages/popup/PopupInputLine.vue'
 import PopupToolbar from 'src/core/pages/popup/PopupToolbar.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { NotificationType, useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import ContentUtils from 'src/core/utils/ContentUtils'
@@ -219,11 +237,13 @@ import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { DeleteTabCommand } from 'src/tabsets/commands/DeleteTabCommand'
+import { IgnoreTagCommand } from 'src/tabsets/commands/IgnoreTagCommand'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useTagsService } from 'src/tags/TagsService'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { UiDensity, useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
@@ -240,12 +260,14 @@ const uiDensity = ref<UiDensity>(useUiStore().uiDensity)
 const alreadyInTabset = ref<boolean>(false)
 const containedInTsCount = ref(0)
 const text = ref<string | undefined>(undefined)
-// const tags = ref<string[]>([])
 const collectionChips = ref<object[]>([])
 
 const infoModes = ['saved', 'updated', 'count', 'lastActive']
 const infoMode = ref<string>(infoModes[0]!)
 
+const loading = ref<boolean>(useUiStore().aiLoading)
+
+const { handleSuccess } = useNotificationHandler()
 provide('ui.density', uiDensity)
 
 const pageModel = reactive<{
@@ -264,7 +286,6 @@ const pageModel = reactive<{
 
 let initialNote = ''
 
-const language = ref<string | undefined>(undefined)
 const infoLabel = ref('')
 const mds = ref<BlobMetadata[]>([])
 const pageCaptureInProgress = ref(false)
@@ -275,6 +296,45 @@ onMounted(() => {
   if (!LocalStorage.getItem('ui.hideWelcomePage')) {
     useRouter().push('/popup/welcome')
   }
+
+  if (tab.value) {
+    return
+  }
+  // keyword tags
+  const metas = useContentStore().getCurrentTabMetas
+  if (metas && metas['keywords' as keyof object]) {
+    useTagsService()
+      .tagsFromKeywords(metas['keywords' as keyof object] as string)
+      .forEach((tag: TagInfo) => {
+        console.log('pushing', tag)
+        pageModel.tagsInfo.push(tag)
+        pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
+      })
+  }
+
+  // hierarchy tags
+  if (currentTabset.value) {
+    useTagsService()
+      .tagsFromHierarchy(currentTabset.value)
+      .forEach((tag: TagInfo) => {
+        pageModel.tagsInfo.push(tag)
+        pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
+      })
+  }
+
+  // url tags
+  if (browserTab.value?.url) {
+    useTagsService()
+      .tagsFromUrl(browserTab.value.url)
+      .forEach((tag: TagInfo) => {
+        pageModel.tagsInfo.push(tag)
+        pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
+      })
+  }
+})
+
+watchEffect(() => {
+  loading.value = useUiStore().aiLoading
 })
 
 watchEffect(() => {
@@ -337,6 +397,8 @@ watchEffect(() => {
         infoLabel.value = 'Saved ' + date.formatDate(tab.value.created, 'DD.MM.YY HH:mm')
         initialNote = tab.value.note
         pageModel.note = tab.value.note
+        console.log('setting tagsInfo')
+        pageModel.tagsInfo = tab.value.tagsInfo
         useSnapshotsStore()
           .metadataFor(tab.value.id)
           .then((res) => {
@@ -372,12 +434,21 @@ watchEffect(() => {
     //console.log('articleContent', articleContent)
     text.value = articleContent
 
-    if (useFeaturesStore().hasFeature(FeatureIdent.AI) && text.value && text.value.trim().length > 10) {
-      //console.log('::::', text.value)
-      console.log('::::', pageModel.description)
+    const categories: CategoryInfo[] = LocalStorage.getItem(TAGS_CATEGORIES) || []
+
+    if (
+      useFeaturesStore().hasFeature(FeatureIdent.AI) &&
+      !tab.value &&
+      categories.length > 0 &&
+      text.value &&
+      text.value.trim().length > 10
+    ) {
+      useUiStore().aiLoading = true
+      console.log('::::', text.value.length)
+      //console.log('::::', pageModel.description)
       const data = {
         text: pageModel.description,
-        candidates: ['news', 'shopping', 'sport'],
+        candidates: categories.map((c: CategoryInfo) => c.label),
       }
 
       chrome.runtime.sendMessage(
@@ -394,13 +465,16 @@ watchEffect(() => {
             const labels: string[] = callback['labels'] as string[]
             const scores: number[] = callback['scores'] as number[]
             console.log('adding tags for ', labels, scores)
-            labels.forEach((label: string, index: number) => {
-              if (scores[index]! >= 0.5) {
-                // pageModel.tags.push(label)
-                pageModel.tagsInfo.push({ label: label, type: 'classification', score: scores[index] || 0 })
-              }
-            })
+
+            useTagsService()
+              .tagsFromClassification(categories, labels, scores, 0.3 / Math.log(labels.length))
+              .forEach((tag: TagInfo) => {
+                pageModel.tagsInfo.push(tag)
+                pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
+              })
+            useUiStore().aiLoading = false
           }
+          useUiStore().aiLoading = false
         },
       )
     }
@@ -417,52 +491,48 @@ watchEffect(() => {
       pageModel.description &&
       pageModel.description.trim().length > 10
     ) {
-      console.log(':::', pageModel.description)
+      //console.log(':::', pageModel.description)
       const data = {
         text: 'ich bin ein Text',
         candidates: ['news', 'shopping'],
       }
 
-      chrome.runtime.sendMessage(
-        {
-          name: 'zero-shot-classification',
-          data: data,
-        },
-        (callback: any) => {
-          console.log('got callback!!', callback)
-          if (chrome.runtime.lastError) {
-            /* ignore */
-          }
-          if (callback) {
-            const labels: string[] = callback['labels'] as string[]
-            const scores: number[] = callback['scores'] as number[]
-            console.log('adding tags for ', labels, scores)
-            if (labels && labels.length > 0) {
-              labels.forEach((label: string, index: number) => {
-                if (scores[index]! >= 0.5) {
-                  pageModel.tagsInfo.push({ label: label, type: 'classification', score: scores[index] || 0 })
-                }
-              })
-            }
-          }
-        },
-      )
+      // chrome.runtime.sendMessage(
+      //   {
+      //     name: 'zero-shot-classification',
+      //     data: data,
+      //   },
+      //   (callback: any) => {
+      //     console.log('got callback!!', callback)
+      //     if (chrome.runtime.lastError) {
+      //       /* ignore */
+      //     }
+      //     if (callback) {
+      //       const labels: string[] = callback['labels'] as string[]
+      //       const scores: number[] = callback['scores'] as number[]
+      //       console.log('adding tags for ', labels, scores)
+      //       if (labels && labels.length > 0) {
+      //         labels.forEach((label: string, index: number) => {
+      //           if (scores[index]! >= 0.5) {
+      //             pageModel.tagsInfo.push({ label: label, type: 'classification', score: scores[index] || 0 })
+      //           }
+      //         })
+      //       }
+      //     }
+      //   },
+      // )
 
       try {
         // @ts-expect-error xxx
         LanguageDetector.create().then((detector: any) => {
-          detector.detect(pageModel.description).then((results: any[]) => {
-            // for (const result of results) {
-            //   console.log(result.detectedLanguage, result.confidence)
-            // }
+          detector.detect(text.value).then((results: any[]) => {
             if (results.length > 0) {
-              language.value = results[0].detectedLanguage
-              // pageModel.aiTags.push(results[0].detectedLanguage)
-              pageModel.tagsInfo.push({
-                label: results[0].detectedLanguage,
-                type: 'langDetection',
-                score: results[0].confidence || 0,
-              })
+              useTagsService()
+                .tagsFromLangDetection(results[0].detectedLanguage, results[0].confidence || 0)
+                .forEach((tag: TagInfo) => {
+                  pageModel.tagsInfo.push(tag)
+                  pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
+                })
             }
           })
         })
@@ -578,8 +648,60 @@ const saveSnapshot = () => {
 }
 const openMHtml = (id: string) => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/mhtml/${id}`))
 const deleteMHtml = (id: string) => useSnapshotsService().deleteSnapshot(id)
-const removeTag = (toDelete: TagInfo) =>
-  (pageModel.tagsInfo = pageModel.tagsInfo.filter((i: TagInfo) => i.label !== toDelete.label))
+
+const removeTag = (toDelete: TagInfo) => {
+  pageModel.tagsInfo = pageModel.tagsInfo.filter((i: TagInfo) => i.label !== toDelete.label)
+  let result: ExecutionResult<any> | undefined = undefined
+  if (toDelete.type === 'keyword') {
+    result = new ExecutionResult(
+      'res',
+      'Tag was deleted',
+      new Map([
+        // ['Close', new NoOpCommand()],
+        ['Always Ignore in future', new IgnoreTagCommand(toDelete.label)],
+      ]),
+    )
+  } else if (toDelete.type === 'classification') {
+    const cats: CategoryInfo[] = LocalStorage.getItem(TAGS_CATEGORIES) || []
+    const category = cats.find((c: CategoryInfo) => c.label === toDelete.label)
+    if (category) {
+      category.weight = category.weight / 1.1
+      LocalStorage.setItem(TAGS_CATEGORIES, cats)
+    }
+  }
+
+  if (result) {
+    handleSuccess(result, NotificationType.USER_CHOICE)
+  }
+}
+
+const tooltipFor = (info: TagInfo): string => {
+  const debug = useSettingsStore().has('DEBUG_MODE')
+  let tooltip = ''
+  switch (info.type) {
+    case 'keyword':
+      tooltip = "automatic tag derived from website's keywords"
+      break
+    case 'url':
+      tooltip = 'automatic tag derived from URL'
+      break
+    case 'classification':
+      tooltip = 'Classification, derived from site\s description using AI'
+      if (debug) {
+        tooltip += ' (score ' + Math.round(info.score * 1000) / 10 + '%)'
+      }
+      break
+    case 'langDetection':
+      tooltip = "Language, derived from site's description using AI"
+      if (debug) {
+        tooltip += ' (score ' + Math.round(info.score * 1000) / 10 + '%)'
+      }
+      break
+    default:
+      tooltip = ''
+  }
+  return tooltip
+}
 </script>
 
 <!--<style lang="scss" src="src/pages/css/sidePanelPage2.scss" />-->

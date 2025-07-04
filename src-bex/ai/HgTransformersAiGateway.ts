@@ -1,7 +1,7 @@
 import { env as henv, pipeline } from '@huggingface/transformers'
 import AiGateway from 'app/src-bex/ai/AiGateway'
 
-class XenovaAiGateway implements AiGateway {
+class HgTransformersGateway implements AiGateway {
   modelPromise: any = null
 
   async loadModule(): Promise<void> {
@@ -10,7 +10,7 @@ class XenovaAiGateway implements AiGateway {
 
     await this.setupOnnxRuntime()
 
-    console.log('initializing transformers....')
+    console.log('initializing transformers.... HgTransformersGateway')
 
     henv.useBrowserCache = true
     //henv.remoteModels = true //false;
@@ -99,4 +99,4 @@ class XenovaAiGateway implements AiGateway {
   }
 }
 
-export default new XenovaAiGateway()
+export default new HgTransformersGateway()

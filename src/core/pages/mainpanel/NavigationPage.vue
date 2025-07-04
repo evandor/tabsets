@@ -207,7 +207,7 @@ watchEffect(() => {
 
     if (tab.value.tags.constructor === Array) {
       tags.value = [...new Set(tab.value.tags)]
-      Tab.setTags(tab.value, tags.value)
+      //Tab.setTags(tab.value, tags.value)
     } else {
       tags.value = []
     }

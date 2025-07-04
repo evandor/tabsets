@@ -6,6 +6,7 @@
     <div class="justify-start items-start greyBorderTop">
       <q-tabs align="left" inline-label v-model="tab" no-caps>
         <q-tab name="appearance" :label="t('appearance')" />
+        <q-tab name="tags" label="Tags" />
         <q-tab name="features" label="More Features" />
         <q-tab name="ignored" label="Ignored Urls" v-if="showIgnored()" />
         <q-tab
@@ -19,10 +20,19 @@
       <AppearanceSettings :dense="true" />
     </div>
 
+    <div v-if="tab === 'tags'">
+      <TagsSettings :dense="true" />
+    </div>
+
     <div v-if="tab === 'features'" class="q-ma-md">
       <div class="text-h6 q-mb-md">Features</div>
 
-      <div class="row q-mx-md" v-for="f in featuresByType('RECOMMENDED_POPUP')">
+      <div
+        class="row q-mx-md"
+        v-for="f in featuresByType('RECOMMENDED')
+          .concat(featuresByType('OPTIONAL'))
+          .concat(featuresByType('EXPERIMENTAL'))
+          .filter((f: Feature) => f.useIn.indexOf('popup') >= 0)">
         <div class="col-1 q-mt-sm">
           <q-icon :name="f.icon" size="1.3em" :color="iconColor2(f)" />
         </div>
@@ -119,6 +129,7 @@ import { onMounted, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
+import TagsSettings from 'pages/helper/TagsSettings.vue'
 import { AppFeatures } from 'src/app/models/AppFeatures'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import Command from 'src/core/domain/Command'

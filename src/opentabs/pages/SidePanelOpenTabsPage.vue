@@ -29,7 +29,6 @@
         </template>
       </ViewToolbarHelper>
       <OpenTabsFilterToolbarHelper
-        v-if="!showDocumentation"
         @on-term-changed="(val) => termChanged(val)"
         @tab-selection-inverted="selectionInverted()"
         :search-hits="searchHits"

@@ -382,7 +382,8 @@ watchEffect(() => {
       tags.value = [...new Set(tab.value.tags)]
       // remove duplicates if any
       // tab.value.setTags(tags.value)
-      Tab.setTags(tab.value, tags.value)
+      // TODO broken
+      //Tab.setTags(tab.value, tags.value)
     } else {
       tags.value = []
     }
