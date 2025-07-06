@@ -6,7 +6,7 @@
       <PopupCollectionSelector
         @tabset-changed="tabsetChanged()"
         :show-tabs-count="!currentTabsetHasFolders()"
-        :url="pageModel.url" />
+        :url="url" />
     </PopupInputLine>
 
     <PopupInputLine title="Folder" v-if="showFolders()">
@@ -26,20 +26,20 @@
         <div class="column">
           <div class="col">
             <AutogrowInput
-              v-model="pageModel.title"
+              v-model="title"
               :input-class="'text-bold'"
               :class="'ellipsis'"
               :filled="false"
               data-testid="pageModelTitle" />
           </div>
-          <div class="col ellipsis-3-lines text-body2">{{ pageModel.description }}</div>
+          <div class="col ellipsis-3-lines text-body2">{{ description }}</div>
           <!--          <AutogrowInput v-model="pageModel.description" :class="'ellipsis-3-lines'" />-->
         </div>
       </div>
     </div>
 
     <!-- info label: created, updated, ... -->
-    <div class="row q-my-xs" v-if="tab && tab.url == pageModel.url">
+    <div class="row q-my-xs" v-if="tab && tab.url == url">
       <div class="col text-right text-caption text-grey-8 q-mx-md cursor-pointer" @click="interateThroughInfo">
         {{ infoLabel }}
       </div>
@@ -47,26 +47,26 @@
 
     <!-- URL -->
     <PopupInputLine title="URL" class="q-mt-md">
-      <AutogrowInput v-model="pageModel.url" :class="'ellipsis'" :filled="true" data-testid="pageModelUrl" />
+      <AutogrowInput v-model="url" :class="'ellipsis'" :filled="true" data-testid="pageModelUrl" />
     </PopupInputLine>
 
     <!-- Note -->
     <PopupInputLine title="Note">
-      <AutogrowInput v-model="pageModel.note" :class="'ellipsis'" :filled="true" data-testid="pageModelNote" />
+      <AutogrowInput v-model="note" :class="'ellipsis'" :filled="true" data-testid="pageModelNote" />
     </PopupInputLine>
 
     <!-- Tags -->
     <PopupInputLine
       v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)"
       :loading="loading"
-      :title="pageModel.tagsInfo.length > 1 ? pageModel.tagsInfo.length + ' Tags' : 'Tags'">
+      :title="tagsInfo.length > 1 ? tagsInfo.length + ' Tags' : 'Tags'">
       <q-select
         input-class="q-ma-none q-pa-none"
         borderless
         filled
         dense
         options-dense
-        v-model="pageModel.tagsInfo"
+        v-model="tagsInfo"
         use-input
         use-chips
         multiple
@@ -76,7 +76,9 @@
         @update:model-value="(val) => updatedTags(val)">
         <template v-slot:selected>
           <q-chip
-            v-for="info in pageModel.tagsInfo"
+            v-for="info in tagsInfo.filter((t: TagInfo) =>
+              useSettingsStore().has('DEBUG_MODE') ? true : t.type == 'manual',
+            )"
             @remove="removeTag(info)"
             dense
             square
@@ -161,7 +163,7 @@
       <div class="col-2 q-ml-xs q-mt-sm text-right text-caption text-grey-8" style="border: 0 solid red"></div>
       <div class="col q-mx-md text-right" style="border: 0 solid red">
         <q-btn
-          v-if="!tab || tab.url !== pageModel.url"
+          v-if="!tab || tab.url !== url"
           style="width: 100px"
           dense
           label="Add"
@@ -169,6 +171,7 @@
           unelevated
           size="15px"
           @click="addTab"
+          data-testid="addNewTabBtn"
           class="cursor-pointer q-px-md">
         </q-btn>
         <q-btn
@@ -247,8 +250,15 @@ import { useTagsService } from 'src/tags/TagsService'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { UiDensity, useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
-import { onMounted, provide, reactive, ref, watchEffect } from 'vue'
+import { onMounted, provide, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+
+// the page model
+const url = ref<string>('')
+const title = ref<string>('')
+const description = ref<string>('')
+const note = ref<string>('')
+const tagsInfo = ref<TagInfo[]>([])
 
 const thumbnail = ref<string | undefined>(useTabsStore2().currentChromeTab?.favIconUrl)
 const currentTabset = ref<Tabset | undefined>(undefined)
@@ -270,25 +280,30 @@ const loading = ref<boolean>(useUiStore().aiLoading)
 const { handleSuccess } = useNotificationHandler()
 provide('ui.density', uiDensity)
 
-const pageModel = reactive<{
-  url: string
-  note: string
-  tagsInfo: TagInfo[]
-  title: string | undefined
-  description: string | undefined
-}>({
-  url: '',
-  note: '',
-  tagsInfo: [],
-  title: undefined,
-  description: undefined,
-})
-
 let initialNote = ''
 
 const infoLabel = ref('')
 const mds = ref<BlobMetadata[]>([])
 const pageCaptureInProgress = ref(false)
+
+function pushTagsInfo() {
+  return (tag: TagInfo) => {
+    tagsInfo.value.push(tag)
+    tagsInfo.value = useTagsService().deduplicateTags(tagsInfo.value)
+  }
+}
+
+function langFromHostname(url: string | undefined): string {
+  if (url) {
+    try {
+      const hostname = new URL(url).hostname
+      return hostname.split('.')[hostname.split('.').length - 1] || 'en'
+    } catch (e) {
+      return 'en'
+    }
+  }
+  return 'en'
+}
 
 onMounted(() => {
   Analytics.firePageViewEvent('PopupPage', document.location.href)
@@ -305,31 +320,17 @@ onMounted(() => {
   if (metas && metas['keywords' as keyof object]) {
     useTagsService()
       .tagsFromKeywords(metas['keywords' as keyof object] as string)
-      .forEach((tag: TagInfo) => {
-        console.log('pushing', tag)
-        pageModel.tagsInfo.push(tag)
-        pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
-      })
+      .forEach(pushTagsInfo())
   }
 
   // hierarchy tags
   if (currentTabset.value) {
-    useTagsService()
-      .tagsFromHierarchy(currentTabset.value)
-      .forEach((tag: TagInfo) => {
-        pageModel.tagsInfo.push(tag)
-        pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
-      })
+    useTagsService().tagsFromHierarchy(currentTabset.value).forEach(pushTagsInfo())
   }
 
   // url tags
   if (browserTab.value?.url) {
-    useTagsService()
-      .tagsFromUrl(browserTab.value.url)
-      .forEach((tag: TagInfo) => {
-        pageModel.tagsInfo.push(tag)
-        pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
-      })
+    useTagsService().tagsFromUrl(browserTab.value.url).forEach(pushTagsInfo())
   }
 })
 
@@ -368,11 +369,11 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if (tab.value && pageModel.note !== initialNote) {
+  if (tab.value && note.value !== initialNote) {
     infoLabel.value = 'updating...'
     setTimeout(() => {
       if (currentTabset.value) {
-        tab.value!.note = pageModel.note
+        tab.value!.note = note.value
         tab.value!.updated = new Date().getTime()
         useTabsetsStore().saveTabset(currentTabset.value)
         infoLabel.value = 'Updated ' + date.formatDate(tab.value!.updated, 'DD.MM.YY HH:mm')
@@ -386,8 +387,8 @@ watchEffect(() => {
   browserTab.value = useTabsStore2().currentChromeTab
   if (browserTab.value) {
     //url.value = browserTab.value.url
-    pageModel.url = browserTab.value.url || 'https://'
-    pageModel.title = browserTab.value.title
+    url.value = browserTab.value.url || 'https://'
+    title.value = browserTab.value.title || ''
     alreadyInTabset.value = useTabsetService().urlExistsInCurrentTabset(browserTab.value.url)
     const tabsets = useTabsetService().tabsetsFor(browserTab.value.url!)
     containedInTsCount.value = tabsets.length
@@ -396,9 +397,9 @@ watchEffect(() => {
       if (tab.value) {
         infoLabel.value = 'Saved ' + date.formatDate(tab.value.created, 'DD.MM.YY HH:mm')
         initialNote = tab.value.note
-        pageModel.note = tab.value.note
+        note.value = tab.value.note
         console.log('setting tagsInfo')
-        pageModel.tagsInfo = tab.value.tagsInfo
+        tagsInfo.value = tab.value.tagsInfo
         useSnapshotsStore()
           .metadataFor(tab.value.id)
           .then((res) => {
@@ -407,15 +408,15 @@ watchEffect(() => {
             console.log('got', mds.value)
           })
       }
-      const url = browserTab.value.url
-      if (url) {
+      const browserUrl = browserTab.value.url
+      if (browserUrl) {
         collectionChips.value = useTabsetService()
-          .tabsetsFor(url)
+          .tabsetsFor(browserUrl)
           .map((ts: string) => {
             return {
               label: useTabsetService().nameForTabsetId(ts),
               tabsetId: ts,
-              encodedUrl: btoa(url || ''),
+              encodedUrl: btoa(browserUrl || ''),
             }
           })
         //console.log('===>', collectionChips.value)
@@ -436,6 +437,9 @@ watchEffect(() => {
 
     const categories: CategoryInfo[] = LocalStorage.getItem(TAGS_CATEGORIES) || []
 
+    //console.log('::::', text.value.length)
+    console.log('::::', description.value)
+
     if (
       useFeaturesStore().hasFeature(FeatureIdent.AI) &&
       !tab.value &&
@@ -447,7 +451,7 @@ watchEffect(() => {
       console.log('::::', text.value.length)
       //console.log('::::', pageModel.description)
       const data = {
-        text: pageModel.description,
+        text: description.value,
         candidates: categories.map((c: CategoryInfo) => c.label),
       }
 
@@ -468,10 +472,7 @@ watchEffect(() => {
 
             useTagsService()
               .tagsFromClassification(categories, labels, scores, 0.3 / Math.log(labels.length))
-              .forEach((tag: TagInfo) => {
-                pageModel.tagsInfo.push(tag)
-                pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
-              })
+              .forEach(pushTagsInfo())
             useUiStore().aiLoading = false
           }
           useUiStore().aiLoading = false
@@ -485,60 +486,30 @@ watchEffect(() => {
   const metas = useContentStore().currentTabMetas
   //console.log('metas', metas)
   if (metas['description' as keyof object]) {
-    pageModel.description = (metas['description' as keyof object] as string | undefined) || ''
-    if (
-      useFeaturesStore().hasFeature(FeatureIdent.AI) &&
-      pageModel.description &&
-      pageModel.description.trim().length > 10
-    ) {
-      //console.log(':::', pageModel.description)
-      const data = {
-        text: 'ich bin ein Text',
-        candidates: ['news', 'shopping'],
-      }
-
-      // chrome.runtime.sendMessage(
-      //   {
-      //     name: 'zero-shot-classification',
-      //     data: data,
-      //   },
-      //   (callback: any) => {
-      //     console.log('got callback!!', callback)
-      //     if (chrome.runtime.lastError) {
-      //       /* ignore */
-      //     }
-      //     if (callback) {
-      //       const labels: string[] = callback['labels'] as string[]
-      //       const scores: number[] = callback['scores'] as number[]
-      //       console.log('adding tags for ', labels, scores)
-      //       if (labels && labels.length > 0) {
-      //         labels.forEach((label: string, index: number) => {
-      //           if (scores[index]! >= 0.5) {
-      //             pageModel.tagsInfo.push({ label: label, type: 'classification', score: scores[index] || 0 })
-      //           }
-      //         })
-      //       }
-      //     }
-      //   },
-      // )
-
+    description.value = (metas['description' as keyof object] as string | undefined) || ''
+    if (useFeaturesStore().hasFeature(FeatureIdent.AI) && description.value && description.value.trim().length > 10) {
       try {
         // @ts-expect-error xxx
         LanguageDetector.create().then((detector: any) => {
           detector.detect(text.value).then((results: any[]) => {
             if (results.length > 0) {
-              useTagsService()
-                .tagsFromLangDetection(results[0].detectedLanguage, results[0].confidence || 0)
-                .forEach((tag: TagInfo) => {
-                  pageModel.tagsInfo.push(tag)
-                  pageModel.tagsInfo = useTagsService().deduplicateTags(pageModel.tagsInfo)
-                })
+              var language = results[0].detectedLanguage
+              var confidence = results[0].confidence || 0
+              useTagsService().tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
+              useTagsService().tagsFromLanguageModel(description.value, language).forEach(pushTagsInfo())
             }
           })
         })
       } catch (e) {
+        useTagsService()
+          .tagsFromLanguageModel(description.value, langFromHostname(browserTab.value?.url))
+          .forEach(pushTagsInfo())
         console.log('error with language detection')
       }
+    } else if (description.value && description.value.trim().length > 10) {
+      useTagsService()
+        .tagsFromLanguageModel(description.value, langFromHostname(browserTab.value?.url))
+        .forEach(pushTagsInfo())
     }
   }
 })
@@ -563,6 +534,9 @@ watchEffect(() => {
           //thumbnail.value = ''
         }
       })
+      .catch((e: any) => {
+        console.debug('error', e)
+      })
   }
 })
 
@@ -570,7 +544,7 @@ const tabsetChanged = () => (currentTabset.value = useTabsetsStore().getCurrentT
 
 const updatedTags = (val: (TagInfo | string)[]) => {
   console.log('updating tag', val)
-  pageModel.tagsInfo = val.map((v: any) => {
+  tagsInfo.value = val.map((v: any) => {
     console.log('type', typeof v)
     if (typeof v == 'string') {
       console.log('hier', v)
@@ -578,7 +552,7 @@ const updatedTags = (val: (TagInfo | string)[]) => {
     }
     return v
   })
-  console.log('updating tag2', pageModel.tagsInfo)
+  console.log('updating tag2', tagsInfo.value)
 }
 
 const openAsArticle = () => {
@@ -595,10 +569,10 @@ const addTab = () => {
   // validation?
   if (browserTab.value) {
     const newTab: Tab = new Tab(uid(), browserTab.value)
-    newTab.url = pageModel.url
-    newTab.note = pageModel.note
-    newTab.description = pageModel.description || ''
-    newTab.tagsInfo = pageModel.tagsInfo
+    newTab.url = url.value
+    newTab.note = note.value
+    newTab.description = description.value || ''
+    newTab.tagsInfo = tagsInfo.value
     useCommandExecutor()
       .executeFromUi(new AddTabToTabsetCommand(newTab, currentTabset.value)) //, props.folder?.id))
       .then(() => {
@@ -650,7 +624,7 @@ const openMHtml = (id: string) => window.open(chrome.runtime.getURL(`www/index.h
 const deleteMHtml = (id: string) => useSnapshotsService().deleteSnapshot(id)
 
 const removeTag = (toDelete: TagInfo) => {
-  pageModel.tagsInfo = pageModel.tagsInfo.filter((i: TagInfo) => i.label !== toDelete.label)
+  tagsInfo.value = tagsInfo.value.filter((i: TagInfo) => i.label !== toDelete.label)
   let result: ExecutionResult<any> | undefined = undefined
   if (toDelete.type === 'keyword') {
     result = new ExecutionResult(

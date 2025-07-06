@@ -435,7 +435,7 @@ export class AppFeatures {
     ),
     new Feature(
       FeatureIdent.AI,
-      'EXPERIMENTAL',
+      'DISABLED',
       'AI Features',
       'active additional AI Features like language detection, summaries etc.',
       'sym_o_play_circle',

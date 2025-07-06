@@ -1,11 +1,16 @@
 import { TAGS_IGNORED } from 'boot/constants'
+import nlp from 'compromise'
+import speech from 'compromise-speech'
+import stats from 'compromise-stats'
+// @ts-expect-error xxx
+import nlpDE from 'de-compromise'
 import { LocalStorage } from 'quasar'
 import { CategoryInfo, TagInfo, TagType } from 'src/core/models/TagInfo'
 import { useUtils } from 'src/core/services/Utils'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
-const { sanitizeAsText, extractSecondLevelDomain } = useUtils()
+const { extractSecondLevelDomain } = useUtils()
 
 function removeDuplicatesByProperty<T>(array: T[], property: keyof T): T[] {
   const uniqueMap = new Map<any, T>()
@@ -31,6 +36,10 @@ function addByTypeIfNotExisting(type: TagType, tags: TagInfo[], tagsToUse: TagIn
   tagsToUse.push(...filteredTags)
 }
 
+function sanitizeContent(s: string): string {
+  return s.replace(/[^\wäöüßÄÖÜ\s]/gi, '')
+}
+
 export function useTagsService() {
   const deduplicateTags = (tags: TagInfo[]): TagInfo[] => {
     //console.log('deduplicating', tags)
@@ -40,6 +49,7 @@ export function useTagsService() {
     )
     addByTypeIfNotExisting('url', tags, tagsToUse)
     addByTypeIfNotExisting('hierarchy', tags, tagsToUse)
+    addByTypeIfNotExisting('languageModel', tags, tagsToUse)
     addByTypeIfNotExisting('keyword', tags, tagsToUse)
     addByTypeIfNotExisting('langDetection', tags, tagsToUse)
     addByTypeIfNotExisting('classification', tags, tagsToUse)
@@ -53,22 +63,22 @@ export function useTagsService() {
       ...new Set(
         keywordsString
           .split(',')
-          .map((k: string) => sanitizeAsText(k.trim().toLowerCase()))
+          .map((k: string) => sanitizeContent(k.trim().toLowerCase()))
           .filter((k: string) => k.length > 2 && k.length <= 12)
           .filter((k: string) => ignoredList.indexOf(k) < 0),
       ),
     ]
     return keywords.map((k: string) => {
-      return { label: k.trim(), type: 'keyword', score: 1 }
+      return { label: sanitizeContent(k.trim()), type: 'keyword', score: 1 }
     })
   }
 
   const tagsFromHierarchy = (ts: Tabset): TagInfo[] => {
     const folderChain = useTabsetsStore().getFolderNameChain(ts, ts.folderActive || ts.id)
     const hierarchies: TagInfo[] = folderChain
-      .map((name: string) => name.replaceAll(' ', '').trim().toLowerCase())
+      .map((name: string) => sanitizeContent(name.replaceAll(' ', '').trim().toLowerCase()))
       .map((name: string) => {
-        return { label: name, type: 'hierarchy', score: 1 }
+        return { label: sanitizeContent(name), type: 'hierarchy', score: 1 }
       })
     return hierarchies
   }
@@ -77,7 +87,7 @@ export function useTagsService() {
     const result: TagInfo[] = []
     const domain = extractSecondLevelDomain(url)
     if (domain) {
-      result.push({ label: domain, type: 'url', score: 1 })
+      result.push({ label: sanitizeContent(domain), type: 'url', score: 1 })
     }
     try {
       const theURL = new URL(url)
@@ -141,6 +151,50 @@ export function useTagsService() {
     ]
   }
 
+  const tagsFromLanguageModel = (text: string, language: string): TagInfo[] => {
+    let doc = null
+    console.log('>>>', text, language)
+    switch (language) {
+      case 'de':
+        console.log('using german')
+        nlpDE.plugin(speech)
+        nlpDE.plugin(stats)
+        doc = nlpDE(text)
+        doc.compute('syllables') //kaboom
+        console.log('===>', doc.json({ syllables: true }))
+        console.log('===>', doc.compute('tfidf').json())
+
+        return sanitizeContent(doc.match('[#Noun+]', 0).text())
+          .split(' ')
+          .filter((word: string) => word.trim().length > 0 && word.trim().length < 26)
+          .map((word: string) => {
+            return { label: word.toLowerCase(), type: 'languageModel', score: 1 }
+          })
+      default:
+        //const nlp = import('compromise')
+        console.log('using german')
+        nlp.plugin(speech)
+        nlp.plugin(stats)
+        doc = nlp(text)
+        doc.compute('syllables') //kaboom
+        console.log('===>', doc.json({ syllables: true }))
+        console.log('===>', doc.compute('tfidf').json())
+
+        let m = doc.match('[#Noun+]', 0)
+        console.log('===>', m.text())
+        const res: TagInfo[] = m
+          .text()
+          .replace(/[^\w\s]/gi, '')
+          .split(' ')
+          .filter((word: string) => word.trim().length > 0 && word.trim().length < 26)
+          .map((word: string) => {
+            return { label: word.toLowerCase(), type: 'languageModel', score: 1 }
+          })
+        console.log('res', res)
+        return res
+    }
+  }
+
   return {
     deduplicateTags,
     tagsFromKeywords,
@@ -148,5 +202,6 @@ export function useTagsService() {
     tagsFromUrl,
     tagsFromClassification,
     tagsFromLangDetection,
+    tagsFromLanguageModel,
   }
 }

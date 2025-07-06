@@ -1,10 +1,10 @@
 import _ from 'lodash'
-import { LocalStorage, QVueGlobals } from 'quasar'
+import { QVueGlobals } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
 import BrowserListeners from 'src/app/listeners/BrowserListeners'
 import BookmarksService from 'src/bookmarks/services/BookmarksService'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
-import { EXTENSION_NAME, TAGS_CATEGORIES } from 'src/boot/constants'
+import { EXTENSION_NAME } from 'src/boot/constants'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
 import { useContentService } from 'src/content/services/ContentService'
 import BexFunctions from 'src/core/communication/BexFunctions'
@@ -166,44 +166,13 @@ class AppService {
       // await router.push('/sidepanel/welcome')
     }
 
-    // set badge, text and color
-    //useTabsetsUiStore().updateExtensionIcon()
-    const tagCats = LocalStorage.getItem(TAGS_CATEGORIES)
-    if (!tagCats) {
-      LocalStorage.setItem(TAGS_CATEGORIES, [
-        { label: 'Art', weight: 1 },
-        { label: 'Attractions', weight: 1 },
-        { label: 'Automotive', weight: 1 },
-        { label: 'Business', weight: 1 },
-        { label: 'Career', weight: 1 },
-        { label: 'Communication', weight: 1 },
-        { label: 'Culture', weight: 1 },
-        { label: 'Education', weight: 1 },
-        { label: 'Entertainment', weight: 1 },
-        { label: 'Events', weight: 1 },
-        { label: 'Fashion', weight: 1 },
-        { label: 'Finance', weight: 1 },
-        { label: 'Food', weight: 1 },
-        { label: 'Gaming', weight: 1 },
-        { label: 'Garden', weight: 1 },
-        { label: 'Health', weight: 1 },
-        { label: 'Hobby', weight: 1 },
-        { label: 'Home', weight: 1 },
-        { label: 'Holidays', weight: 1 },
-        { label: 'Law', weight: 1 },
-        { label: 'Literature', weight: 1 },
-        { label: 'Music', weight: 1 },
-        { label: 'Navigation', weight: 1 },
-        { label: 'Pets', weight: 1 },
-        { label: 'Realestate', weight: 1 },
-        { label: 'Religion', weight: 1 },
-        { label: 'Science', weight: 1 },
-        { label: 'Shopping', weight: 1 },
-        { label: 'Sport', weight: 1 },
-        { label: 'Technology', weight: 1 },
-        { label: 'Travel', weight: 1 },
-      ])
-    }
+    // const tagCats = LocalStorage.getItem(TAGS_CATEGORIES)
+    // if (!tagCats) {
+    //   LocalStorage.setItem(TAGS_CATEGORIES, [
+    //
+    //   ])
+    // }
+
     ChromeApi.buildContextMenu('AppService')
   }
 }

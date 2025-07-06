@@ -1,4 +1,4 @@
-export type TagType = 'manual' | 'url' | 'hierarchy' | 'keyword' | 'langDetection' | 'classification'
+export type TagType = 'manual' | 'url' | 'hierarchy' | 'languageModel' | 'keyword' | 'langDetection' | 'classification'
 
 export type TagInfo = {
   label: string

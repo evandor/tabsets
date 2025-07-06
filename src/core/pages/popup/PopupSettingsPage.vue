@@ -6,7 +6,7 @@
     <div class="justify-start items-start greyBorderTop">
       <q-tabs align="left" inline-label v-model="tab" no-caps>
         <q-tab name="appearance" :label="t('appearance')" />
-        <q-tab name="tags" label="Tags" />
+        <q-tab name="tags" label="Tags" v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)" />
         <q-tab name="features" label="More Features" />
         <q-tab name="ignored" label="Ignored Urls" v-if="showIgnored()" />
         <q-tab
@@ -47,6 +47,21 @@
             class="cursor-pointer"
             color="primary"
             @click.stop="openFeaturePage(f.ident)" />
+        </div>
+      </div>
+
+      <div v-if="useSettingsStore().has('DEV_MODE')">
+        <div class="row">
+          <div class="col-12">
+            <hr />
+          </div>
+        </div>
+        <div class="row q-mx-md">
+          <div class="col-1 q-mt-sm"></div>
+          <div class="col-7 q-mt-sm">DEBUG Mode</div>
+          <div class="col text-right">
+            <q-toggle v-model="debugEnabled" @click="updateSettings2('DEBUG_MODE', debugEnabled)" />
+          </div>
         </div>
       </div>
     </div>
@@ -112,6 +127,14 @@
  * refactoring remark: uses many other modules, needs to be one-per-application
  *
  */
+/**
+ * refactoring remark: uses many other modules, needs to be one-per-application
+ *
+ */
+/**
+ * refactoring remark: uses many other modules, needs to be one-per-application
+ *
+ */
 import _ from 'lodash'
 import { Notify, openURL, useQuasar } from 'quasar'
 import { FeatureIdent, FeatureType } from 'src/app/models/FeatureIdent'
@@ -131,6 +154,7 @@ import { useRoute, useRouter } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
 import TagsSettings from 'pages/helper/TagsSettings.vue'
 import { AppFeatures } from 'src/app/models/AppFeatures'
+import { SettingIdent } from 'src/app/models/SettingIdent'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import Command from 'src/core/domain/Command'
 import PopupToolbar from 'src/core/pages/popup/PopupToolbar.vue'
@@ -144,6 +168,7 @@ const { sendMsg } = useUtils()
 const toggle = ref(true)
 const paddingTop = ref('padding-top: 40px')
 const activeFeatures = ref<{ [k: string]: boolean }>({})
+const debugEnabled = ref<boolean>(useSettingsStore().has('DEBUG_MODE') || false)
 
 const searchStore = useSearchStore()
 const settingsStore = useSettingsStore()
@@ -283,6 +308,16 @@ const toggleFeature = (f: Feature, enabled: boolean) => {
       console.log('revoking2', f)
       useFeaturesStore().deactivateFeature(f.ident.toUpperCase())
     }
+  }
+}
+
+const updateSettings2 = (ident: SettingIdent, active: boolean) => {
+  console.log('settings2 updated to', ident, active)
+  settingsStore.setToggle(ident, active)
+  if (active) {
+    sendMsg('setting-activated', { setting: ident })
+  } else {
+    sendMsg('setting-deactivated', { setting: ident })
   }
 }
 </script>

@@ -1020,10 +1020,10 @@ export function useTabsetService() {
     return useTabsetsStore().tabsets.get(tsId)?.name || 'unknown'
   }
 
-  const limitExceeded = async () => {
+  const limitExceeded = () => {
     const exceedInfo = useAuthStore().limitExceeded('TABS', useTabsetsStore().allTabsCount)
     if (exceedInfo.exceeded) {
-      await useNavigationService().browserTabFor(
+      useNavigationService().browserTabFor(
         chrome.runtime.getURL(
           `/www/index.html#/mainpanel/settings?tab=account&exceeded=tabs&limit=${exceedInfo.limit}`,
         ),
@@ -1041,7 +1041,7 @@ export function useTabsetService() {
     if (!tab.url) {
       return Promise.resolve('tab.url undefined')
     }
-    if (await limitExceeded()) {
+    if (limitExceeded()) {
       return Promise.resolve('Tabs Limit was Exceeded')
     }
     if (!allowDuplicates) {
