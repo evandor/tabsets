@@ -41,6 +41,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { PropType, ref } from 'vue'
 
 const emit = defineEmits(['tagSelected'])
@@ -53,7 +54,7 @@ const hoveredTag = ref<string | undefined>(undefined)
 const hoveredOver = (tag: string) => hoveredTag.value === tag
 
 const createDynamicTabsetFrom = (tag: string) => {
-  //  useCommandExecutor().executeFromUi(new CreateDynamicTabset(tag))
+  useCommandExecutor().executeFromUi(new CreateDynamicTabset(tag))
 }
 
 const selectTag = (tag: string) => emit('tagSelected', tag)

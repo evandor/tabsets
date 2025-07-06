@@ -32,8 +32,18 @@
               :filled="false"
               data-testid="pageModelTitle" />
           </div>
-          <div class="col ellipsis-3-lines text-body2">{{ description }}</div>
-          <!--          <AutogrowInput v-model="pageModel.description" :class="'ellipsis-3-lines'" />-->
+          <div v-if="!editDescription" class="col ellipsis-3-lines text-body2" @click="toggleEditDescription()">
+            {{ description }}
+          </div>
+          <div v-else>
+            <AutogrowInput
+              @blur="toggleEditDescription()"
+              ref="descriptionRef"
+              v-model="description"
+              :class="'ellipsis-3-lines'"
+              :filled="false"
+              :active="true" />
+          </div>
         </div>
       </div>
     </div>
@@ -152,9 +162,6 @@
         color="grey-7"
         class="cursor-pointer q-mt-xs q-ml-sm">
         <q-tooltip class="tooltip-small" :delay="500">Save a snapshot of this page</q-tooltip>
-        <!--        <q-badge v-if="snapshotsSize > 0" floating color="warning" size="xs" text-color="primary"-->
-        <!--          >{{ snapshotsSize }}-->
-        <!--        </q-badge>-->
       </q-btn>
     </PopupInputLine>
 
@@ -188,25 +195,6 @@
         </q-btn>
       </div>
     </div>
-
-    <template v-if="useSettingsStore().has('DEBUG_MODE')">
-      <div class="row q-pa-none q-ma-none fit">
-        <div
-          class="col-12 q-pa-none q-mx-md q-mt-md q-mb-none text-caption ellipsis-2-lines"
-          style="font-size: smaller">
-          {{ browserTab?.url }}
-        </div>
-        <div class="col-12 q-pa-none q-mx-md q-my-none text-caption" style="font-size: smaller">
-          {{ useContentStore().getCurrentTabContent?.length }}
-        </div>
-        <div class="col-12 q-pa-none q-mx-md q-my-none text-caption" style="font-size: smaller">
-          {{ useContentStore().currentTabFavIcon }}<br />
-          <!-- {{ text }}<br />-->
-          <!--          <hr />-->
-          <!--          {{ browserTab }}<br />-->
-        </div>
-      </div>
-    </template>
 
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode q-ma-none q-ml-md">
       <PopupToolbar title="Tabsets" />
@@ -250,7 +238,7 @@ import { useTagsService } from 'src/tags/TagsService'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { UiDensity, useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
-import { onMounted, provide, ref, watchEffect } from 'vue'
+import { onMounted, provide, ref, useTemplateRef, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
 // the page model
@@ -272,6 +260,10 @@ const containedInTsCount = ref(0)
 const text = ref<string | undefined>(undefined)
 const collectionChips = ref<object[]>([])
 
+const editDescription = ref(false)
+const descriptionRef = useTemplateRef<HTMLElement>('descriptionRef')
+// const { focused: editDescriptionFocus } = useFocus(descriptionRef)
+
 const infoModes = ['saved', 'updated', 'count', 'lastActive']
 const infoMode = ref<string>(infoModes[0]!)
 
@@ -281,6 +273,7 @@ const { handleSuccess } = useNotificationHandler()
 provide('ui.density', uiDensity)
 
 let initialNote = ''
+let initialDesc = ''
 
 const infoLabel = ref('')
 const mds = ref<BlobMetadata[]>([])
@@ -369,11 +362,12 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if (tab.value && note.value !== initialNote) {
+  if (tab.value && (note.value !== initialNote || description.value !== initialDesc)) {
     infoLabel.value = 'updating...'
     setTimeout(() => {
       if (currentTabset.value) {
         tab.value!.note = note.value
+        tab.value!.description = description.value
         tab.value!.updated = new Date().getTime()
         useTabsetsStore().saveTabset(currentTabset.value)
         infoLabel.value = 'Updated ' + date.formatDate(tab.value!.updated, 'DD.MM.YY HH:mm')
@@ -381,6 +375,19 @@ watchEffect(() => {
     }, 1000)
   }
 })
+
+function getSnapshots() {
+  if (!tab.value) {
+    return
+  }
+  useSnapshotsStore()
+    .metadataFor(tab.value.id)
+    .then((res) => {
+      mds.value = res
+      mds.value = mds.value.sort((a: BlobMetadata, b: BlobMetadata) => b.created - a.created)
+      console.log('got', mds.value)
+    })
+}
 
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
@@ -398,15 +405,11 @@ watchEffect(() => {
         infoLabel.value = 'Saved ' + date.formatDate(tab.value.created, 'DD.MM.YY HH:mm')
         initialNote = tab.value.note
         note.value = tab.value.note
+        initialDesc = tab.value.description
+        description.value = tab.value.description
         console.log('setting tagsInfo')
         tagsInfo.value = tab.value.tagsInfo
-        useSnapshotsStore()
-          .metadataFor(tab.value.id)
-          .then((res) => {
-            mds.value = res
-            mds.value = mds.value.sort((a: BlobMetadata, b: BlobMetadata) => b.created - a.created)
-            console.log('got', mds.value)
-          })
+        getSnapshots()
       }
       const browserUrl = browserTab.value.url
       if (browserUrl) {
@@ -615,13 +618,20 @@ const switchTabset = (tsId: string) => {
 }
 
 const saveSnapshot = () => {
-  console.log('hier', tab.value)
   if (tab.value && tab.value.url) {
-    useCommandExecutor().executeFromUi(new SaveMHtmlCommand(tab.value.id, tab.value.url))
+    useCommandExecutor()
+      .executeFromUi(new SaveMHtmlCommand(tab.value.id, tab.value.url))
+      .then(() => {
+        getSnapshots()
+      })
   }
 }
+
 const openMHtml = (id: string) => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/mhtml/${id}`))
-const deleteMHtml = (id: string) => useSnapshotsService().deleteSnapshot(id)
+const deleteMHtml = (id: string) =>
+  useSnapshotsService()
+    .deleteSnapshot(id)
+    .then(() => getSnapshots())
 
 const removeTag = (toDelete: TagInfo) => {
   tagsInfo.value = tagsInfo.value.filter((i: TagInfo) => i.label !== toDelete.label)
@@ -675,6 +685,11 @@ const tooltipFor = (info: TagInfo): string => {
       tooltip = ''
   }
   return tooltip
+}
+
+const toggleEditDescription = () => {
+  editDescription.value = !editDescription.value
+  // editDescriptionFocus.value = editDescription.value
 }
 </script>
 

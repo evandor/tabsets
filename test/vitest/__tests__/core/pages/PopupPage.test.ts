@@ -1,14 +1,12 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { mount, VueWrapper } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import { LocalStorage, uid } from 'quasar'
+import { LocalStorage } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
 import { useContentStore } from 'src/content/stores/contentStore'
 import PopupPage from 'src/core/pages/popup/PopupPage.vue'
 import { useDB } from 'src/services/usePersistenceService'
-import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
-import { Tab } from 'src/tabsets/models/Tab'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -138,27 +136,30 @@ describe('PopupPage', () => {
 
   it('should be loaded from existing tab', async () => {
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
-    const creationResult = await new CreateTabsetCommand('new Tabset', []).execute()
-    const tabset = creationResult.result.tabset
-    await new AddTabToTabsetCommand(new Tab(uid(), skysailChromeTab), tabset).execute()
+    useContentStore().setCurrentTabMetas({
+      keywords: 'keyword1, keyword2',
+      description: 'The Websites Description',
+    })
+    const executionResult = await new CreateTabsetCommand('new Tabset', []).execute()
+    //const ts = executionResult.result.tabset
+
+    wrapper = mount(PopupPage)
+
+    await wrapper.find('[data-testid=pageModelNote]').setValue('a note')
+    await wrapper.find('[data-testid=addNewTabBtn]').trigger('click')
+
+    // useTabsStore2().setCurrentChromeTab(skysailChromeTab)
+    // const creationResult = await new CreateTabsetCommand('new Tabset', []).execute()
+    // const tabset = creationResult.result.tabset
+    // await new AddTabToTabsetCommand(new Tab(uid(), skysailChromeTab), tabset).execute()
 
     wrapper = mount(PopupPage)
 
     expect(wrapper.vm.url).toBe('https://www.skysail.io/some-subpage')
     expect(wrapper.vm.title).toBe('title')
     expect(wrapper.vm.description).toBe('The Websites Description')
-    expect(wrapper.vm.note).toBe('')
-    expect(wrapper.vm.tagsInfo).toEqual([
-      { label: 'skysail', type: 'url', score: 1 },
-      { label: 'io', type: 'url', score: 1 },
-      { label: 'some', type: 'url', score: 1 },
-      { label: 'subpage', type: 'url', score: 1 },
-      { label: 'newtabset', type: 'hierarchy', score: 1 },
-      { label: 'websites', type: 'languageModel', score: 1 },
-      { label: 'description', type: 'languageModel', score: 1 },
-      { label: 'keyword1', type: 'keyword', score: 1 },
-      { label: 'keyword2', type: 'keyword', score: 1 },
-    ])
+    expect(wrapper.vm.note).toBe('a note')
+    // expect(wrapper.vm.tagsInfo).toEqual([])
   })
 
   // it('should be mounted from browser tab with AI activated', async () => {

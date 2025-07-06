@@ -107,10 +107,8 @@ export function useTagsService() {
           return path.split('_')
         })
         .map((p: string) => p.trim().toLowerCase())
-        .filter((p: string) => p.length > 2 && p.length <= 26)
         .map((p: string) => p.replace(/\d/g, '')) // no numbers please
-        //.map((p: string) => pluralize.singular(p))
-        .filter((p: string) => p.length > 0)
+        .filter((p: string) => p.length > 2 && p.length <= 26)
         .forEach((p: string) => {
           result.push({ label: p, type: 'url', score: 1 })
         })
