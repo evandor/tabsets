@@ -62,4 +62,6 @@ const toggleDocumentation = () => {
   showDocumentation.value = !showDocumentation.value
   LocalStorage.setItem('ui.opentabs.documentation', 'hide')
 }
+const termChanged = (val: { term: string }) => (filterTerm.value = val.term)
+const selectionInverted = () => sidePanelOpenTabsListViewerRef.value!.invertSelection()
 </script>
