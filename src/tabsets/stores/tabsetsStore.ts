@@ -222,11 +222,11 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     if (found) {
       currentTabsetId.value = found.id
       currentTabsetFolderId.value = found.folderActive
-      return found
+      return Promise.resolve(found)
     } else {
       console.debug(`did not find tabset ${tabsetId}, not trying to reload`)
     }
-    return undefined
+    return Promise.resolve(undefined)
   }
 
   function share(tabset: Tabset, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string) {
