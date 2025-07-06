@@ -35,6 +35,7 @@ import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
+import { useAuthStore } from 'stores/authStore'
 import { watch } from 'vue'
 import { Router } from 'vue-router'
 
