@@ -33,7 +33,7 @@ function runHousekeeping() {
 }
 
 class BrowserApi {
-  onHeadersReceivedListener = function (details: chrome.webRequest.WebResponseHeadersDetails) {
+  onCompletedListener = function (details: chrome.webRequest.WebResponseHeadersDetails) {
     if (details.url) {
       // store transient information
       useRequestsStore().setCurrentTabRequest(details)
@@ -41,6 +41,10 @@ class BrowserApi {
       // save to db for existing tabs
       useRequestsService().logWebRequest(details)
     }
+  }
+
+  onBeforeRedirectListener = function (details: chrome.webRequest.WebResponseHeadersDetails) {
+    console.log('on Before redirect', details)
   }
 
   init() {
@@ -93,28 +97,22 @@ class BrowserApi {
   }
 
   startWebRequestListener() {
-    //console.log(' ...adding WebRequestListener')
-    chrome.webRequest?.onHeadersReceived.addListener(
-      this.onHeadersReceivedListener,
+    console.log(' ...adding WebRequestListener')
+    chrome.webRequest?.onCompleted.addListener(this.onCompletedListener, { urls: ['*://*/*'], types: ['main_frame'] }, [
+      'extraHeaders',
+      'responseHeaders',
+    ])
+    chrome.webRequest.onBeforeRedirect.addListener(
+      this.onBeforeRedirectListener,
       { urls: ['*://*/*'], types: ['main_frame'] },
-      ['responseHeaders'],
-    )
-    chrome.webRequest?.onCompleted.addListener(
-      (details: any) => {
-        console.log('details!', details)
-      },
-      {
-        urls: ['*://*/*/graphql'],
-        types: ['xmlhttprequest'],
-      },
-      ['responseHeaders'],
+      ['extraHeaders', 'responseHeaders'],
     )
   }
 
   stopWebRequestListener() {
     if (chrome.webRequest) {
       //console.debug('removing WebRequestListener if running', chrome.webRequest)
-      chrome.webRequest.onHeadersReceived.removeListener(this.onHeadersReceivedListener)
+      chrome.webRequest.onHeadersReceived.removeListener(this.onCompletedListener)
     }
   }
 

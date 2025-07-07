@@ -11,7 +11,7 @@ import { ChangeInfo } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { ref } from 'vue'
 
-const { inBexMode } = useUtils()
+const { inBexMode, sendMsg } = useUtils()
 
 export class OpenTabCommand implements Command<string> {
   getHandler = useActionHandlers(undefined).getHandler
@@ -56,6 +56,12 @@ export class OpenTabCommand implements Command<string> {
       if (this.tab.httpStatus === 0) {
         this.tab.httpStatus = 200 // ok "for now"
       }
+
+      // badge indicator icon
+      setTimeout(() => {
+        sendMsg('url-added', { url: this.tab.url })
+      }, 1000)
+
       Analytics.fireEvent('tabset_tab_opened', {})
       return Promise.resolve(new ExecutionResult('', 'opened'))
     } catch (err: any) {

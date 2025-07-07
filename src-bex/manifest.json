@@ -61,8 +61,8 @@
     "side_panel": {
       "default_path": "www/index.html#/sidepanel"
     },
-    "permissions": ["storage", "tabs", "activeTab", "alarms", "scripting", "sidePanel", "contextMenus", "bookmarks"],
-    "optional_permissions": ["pageCapture", "notifications", "webRequest", "tabGroups"],
+    "permissions": ["storage", "tabs", "activeTab", "alarms", "scripting", "sidePanel", "contextMenus", "bookmarks","webRequest"],
+    "optional_permissions": ["pageCapture", "notifications",  "tabGroups"],
     "background": {
       "service_worker": "background.ts"
     }
