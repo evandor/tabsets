@@ -8,7 +8,12 @@ export type AccessItem = 'TABS' | 'TABSETS' | 'SPACES' | 'SYNC' | 'SHARE' | 'FEA
  * dummy store for submodules integration
  */
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<{ uid: string; email: string; photoURL: string }>({ uid: '', email: '', photoURL: '' })
+  const user = ref<{ uid: string; email: string; photoURL: string; isAnonymous: boolean }>({
+    uid: '',
+    email: '',
+    photoURL: '',
+    isAnonymous: false,
+  })
   const products = ref<string[]>([])
   const avatar = ref('https://www.gravatar.com/avatar/unknown')
 
