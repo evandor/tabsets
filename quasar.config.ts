@@ -1,47 +1,11 @@
-;
-
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-// Configuration for your app
-// https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
-// https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
-import { fileURLToPath } from 'node:url';
-import { defineConfig } from '#q-app/wrappers';
-import 'dotenv/config.js';
-import { sentryVitePlugin } from '@sentry/vite-plugin';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import version from 'vite-plugin-package-version';
-
-
-;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { fileURLToPath } from 'node:url'
+import { defineConfig } from '#q-app/wrappers'
+import 'dotenv/config.js'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
+import version from 'vite-plugin-package-version'
 
 export default defineConfig((ctx) => {
   return {
@@ -155,7 +119,6 @@ export default defineConfig((ctx) => {
           },
           { server: false },
         ],
-        nodePolyfills(), // as of https://stackoverflow.com/questions/76431747/module-has-been-externalized-for-browser-compatibility-error-in-vite-build
         version(),
         [
           sentryVitePlugin,

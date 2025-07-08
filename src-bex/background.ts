@@ -1,6 +1,5 @@
 import { createBridge } from '#q-app/bex/background'
 import Analytics from 'src/core/utils/google-analytics'
-import { useAiService } from 'src/services/useAiService'
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -25,20 +24,19 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   ;(async function () {
-    const aiGateway = useAiService().xenova
     if (message.name === 'init-ai-module') {
       console.log('got message init-ai-module!!')
-      try {
-        await aiGateway.loadModule()
-        sendResponse('ai module loaded')
-      } catch (err: any) {
-        sendResponse('error: ' + err)
-      }
+      // try {
+      //   await aiGateway.loadModule()
+      //   sendResponse('ai module loaded')
+      // } catch (err: any) {
+      //   sendResponse('error: ' + err)
+      // }
     } else if (message.name === 'zero-shot-classification') {
       try {
         console.log('hier', modelPromise)
-        const result = await aiGateway.zeroShotClassification(message.data.text, message.data.candidates as string[])
-        sendResponse(result)
+        // const result = await aiGateway.zeroShotClassification(message.data.text, message.data.candidates as string[])
+        // sendResponse(result)
       } catch (err) {
         console.log('got error', err)
         sendResponse(err)
