@@ -1,6 +1,6 @@
 import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore'
 import { LocalStorage } from 'quasar'
-import FirebaseServices from 'src/services/firebase/FirebaseServices'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { Space } from 'src/spaces/models/Space'
 import SpacesPersistence from 'src/spaces/persistence/SpacesPersistence'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
@@ -9,21 +9,23 @@ import { useAuthStore } from 'stores/authStore'
 
 const STORE_IDENT = 'spaces'
 
-function spaceDoc(spaceId: string) {
-  return doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, spaceId)
+function spaceDoc(firebaseServices: IFirebaseServices, spaceId: string) {
+  return doc(firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, spaceId)
 }
 
-function spacesCollection() {
-  return collection(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT)
+function spacesCollection(firebaseServices: IFirebaseServices) {
+  return collection(firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT)
 }
 
 class FirestoreSpacesPersistence implements SpacesPersistence {
+  private firebaseServices: IFirebaseServices = null as unknown as IFirebaseServices
   getServiceName(): string {
     return this.constructor.name
   }
 
-  async init() {
+  async init(firebaseServices: IFirebaseServices) {
     // console.debug(` ...initialized spaces: ${this.getServiceName()}`, '✅')
+    this.firebaseServices = firebaseServices
     return Promise.resolve('')
   }
 
@@ -33,7 +35,7 @@ class FirestoreSpacesPersistence implements SpacesPersistence {
     }
     useUiStore().syncing = true
     LocalStorage.set('ui.spaces.lastUpdate', new Date().getTime())
-    ;(await getDocs(spacesCollection())).forEach((doc) => {
+    ;(await getDocs(spacesCollection(this.firebaseServices))).forEach((doc) => {
       let newItem = doc.data() as Space
       newItem.id = doc.id
       useSpacesStore().addSpace(newItem)
@@ -44,14 +46,14 @@ class FirestoreSpacesPersistence implements SpacesPersistence {
 
   async addSpace(entity: Space): Promise<any> {
     useUiStore().syncing = true
-    await setDoc(spaceDoc(entity.id), JSON.parse(JSON.stringify(entity)))
+    await setDoc(spaceDoc(this.firebaseServices, entity.id), JSON.parse(JSON.stringify(entity)))
     useUiStore().syncing = false
   }
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   async deleteSpace(entityId: string) {
     useUiStore().syncing = true
-    await deleteDoc(spaceDoc(entityId))
+    await deleteDoc(spaceDoc(this.firebaseServices, entityId))
     useUiStore().syncing = false
   }
 
