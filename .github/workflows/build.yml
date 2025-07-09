@@ -5,7 +5,7 @@ on:
 #      - master
 #      - main
   push:
-    branches: [ pro ]
+    branches: ['**']
 jobs:
   coverage:
     runs-on: ubuntu-latest
