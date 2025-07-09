@@ -1,4 +1,5 @@
 import Persistence from 'src/core/persistence/Persistence'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { Suggestion, SuggestionState } from 'src/suggestions/domain/models/Suggestion'
 
 abstract class SuggestionsPersistence implements Persistence {
@@ -6,7 +7,7 @@ abstract class SuggestionsPersistence implements Persistence {
     return this.constructor.name
   }
 
-  abstract init(): Promise<any>
+  abstract init(firebaseServices: IFirebaseServices): Promise<any>
 
   abstract getSuggestions(): Promise<Suggestion[]>
   abstract addSuggestion(suggestion: Suggestion): Promise<void>

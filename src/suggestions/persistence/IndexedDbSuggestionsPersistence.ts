@@ -1,5 +1,6 @@
 import { IDBPDatabase, openDB } from 'idb'
 import _ from 'lodash'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { Suggestion, SuggestionState } from 'src/suggestions/domain/models/Suggestion'
 import SuggestionsPersistence from 'src/suggestions/persistence/SuggestionsPersistence'
 
@@ -8,7 +9,7 @@ class IndexedDbSuggestionsPersistence extends SuggestionsPersistence {
 
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
-  async init() {
+  async init(firebaseServices: IFirebaseServices) {
     this.db = await this.initDatabase()
     // console.debug(` ...initialized suggestions: DB`, '✅')
     return Promise.resolve('')
