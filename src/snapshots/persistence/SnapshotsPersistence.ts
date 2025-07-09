@@ -1,10 +1,11 @@
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { Annotation } from 'src/snapshots/models/Annotation'
 import { BlobMetadata, BlobType } from 'src/snapshots/models/BlobMetadata'
 
 interface SnapshotsPersistence {
   // --- generic ---
   getServiceName(): string
-  init(): Promise<any>
+  init(firestoreServices: IFirebaseServices): Promise<any>
   compactDb(): Promise<any>
   clear(name: string): void
 
