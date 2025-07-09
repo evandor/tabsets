@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 import { Annotation } from 'src/snapshots/models/Annotation'
 import { BlobMetadata, BlobType } from 'src/snapshots/models/BlobMetadata'
 import SnapshotsPersistence from 'src/snapshots/persistence/SnapshotsPersistence'
@@ -13,7 +14,7 @@ export const useSnapshotsStore = defineStore('snapshots', () => {
 
   async function initialize(ps: SnapshotsPersistence) {
     storage = ps
-    await storage.init()
+    await storage.init(useFirebaseServices().firebaseServices)
     metadata.value = await storage.getMetadata()
     lastUpdate.value = new Date().getTime()
     // console.debug(' ...initialized snapshots: Store', '✅')
