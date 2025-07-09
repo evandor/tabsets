@@ -122,7 +122,7 @@
     "prettier": "^3.3.3",
     "typescript": "~5.5.4",
     "vite-plugin-checker": "^0.9.1",
-    "vite-plugin-node-polyfills": "^0.23.0",
+    "vite-plugin-node-polyfills": "^0.24.0",
     "vitepress": "^2.0.0-alpha.7",
     "vitepress-plugin-mermaid": "^2.0.17",
     "vitest": "^3.0.7",

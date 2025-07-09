@@ -3,6 +3,7 @@ import { AppFeatures } from 'src/app/models/AppFeatures'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useUtils } from 'src/core/services/Utils'
 import FeaturesPersistence from 'src/features/persistence/FeaturesPersistence'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 import { ref } from 'vue'
 
 export const useFeaturesStore = defineStore('features', () => {
@@ -21,7 +22,7 @@ export const useFeaturesStore = defineStore('features', () => {
   async function initialize(persistence: FeaturesPersistence) {
     // console.debug(` ...initializing featuresStore (${persistence?.getServiceName()})`)
     storage = persistence
-    await storage.init()
+    await storage.init(useFirebaseServices().firebaseServices)
     await load()
   }
 
