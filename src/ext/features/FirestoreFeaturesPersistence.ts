@@ -1,27 +1,29 @@
 import { collection, deleteDoc, doc, getDocs, setDoc } from 'firebase/firestore'
 import { uid } from 'quasar'
 import FeaturesPersistence from 'src/features/persistence/FeaturesPersistence'
-import FirebaseServices from 'src/services/firebase/FirebaseServices'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useAuthStore } from 'stores/authStore'
 
 const STORE_IDENT = 'features'
 
-function featureDoc(id: string) {
-  return doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, id)
+function featureDoc(firebaseServices: IFirebaseServices, id: string) {
+  return doc(firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, id)
 }
 
-function featuresCollection() {
-  return collection(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT)
+function featuresCollection(firebaseServices: IFirebaseServices) {
+  return collection(firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT)
 }
 
 class FirestoreFeaturesPersistence implements FeaturesPersistence {
+  private firebaseServices: IFirebaseServices = null as unknown as IFirebaseServices
   getServiceName(): string {
     return this.constructor.name
   }
 
-  async init() {
+  async init(firebaseServices: IFirebaseServices) {
     //console.debug(" ...initializing GitPersistenceService")
     //this.indexedDB = useDB(undefined).db as typeof IndexedDbPersistenceService
+    this.firebaseServices = firebaseServices
     return Promise.resolve('')
   }
 
@@ -40,7 +42,7 @@ class FirestoreFeaturesPersistence implements FeaturesPersistence {
       return Promise.resolve([]) // user not authenticated
     }
     // collection(FirebaseServices.getFirestore(), "users", useAuthStore().user.uid, STORE_IDENT)
-    const docs = await getDocs(featuresCollection())
+    const docs = await getDocs(featuresCollection(this.firebaseServices))
     // console.log('docs', docs)
 
     const res: string[] = []
@@ -53,15 +55,15 @@ class FirestoreFeaturesPersistence implements FeaturesPersistence {
   }
 
   async saveActiveFeatures(activeFeatures: string[]) {
-    const docs = await getDocs(featuresCollection())
+    const docs = await getDocs(featuresCollection(this.firebaseServices))
     //_.map(docs, (doc: any) => doc.data() as string)
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     docs.forEach(async (doc: any) => {
       console.log('deleting document', doc)
-      await deleteDoc(featureDoc(doc.id))
+      await deleteDoc(featureDoc(this.firebaseServices, doc.id))
     })
     activeFeatures.forEach((feature: string) => {
-      setDoc(featureDoc(uid()), { feature })
+      setDoc(featureDoc(this.firebaseServices, uid()), { feature })
     })
   }
 }
