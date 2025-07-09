@@ -1,6 +1,7 @@
 import { IDBPDatabase, openDB } from 'idb'
 import _ from 'lodash'
 import { uid } from 'quasar'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { Annotation } from 'src/snapshots/models/Annotation'
 import { BlobMetadata, BlobType } from 'src/snapshots/models/BlobMetadata'
 import SnapshotsPersistence from 'src/snapshots/persistence/SnapshotsPersistence'
@@ -15,7 +16,7 @@ class IndexedDbSnapshotsPersistence implements SnapshotsPersistence {
     return this.constructor.name
   }
 
-  async init() {
+  async init(firestoreServices: IFirebaseServices) {
     this.db = await this.initDatabase()
     // console.debug(` ...initialized snapshots: ${this.getServiceName()}`, '✅')
     return Promise.resolve()

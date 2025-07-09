@@ -92,7 +92,7 @@
           </q-item>
         </template>
 
-        <!--      <template v-if="useAuthStore().isAuthenticated">-->
+        <!--      <template v-if="useAuth().isAuthenticated">-->
         <!--        <q-separator inset/>-->
         <!--        <q-item clickable v-close-popup @click.stop="openSimilar()">-->
         <!--          <q-item-section style="padding-right:0;min-width:25px;max-width: 25px;">-->

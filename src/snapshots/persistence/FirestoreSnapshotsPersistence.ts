@@ -2,7 +2,7 @@ import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, 
 import { deleteObject, getBlob, getMetadata, listAll, ref, uploadBytes } from 'firebase/storage'
 import _ from 'lodash'
 import { uid } from 'quasar'
-import FirebaseServices from 'src/services/firebase/FirebaseServices'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { Annotation } from 'src/snapshots/models/Annotation'
 import { BlobMetadata, BlobType } from 'src/snapshots/models/BlobMetadata'
 import SnapshotsPersistence from 'src/snapshots/persistence/SnapshotsPersistence'
@@ -10,21 +10,23 @@ import { useAuthStore } from 'stores/authStore'
 
 const STORE_IDENT = 'snapshotmetadata'
 
-function metadataDoc(id: string) {
-  return doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, id)
+function metadataDoc(firestoreServices: IFirebaseServices, id: string) {
+  return doc(firestoreServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, id)
 }
 
-function metadataCollection() {
-  return collection(FirebaseServices.getFirestore(), 'users', useAuthStore().user?.uid || 'x', STORE_IDENT)
+function metadataCollection(firestoreServices: IFirebaseServices) {
+  return collection(firestoreServices.getFirestore(), 'users', useAuthStore().user?.uid || 'x', STORE_IDENT)
 }
 
 class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
+  private firestoreServices: IFirebaseServices = null as unknown as IFirebaseServices
   getServiceName(): string {
     return this.constructor.name
   }
 
-  async init() {
-    // console.debug(` ...initialized snapshots: ${this.getServiceName()}`, '✅')
+  async init(firestoreServices: IFirebaseServices) {
+    console.debug(` ...initialized snapshots: ${this.getServiceName()}`, '✅')
+    this.firestoreServices = firestoreServices
     return Promise.resolve('')
   }
 
@@ -45,7 +47,7 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
       return Promise.resolve([])
     }
     md.annotations.push(annotation)
-    await setDoc(metadataDoc(mdId), JSON.parse(JSON.stringify(md)))
+    await setDoc(metadataDoc(this.firestoreServices, mdId), JSON.parse(JSON.stringify(md)))
     return Promise.resolve(md.annotations)
   }
 
@@ -58,7 +60,7 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
     }
     md.annotations = _.filter(md.annotations, (a: Annotation) => a.id !== toDelete.id)
     console.log('deleted annotationm, got', md)
-    await setDoc(metadataDoc(metadataId), JSON.parse(JSON.stringify(md)))
+    await setDoc(metadataDoc(this.firestoreServices, metadataId), JSON.parse(JSON.stringify(md)))
     return md.annotations
   }
 
@@ -72,7 +74,7 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
       return Promise.resolve()
     }
     const storageReference = ref(
-      FirebaseServices.getStorage(),
+      this.firestoreServices.getStorage(),
       `users/${useAuthStore().user.uid}/snapshotBlobs/${md.blobId}`,
     )
     deleteObject(storageReference)
@@ -80,7 +82,9 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
       .catch((error) => {
         console.log('error', error)
       })
-    await deleteDoc(doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, metadataId))
+    await deleteDoc(
+      doc(this.firestoreServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, metadataId),
+    )
     await this.updateStorageQuote()
     return Promise.resolve()
   }
@@ -91,7 +95,10 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
       return Promise.resolve(undefined)
     }
     console.log(`getting blob for ${id}`)
-    const storageReference = ref(FirebaseServices.getStorage(), `users/${useAuthStore().user.uid}/snapshotBlobs/${id}`)
+    const storageReference = ref(
+      this.firestoreServices.getStorage(),
+      `users/${useAuthStore().user.uid}/snapshotBlobs/${id}`,
+    )
     return await getBlob(storageReference)
   }
 
@@ -103,7 +110,7 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
     //console.debug(' ...loading metadata', this.getServiceName(), useAuthStore().user.uid)
     const mds: BlobMetadata[] = []
     // useUiStore().syncing = true
-    const docs = await getDocs(metadataCollection())
+    const docs = await getDocs(metadataCollection(this.firestoreServices))
     docs.forEach((doc: any) => {
       let newItem = doc.data() as BlobMetadata
       //console.log("newItem", newItem)
@@ -116,7 +123,7 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
 
   async getMetadataFor(sourceId: string): Promise<BlobMetadata[]> {
     const res: BlobMetadata[] = []
-    const cr = collection(FirebaseServices.getFirestore(), 'users', useAuthStore().user?.uid || 'x', STORE_IDENT)
+    const cr = collection(this.firestoreServices.getFirestore(), 'users', useAuthStore().user?.uid || 'x', STORE_IDENT)
     const r = query(cr, where('sourceId', '==', sourceId))
     const querySnapshot = await getDocs(r)
     querySnapshot.forEach((doc) => {
@@ -140,7 +147,13 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
   private async saveMetadata(id: string, blobId: string, blobType: BlobType, url: string, remark: string | undefined) {
     const mdId = uid()
     const md = new BlobMetadata(mdId, id, blobId, blobType, url, remark)
-    const mdDoc = doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user?.uid || 'x', STORE_IDENT, mdId)
+    const mdDoc = doc(
+      this.firestoreServices.getFirestore(),
+      'users',
+      useAuthStore().user?.uid || 'x',
+      STORE_IDENT,
+      mdId,
+    )
     await setDoc(mdDoc, JSON.parse(JSON.stringify(md)))
     return mdId
   }
@@ -148,7 +161,7 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
   private async saveBlobToStorage(data: Blob) {
     const blobId = uid()
     const storageReference = ref(
-      FirebaseServices.getStorage(),
+      this.firestoreServices.getStorage(),
       `users/${useAuthStore().user.uid}/snapshotBlobs/${blobId}`,
     )
     await uploadBytes(storageReference, data)
@@ -163,7 +176,7 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
     if (!useAuthStore().user) {
       return Promise.resolve(undefined)
     }
-    const res = await getDoc(metadataDoc(id))
+    const res = await getDoc(metadataDoc(this.firestoreServices, id))
     if (res) {
       return Promise.resolve(res.data() as BlobMetadata)
     }
@@ -172,13 +185,13 @@ class FirestoreSnapshotsPersistence implements SnapshotsPersistence {
 
   private async saveQuote(quote: object) {
     if (useAuthStore().user?.uid) {
-      const userDoc = doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user?.uid)
+      const userDoc = doc(this.firestoreServices.getFirestore(), 'users', useAuthStore().user?.uid)
       await updateDoc(userDoc, quote)
     }
   }
 
   private async updateStorageQuote() {
-    const userSnapshots = ref(FirebaseServices.getStorage(), `users/${useAuthStore().user.uid}/snapshotBlobs`)
+    const userSnapshots = ref(this.firestoreServices.getStorage(), `users/${useAuthStore().user.uid}/snapshotBlobs`)
     const res = await listAll(userSnapshots)
     let size = 0
     for (const itemRef of res.items) {
