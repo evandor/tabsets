@@ -1,4 +1,5 @@
 import { Auth } from 'firebase/auth/web-extension'
+import { Firestore } from 'firebase/firestore'
 import { FirebaseStorage } from 'firebase/storage'
 
 interface IFirebaseServices {
@@ -6,7 +7,7 @@ interface IFirebaseServices {
 
   getAuth(): Auth
 
-  getFirestore(): void
+  getFirestore(): Firestore
 
   getStorage(): FirebaseStorage
 }
