@@ -21,6 +21,7 @@
 import _ from 'lodash'
 import { uid } from 'quasar'
 import SearchHit from 'src/core/components/layouts/SearchHit.vue'
+import { TagInfo } from 'src/core/models/TagInfo'
 import ViewToolbarHelper from 'src/core/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import { Hit } from 'src/search/models/Hit'
