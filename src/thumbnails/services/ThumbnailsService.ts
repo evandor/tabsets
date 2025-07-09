@@ -1,5 +1,6 @@
 import AppEventDispatcher from 'src/app/AppEventDispatcher'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 import ThumbnailsPersistence from 'src/thumbnails/persistence/ThumbnailsPersistence'
 
 let db: ThumbnailsPersistence = null as unknown as ThumbnailsPersistence
@@ -7,7 +8,7 @@ let db: ThumbnailsPersistence = null as unknown as ThumbnailsPersistence
 export function useThumbnailsService() {
   const init = async (storage: ThumbnailsPersistence) => {
     db = storage
-    await db.init()
+    await db.init(useFirebaseServices().firebaseServices)
     //initListeners()
     // console.debug(` ...initialized thumbnails: Service`, '✅')
   }

@@ -1,7 +1,7 @@
-/**
- * noop service to satisfy submodules dependencies
- */
-class FirebaseServices {
+import { FirebaseStorage } from 'firebase/storage'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
+
+class FirebaseServices implements IFirebaseServices {
   init() {}
 
   getAuth() {
@@ -12,8 +12,8 @@ class FirebaseServices {
     return null
   }
 
-  getStorage() {
-    return null
+  getStorage(): FirebaseStorage {
+    return null as unknown as FirebaseStorage
   }
 }
 

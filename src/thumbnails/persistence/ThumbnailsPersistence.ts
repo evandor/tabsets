@@ -1,11 +1,12 @@
 import Persistence from 'src/core/persistence/Persistence'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 abstract class ThumbnailsPersistence implements Persistence {
   getServiceName(): string {
     return this.constructor.name
   }
 
-  abstract init(): Promise<any>
+  abstract init(firebaseServices: IFirebaseServices): Promise<any>
 
   abstract saveThumbnail(tabId: string, tabsetId: string, thumbnail: string): Promise<void>
 
