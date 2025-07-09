@@ -6,7 +6,7 @@
 
   <q-list>
     <q-item
-      v-for="f in featuresByType(['RECOMMENDED', 'RECOMMENDED_POPUP'])"
+      v-for="f in featuresByType(['RECOMMENDED'])"
       clickable
       v-ripple
       :dense="useSettingsStore().has('DEV_MODE')"

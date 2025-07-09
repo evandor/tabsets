@@ -16,7 +16,7 @@
         :tabset="props.tabset!"
         :tabset-shared-id="tabsetSharedId!"
         :simpleUi="props.simpleUi"
-        :tabs="props.tabs"
+        :tabs="getTabs()"
         :detailLevel="props.detailLevel as ListDetailLevel" />
     </vue-draggable-next>
   </q-list>
@@ -28,7 +28,7 @@
     :tabset="props.tabset!"
     :tabset-shared-id="tabsetSharedId!"
     :simpleUi="props.simpleUi"
-    :tabs="props.tabs"
+    :tabs="getTabs()"
     :detailLevel="props.detailLevel as ListDetailLevel" />
 </template>
 
@@ -37,10 +37,13 @@ import _ from 'lodash'
 import { useQuasar } from 'quasar'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { CreateTabFromOpenTabsCommand } from 'src/tabsets/commands/CreateTabFromOpenTabs'
+import { DynamicTabSourceType } from 'src/tabsets/models/DynamicTabSource'
+import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab, TabSorting } from 'src/tabsets/models/Tab'
-import { Tabset } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
 import TabListHelper from 'src/tabsets/pages/pwa/TabListHelper.vue'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTagsService } from 'src/tags/TagsService'
 import { ListDetailLevel } from 'src/ui/stores/uiStore'
 import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import { PropType } from 'vue'
@@ -102,6 +105,16 @@ const handleDragAndDrop = (event: any) => {
 }
 
 const preventDragAndDrop = () => $q.platform.is.mobile || props.tabsetSorting !== TabSorting.CUSTOM
+
+const getTabs = () => {
+  if (props.tabset.type === TabsetType.DYNAMIC && props.tabset.dynamicTabs?.type === DynamicTabSourceType.TAG) {
+    const tags = props.tabset.dynamicTabs.config['tags' as keyof object]
+    return useTagsService()
+      .getDynamicTabsBy(tags)
+      .map((it: IndexedTab) => it.tab)
+  }
+  return props.tabs
+}
 </script>
 
 <style lang="sass" scoped>

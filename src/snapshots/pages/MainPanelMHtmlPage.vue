@@ -1,10 +1,10 @@
 <template>
   <div style="position: absolute; left: 50%; top: 20%; width: 400px">
-    <div style="position: relative; left: -50%; border: dotted red 2px; border-radius: 6px">
+    <div style="position: relative; left: -50%">
       <div class="column q-ma-lg q-pa-lg">
-        <div class="col q-my-md text-bold">This is an archived Snapshot of your Source<br /></div>
+        <div class="col q-my-md text-bold">Proceed to the archived Snapshot of your Page<br /></div>
 
-        <div class="col" v-if="htmlMetadata?.url">
+        <div class="col ellipsis-3-lines text-caption" v-if="htmlMetadata?.url">
           {{ htmlMetadata?.url }}
         </div>
         <div class="col" v-else>
@@ -12,13 +12,15 @@
         </div>
 
         <div class="col q-my-md" v-if="!initialProceedToPage">
-          Archived Snapshots may not look exactly like their originals, but they will not change in future.
+          Archived Snapshots may not look exactly like their originals.
         </div>
         <div class="col" v-if="!initialProceedToPage">
-          <q-checkbox label="skip future acknowledgments" v-model="proceedToPage"></q-checkbox>
+          <q-checkbox label="don't show this message again" v-model="proceedToPage"></q-checkbox>
         </div>
         <div class="col q-my-md" v-if="!initialProceedToPage">
-          <span class="cursor-pointer text-accent text-bold" @click="loadArchivedPage()">Got it!</span>
+          <span class="cursor-pointer text-accent text-bold">
+            <q-btn color="primary" label="Proceed" @click="loadArchivedPage()" />
+          </span>
         </div>
         <div class="col q-my-md" v-if="initialProceedToPage && htmlMetadata?.url">redirecting...</div>
       </div>

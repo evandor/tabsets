@@ -25,6 +25,12 @@
           <q-icon name="o_keyboard_return" class="cursor-pointer" @click="router.push('/popup')" />
         </template>
       </PopupToolbar>
+      <OpenTabsFilterToolbarHelper
+        v-if="!showDocumentation"
+        @on-term-changed="(val) => termChanged(val)"
+        @tab-selection-inverted="selectionInverted()"
+        :search-hits="searchHits"
+        :tabSelection="tabSelection" />
     </q-page-sticky>
   </q-page>
 </template>
@@ -32,6 +38,7 @@
 <script lang="ts" setup>
 import { LocalStorage } from 'quasar'
 import PopupToolbar from 'src/core/pages/popup/PopupToolbar.vue'
+import OpenTabsFilterToolbarHelper from 'src/core/pages/sidepanel/helper/OpenTabsFilterToolbarHelper.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import SidePanelOpenTabsPageHelp from 'src/opentabs/pages/help/SidePanelOpenTabsPageHelp.vue'
 import SidePanelOpenTabsListViewer from 'src/opentabs/pages/SidePanelOpenTabsListViewer.vue'
@@ -55,4 +62,6 @@ const toggleDocumentation = () => {
   showDocumentation.value = !showDocumentation.value
   LocalStorage.setItem('ui.opentabs.documentation', 'hide')
 }
+const termChanged = (val: { term: string }) => (filterTerm.value = val.term)
+const selectionInverted = () => sidePanelOpenTabsListViewerRef.value!.invertSelection()
 </script>

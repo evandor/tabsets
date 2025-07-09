@@ -4,6 +4,7 @@ export enum ToastType {
   INFO = 'INFO',
   WARNING = 'WARNING',
   ERROR = 'ERROR',
+  CHOICE = 'CHOICE',
 }
 
 export class Toast {

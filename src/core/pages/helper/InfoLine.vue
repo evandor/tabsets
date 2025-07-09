@@ -1,14 +1,13 @@
 <template>
-  <div class="col-3 text-body1">
+  <div class="col-3 text-caption">
     {{ props.label
     }}<span v-if="helpLink" class="q-ml-sm"
       ><q-icon name="sym_o_help" class="cursor-pointer" @click="useNavigationService().browserTabFor(helpLink)"
     /></span>
   </div>
-  <div class="col-7">
+  <div class="col-9">
     <slot></slot>
   </div>
-  <div class="col"></div>
 </template>
 
 <script lang="ts" setup>

@@ -16,11 +16,14 @@ import { ref } from 'vue'
 
 const model = defineModel<string | undefined>()
 
-const props = defineProps<{
+type Props = {
   inputClass?: string | undefined
   class?: string | undefined
   filled: boolean
-}>()
+  active?: boolean
+}
 
-const active = ref(false)
+const props = withDefaults(defineProps<Props>(), { active: false })
+
+const active = ref(props.active)
 </script>

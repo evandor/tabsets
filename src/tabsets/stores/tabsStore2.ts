@@ -146,7 +146,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
   }
 
   async function onTabActivated(activeInfo: chrome.tabs.TabActiveInfo) {
-    console.log(`tabActivated: ${JSON.stringify(activeInfo)}`)
+    console.log(` -> tabActivated: ${JSON.stringify(activeInfo)}`)
     const tab: chrome.tabs.Tab = await chrome.tabs.get(activeInfo.tabId)
     useTabsetsUiStore().updateExtensionIcon(tab)
     await useContentStore().resetFor(tab)
@@ -185,7 +185,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     if (info.status !== 'complete') {
       return
     }
-    console.log(`tabUpdate (complete): ${chromeTab.url?.substring(0, 30)}, ${JSON.stringify(info)}`)
+    console.log(` -> tabUpdate (complete): ${chromeTab.url?.substring(0, 30)}, ${JSON.stringify(info)}`)
     browserTabs.value = await queryTabs()
     await setCurrentTab()
 
@@ -353,7 +353,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     if (chrome.runtime.lastError) {
       console.warn('got runtime error:' + JSON.stringify(chrome.runtime.lastError))
     }
-    console.debug('setting current tab', tabs)
+    //console.debug('setting current tab', tabs)
     if (tabs && tabs[0]) {
       setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
       return Promise.resolve(tabs[0])

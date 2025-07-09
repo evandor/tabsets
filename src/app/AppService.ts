@@ -166,8 +166,12 @@ class AppService {
       // await router.push('/sidepanel/welcome')
     }
 
-    // set badge, text and color
-    //useTabsetsUiStore().updateExtensionIcon()
+    // const tagCats = LocalStorage.getItem(TAGS_CATEGORIES)
+    // if (!tagCats) {
+    //   LocalStorage.setItem(TAGS_CATEGORIES, [
+    //
+    //   ])
+    // }
 
     ChromeApi.buildContextMenu('AppService')
   }

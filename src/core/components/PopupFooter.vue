@@ -1,5 +1,15 @@
 <template>
   <q-footer class="q-pa-none q-mt-sm darkInDarkMode brightInBrightMode" style="border-top: 1px solid lightgrey">
+    <div class="row fit q-ma-none q-pa-none" v-if="!checkToasts() && useUiStore().progress">
+      <div class="col-12">
+        <q-linear-progress stripe size="18px" :value="progressValue" color="warning" track-color="grey-4">
+          <div class="absolute-full flex flex-center">
+            <q-badge :label="progressLabel" color="white" text-color="primary" />
+          </div>
+        </q-linear-progress>
+      </div>
+    </div>
+
     <template v-if="checkToasts()">
       <Transition name="fade" appear>
         <q-banner
@@ -61,7 +71,7 @@ import { ToastType } from 'src/core/models/Toast'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { openSidepanel } = useUtils()
@@ -69,6 +79,9 @@ const { openSidepanel } = useUtils()
 const router = useRouter()
 const sidepanelEnabled = ref(false)
 const opentabsView = ref(false)
+
+const progressValue = ref<number>(0.0)
+const progressLabel = ref<string>('')
 
 if (chrome.sidePanel) {
   // chrome.tabs.query({ active: true, lastFocusedWindow: true }).then((ts: chrome.tabs.Tab[]) => {
@@ -79,6 +92,15 @@ if (chrome.sidePanel) {
     //console.log('ctxs', ctxs)
     sidepanelEnabled.value = ctxs.filter((c: object) => 'SIDE_PANEL' === c['contextType' as keyof object]).length > 0
     // console.log('sidepanelEnabled', sidepanelEnabled.value)
+  })
+
+  watchEffect(() => {
+    const uiProgress = useUiStore().progress
+    if (uiProgress) {
+      progressValue.value = (uiProgress['val' as keyof object] as number) || 0.0
+      progressLabel.value = uiProgress['label' as keyof object] || ''
+      //console.log("we are here", progressValue.value)
+    }
   })
 
   // chrome.sidePanel
@@ -125,6 +147,8 @@ const toastBannerClass = () => {
       return 'bg-warning' + defaults
     case ToastType.ERROR:
       return 'bg-negative' + defaults
+    case ToastType.CHOICE:
+      return 'bg-grey-3 text-primary q-py-none'
     default:
       return 'bg-negative' + defaults
   }

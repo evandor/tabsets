@@ -32,12 +32,12 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.FOLDER,
-      'RECOMMENDED_POPUP',
+      'RECOMMENDED',
       'Folders and Subfolders',
       'Use folders inside your tabsets to add another level of organisation',
       'o_folder',
       '',
-      ['all'],
+      ['all', 'popup'],
       [],
       false,
       'warning',
@@ -45,12 +45,12 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.GALLERY,
-      'RECOMMENDED_POPUP',
+      'RECOMMENDED',
       'Gallery View',
       'View and organize your tabs in a Tabset Gallery',
       'calendar_view_month',
       '/gallery.png',
-      ['all'],
+      ['all', 'popup'],
       [],
       false,
       'primary',
@@ -88,13 +88,13 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.OPEN_TABS,
-      'RECOMMENDED_POPUP',
+      'RECOMMENDED',
       'Open Tabs',
       'Quick access to all your open tabs of the current browsers window<br><br>' +
         'Adds quick navigation to jump back and forth to recently opened tabs.',
       'sym_o_tabs',
       '/opentabs.png',
-      ['bex'],
+      ['bex', 'popup'],
     ),
 
     new Feature(
@@ -175,7 +175,7 @@ export class AppFeatures {
       'Tabs can be tagged with labels making it easier to be found again',
       'o_label',
       '',
-      ['all'],
+      ['all', 'popup'],
     ),
 
     new Feature(
@@ -212,12 +212,12 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.SAVE_MHTML,
-      'RECOMMENDED_POPUP',
+      'RECOMMENDED',
       'Save Page Snapshot',
       'Saves the content of a website as MHTML as a snapshot',
       'o_save',
       '',
-      ['bex'],
+      ['bex', 'popup'],
     )
       .setActivateCommands([new GrantPermissionCommand('pageCapture')])
       .setDeactivateCommands([new RevokePermissionCommand('pageCapture')]),
@@ -365,12 +365,12 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.READING_MODE,
-      'RECOMMENDED_POPUP',
+      'RECOMMENDED',
       'Reading Mode',
       'Analyse tab contents and use the distraction-free Reading Mode if applicable',
       'sym_o_menu_book',
       '',
-      ['bex'],
+      ['bex', 'popup'],
     ),
 
     new Feature(
@@ -435,15 +435,16 @@ export class AppFeatures {
     ),
     new Feature(
       FeatureIdent.AI,
-      'EXPERIMENTAL',
+      'DISABLED',
       'AI Features',
       'active additional AI Features like language detection, summaries etc.',
       'sym_o_play_circle',
       '',
-      ['all'],
+      ['all', 'popup'],
     ).setActivateCommands([new DownloadAIModelsCommand()]),
     new Feature(FeatureIdent.VISUALIZATIONS, 'EXPERIMENTAL', 'Visualizations', 'mind-map style', 'sym_o_graph_5', '', [
       'all',
+      'popup',
     ]),
   ]
 

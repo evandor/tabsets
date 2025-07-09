@@ -6,7 +6,7 @@
       <PopupCollectionSelector
         @tabset-changed="tabsetChanged()"
         :show-tabs-count="!currentTabsetHasFolders()"
-        :url="pageModel.url" />
+        :url="url" />
     </PopupInputLine>
 
     <PopupInputLine title="Folder" v-if="showFolders()">
@@ -26,20 +26,30 @@
         <div class="column">
           <div class="col">
             <AutogrowInput
-              v-model="pageModel.title"
+              v-model="title"
               :input-class="'text-bold'"
               :class="'ellipsis'"
               :filled="false"
               data-testid="pageModelTitle" />
           </div>
-          <div class="col ellipsis-3-lines text-body2">{{ pageModel.description }}</div>
-          <!--          <AutogrowInput v-model="pageModel.description" :class="'ellipsis-3-lines'" />-->
+          <div v-if="!editDescription" class="col ellipsis-3-lines text-body2" @click="toggleEditDescription()">
+            {{ description }}
+          </div>
+          <div v-else>
+            <AutogrowInput
+              @blur="toggleEditDescription()"
+              ref="descriptionRef"
+              v-model="description"
+              :class="'ellipsis-3-lines'"
+              :filled="false"
+              :active="true" />
+          </div>
         </div>
       </div>
     </div>
 
     <!-- info label: created, updated, ... -->
-    <div class="row q-my-xs" v-if="tab && tab.url == pageModel.url">
+    <div class="row q-my-xs" v-if="tab && tab.url == url">
       <div class="col text-right text-caption text-grey-8 q-mx-md cursor-pointer" @click="interateThroughInfo">
         {{ infoLabel }}
       </div>
@@ -47,23 +57,26 @@
 
     <!-- URL -->
     <PopupInputLine title="URL" class="q-mt-md">
-      <AutogrowInput v-model="pageModel.url" :class="'ellipsis'" :filled="true" data-testid="pageModelUrl" />
+      <AutogrowInput v-model="url" :class="'ellipsis'" :filled="true" data-testid="pageModelUrl" />
     </PopupInputLine>
 
     <!-- Note -->
     <PopupInputLine title="Note">
-      <AutogrowInput v-model="pageModel.note" :class="'ellipsis'" :filled="true" data-testid="pageModelNote" />
+      <AutogrowInput v-model="note" :class="'ellipsis'" :filled="true" data-testid="pageModelNote" />
     </PopupInputLine>
 
     <!-- Tags -->
-    <PopupInputLine title="Tags">
+    <PopupInputLine
+      v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)"
+      :loading="loading"
+      :title="tagsInfo.length > 1 ? tagsInfo.length + ' Tags' : 'Tags'">
       <q-select
         input-class="q-ma-none q-pa-none"
         borderless
         filled
         dense
         options-dense
-        v-model="pageModel.tagsInfo"
+        v-model="tagsInfo"
         use-input
         use-chips
         multiple
@@ -73,15 +86,29 @@
         @update:model-value="(val) => updatedTags(val)">
         <template v-slot:selected>
           <q-chip
-            v-for="info in pageModel.tagsInfo"
+            v-for="info in tagsInfo.filter((t: TagInfo) =>
+              useSettingsStore().has('DEBUG_MODE') ? true : t.type == 'manual',
+            )"
             @remove="removeTag(info)"
             dense
             square
+            outline
             removable
-            :color="info.type == 'manual' ? 'white' : 'grey-2'"
+            :color="
+              info.type == 'manual'
+                ? 'primary'
+                : info.type == 'url'
+                  ? 'orange-8'
+                  : info.type == 'classification'
+                    ? 'green-8'
+                    : 'grey-8'
+            "
             text-color="primary"
-            class="q-my-none q-ml-xs q-mr-none">
+            class="q-my-xs q-ml-xs q-mr-none">
             {{ info.label }}
+            <q-tooltip class="tooltip-small" :delay="500">
+              {{ tooltipFor(info) }}
+            </q-tooltip>
           </q-chip>
         </template>
       </q-select>
@@ -135,9 +162,6 @@
         color="grey-7"
         class="cursor-pointer q-mt-xs q-ml-sm">
         <q-tooltip class="tooltip-small" :delay="500">Save a snapshot of this page</q-tooltip>
-        <!--        <q-badge v-if="snapshotsSize > 0" floating color="warning" size="xs" text-color="primary"-->
-        <!--          >{{ snapshotsSize }}-->
-        <!--        </q-badge>-->
       </q-btn>
     </PopupInputLine>
 
@@ -146,7 +170,7 @@
       <div class="col-2 q-ml-xs q-mt-sm text-right text-caption text-grey-8" style="border: 0 solid red"></div>
       <div class="col q-mx-md text-right" style="border: 0 solid red">
         <q-btn
-          v-if="!tab || tab.url !== pageModel.url"
+          v-if="!tab || tab.url !== url"
           style="width: 100px"
           dense
           label="Add"
@@ -154,6 +178,7 @@
           unelevated
           size="15px"
           @click="addTab"
+          data-testid="addNewTabBtn"
           class="cursor-pointer q-px-md">
         </q-btn>
         <q-btn
@@ -171,25 +196,6 @@
       </div>
     </div>
 
-    <template v-if="useSettingsStore().has('DEBUG_MODE')">
-      <div class="row q-pa-none q-ma-none fit">
-        <div
-          class="col-12 q-pa-none q-mx-md q-mt-md q-mb-none text-caption ellipsis-2-lines"
-          style="font-size: smaller">
-          {{ browserTab?.url }}
-        </div>
-        <div class="col-12 q-pa-none q-mx-md q-my-none text-caption" style="font-size: smaller">
-          {{ useContentStore().getCurrentTabContent?.length }}
-        </div>
-        <div class="col-12 q-pa-none q-mx-md q-my-none text-caption" style="font-size: smaller">
-          {{ useContentStore().currentTabFavIcon }}<br />
-          <!-- {{ text }}<br />-->
-          <!--          <hr />-->
-          <!--          {{ browserTab }}<br />-->
-        </div>
-      </div>
-    </template>
-
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode q-ma-none q-ml-md">
       <PopupToolbar title="Tabsets" />
     </q-page-sticky>
@@ -197,17 +203,20 @@
 </template>
 
 <script lang="ts" setup>
+import { TAGS_CATEGORIES } from 'boot/constants'
 import { date, LocalStorage, uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useContentStore } from 'src/content/stores/contentStore'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
-import { TagInfo } from 'src/core/models/TagInfo'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { CategoryInfo, TagInfo } from 'src/core/models/TagInfo'
 import AutogrowInput from 'src/core/pages/popup/helper/AutogrowInput.vue'
 import PopupCollectionSelector from 'src/core/pages/popup/PopupCollectionSelector.vue'
 import PopupFolderSelector from 'src/core/pages/popup/PopupFolderSelector.vue'
 import PopupInputLine from 'src/core/pages/popup/PopupInputLine.vue'
 import PopupToolbar from 'src/core/pages/popup/PopupToolbar.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { NotificationType, useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import ContentUtils from 'src/core/utils/ContentUtils'
@@ -219,16 +228,25 @@ import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { DeleteTabCommand } from 'src/tabsets/commands/DeleteTabCommand'
+import { IgnoreTagCommand } from 'src/tabsets/commands/IgnoreTagCommand'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useTagsService } from 'src/tags/TagsService'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { UiDensity, useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
-import { onMounted, provide, reactive, ref, watchEffect } from 'vue'
+import { onMounted, provide, ref, useTemplateRef, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+
+// the page model
+const url = ref<string>('')
+const title = ref<string>('')
+const description = ref<string>('')
+const note = ref<string>('')
+const tagsInfo = ref<TagInfo[]>([])
 
 const thumbnail = ref<string | undefined>(useTabsStore2().currentChromeTab?.favIconUrl)
 const currentTabset = ref<Tabset | undefined>(undefined)
@@ -240,34 +258,45 @@ const uiDensity = ref<UiDensity>(useUiStore().uiDensity)
 const alreadyInTabset = ref<boolean>(false)
 const containedInTsCount = ref(0)
 const text = ref<string | undefined>(undefined)
-// const tags = ref<string[]>([])
 const collectionChips = ref<object[]>([])
+
+const editDescription = ref(false)
+const descriptionRef = useTemplateRef<HTMLElement>('descriptionRef')
+// const { focused: editDescriptionFocus } = useFocus(descriptionRef)
 
 const infoModes = ['saved', 'updated', 'count', 'lastActive']
 const infoMode = ref<string>(infoModes[0]!)
 
+const loading = ref<boolean>(useUiStore().aiLoading)
+
+const { handleSuccess } = useNotificationHandler()
 provide('ui.density', uiDensity)
 
-const pageModel = reactive<{
-  url: string
-  note: string
-  tagsInfo: TagInfo[]
-  title: string | undefined
-  description: string | undefined
-}>({
-  url: '',
-  note: '',
-  tagsInfo: [],
-  title: undefined,
-  description: undefined,
-})
-
 let initialNote = ''
+let initialDesc = ''
 
-const language = ref<string | undefined>(undefined)
 const infoLabel = ref('')
 const mds = ref<BlobMetadata[]>([])
 const pageCaptureInProgress = ref(false)
+
+function pushTagsInfo() {
+  return (tag: TagInfo) => {
+    tagsInfo.value.push(tag)
+    tagsInfo.value = useTagsService().deduplicateTags(tagsInfo.value)
+  }
+}
+
+function langFromHostname(url: string | undefined): string {
+  if (url) {
+    try {
+      const hostname = new URL(url).hostname
+      return hostname.split('.')[hostname.split('.').length - 1] || 'en'
+    } catch (e) {
+      return 'en'
+    }
+  }
+  return 'en'
+}
 
 onMounted(() => {
   Analytics.firePageViewEvent('PopupPage', document.location.href)
@@ -275,6 +304,31 @@ onMounted(() => {
   if (!LocalStorage.getItem('ui.hideWelcomePage')) {
     useRouter().push('/popup/welcome')
   }
+
+  if (tab.value) {
+    return
+  }
+  // keyword tags
+  const metas = useContentStore().getCurrentTabMetas
+  if (metas && metas['keywords' as keyof object]) {
+    useTagsService()
+      .tagsFromKeywords(metas['keywords' as keyof object] as string)
+      .forEach(pushTagsInfo())
+  }
+
+  // hierarchy tags
+  if (currentTabset.value) {
+    useTagsService().tagsFromHierarchy(currentTabset.value).forEach(pushTagsInfo())
+  }
+
+  // url tags
+  if (browserTab.value?.url) {
+    useTagsService().tagsFromUrl(browserTab.value.url).forEach(pushTagsInfo())
+  }
+})
+
+watchEffect(() => {
+  loading.value = useUiStore().aiLoading
 })
 
 watchEffect(() => {
@@ -308,11 +362,12 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  if (tab.value && pageModel.note !== initialNote) {
+  if (tab.value && (note.value !== initialNote || description.value !== initialDesc)) {
     infoLabel.value = 'updating...'
     setTimeout(() => {
       if (currentTabset.value) {
-        tab.value!.note = pageModel.note
+        tab.value!.note = note.value
+        tab.value!.description = description.value
         tab.value!.updated = new Date().getTime()
         useTabsetsStore().saveTabset(currentTabset.value)
         infoLabel.value = 'Updated ' + date.formatDate(tab.value!.updated, 'DD.MM.YY HH:mm')
@@ -321,13 +376,26 @@ watchEffect(() => {
   }
 })
 
+function getSnapshots() {
+  if (!tab.value) {
+    return
+  }
+  useSnapshotsStore()
+    .metadataFor(tab.value.id)
+    .then((res) => {
+      mds.value = res
+      mds.value = mds.value.sort((a: BlobMetadata, b: BlobMetadata) => b.created - a.created)
+      console.log('got', mds.value)
+    })
+}
+
 watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
   browserTab.value = useTabsStore2().currentChromeTab
   if (browserTab.value) {
     //url.value = browserTab.value.url
-    pageModel.url = browserTab.value.url || 'https://'
-    pageModel.title = browserTab.value.title
+    url.value = browserTab.value.url || 'https://'
+    title.value = browserTab.value.title || ''
     alreadyInTabset.value = useTabsetService().urlExistsInCurrentTabset(browserTab.value.url)
     const tabsets = useTabsetService().tabsetsFor(browserTab.value.url!)
     containedInTsCount.value = tabsets.length
@@ -336,24 +404,22 @@ watchEffect(() => {
       if (tab.value) {
         infoLabel.value = 'Saved ' + date.formatDate(tab.value.created, 'DD.MM.YY HH:mm')
         initialNote = tab.value.note
-        pageModel.note = tab.value.note
-        useSnapshotsStore()
-          .metadataFor(tab.value.id)
-          .then((res) => {
-            mds.value = res
-            mds.value = mds.value.sort((a: BlobMetadata, b: BlobMetadata) => b.created - a.created)
-            console.log('got', mds.value)
-          })
+        note.value = tab.value.note
+        initialDesc = tab.value.description
+        description.value = tab.value.description
+        console.log('setting tagsInfo')
+        tagsInfo.value = tab.value.tagsInfo
+        getSnapshots()
       }
-      const url = browserTab.value.url
-      if (url) {
+      const browserUrl = browserTab.value.url
+      if (browserUrl) {
         collectionChips.value = useTabsetService()
-          .tabsetsFor(url)
+          .tabsetsFor(browserUrl)
           .map((ts: string) => {
             return {
               label: useTabsetService().nameForTabsetId(ts),
               tabsetId: ts,
-              encodedUrl: btoa(url || ''),
+              encodedUrl: btoa(browserUrl || ''),
             }
           })
         //console.log('===>', collectionChips.value)
@@ -372,12 +438,24 @@ watchEffect(() => {
     //console.log('articleContent', articleContent)
     text.value = articleContent
 
-    if (useFeaturesStore().hasFeature(FeatureIdent.AI) && text.value && text.value.trim().length > 10) {
-      //console.log('::::', text.value)
-      console.log('::::', pageModel.description)
+    const categories: CategoryInfo[] = LocalStorage.getItem(TAGS_CATEGORIES) || []
+
+    //console.log('::::', text.value.length)
+    console.log('::::', description.value)
+
+    if (
+      useFeaturesStore().hasFeature(FeatureIdent.AI) &&
+      !tab.value &&
+      categories.length > 0 &&
+      text.value &&
+      text.value.trim().length > 10
+    ) {
+      useUiStore().aiLoading = true
+      console.log('::::', text.value.length)
+      //console.log('::::', pageModel.description)
       const data = {
-        text: pageModel.description,
-        candidates: ['news', 'shopping', 'sport'],
+        text: description.value,
+        candidates: categories.map((c: CategoryInfo) => c.label),
       }
 
       chrome.runtime.sendMessage(
@@ -394,13 +472,13 @@ watchEffect(() => {
             const labels: string[] = callback['labels'] as string[]
             const scores: number[] = callback['scores'] as number[]
             console.log('adding tags for ', labels, scores)
-            labels.forEach((label: string, index: number) => {
-              if (scores[index]! >= 0.5) {
-                // pageModel.tags.push(label)
-                pageModel.tagsInfo.push({ label: label, type: 'classification', score: scores[index] || 0 })
-              }
-            })
+
+            useTagsService()
+              .tagsFromClassification(categories, labels, scores, 0.3 / Math.log(labels.length))
+              .forEach(pushTagsInfo())
+            useUiStore().aiLoading = false
           }
+          useUiStore().aiLoading = false
         },
       )
     }
@@ -411,64 +489,30 @@ watchEffect(() => {
   const metas = useContentStore().currentTabMetas
   //console.log('metas', metas)
   if (metas['description' as keyof object]) {
-    pageModel.description = (metas['description' as keyof object] as string | undefined) || ''
-    if (
-      useFeaturesStore().hasFeature(FeatureIdent.AI) &&
-      pageModel.description &&
-      pageModel.description.trim().length > 10
-    ) {
-      console.log(':::', pageModel.description)
-      const data = {
-        text: 'ich bin ein Text',
-        candidates: ['news', 'shopping'],
-      }
-
-      chrome.runtime.sendMessage(
-        {
-          name: 'zero-shot-classification',
-          data: data,
-        },
-        (callback: any) => {
-          console.log('got callback!!', callback)
-          if (chrome.runtime.lastError) {
-            /* ignore */
-          }
-          if (callback) {
-            const labels: string[] = callback['labels'] as string[]
-            const scores: number[] = callback['scores'] as number[]
-            console.log('adding tags for ', labels, scores)
-            if (labels && labels.length > 0) {
-              labels.forEach((label: string, index: number) => {
-                if (scores[index]! >= 0.5) {
-                  pageModel.tagsInfo.push({ label: label, type: 'classification', score: scores[index] || 0 })
-                }
-              })
-            }
-          }
-        },
-      )
-
+    description.value = (metas['description' as keyof object] as string | undefined) || ''
+    if (useFeaturesStore().hasFeature(FeatureIdent.AI) && description.value && description.value.trim().length > 10) {
       try {
         // @ts-expect-error xxx
         LanguageDetector.create().then((detector: any) => {
-          detector.detect(pageModel.description).then((results: any[]) => {
-            // for (const result of results) {
-            //   console.log(result.detectedLanguage, result.confidence)
-            // }
+          detector.detect(text.value).then((results: any[]) => {
             if (results.length > 0) {
-              language.value = results[0].detectedLanguage
-              // pageModel.aiTags.push(results[0].detectedLanguage)
-              pageModel.tagsInfo.push({
-                label: results[0].detectedLanguage,
-                type: 'langDetection',
-                score: results[0].confidence || 0,
-              })
+              var language = results[0].detectedLanguage
+              var confidence = results[0].confidence || 0
+              useTagsService().tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
+              useTagsService().tagsFromLanguageModel(description.value, language).forEach(pushTagsInfo())
             }
           })
         })
       } catch (e) {
+        useTagsService()
+          .tagsFromLanguageModel(description.value, langFromHostname(browserTab.value?.url))
+          .forEach(pushTagsInfo())
         console.log('error with language detection')
       }
+    } else if (description.value && description.value.trim().length > 10) {
+      useTagsService()
+        .tagsFromLanguageModel(description.value, langFromHostname(browserTab.value?.url))
+        .forEach(pushTagsInfo())
     }
   }
 })
@@ -493,6 +537,9 @@ watchEffect(() => {
           //thumbnail.value = ''
         }
       })
+      .catch((e: any) => {
+        console.debug('error', e)
+      })
   }
 })
 
@@ -500,7 +547,7 @@ const tabsetChanged = () => (currentTabset.value = useTabsetsStore().getCurrentT
 
 const updatedTags = (val: (TagInfo | string)[]) => {
   console.log('updating tag', val)
-  pageModel.tagsInfo = val.map((v: any) => {
+  tagsInfo.value = val.map((v: any) => {
     console.log('type', typeof v)
     if (typeof v == 'string') {
       console.log('hier', v)
@@ -508,7 +555,7 @@ const updatedTags = (val: (TagInfo | string)[]) => {
     }
     return v
   })
-  console.log('updating tag2', pageModel.tagsInfo)
+  console.log('updating tag2', tagsInfo.value)
 }
 
 const openAsArticle = () => {
@@ -525,10 +572,10 @@ const addTab = () => {
   // validation?
   if (browserTab.value) {
     const newTab: Tab = new Tab(uid(), browserTab.value)
-    newTab.url = pageModel.url
-    newTab.note = pageModel.note
-    newTab.description = pageModel.description || ''
-    newTab.tagsInfo = pageModel.tagsInfo
+    newTab.url = url.value
+    newTab.note = note.value
+    newTab.description = description.value || ''
+    newTab.tagsInfo = tagsInfo.value
     useCommandExecutor()
       .executeFromUi(new AddTabToTabsetCommand(newTab, currentTabset.value)) //, props.folder?.id))
       .then(() => {
@@ -571,15 +618,79 @@ const switchTabset = (tsId: string) => {
 }
 
 const saveSnapshot = () => {
-  console.log('hier', tab.value)
   if (tab.value && tab.value.url) {
-    useCommandExecutor().executeFromUi(new SaveMHtmlCommand(tab.value.id, tab.value.url))
+    useCommandExecutor()
+      .executeFromUi(new SaveMHtmlCommand(tab.value.id, tab.value.url))
+      .then(() => {
+        getSnapshots()
+      })
   }
 }
+
 const openMHtml = (id: string) => window.open(chrome.runtime.getURL(`www/index.html#/mainpanel/mhtml/${id}`))
-const deleteMHtml = (id: string) => useSnapshotsService().deleteSnapshot(id)
-const removeTag = (toDelete: TagInfo) =>
-  (pageModel.tagsInfo = pageModel.tagsInfo.filter((i: TagInfo) => i.label !== toDelete.label))
+const deleteMHtml = (id: string) =>
+  useSnapshotsService()
+    .deleteSnapshot(id)
+    .then(() => getSnapshots())
+
+const removeTag = (toDelete: TagInfo) => {
+  tagsInfo.value = tagsInfo.value.filter((i: TagInfo) => i.label !== toDelete.label)
+  let result: ExecutionResult<any> | undefined = undefined
+  if (toDelete.type === 'keyword') {
+    result = new ExecutionResult(
+      'res',
+      'Tag was deleted',
+      new Map([
+        // ['Close', new NoOpCommand()],
+        ['Always Ignore in future', new IgnoreTagCommand(toDelete.label)],
+      ]),
+    )
+  } else if (toDelete.type === 'classification') {
+    const cats: CategoryInfo[] = LocalStorage.getItem(TAGS_CATEGORIES) || []
+    const category = cats.find((c: CategoryInfo) => c.label === toDelete.label)
+    if (category) {
+      category.weight = category.weight / 1.1
+      LocalStorage.setItem(TAGS_CATEGORIES, cats)
+    }
+  }
+
+  if (result) {
+    handleSuccess(result, NotificationType.USER_CHOICE)
+  }
+}
+
+const tooltipFor = (info: TagInfo): string => {
+  const debug = useSettingsStore().has('DEBUG_MODE')
+  let tooltip = ''
+  switch (info.type) {
+    case 'keyword':
+      tooltip = "automatic tag derived from website's keywords"
+      break
+    case 'url':
+      tooltip = 'automatic tag derived from URL'
+      break
+    case 'classification':
+      tooltip = 'Classification, derived from site\s description using AI'
+      if (debug) {
+        tooltip += ' (score ' + Math.round(info.score * 1000) / 10 + '%)'
+      }
+      break
+    case 'langDetection':
+      tooltip = "Language, derived from site's description using AI"
+      if (debug) {
+        tooltip += ' (score ' + Math.round(info.score * 1000) / 10 + '%)'
+      }
+      break
+    default:
+      tooltip = ''
+  }
+  return tooltip
+}
+
+const toggleEditDescription = () => {
+  editDescription.value = !editDescription.value
+  // editDescriptionFocus.value = editDescription.value
+}
 </script>
 
 <!--<style lang="scss" src="src/pages/css/sidePanelPage2.scss" />-->
