@@ -3,6 +3,7 @@
 import { STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 import { RestApiIdent } from 'src/rest/RestApi'
 import { useAuthStore } from 'src/stores/authStore'
+import { DynamicTabSource } from 'src/tabsets/models/DynamicTabSource'
 import { SharingInfo } from 'src/tabsets/models/SharingInfo'
 import { Tab } from 'src/tabsets/models/Tab'
 import { TabsetColumn } from 'src/tabsets/models/TabsetColumn'
@@ -75,6 +76,7 @@ export class Tabset {
   created: number
   updated: number
   tabs: Tab[]
+  dynamicTabs: DynamicTabSource | undefined
 
   folders: Tabset[] = []
   folderActive: string | undefined = undefined

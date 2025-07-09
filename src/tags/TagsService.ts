@@ -4,9 +4,12 @@ import speech from 'compromise-speech'
 import stats from 'compromise-stats'
 // @ts-expect-error xxx
 import nlpDE from 'de-compromise'
+import _ from 'lodash'
 import { LocalStorage } from 'quasar'
 import { CategoryInfo, TagInfo, TagType } from 'src/core/models/TagInfo'
 import { useUtils } from 'src/core/services/Utils'
+import { IndexedTab } from 'src/tabsets/models/IndexedTab'
+import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
@@ -193,6 +196,29 @@ export function useTagsService() {
     }
   }
 
+  function getDynamicTabsBy(tags: string[]) {
+    const result: IndexedTab[] = []
+    const term: string = tags.length > 0 ? (tags[0] as string) : ''
+    let i = 0
+    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
+      _.forEach(tabset.tabs, (tab: Tab) => {
+        if (tab.tagsInfo?.map((t: TagInfo) => t.label).indexOf(term) >= 0) {
+          //console.log("found tab", term, tab.tags)
+          result.push(new IndexedTab(i++, tab))
+        }
+      })
+    })
+    return result
+  }
+
+  const addToIgnored = (v: string) => {
+    const tags = (LocalStorage.getItem(TAGS_IGNORED) as string[]) || []
+    if (tags.indexOf(v) < 0) {
+      tags.push(v)
+      LocalStorage.setItem(TAGS_IGNORED, tags)
+    }
+  }
+
   return {
     deduplicateTags,
     tagsFromKeywords,
@@ -201,5 +227,7 @@ export function useTagsService() {
     tagsFromClassification,
     tagsFromLangDetection,
     tagsFromLanguageModel,
+    getDynamicTabsBy,
+    addToIgnored,
   }
 }

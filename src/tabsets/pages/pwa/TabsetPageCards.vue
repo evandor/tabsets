@@ -19,8 +19,11 @@
 import _ from 'lodash'
 import { uid } from 'quasar'
 import TabGrid2 from 'src/tabsets/layouts/TabGrid2.vue'
+import { DynamicTabSourceType } from 'src/tabsets/models/DynamicTabSource'
+import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab } from 'src/tabsets/models/Tab'
-import { Tabset } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import { useTagsService } from 'src/tags/TagsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import { PropType, ref, watchEffect } from 'vue'
@@ -76,21 +79,12 @@ watchEffect(() => {
 })
 
 function currentTabs(): Tab[] {
-  //console.log("got", props.tabset.tabs)
-  // const filter = useUiStore().tabsFilter
-  // if (filter && filter.trim() !== '') {
-  //   return _.orderBy(
-  //     _.filter(props.tabsetFolder.tabs, (t: Tab) => {
-  //       return (
-  //         (t.url || '')?.indexOf(filter) >= 0 ||
-  //         (t.title || '')?.indexOf(filter) >= 0 ||
-  //         t.description.indexOf(filter) >= 0
-  //       )
-  //     }),
-  //     getOrder(),
-  //     [orderDesc.value ? 'desc' : 'asc'],
-  //   )
-  // }
+  if (props.tabset.type === TabsetType.DYNAMIC && props.tabset.dynamicTabs?.type === DynamicTabSourceType.TAG) {
+    const tags = props.tabset.dynamicTabs.config['tags' as keyof object]
+    return useTagsService()
+      .getDynamicTabsBy(tags)
+      .map((it: IndexedTab) => it.tab)
+  }
   return _.orderBy(props.tabsetFolder.tabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 
