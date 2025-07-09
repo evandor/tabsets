@@ -1,4 +1,5 @@
 import { Auth } from 'firebase/auth/web-extension'
+import { Firestore } from 'firebase/firestore'
 import { FirebaseStorage } from 'firebase/storage'
 import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
@@ -9,7 +10,7 @@ class FirebaseServices implements IFirebaseServices {
     return null as unknown as Auth
   }
 
-  getFirestore(): any {
+  getFirestore(): Firestore {
     return null
   }
 
