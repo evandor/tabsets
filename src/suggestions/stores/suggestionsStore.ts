@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { defineStore } from 'pinia'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 import { Suggestion, SuggestionState, SuggestionType } from 'src/suggestions/domain/models/Suggestion'
 import SuggestionsPersistence from 'src/suggestions/persistence/SuggestionsPersistence'
 import { computed, ref } from 'vue'
@@ -11,7 +12,7 @@ export const useSuggestionsStore = defineStore('suggestions', () => {
 
   async function init(db: SuggestionsPersistence) {
     storage = db
-    await storage.init()
+    await storage.init(useFirebaseServices().firebaseServices)
     await loadSuggestionsFromDb()
   }
 
