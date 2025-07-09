@@ -353,7 +353,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     if (chrome.runtime.lastError) {
       console.warn('got runtime error:' + JSON.stringify(chrome.runtime.lastError))
     }
-    console.debug('setting current tab', tabs)
+    //console.debug('setting current tab', tabs)
     if (tabs && tabs[0]) {
       setCurrentChromeTab(tabs[0] as unknown as chrome.tabs.Tab)
       return Promise.resolve(tabs[0])

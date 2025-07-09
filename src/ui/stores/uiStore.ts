@@ -64,6 +64,7 @@ export const useUiStore = defineStore('ui', () => {
   const appLoading = ref<string | undefined>(undefined)
   const bookmarksLoading = ref<boolean>(false)
   const pageCaptureLoading = ref<boolean>(false)
+  const aiLoading = ref<boolean>(false)
   const progress = ref<object | undefined>(undefined)
   const commandExecuting = ref(false)
   const watermark = ref('')
@@ -462,6 +463,11 @@ export const useUiStore = defineStore('ui', () => {
     toasts.value.push(new Toast(msg, ToastType.INFO, actions))
   }
 
+  function createUserChoiceToast(msg: string, actions: any[] = []) {
+    toastTimeouts.value.forEach((timeout: NodeJS.Timeout) => clearTimeout(timeout))
+    toasts.value.push(new Toast(msg, ToastType.CHOICE, actions))
+  }
+
   function createWarningToast(msg: string, action: any = undefined) {
     toastTimeouts.value.forEach((timeout: NodeJS.Timeout) => clearTimeout(timeout))
     toasts.value.push(new Toast(msg, ToastType.WARNING, action))
@@ -620,6 +626,7 @@ export const useUiStore = defineStore('ui', () => {
     createSuccessToast,
     createWarningToast,
     createErrorToast,
+    createUserChoiceToast,
     delayedToastRemoval,
     callUndoActionFromCurrentToast,
     getButtonSize,
@@ -630,6 +637,7 @@ export const useUiStore = defineStore('ui', () => {
     appLoading,
     bookmarksLoading,
     pageCaptureLoading,
+    aiLoading,
     progress,
     setProgress,
     stopProgress,

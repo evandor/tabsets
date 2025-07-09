@@ -378,6 +378,20 @@ export function useUtils() {
     return Promise.reject('chrome.sidePanel not defined')
   }
 
+  function extractSecondLevelDomain(url: string): string | undefined {
+    try {
+      const hostname = new URL(url).hostname
+      const withoutWww = hostname.startsWith('www.') ? hostname.substring(4) : hostname
+      const parts = withoutWww.split('.')
+      if (parts.length === 0) {
+        return undefined
+      }
+      return parts[0]
+    } catch (err) {
+      return undefined
+    }
+  }
+
   return {
     formatDate,
     createDataTestIdentifier,
@@ -401,5 +415,6 @@ export function useUtils() {
     closeWindow,
     getMinimalJSON,
     openSidepanel,
+    extractSecondLevelDomain,
   }
 }

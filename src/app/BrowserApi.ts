@@ -119,7 +119,7 @@ class BrowserApi {
   }
 
   buildContextMenu(caller: string) {
-    if (process.env.MODE !== 'bex') {
+    if (process.env.MODE !== 'bex' || !chrome.contextMenus) {
       return
     }
 

@@ -16,6 +16,7 @@
     <q-tabs align="left" inline-label v-model="tab" no-caps>
       <q-tab name="appearance" :label="t('appearance')" />
       <q-tab name="thirdparty" label="Third Party Services" />
+      <q-tab name="tags" label="Tags" />
       <q-tab name="ignored" label="Ignored Urls" v-if="showIgnored()" />
       <q-tab
         name="archived"
@@ -33,6 +34,10 @@
 
   <div v-if="tab === 'appearance'">
     <AppearanceSettings />
+  </div>
+
+  <div v-if="tab === 'tags'">
+    <TagsSettings />
   </div>
 
   <div v-if="tab === 'internals'">
@@ -182,6 +187,7 @@ import { useI18n } from 'vue-i18n'
 import VueJsonPretty from 'vue-json-pretty'
 import { useRoute } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
+import TagsSettings from 'pages/helper/TagsSettings.vue'
 import { SettingIdent } from 'src/app/models/SettingIdent'
 import ImportExportSettings from 'src/core/pages/helper/ImportExportSettings.vue'
 import InternalSettings from 'src/core/pages/helper/InternalSettings.vue'

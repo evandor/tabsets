@@ -7,6 +7,7 @@ import { useUiStore } from 'src/ui/stores/uiStore'
 export enum NotificationType {
   NOTIFY = 'NOTIFY',
   TOAST = 'TOAST',
+  USER_CHOICE = 'USER_CHOICE',
 }
 
 const { error } = useLogger()
@@ -72,6 +73,9 @@ export function useNotificationHandler() {
           message: executionResult.message,
           actions: actions,
         })
+        break
+      case NotificationType.USER_CHOICE:
+        useUiStore().createUserChoiceToast(executionResult.message, actions)
         break
       default:
         useUiStore().createSuccessToast(executionResult.message, actions)
