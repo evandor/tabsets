@@ -19,6 +19,13 @@
     :tabsCount="props.tabset.tabs.length"
     :tabset="tabsetForTabList(props.tabset as Tabset)"
     @tabs-found="(n: number) => emits('tabs-found', n)" />
+
+  <div
+    v-if="props.tabset.tabs.length === 0"
+    class="text-center q-ma-md q-pa-md text-caption"
+    style="border: 1px dotted grey; border-radius: 6px">
+    There are not links yet in this collection
+  </div>
 </template>
 
 <script setup lang="ts">

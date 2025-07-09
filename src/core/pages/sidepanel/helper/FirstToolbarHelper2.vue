@@ -229,6 +229,7 @@ watchEffect(() => {
     )
     .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
     .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
+    .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
     //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
     .filter((ts: Tabset) => {
       if (useSpaces && space) {

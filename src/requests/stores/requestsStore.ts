@@ -9,7 +9,7 @@ export const useRequestsStore = defineStore('requests', () => {
   const currentTabRequest = ref<chrome.webRequest.WebResponseHeadersDetails | undefined>(undefined)
 
   const setCurrentTabRequest = (details: chrome.webRequest.WebResponseHeadersDetails) => {
-    //console.log('details', details)
+    console.log('====details', details)
     currentTabRequest.value = details
   }
 

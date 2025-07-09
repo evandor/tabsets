@@ -66,7 +66,6 @@
 import _ from 'lodash'
 import { uid } from 'quasar'
 import Analytics from 'src/core/utils/google-analytics'
-import TabGrid2 from 'src/tabsets/layouts/TabGrid2.vue'
 import { Tab, TabFavorite } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import TabsetService from 'src/tabsets/services/TabsetService'

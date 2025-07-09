@@ -327,6 +327,7 @@ import _ from 'lodash'
 import { useQuasar } from 'quasar'
 import { STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 import { TabReferenceType } from 'src/content/models/TabReference'
+import { TagInfo } from 'src/core/models/TagInfo'
 import TabDetailsSearchIndex from 'src/core/pages/sidepanel/helper/TabDetailsSearchIndex.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
@@ -368,7 +369,7 @@ const tabId = ref<string | undefined>(undefined)
 const opensearchterm = ref<string | undefined>(undefined)
 const indexTypesCount = ref(0)
 
-const tags = ref<string[]>([])
+const tags = ref<TagInfo[]>([])
 
 watchEffect(() => {
   tabId.value = route.params.tabId as unknown as string
@@ -379,10 +380,12 @@ watchEffect(() => {
     tab.value = tabObject.tab
     // console.log('tab.tags.value', tab.value.tags)
     if (tab.value.tags.constructor === Array) {
-      tags.value = [...new Set(tab.value.tags)]
+      // tags.value = [...new Set(tab.value.tags)]
+      tags.value = tab.value.tagsInfo
       // remove duplicates if any
       // tab.value.setTags(tags.value)
-      Tab.setTags(tab.value, tags.value)
+      // TODO broken
+      //Tab.setTags(tab.value, tags.value)
     } else {
       tags.value = []
     }

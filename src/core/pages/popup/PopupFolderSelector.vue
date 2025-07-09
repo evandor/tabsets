@@ -35,7 +35,7 @@
           </template>
         </q-select>
         <div
-          v-if="showTabsCount"
+          v-if="showTabsCount && props.currentTabset.tabs.length > 0"
           class="text-left q-ml-sm text-caption vertical-middle text-grey-8 cursor-pointer"
           @click="router.push('/popup/tabset')">
           {{ props.currentTabset.tabs.length + ' ' + (props.currentTabset.tabs.length === 1 ? 'tab' : 'tabs') }}

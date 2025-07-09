@@ -50,11 +50,4 @@ export enum FeatureIdent {
   VISUALIZATIONS = 'VISUALIZATIONS',
 }
 
-export type FeatureType =
-  | 'RECOMMENDED'
-  | 'RECOMMENDED_POPUP'
-  | 'OPTIONAL'
-  | 'EXPERIMENTAL'
-  | 'PLANNED'
-  | 'DISABLED'
-  | 'INTERNAL'
+export type FeatureType = 'RECOMMENDED' | 'OPTIONAL' | 'EXPERIMENTAL' | 'PLANNED' | 'DISABLED' | 'INTERNAL'

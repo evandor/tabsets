@@ -7,6 +7,7 @@ import { ExcalidrawStorage } from 'src/tabsets/actionHandling/model/ExcalidrawSt
 import { Page } from 'src/tabsets/models/cms/backend'
 import { Placeholders } from 'src/tabsets/models/Placeholders'
 import { TabLog } from 'src/tabsets/models/TabLog'
+import { useTagsService } from 'src/tags/TagsService'
 import { ListDetailLevel } from 'src/ui/stores/uiStore'
 
 const { sanitizeAsText, sanitizeAsHtml } = useUtils()
@@ -127,7 +128,7 @@ export class Tab {
   description: string
   longDescription: string | undefined
   keywords: string
-  tags: string[] // Set<string> got issues in indexeddb
+  tags: string[] // deprecated, use tagsInfo (or used for manual input)
   tagsInfo: TagInfo[] = []
   image: string
   date: string
@@ -226,8 +227,6 @@ export class Tab {
 
     this.preview = TabPreview.FAVICON
 
-    this.tags = []
-
     if (!Tab.titleIsValid) {
       throw new Error(`Tab's title '${this.title}' is not valid`)
     }
@@ -279,12 +278,13 @@ export class Tab {
     return this.tabReferences.findIndex((ref: TabReference) => ref.type === type) >= 0
   }
 
-  static setTags(tab: Tab, tags: string[]) {
-    tab.tags = [...new Set(tags.map((tag: string) => tag.trim()))]
+  static setTags(tab: Tab, tags: TagInfo[]) {
+    tab.tagsInfo = useTagsService().deduplicateTags(tags)
   }
 
-  static addTags(tab: Tab, tags: string[]) {
-    Tab.setTags(tab, tags.concat(tags))
+  static addTags(tab: Tab, tags: TagInfo[]) {
+    console.log('adding tags', tags.length, tags)
+    Tab.setTags(tab, tab.tagsInfo.concat(tags))
   }
 
   static logIdent(tab: Tab) {

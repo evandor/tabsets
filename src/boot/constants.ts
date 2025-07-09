@@ -15,6 +15,9 @@ const STRIP_CHARS_IN_COLOR_INPUT = /[`@$%^*=\[\]{};:"\\|<>\/~]/g
 // Local storage Identifiers
 const TITLE_IDENT = 'title'
 
+const TAGS_IGNORED = 'tags.ignored'
+const TAGS_CATEGORIES = 'tags.categories'
+
 const APP_INSTALLATION_ID = 'app.installation.id'
 
 const SHARING_AUTHOR_IDENT = 'sharing.author'
@@ -70,4 +73,6 @@ export {
   TABS_LIMIT_NO_SUBSCRIPTION,
   THUMBNAILS_LIMIT_NO_SUBSCRIPTION,
   NEW_TAB_EXTENSION_ID,
+  TAGS_IGNORED,
+  TAGS_CATEGORIES,
 }

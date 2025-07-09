@@ -37,7 +37,7 @@
             </template>
           </q-select>
           <div
-            v-if="showTabsCount"
+            v-if="showTabsCount && currentTabset.tabs.length > 0"
             class="text-left q-ml-sm text-caption vertical-middle text-grey-8 cursor-pointer"
             @click="router.push('/popup/tabset')">
             {{ currentTabset.tabs.length + ' ' + (currentTabset.tabs.length === 1 ? 'tab' : 'tabs') }}
@@ -138,6 +138,7 @@ watchEffect(() => {
     )
     .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
     .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
+    .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
     //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
     .filter((ts: Tabset) => {
       if (useSpaces && space) {

@@ -60,12 +60,14 @@ import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { ViewContext } from 'src/core/models/ViewContext'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import SidePanelTabListHelper from 'src/tabsets/layouts/SidePanelTabListHelper.vue'
+import { DynamicTabSourceType } from 'src/tabsets/models/DynamicTabSource'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab, TabSorting } from 'src/tabsets/models/Tab'
 import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
 import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTagsService } from 'src/tags/TagsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { PropType, ref, watch } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
@@ -131,6 +133,11 @@ const tabsForColumn = (): IndexedTab[] => {
       return false
     }
     return property.toLowerCase().indexOf(props.filter!.toLowerCase()) >= 0
+  }
+
+  if (props.tabset?.type === TabsetType.DYNAMIC && props.tabset?.dynamicTabs?.type === DynamicTabSourceType.TAG) {
+    const tags = props.tabset.dynamicTabs.config['tags' as keyof object]
+    return useTagsService().getDynamicTabsBy(tags)
   }
 
   return (props.tabset?.tabs as Tab[])

@@ -18,6 +18,7 @@
       <q-tab name="account" label="Account" />
       <q-tab name="sharing" label="Sharing" />
       <q-tab name="thirdparty" label="Third Party Services" />
+      <q-tab name="tags" label="Tags" />
       <q-tab name="ignored" label="Ignored Urls" v-if="showIgnored()" />
       <q-tab
         name="archived"
@@ -35,6 +36,10 @@
 
   <div v-if="tab === 'appearance'">
     <AppearanceSettings />
+  </div>
+
+  <div v-if="tab === 'tags'">
+    <TagsSettings />
   </div>
 
   <div v-if="tab === 'account'">

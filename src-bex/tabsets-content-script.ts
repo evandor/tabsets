@@ -102,6 +102,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (current.indexOf(request.url) === -1) {
       current.push(request.url)
     }
+    console.log('updating tabsets.managed', current)
     LocalStorage.setItem('tabsets.managed', current)
   } else if (request.name === 'url-deleted') {
     const current: string[] = LocalStorage.getItem('tabsets.managed') || []

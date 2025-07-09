@@ -19,40 +19,42 @@
 
 <script setup lang="ts">
 import _ from 'lodash'
-import { uid, useQuasar } from 'quasar'
+import { uid } from 'quasar'
 import SearchHit from 'src/core/components/layouts/SearchHit.vue'
+import { TagInfo } from 'src/core/models/TagInfo'
 import ViewToolbarHelper from 'src/core/pages/sidepanel/helper/ViewToolbarHelper.vue'
 import Analytics from 'src/core/utils/google-analytics'
 import { Hit } from 'src/search/models/Hit'
-import { Tab } from 'src/tabsets/models/Tab'
-import { Tabset } from 'src/tabsets/models/Tabset'
+import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTagsService } from 'src/tags/TagsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, ref, watchEffect } from 'vue'
 
-const $q = useQuasar()
 const tabsetHits = ref<Hit[]>([])
-const showReindexDialog = ref(false)
 
 onMounted(() => {
   Analytics.firePageViewEvent('SidePanelTagsPage', document.location.href)
 })
 
 const newSearch = (term: string) => {
+  console.log('term', term)
   tabsetHits.value = []
 
   if (term && term.trim() !== '') {
-    const results: Tab[] = []
+    const results = useTagsService()
+      .getDynamicTabsBy([term])
+      .map((it: IndexedTab) => it.tab)
+    //const results: Tab[] = []
 
-    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
-      _.forEach(tabset.tabs, (tab: Tab) => {
-        if (tab.tags?.indexOf(term) >= 0) {
-          //console.log("found tab", term, tab.tags)
-          results.push(tab)
-        }
-      })
-    })
+    // _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
+    //   _.forEach(tabset.tabs, (tab: Tab) => {
+    //     if (tab.tagsInfo?.map((t: TagInfo) => t.label).indexOf(term) >= 0) {
+    //       //console.log("found tab", term, tab.tags)
+    //       results.push(tab)
+    //     }
+    //   })
+    // })
 
     _.forEach(results, (h: any) => {
       //console.log("h", h.item.bookmarkId)
