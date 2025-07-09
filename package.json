@@ -36,6 +36,9 @@
     "info": "yarn list > docs/yarn.list.txt && quasar info > docs/quasar.info.txt",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org skysail-dk --project tabsets-pro ./dist && sentry-cli sourcemaps upload --org skysail-dk --project tabsets-pro ./dist"
   },
+  "resolutions": {
+    "vite": "6.3.5"
+  },
   "dependencies": {
     "@grafana/faro-web-sdk": "^1.17.1",
     "@grafana/faro-web-tracing": "^1.17.1",

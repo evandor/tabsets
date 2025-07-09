@@ -26,7 +26,6 @@ import { useDB } from 'src/services/usePersistenceService'
 import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
-import { useAuthStore } from 'src/stores/authStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -45,10 +44,10 @@ class AppService {
   router: Router = null as unknown as Router
   initialized = false
 
-  async init(quasar: QVueGlobals, router: Router, user: User | undefined = undefined) {
+  async init(quasar: QVueGlobals, router: Router, forceReload=false, user: User | undefined = undefined) {
     console.log(`initializing AppService: initialized=${this.initialized}, router set=${router !== undefined}`)
 
-    if (this.initialized) {
+    if (this.initialized && !forceReload) {
       console.debug('stopping AppService initialization; already initialized and not forcing restart')
       return Promise.resolve()
     }

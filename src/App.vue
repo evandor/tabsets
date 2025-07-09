@@ -20,6 +20,7 @@ import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 const version = import.meta.env.PACKAGE_VERSION
 
@@ -68,9 +69,9 @@ useAppStore().init()
 
 const { info } = useLogger()
 
-FirebaseServices.init()
+// FirebaseServices.init()
 
-const auth = FirebaseServices.getAuth()
+const auth = useFirebaseServices().firebaseServices.getAuth()
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 onAuthStateChanged(auth, async (user) => {
