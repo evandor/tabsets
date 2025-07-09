@@ -59,7 +59,7 @@ class FirestoreSuggestionsPersistence extends SuggestionsPersistence {
   }
 
   async clearAll(): Promise<void> {
-    const suggestions = await getDocs(this.firebaseServices, suggestionsCollection())
+    const suggestions = await getDocs(suggestionsCollection(this.firebaseServices))
     suggestions.forEach((doc: DocumentData) => {
       console.log('deleting', doc.data())
       deleteDoc(doc.ref)
