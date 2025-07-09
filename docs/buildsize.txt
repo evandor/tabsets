@@ -1,172 +1,173 @@
  ╔════════════════════════════════════════════════════════════════════════════════════════════════╦══════════════╗
  ║                                                                                          Asset ║         Size ║
  ╟────────────────────────────────────────────────────────────────────────────────────────────────╫──────────────╢
- ║                                                                                  background.js ║   4503.56 KB ║
- ║                                                                      tabsets-content-script.js ║   1249.56 KB ║
+ ║                                                                                  background.js ║    744.46 KB ║
+ ║                                                                      tabsets-content-script.js ║   1249.62 KB ║
  ║                                                          tabsets-request-interceptor-inject.js ║      0.30 KB ║
  ║                                                                 tabsets-request-interceptor.js ║      1.88 KB ║
  ║                                                               tabsets-toolbar-contentscript.js ║     23.40 KB ║
- ║                        www/assets/AddUrlDialog.vue_vue_type_script_setup_true_lang-B-doUNAv.js ║      5.47 KB ║
- ║                  www/assets/AppearanceSettings.vue_vue_type_script_setup_true_lang-CBhx85JB.js ║     54.53 KB ║
- ║                                                                www/assets/Bookmark-Cf5_LDRG.js ║      8.15 KB ║
- ║                                                           www/assets/BookmarksTree-Bd9AfEDw.js ║     18.11 KB ║
- ║                  www/assets/ByDomainListWidget.vue_vue_type_script_setup_true_lang-DZ0PBvCr.js ║      4.09 KB ║
- ║                                                   www/assets/CreateTabFromOpenTabs-CXXH4zjE.js ║      4.08 KB ║
- ║                                                              www/assets/CustomPage-DLRO5xOW.js ║      9.36 KB ║
- ║                                                        www/assets/DeleteTabCommand-BFuDLibK.js ║      2.99 KB ║
- ║                         www/assets/DrawerRight.vue_vue_type_script_setup_true_lang-Dch5EU1S.js ║     63.17 KB ║
- ║                                                           www/assets/ErrorNotFound-Mk0CX1VP.js ║      1.93 KB ║
- ║                                                            www/assets/FeaturesPage-BgBna2zv.js ║     12.80 KB ║
- ║                                                     www/assets/FirstToolbarHelper2-ay_HDFi0.js ║     32.25 KB ║
- ║                                                          www/assets/FullPageLayout-BO2O8jkR.js ║     51.16 KB ║
- ║                                                           www/assets/FullpageStart-Bnx6SXCY.js ║      2.57 KB ║
- ║                                                          www/assets/GetStartedPage-jtWY03MH.js ║      8.58 KB ║
- ║                           www/assets/Highlight.vue_vue_type_script_setup_true_lang-HfwVFPu0.js ║      1.57 KB ║
- ║                        www/assets/ImportDialog.vue_vue_type_script_setup_true_lang-BJVUCSsh.js ║      7.67 KB ║
- ║                   www/assets/InfoMessageWidget.vue_vue_type_script_setup_true_lang-DZPIt7v_.js ║      3.32 KB ║
- ║                                                    www/assets/MainNavigationLayout-DYmzJsd6.js ║      1.27 KB ║
- ║                                                  www/assets/MainPanelBookmarksPage-s45Ne_dT.js ║     26.07 KB ║
- ║                                        www/assets/MainPanelFolderVisualisationPage-gSffFd_Z.js ║    327.52 KB ║
- ║                                                       www/assets/MainPanelHtmlPage-xmthJ7N_.js ║     30.75 KB ║
- ║                                                      www/assets/MainPanelMHtmlPage-BkOOHrvV.js ║     23.32 KB ║
- ║                                                        www/assets/MainPanelPdfPage-B4Md6iZ2.js ║      5.18 KB ║
- ║                                                        www/assets/MainPanelPngPage-CBT1s2Oa.js ║      4.99 KB ║
- ║                                                www/assets/MainPanelReadingModePage-DkUVYMr4.js ║      6.84 KB ║
- ║                                                     www/assets/MainPanelSpacesPage-CMLLkegz.js ║      7.86 KB ║
- ║                                              www/assets/MainPanelTabAssignmentPage-BWC135xu.js ║      8.97 KB ║
- ║                                             www/assets/MainPanelTabsetOverviewPage-0Sg9Yr1T.js ║      7.49 KB ║
- ║                                            www/assets/MainPanelTabsetsOverviewPage-mxc-MF7e.js ║      7.19 KB ║
- ║                                                    www/assets/MarkTabsetAsArchived-DJ2c6op4.js ║      2.03 KB ║
- ║                                                     www/assets/MarkTabsetAsDefault-Uvmbnn0e.js ║      1.08 KB ║
- ║                                                    www/assets/MarkTabsetAsFavorite-0xsDxExX.js ║      1.28 KB ║
- ║              www/assets/NavTabsetsListWidgetNonBex.vue_vue_type_style_index_0_lang-C2GGzRdf.js ║     35.40 KB ║
- ║                                                          www/assets/NavigationPage-Cp7zt7P9.js ║     17.75 KB ║
- ║                     www/assets/NewTabsetDialog.vue_vue_type_script_setup_true_lang-C8Slp1G6.js ║     11.88 KB ║
- ║                                               www/assets/NoopAddUrlToTabsetHandler-CtBoD63s.js ║      1.06 KB ║
- ║                                                         www/assets/NoteOverlayPage-DuXuW1yL.js ║     37.13 KB ║
- ║                                                            www/assets/ObsidianPage-C_iFZvg2.js ║      1.50 KB ║
- ║               www/assets/OpenRightDrawerWidget.vue_vue_type_script_setup_true_lang-XSXKlDhh.js ║      1.54 KB ║
- ║                                                            www/assets/OpenTabCard2-BWPjqUue.js ║      8.94 KB ║
- ║           www/assets/PanelTabListElementWidget.vue_vue_type_script_setup_true_lang-BIC5-hhU.js ║    997.86 KB ║
- ║                                                             www/assets/PlainLayout-Cs1ic0VL.js ║      1.31 KB ║
- ║                                              www/assets/PlainWithRightDrawerLayout-CpPAS70f.js ║      3.09 KB ║
- ║                                                     www/assets/PopupCollectionPage-DU0TAYt7.js ║      5.00 KB ║
- ║                                                    www/assets/PopupCollectionsPage-NfFnbyjq.js ║     11.53 KB ║
- ║                                                             www/assets/PopupLayout-HHSQN0W3.js ║      7.36 KB ║
- ║                                                       www/assets/PopupOpenTabsPage-BefpJvMV.js ║      4.76 KB ║
- ║                                                               www/assets/PopupPage-D1fteNIs.js ║     49.70 KB ║
- ║                                                       www/assets/PopupSettingsPage-DNSBhqBX.js ║     13.48 KB ║
- ║                        www/assets/PopupToolbar.vue_vue_type_script_setup_true_lang-CoNFAiyg.js ║      3.05 KB ║
- ║                                                                  www/assets/QBadge-CajBsuGw.js ║      1.91 KB ║
- ║                                                                 www/assets/QBanner-miMxpzlq.js ║      1.92 KB ║
- ║                                                            www/assets/QBreadcrumbs-B2lyj-Qh.js ║      4.08 KB ║
- ║                                                            www/assets/QBtnDropdown-CXjvowAJ.js ║      7.33 KB ║
- ║                                                                   www/assets/QChip-B5pFluvY.js ║      5.21 KB ║
- ║                                                          www/assets/QExpansionItem-G8lMQX_A.js ║      9.57 KB ║
- ║                                                                 www/assets/QFooter-J2K1KXz3.js ║      5.55 KB ║
- ║                                                                 www/assets/QHeader-D5ptl4-a.js ║      4.97 KB ║
- ║                                                                    www/assets/QImg-DyxQoUkg.js ║      7.73 KB ║
- ║                                                              www/assets/QItemLabel-BdfXeieT.js ║      1.56 KB ║
- ║                                                                 www/assets/QLayout-n25n2rKJ.js ║     11.02 KB ║
- ║                                                         www/assets/QLinearProgress-D6SsOVI7.js ║      3.96 KB ║
- ║                                                            www/assets/QMarkupTable-BIvXa2DG.js ║      1.77 KB ║
- ║                                                                   www/assets/QPage-ClBsNR1g.js ║      2.12 KB ║
- ║                                                             www/assets/QPageSticky-BMFdcc_e.js ║      3.65 KB ║
- ║                                                              www/assets/QPopupEdit-Bgb-B6R8.js ║      5.77 KB ║
- ║                                                         www/assets/QResizeObserver-C9b3xMSS.js ║      4.16 KB ║
- ║                                                                 www/assets/QSelect-vnW-Ri3H.js ║     62.33 KB ║
- ║                                                        www/assets/QSlideTransition-BLyl7spB.js ║      3.42 KB ║
- ║                                                            www/assets/QSpinnerDots-hQDdw6_z.js ║      1.99 KB ║
- ║                                                        www/assets/QSpinnerFacebook-BPIVyJWT.js ║      2.03 KB ║
- ║                                                              www/assets/QTabPanels-ChOqj3SP.js ║     14.33 KB ║
- ║                                                                  www/assets/QTable-n3vSUKlC.js ║     47.68 KB ║
- ║                                                                   www/assets/QTabs-SwVLZJ80.js ║     23.07 KB ║
- ║                                                                www/assets/QToolbar-CRg6wkkU.js ║      1.30 KB ║
- ║                                                                   www/assets/QTree-4N2oM8iv.js ║     19.37 KB ║
- ║                                                      www/assets/RestCallResultPage-pWyhLQ6n.js ║    127.42 KB ║
- ║                                                        www/assets/SaveMHtmlCommand-DMI-gmKT.js ║      1.64 KB ║
- ║                               www/assets/SearchHit.vue_vue_type_style_index_0_lang-C0y3TAkK.js ║     10.94 KB ║
- ║                                                              www/assets/SearchPage-DLXvUH-2.js ║      4.99 KB ║
- ║                                                        www/assets/SearchResultPage-CGvUH47j.js ║      5.07 KB ║
- ║                                                     www/assets/SearchToolbarHelper-CwfyPTtT.js ║      4.19 KB ║
- ║                           www/assets/SearchWidget2.vue_vue_type_style_index_0_lang-DU4oOf5l.js ║      5.59 KB ║
- ║                                                     www/assets/SelectTabsetCommand-C_DsZAj2.js ║      1.90 KB ║
- ║                                                            www/assets/SettingsPage-Bpbkd1f2.js ║     43.71 KB ║
- ║                                                                www/assets/ShortUrl-9zuTm4om.js ║      2.02 KB ║
- ║                                                  www/assets/SidePanelBookmarksPage-C9-PxVWd.js ║      4.82 KB ║
- ║                                                   www/assets/SidePanelByDomainList-BXFAm0tF.js ║      3.06 KB ║
- ║                                                   www/assets/SidePanelByDomainPage-DpOF8hcZ.js ║      9.40 KB ║
- ║                                                www/assets/SidePanelCollectionsPage-CTjP8YIh.js ║     11.75 KB ║
- ║                                            www/assets/SidePanelImportBookmarksPage-DSLu1HsH.js ║      5.96 KB ║
- ║                                                 www/assets/SidePanelLatestTabsPage-tefTAEKg.js ║     10.35 KB ║
- ║                                                         www/assets/SidePanelLayout-DSCezvrM.js ║     97.11 KB ║
- ║                                                   www/assets/SidePanelMessagesPage-CCxVpp8z.js ║      3.47 KB ║
- ║                                             www/assets/SidePanelOpenTabsListViewer-CiEEh9Im.js ║     29.09 KB ║
- ║                                                   www/assets/SidePanelOpenTabsPage-Ct4FhqaY.js ║     13.29 KB ║
- ║                                                          www/assets/SidePanelPage2-B3dSGtGR.js ║     44.07 KB ║
- ║          www/assets/SidePanelPageContentExpand.vue_vue_type_script_setup_true_lang-CGGJzJDM.js ║     18.92 KB ║
- ║                                                  www/assets/SidePanelRemindersPage-CNolzy6-.js ║     11.38 KB ║
- ║                                                   www/assets/SidePanelResearchPage-yZrctHJ0.js ║     36.17 KB ║
- ║                                                  www/assets/SidePanelRssListViewer-DCFtkd7I.js ║      4.64 KB ║
- ║                                                        www/assets/SidePanelRssPage-68lzlTTr.js ║      5.12 KB ║
- ║                                                     www/assets/SidePanelSearchPage-BkhxMJRd.js ║      6.96 KB ║
- ║                                                   www/assets/SidePanelSessionsPage-BrHupfVa.js ║      9.26 KB ║
- ║                                                     www/assets/SidePanelSpacesPage-D3q6D1fJ.js ║     21.84 KB ║
- ║                                                     www/assets/SidePanelTabDetails-CU588TNp.js ║     38.73 KB ║
- ║                                                  www/assets/SidePanelTabListHelper-BSiprCPk.js ║     55.22 KB ║
- ║                                                 www/assets/SidePanelTabsAsTreePage-DXVD0fXe.js ║      9.22 KB ║
- ║                                                 www/assets/SidePanelTagsListViewer-5fOHn1V-.js ║    260.08 KB ║
- ║                                                       www/assets/SidePanelTagsPage-B1A1MQ19.js ║      4.28 KB ║
- ║              www/assets/SidePanelToolbarButton.vue_vue_type_script_setup_true_lang-Cl63Lp3I.js ║      1.68 KB ║
- ║ www/assets/SidePanelToolbarTabNavigationHelper.vue_vue_type_script_setup_true_lang-CxuwrjkC.js ║      2.10 KB ║
- ║                                                      www/assets/SidePanelTop10Page-C-HQi3C6.js ║     13.36 KB ║
- ║                                                  www/assets/SidePanelWithoutLayout-Bj1t96Uv.js ║      0.92 KB ║
- ║                                                     www/assets/SnapshotOverlayPage-DytKP-1-.js ║      6.05 KB ║
- ║                  www/assets/SnapshotViewHelper.vue_vue_type_script_setup_true_lang-DFK9u0Ip.js ║      4.51 KB ║
- ║                  www/assets/StartSessionDialog.vue_vue_type_script_setup_true_lang-BSo9vjxj.js ║      7.55 KB ║
- ║                    www/assets/SuggestionDialog.vue_vue_type_script_setup_true_lang-BPulbhkW.js ║     31.02 KB ║
- ║                    www/assets/TabFaviconWidget.vue_vue_type_script_setup_true_lang-D7CLzLUA.js ║      2.86 KB ║
- ║                                                                 www/assets/TabPage-CJRxJUWl.js ║     23.37 KB ║
- ║                                                              www/assets/TabService-Clm0RKJF.js ║      1.36 KB ║
- ║                                                              www/assets/TabsetPage-C07pphRA.js ║     29.39 KB ║
- ║                     www/assets/TabsetPageCards.vue_vue_type_script_setup_true_lang-Cf3PRcTn.js ║    184.20 KB ║
- ║                                                                www/assets/TouchPan-OBY_K1EP.js ║     11.35 KB ║
- ║                                                       www/assets/ViewToolbarHelper-pCOtcZ87.js ║      6.34 KB ║
- ║                                                             www/assets/WelcomePage-D0UIU9Sv.js ║      6.50 KB ║
- ║                                                             www/assets/WelcomePage-DYImWG6M.js ║      8.08 KB ║
- ║                                                                   www/assets/axios-7cE0kWrr.js ║     74.96 KB ║
- ║                                                                    www/assets/date-C2jzflEA.js ║     25.89 KB ║
- ║                                                           www/assets/errorhandling-Bn-QTjFL.js ║      1.04 KB ║
- ║                                                                www/assets/frontend-BX3R2TT2.js ║      1.78 KB ║
- ║                                                       www/assets/global-components-D5c7Cvph.js ║     25.45 KB ║
- ║                                                                    www/assets/i18n-AWEbGg4T.js ║      2.85 KB ║
- ║                                                                   www/assets/index-DflAoT0h.js ║   3501.40 KB ║
- ║                         www/assets/offlineInfo.vue_vue_type_script_setup_true_lang-CWFb9Ok8.js ║      2.09 KB ║
- ║     www/assets/panelTabListElementWidget.scss_vue_type_style_index_0_src_true_lang-CW1t5as4.js ║    105.16 KB ║
+ ║                        www/assets/AddUrlDialog.vue_vue_type_script_setup_true_lang-CRPJteNs.js ║      5.47 KB ║
+ ║                  www/assets/AppearanceSettings.vue_vue_type_script_setup_true_lang-rqF3hSNm.js ║     56.97 KB ║
+ ║                                                                www/assets/Bookmark-B6Z934OH.js ║      8.15 KB ║
+ ║                                                           www/assets/BookmarksTree-C3ihUX3G.js ║     18.11 KB ║
+ ║                  www/assets/ByDomainListWidget.vue_vue_type_script_setup_true_lang-BDXevRZp.js ║      4.09 KB ║
+ ║                                                   www/assets/CreateTabFromOpenTabs-Cvlrw-dJ.js ║      4.08 KB ║
+ ║                                                              www/assets/CustomPage-53BQJfls.js ║      9.36 KB ║
+ ║                                                        www/assets/DeleteTabCommand-D5YO-7eH.js ║      2.99 KB ║
+ ║                         www/assets/DrawerRight.vue_vue_type_script_setup_true_lang-BIIqq5Mr.js ║     63.15 KB ║
+ ║                                                        www/assets/DynamicTabSource-BbhvJMHt.js ║      0.91 KB ║
+ ║                                                           www/assets/ErrorNotFound-ChE36kkL.js ║      1.93 KB ║
+ ║                                                            www/assets/FeaturesPage-3HPys1Vy.js ║     12.80 KB ║
+ ║                                                     www/assets/FirstToolbarHelper2-CQ2tktu6.js ║     32.29 KB ║
+ ║                                                          www/assets/FullPageLayout-BMpD8EkY.js ║     51.16 KB ║
+ ║                                                           www/assets/FullpageStart-CKdWMjDR.js ║      2.57 KB ║
+ ║                                                          www/assets/GetStartedPage-cQivJkYs.js ║      8.58 KB ║
+ ║                           www/assets/Highlight.vue_vue_type_script_setup_true_lang-1cy659Hb.js ║      1.57 KB ║
+ ║                        www/assets/ImportDialog.vue_vue_type_script_setup_true_lang-CkVFqLiR.js ║      7.67 KB ║
+ ║                   www/assets/InfoMessageWidget.vue_vue_type_script_setup_true_lang-DZer0eJ9.js ║      3.32 KB ║
+ ║                                                    www/assets/MainNavigationLayout-D1TZ3n1E.js ║      1.27 KB ║
+ ║                                                  www/assets/MainPanelBookmarksPage-LX4KJFOo.js ║     26.07 KB ║
+ ║                                        www/assets/MainPanelFolderVisualisationPage-tYCSFgHc.js ║    327.52 KB ║
+ ║                                                       www/assets/MainPanelHtmlPage-XkoZWFHX.js ║     30.75 KB ║
+ ║                                                      www/assets/MainPanelMHtmlPage-YYQyDiCm.js ║     23.41 KB ║
+ ║                                                        www/assets/MainPanelPdfPage-DdfK1egT.js ║      5.18 KB ║
+ ║                                                        www/assets/MainPanelPngPage-BJDS_U5O.js ║      4.99 KB ║
+ ║                                                www/assets/MainPanelReadingModePage-DfN-NF3G.js ║      6.84 KB ║
+ ║                                                     www/assets/MainPanelSpacesPage-KOttvwIo.js ║      7.86 KB ║
+ ║                                              www/assets/MainPanelTabAssignmentPage-CrA8Vfjk.js ║      8.97 KB ║
+ ║                                             www/assets/MainPanelTabsetOverviewPage-CgCAL0SZ.js ║      7.53 KB ║
+ ║                                            www/assets/MainPanelTabsetsOverviewPage-B1kooC6J.js ║      7.19 KB ║
+ ║                                                    www/assets/MarkTabsetAsArchived-BFEMBO1P.js ║      2.03 KB ║
+ ║                                                     www/assets/MarkTabsetAsDefault-CIw_O856.js ║      1.08 KB ║
+ ║                                                    www/assets/MarkTabsetAsFavorite-DhyISWW2.js ║      1.28 KB ║
+ ║              www/assets/NavTabsetsListWidgetNonBex.vue_vue_type_style_index_0_lang-LH66cbMm.js ║     35.40 KB ║
+ ║                                                          www/assets/NavigationPage-CzKsWuUa.js ║     17.71 KB ║
+ ║                     www/assets/NewTabsetDialog.vue_vue_type_script_setup_true_lang-Biw6y_tB.js ║     11.88 KB ║
+ ║                                               www/assets/NoopAddUrlToTabsetHandler-BcU9UJLY.js ║      1.06 KB ║
+ ║                                                         www/assets/NoteOverlayPage-d0kOiLUW.js ║     37.13 KB ║
+ ║                                                            www/assets/ObsidianPage-BBbpIne3.js ║      1.50 KB ║
+ ║               www/assets/OpenRightDrawerWidget.vue_vue_type_script_setup_true_lang-yLzL_rSh.js ║      1.54 KB ║
+ ║                                                            www/assets/OpenTabCard2-Dj_QUwpJ.js ║      8.94 KB ║
+ ║           www/assets/PanelTabListElementWidget.vue_vue_type_script_setup_true_lang-7qQUyI7w.js ║     81.62 KB ║
+ ║                                                             www/assets/PlainLayout-C7GHWxv4.js ║      1.31 KB ║
+ ║                                              www/assets/PlainWithRightDrawerLayout-Dh45pAQk.js ║      3.09 KB ║
+ ║                                                     www/assets/PopupCollectionPage-DNSMKiBz.js ║      5.04 KB ║
+ ║                                                    www/assets/PopupCollectionsPage-BEp8D3fD.js ║     11.53 KB ║
+ ║                                                             www/assets/PopupLayout-DU3tm-tu.js ║      8.90 KB ║
+ ║                                                       www/assets/PopupOpenTabsPage-CgmqW_in.js ║      5.52 KB ║
+ ║                                                               www/assets/PopupPage-bcIg3YzD.js ║     54.36 KB ║
+ ║                                                       www/assets/PopupSettingsPage-CgdfklL-.js ║     15.78 KB ║
+ ║                        www/assets/PopupToolbar.vue_vue_type_script_setup_true_lang-eA2yjOrD.js ║      3.05 KB ║
+ ║                                                                  www/assets/QBadge-8H-SC0vj.js ║      1.91 KB ║
+ ║                                                                 www/assets/QBanner-DFzkUrGg.js ║      1.92 KB ║
+ ║                                                            www/assets/QBreadcrumbs-CvJbVnod.js ║      4.08 KB ║
+ ║                                                            www/assets/QBtnDropdown-pfkNFPiN.js ║      7.33 KB ║
+ ║                                                                   www/assets/QChip-Ct1JEv1y.js ║      5.21 KB ║
+ ║                                                          www/assets/QExpansionItem-CI-TIzEN.js ║      9.57 KB ║
+ ║                                                                 www/assets/QFooter-Dw1cLVkO.js ║      5.55 KB ║
+ ║                                                                 www/assets/QHeader-CDWK0LQX.js ║      4.97 KB ║
+ ║                                                                    www/assets/QImg-Hgenz6Pv.js ║      7.73 KB ║
+ ║                                                              www/assets/QItemLabel-D7pGZMwe.js ║      1.56 KB ║
+ ║                                                                 www/assets/QLayout-C_4i8M7-.js ║     11.01 KB ║
+ ║                                                         www/assets/QLinearProgress-BhrC9D3w.js ║      3.96 KB ║
+ ║                                                            www/assets/QMarkupTable-C85AqGYc.js ║      1.77 KB ║
+ ║                                                                   www/assets/QPage-23EQ5cCs.js ║      2.12 KB ║
+ ║                                                             www/assets/QPageSticky-BbAPbEhz.js ║      3.65 KB ║
+ ║                                                              www/assets/QPopupEdit-DoeHRefX.js ║      5.77 KB ║
+ ║                                                         www/assets/QResizeObserver-C1xymFTx.js ║      4.16 KB ║
+ ║                                                                 www/assets/QSelect-DRpGmJUd.js ║     62.33 KB ║
+ ║                                                        www/assets/QSlideTransition-UDQ8YHBq.js ║      3.42 KB ║
+ ║                                                            www/assets/QSpinnerDots-CywJ2ky8.js ║      1.99 KB ║
+ ║                                                        www/assets/QSpinnerFacebook-lTVuQp_c.js ║      2.03 KB ║
+ ║                                                              www/assets/QTabPanels-DkO7EPk9.js ║     14.33 KB ║
+ ║                                                                  www/assets/QTable-Bnyv7Mqc.js ║     47.68 KB ║
+ ║                                                                   www/assets/QTabs-BrBRbJl8.js ║     23.07 KB ║
+ ║                                                                www/assets/QToolbar-DJAUNMIb.js ║      1.30 KB ║
+ ║                                                                   www/assets/QTree-C-UDNWna.js ║     19.37 KB ║
+ ║                                                      www/assets/RestCallResultPage-B0KjXRxn.js ║    127.42 KB ║
+ ║                                                        www/assets/SaveMHtmlCommand-B6m0vN60.js ║      1.64 KB ║
+ ║                               www/assets/SearchHit.vue_vue_type_style_index_0_lang-CQPEYxxN.js ║     10.94 KB ║
+ ║                                                              www/assets/SearchPage-CVlsKNb9.js ║      4.99 KB ║
+ ║                                                        www/assets/SearchResultPage-CKcwuamS.js ║      5.07 KB ║
+ ║                                                     www/assets/SearchToolbarHelper-BY5jRnwS.js ║      4.19 KB ║
+ ║                           www/assets/SearchWidget2.vue_vue_type_style_index_0_lang-DAOuQrLf.js ║      5.59 KB ║
+ ║                                                     www/assets/SelectTabsetCommand-Biaj4Mle.js ║      1.89 KB ║
+ ║                                                            www/assets/SettingsPage-DEBIjGWQ.js ║     44.13 KB ║
+ ║                                                                www/assets/ShortUrl-Dx2i4Rt4.js ║      2.02 KB ║
+ ║                                                  www/assets/SidePanelBookmarksPage-CfdR5HJR.js ║      4.82 KB ║
+ ║                                                   www/assets/SidePanelByDomainList-Dnuk1rwn.js ║      3.06 KB ║
+ ║                                                   www/assets/SidePanelByDomainPage-BNdqA63A.js ║      9.40 KB ║
+ ║                                                www/assets/SidePanelCollectionsPage-BKj7Abtd.js ║     11.75 KB ║
+ ║                                            www/assets/SidePanelImportBookmarksPage-C6dfS0rR.js ║      5.96 KB ║
+ ║                                                 www/assets/SidePanelLatestTabsPage-KOjwpmdY.js ║     10.35 KB ║
+ ║                                                         www/assets/SidePanelLayout-C7dTfhYZ.js ║     97.10 KB ║
+ ║                                                   www/assets/SidePanelMessagesPage-jEch-T5G.js ║      3.47 KB ║
+ ║                                             www/assets/SidePanelOpenTabsListViewer-AEYwF1HP.js ║     36.41 KB ║
+ ║                                                   www/assets/SidePanelOpenTabsPage-9KJRm_u9.js ║      5.72 KB ║
+ ║                                                          www/assets/SidePanelPage2-D70FsmRZ.js ║     44.15 KB ║
+ ║          www/assets/SidePanelPageContentExpand.vue_vue_type_script_setup_true_lang-4PCkArnl.js ║     19.60 KB ║
+ ║                                                  www/assets/SidePanelRemindersPage-DquzmFzS.js ║     11.38 KB ║
+ ║                                                   www/assets/SidePanelResearchPage-BgTjNWbt.js ║     36.17 KB ║
+ ║                                                  www/assets/SidePanelRssListViewer-CC9Nm_mx.js ║      4.64 KB ║
+ ║                                                        www/assets/SidePanelRssPage-CY1-Cgb2.js ║      5.12 KB ║
+ ║                                                     www/assets/SidePanelSearchPage-C1EEjjUb.js ║      6.96 KB ║
+ ║                                                   www/assets/SidePanelSessionsPage-Dip30Y_d.js ║      9.26 KB ║
+ ║                                                     www/assets/SidePanelSpacesPage-DB6-qQ09.js ║     21.84 KB ║
+ ║                                                     www/assets/SidePanelTabDetails-B8QazpoU.js ║     38.66 KB ║
+ ║                                                  www/assets/SidePanelTabListHelper-De1INdtQ.js ║     55.22 KB ║
+ ║                                                 www/assets/SidePanelTabsAsTreePage-CGbLleD3.js ║      9.22 KB ║
+ ║                                                 www/assets/SidePanelTagsListViewer-t2Ad2Pwa.js ║    264.43 KB ║
+ ║                                                       www/assets/SidePanelTagsPage-GtlGWg4a.js ║      4.04 KB ║
+ ║              www/assets/SidePanelToolbarButton.vue_vue_type_script_setup_true_lang-COQeYock.js ║      1.68 KB ║
+ ║ www/assets/SidePanelToolbarTabNavigationHelper.vue_vue_type_script_setup_true_lang-gOlNMjnl.js ║      2.10 KB ║
+ ║                                                      www/assets/SidePanelTop10Page-C9zcE4PH.js ║     13.36 KB ║
+ ║                                                  www/assets/SidePanelWithoutLayout-BewOco1S.js ║      0.92 KB ║
+ ║                                                     www/assets/SnapshotOverlayPage-D3OuOFeG.js ║      6.05 KB ║
+ ║                  www/assets/SnapshotViewHelper.vue_vue_type_script_setup_true_lang-Be3St__3.js ║      4.51 KB ║
+ ║                  www/assets/StartSessionDialog.vue_vue_type_script_setup_true_lang-Dm0x5A7z.js ║      7.55 KB ║
+ ║                    www/assets/SuggestionDialog.vue_vue_type_script_setup_true_lang-CQXzcGP7.js ║     31.01 KB ║
+ ║                    www/assets/TabFaviconWidget.vue_vue_type_script_setup_true_lang-C6D8KDS5.js ║      2.86 KB ║
+ ║                                                                 www/assets/TabPage-BNB2RGgc.js ║     23.37 KB ║
+ ║                                                              www/assets/TabService-BmJWYHfn.js ║      1.36 KB ║
+ ║                                                              www/assets/TabsetPage-Bps35NN3.js ║     29.43 KB ║
+ ║                     www/assets/TabsetPageCards.vue_vue_type_script_setup_true_lang-MtOL5ISk.js ║    184.97 KB ║
+ ║                                                                www/assets/TouchPan-D5BhI0nO.js ║     11.35 KB ║
+ ║                                                       www/assets/ViewToolbarHelper-Cvjej3i_.js ║      6.34 KB ║
+ ║                                                             www/assets/WelcomePage-Dm6YFZue.js ║      6.50 KB ║
+ ║                                                             www/assets/WelcomePage-NKTyCXAo.js ║      8.08 KB ║
+ ║                                                                   www/assets/axios-Bxt9ppG6.js ║     74.91 KB ║
+ ║                                                                    www/assets/date-FWz-OLXr.js ║     25.89 KB ║
+ ║                                                           www/assets/errorhandling-CxVaDSF7.js ║      1.04 KB ║
+ ║                                                                www/assets/frontend-BQZynT6i.js ║      1.78 KB ║
+ ║                                                       www/assets/global-components-Ds_EJzfT.js ║     25.45 KB ║
+ ║                                                                    www/assets/i18n-DOVBYlPE.js ║      2.85 KB ║
+ ║                                                                   www/assets/index-DTFLiqUy.js ║   4403.29 KB ║
+ ║                         www/assets/offlineInfo.vue_vue_type_script_setup_true_lang-DFKOJ1uL.js ║      2.09 KB ║
+ ║     www/assets/panelTabListElementWidget.scss_vue_type_style_index_0_src_true_lang-D8sdVuPN.js ║    105.16 KB ║
  ║                                                                     www/assets/rtl-X6pZALxo.js ║      1.01 KB ║
  ║                                                                   www/assets/touch-DFSKp2fC.js ║      1.69 KB ║
- ║                                                          www/assets/use-fullscreen-B1m_NE7m.js ║      2.89 KB ║
+ ║                                                          www/assets/use-fullscreen-DDv66Wa6.js ║      2.89 KB ║
  ║                                                        www/assets/use-render-cache-CDvFAR2V.js ║      1.05 KB ║
- ║                                                     www/assets/useTabsetsFunctions-D9akuyjs.js ║     79.61 KB ║
- ║                                          www/assets/vue-draggable-next.esm-bundler-BdPwQHE6.js ║     87.98 KB ║
- ║                                                 www/assets/vue-highlight-words.esm-CYqv0Mdn.js ║      8.97 KB ║
- ║                                                        www/assets/vue-i18n.runtime-Xn2jGVRM.js ║    114.73 KB ║
- ║                                                         www/assets/vue-json-pretty-DbcpJ4Rl.js ║     33.61 KB ║
+ ║                                                     www/assets/useTabsetsFunctions-BUzG5qMr.js ║     79.75 KB ║
+ ║                                          www/assets/vue-draggable-next.esm-bundler-DmT3qiWt.js ║     88.05 KB ║
+ ║                                                 www/assets/vue-highlight-words.esm-Cqg0HC8d.js ║      8.97 KB ║
+ ║                                                        www/assets/vue-i18n.runtime-CdPWkvvf.js ║    114.73 KB ║
+ ║                                                         www/assets/vue-json-pretty-Dspz_eDB.js ║     33.61 KB ║
  ║                                                        www/wasm/ort-wasm-simd-threaded.jsep.js ║     43.44 KB ║
  ╟────────────────────────────────────────────────────────────────────────────────────────────────╫──────────────╢
  ║                                                                             assets/content.css ║      1.08 KB ║
  ║                                                          www/assets/BookmarksTree-RWdgto6c.css ║      0.43 KB ║
  ║                                                             www/assets/CustomPage-CFFz_1vg.css ║      0.11 KB ║
- ║                                                    www/assets/FirstToolbarHelper2-BbePcR6t.css ║      0.45 KB ║
+ ║                                                    www/assets/FirstToolbarHelper2-BKb9L3b1.css ║      0.45 KB ║
  ║                                                 www/assets/MainPanelBookmarksPage-GStVB-bs.css ║      0.20 KB ║
  ║                                       www/assets/MainPanelFolderVisualisationPage-sSrevA9x.css ║      7.31 KB ║
  ║                                             www/assets/NavTabsetsListWidgetNonBex-i60najnu.css ║      0.12 KB ║
- ║                                                         www/assets/NavigationPage-BwfE33bu.css ║      0.05 KB ║
+ ║                                                         www/assets/NavigationPage-D9slmrEd.css ║      0.05 KB ║
  ║                                                        www/assets/NoteOverlayPage-DEr_pv6A.css ║      0.05 KB ║
  ║                                                           www/assets/OpenTabCard2-CIwSHZNN.css ║      0.26 KB ║
  ║                                                    www/assets/PopupCollectionPage-BfCQ6sEM.css ║      0.20 KB ║
  ║                                                            www/assets/PopupLayout-DNITVeiM.css ║      0.23 KB ║
- ║                                                              www/assets/PopupPage-ClEA-neJ.css ║      0.20 KB ║
+ ║                                                              www/assets/PopupPage-CbX_Wxv4.css ║      0.20 KB ║
  ║                                                              www/assets/SearchHit-CuzrL87A.css ║      0.21 KB ║
  ║                                                    www/assets/SearchToolbarHelper-BS7urK1l.css ║      0.18 KB ║
  ║                                                          www/assets/SearchWidget2-Cj-j6sZd.css ║      0.40 KB ║
@@ -174,8 +175,7 @@
  ║                                                  www/assets/SidePanelByDomainPage-DeIf5s25.css ║      0.48 KB ║
  ║                                               www/assets/SidePanelCollectionsPage-BkvBDCNm.css ║      0.38 KB ║
  ║                                                        www/assets/SidePanelLayout-Bh_WZnBE.css ║      0.69 KB ║
- ║                                            www/assets/SidePanelOpenTabsListViewer-Bxn6gXUq.css ║      0.26 KB ║
- ║                                                  www/assets/SidePanelOpenTabsPage-BTZCXqm2.css ║      0.18 KB ║
+ ║                                            www/assets/SidePanelOpenTabsListViewer-BsKWj0S2.css ║      0.44 KB ║
  ║                                                         www/assets/SidePanelPage2-CiVCe_jb.css ║      0.10 KB ║
  ║                                             www/assets/SidePanelPageContentExpand-IRL7m1mc.css ║      1.67 KB ║
  ║                                                 www/assets/SidePanelRemindersPage-CySZw8Y-.css ║      0.26 KB ║
@@ -187,7 +187,7 @@
  ║                                                       www/assets/SuggestionDialog-B8wElQ5_.css ║      0.36 KB ║
  ║                                                                www/assets/TabPage-B1lg5lF_.css ║      0.28 KB ║
  ║                                                             www/assets/TabsetPage-CH5YM3tU.css ║      0.20 KB ║
- ║                                                        www/assets/TabsetPageCards-CmN-O393.css ║      4.83 KB ║
+ ║                                                        www/assets/TabsetPageCards-B1YXH9x3.css ║      4.83 KB ║
  ║                                                      www/assets/ViewToolbarHelper-DgKPcOU1.css ║      0.18 KB ║
  ║                                                                www/assets/default-C516BNXB.css ║      0.47 KB ║
  ║                                                      www/assets/global-components-5cwDlNM2.css ║      0.05 KB ║
@@ -197,11 +197,11 @@
  ║                                                                 www/assets/styles-gJqN0Hn4.css ║      3.06 KB ║
  ║                                                                  www/css/ts-content-script.css ║      0.04 KB ║
  ╟────────────────────────────────────────────────────────────────────────────────────────────────╫──────────────╢
- ║                                                                                  manifest.json ║      2.12 KB ║
+ ║                                                                                  manifest.json ║      2.10 KB ║
  ╟────────────────────────────────────────────────────────────────────────────────────────────────╫──────────────╢
  ║                                                                                 www/index.html ║      1.11 KB ║
  ║                                                                             www/sidepanel.html ║      0.74 KB ║
  ╠════════════════════════════════════════════════════════════════════════════════════════════════╬══════════════╣
- ║                                                                           Total JS (152 files) ║  13380.36 KB ║
- ║                                                                           Total CSS (42 files) ║    336.84 KB ║
+ ║                                                                           Total JS (153 files) ║   9625.63 KB ║
+ ║                                                                           Total CSS (41 files) ║    336.84 KB ║
  ╚════════════════════════════════════════════════════════════════════════════════════════════════╩══════════════╝

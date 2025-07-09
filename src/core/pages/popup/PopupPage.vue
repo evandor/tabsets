@@ -408,7 +408,7 @@ watchEffect(() => {
         initialDesc = tab.value.description
         description.value = tab.value.description
         console.log('setting tagsInfo')
-        tagsInfo.value = tab.value.tagsInfo
+        tagsInfo.value = tab.value.tagsInfo || []
         getSnapshots()
       }
       const browserUrl = browserTab.value.url

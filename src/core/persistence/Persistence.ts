@@ -1,7 +1,9 @@
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
+
 interface Persistence {
   getServiceName(): string
 
-  init(): Promise<any>
+  init(firebaseServices: IFirebaseServices): Promise<any>
 
   compactDb(): Promise<any>
 }

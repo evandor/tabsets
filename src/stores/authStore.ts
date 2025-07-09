@@ -247,43 +247,18 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout(): Promise<any> {
-    console.log('logging out user')
-    avatar.value = 'https://www.gravatar.com/avatar/unknown'
-    return signOut(getAuth()).then(() => {
-      authenticated.value = false
-      user.value = null as unknown as User
-      LocalStorage.remove(CURRENT_USER_ID)
-      //console.log("logout", (process.env.MODE === 'bex') ? window.location.origin + "/www/index.html" : window.location.origin)
-      return Promise.resolve('')
-    })
-  }
-
-  function upsertAccount(acc: Account | undefined) {
-    console.log('upserting account', acc)
-    if (acc) {
-      //storage.upsertAccount(acc)
-    }
-    account.value = acc
-  }
-
-  function setProducts(ps: string[]) {
-    products.value = ps
+    return Promise.resolve()
   }
 
   return {
+    initialize,
+    user,
     isAuthenticated,
     getUsername,
-    getAccessTokenSilently,
-    useAuthRequest,
-    setAuthRequest,
     setUser,
     logout,
-    user,
     getAccount,
     getUserData,
-    getRoles,
-    setProducts,
-    userMayAccess,
     limitExceeded,
     avatar,
   }

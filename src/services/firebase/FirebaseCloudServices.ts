@@ -3,9 +3,10 @@ import { Auth, connectAuthEmulator, getAuth } from 'firebase/auth/web-extension'
 import { connectDatabaseEmulator, Database, getDatabase } from 'firebase/database'
 import { connectFirestoreEmulator, Firestore, getFirestore, initializeFirestore } from 'firebase/firestore'
 import { connectStorageEmulator, FirebaseStorage, getStorage } from 'firebase/storage'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useUiStore } from 'src/ui/stores/uiStore'
 
-class FirebaseServices {
+class FirebaseCloudServices implements IFirebaseServices {
   private firebaseApp: any = null //firebase.app.App = null as unknown as firebase.app.App
   private auth: Auth = null as unknown as Auth
   private firestore: Firestore = null as unknown as Firestore
@@ -54,16 +55,20 @@ class FirebaseServices {
   }
 
   getAuth() {
-    return null
+    return this.auth
   }
 
-  getFirestore(): any {
-    return null
+  getFirestore(): Firestore {
+    return this.firestore
   }
 
-  getStorage() {
-    return null
+  getStorage(): FirebaseStorage {
+    return this.storage
+  }
+
+  getDatabase(): Database {
+    return this.database
   }
 }
 
-export default new FirebaseServices()
+export default new FirebaseCloudServices()

@@ -1,12 +1,15 @@
 import { doc, setDoc } from 'firebase/firestore'
 import { deleteObject, getBytes, getMetadata, listAll, ref, StringFormat, uploadString } from 'firebase/storage'
 import FirebaseServices from 'src/services/firebase/FirebaseServices'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import ThumbnailsPersistence from 'src/thumbnails/persistence/ThumbnailsPersistence'
 import { useAuthStore } from 'stores/authStore'
 
 class FirestoreThumbnailsPersistence extends ThumbnailsPersistence {
-  async init() {
-    // console.debug(` ...initialized thumbnails: ${this.getServiceName()}`, '✅')
+  private firebaseServices: IFirebaseServices = null as unknown as IFirebaseServices
+  async init(firebaseServices: IFirebaseServices) {
+    console.debug(` ...initialized thumbnails: ${this.getServiceName()}`, '✅')
+    this.firebaseServices = firebaseServices
     return Promise.resolve('')
   }
 
@@ -21,7 +24,7 @@ class FirestoreThumbnailsPersistence extends ThumbnailsPersistence {
     const url = `users/${userId}/thumbnails/${tabId}`
     try {
       //console.log(`getting thumbnail for ${url}`)
-      const storageReference = ref(FirebaseServices.getStorage(), url)
+      const storageReference = ref(this.firebaseServices.getStorage(), url)
       const res = await getBytes(storageReference)
       const decoder = new TextDecoder('utf-8')
       return decoder.decode(res)
