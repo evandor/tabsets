@@ -4,7 +4,7 @@
       <router-view />
     </q-page-container>
 
-    <q-footer elevated>
+    <q-footer>
       <SidePanelFooter />
     </q-footer>
   </q-layout>

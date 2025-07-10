@@ -4,6 +4,7 @@ import ChromeApi from 'src/app/BrowserApi'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import InMemoryFeaturesPersistence from 'src/features/persistence/InMemoryFeaturesPersistence'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useDB } from 'src/services/usePersistenceService'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
@@ -126,7 +127,7 @@ describe('WindowsStore', () => {
     setActivePinia(createPinia())
     await useFeaturesStore().initialize(InMemoryFeaturesPersistence)
     useFeaturesStore().activateFeature(FeatureIdent.WINDOWS_MANAGEMENT)
-    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
     await IndexedDbWindowsPersistence.init()
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)

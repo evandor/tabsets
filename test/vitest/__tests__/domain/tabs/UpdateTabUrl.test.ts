@@ -4,6 +4,7 @@ import ChromeApi from 'src/app/BrowserApi'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
 import { useContentService } from 'src/content/services/ContentService'
 import { useSearchStore } from 'src/search/stores/searchStore'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useDB } from 'src/services/usePersistenceService'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
@@ -26,7 +27,7 @@ describe('UpdateTabUrl', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
     await IndexedDbContentPersistence.init()
     await useContentService().init(IndexedDbContentPersistence)
     db = useDB().tabsetsDb

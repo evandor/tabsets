@@ -1,5 +1,6 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createPinia, setActivePinia } from 'pinia'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useDB } from 'src/services/usePersistenceService'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
@@ -18,7 +19,7 @@ describe('CreateTabsetCommand', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useSuggestionsStore().init(useDB(undefined).suggestionsDb)
