@@ -20,7 +20,6 @@ import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 const STORE_IDENT = 'tabsets'
 
@@ -48,6 +47,7 @@ function publicTabsetsDoc(firebaseServices: IFirebaseServices, docId: string) {
 
 class FirestoreTabsetsPersistence implements TabsetsPersistence {
   private firebaseServices: IFirebaseServices = null as unknown as IFirebaseServices
+
   getServiceName(): string {
     return 'FirestoreTabsetsPersistence'
   }

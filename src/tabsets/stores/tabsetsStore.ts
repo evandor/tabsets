@@ -15,9 +15,7 @@ import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
-// import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { computed, ref, watch } from 'vue'
-import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 /**
  * a pinia store for "Tabsets".

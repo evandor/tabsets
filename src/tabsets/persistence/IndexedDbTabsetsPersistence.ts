@@ -1,12 +1,11 @@
-// 3 expected diffs to localstorage
-import { IDBPDatabase, openDB } from 'idb'
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
-import { useDB } from 'src/services/usePersistenceService'
-import { SharingInfo } from 'src/tabsets/models/SharingInfo'
-import { Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
-import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
+import { IDBPDatabase, openDB } from 'idb';
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices';
+import { useDB } from 'src/services/usePersistenceService';
+import { SharingInfo } from 'src/tabsets/models/SharingInfo';
+import { Tabset, TabsetSharing } from 'src/tabsets/models/Tabset';
+import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence';
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore';
+
 
 class IndexedDbTabsetsPersistence implements TabsetsPersistence {
   private STORE_IDENT = 'tabsets'

@@ -8,7 +8,6 @@ import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabset
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 installQuasarPlugin()
 
