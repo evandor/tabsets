@@ -248,7 +248,7 @@ import { date, LocalStorage, openURL, uid, useQuasar } from 'quasar'
 import BrowserApi from 'src/app/BrowserApi'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { EXTENSION_NAME, GITHUB_AUTO_SYNC, GITHUB_AUTO_SYNC_LASTUPDATE } from 'src/boot/constants'
+import { GITHUB_AUTO_SYNC, GITHUB_AUTO_SYNC_LASTUPDATE } from 'src/boot/constants'
 import { useContentStore } from 'src/content/stores/contentStore'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
 import SidePanelFooterLeftButtons from 'src/core/components/helper/SidePanelFooterLeftButtons.vue'
@@ -514,8 +514,7 @@ const logout = () => {
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-bottom:20px;' : '')
 const gotoStripe = () => openURL(process.env.STRIPE_CUSTOMER_PORTAL!)
 // const openPwaUrl = () => NavigationService.openOrCreateTab([process.env.TABSETS_PWA_URL || 'https://www.skysail.io'])
-// @ts-expect-error xxx
-const showLoginBtn = () => EXTENSION_NAME !== 'tabsets'
+const showLoginBtn = () => process.env.TABSETS_USE_AUTH
 const showSettingsButton = () => route?.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated()
 
 const drop = (evt: any) => {
