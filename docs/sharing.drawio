@@ -1,0 +1,165 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" version="27.1.1">
+  <diagram id="KJRLZbUMWtx5j0lMuly0" name="Page-1">
+    <mxGraphModel dx="927" dy="836" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="3" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="120" y="100" width="670" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="&lt;b&gt;User A&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="130" y="110" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="190" y="110" width="230" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="Tabsets" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="200" y="130" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="Tabset X" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="270" y="130" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="Tabset Y" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+          <mxGeometry x="270" y="160" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="Tabset Z" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="270" y="190" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="18" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="180" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="665" y="250" />
+              <mxPoint x="430" y="250" />
+              <mxPoint x="430" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="18" value="created: 123&lt;br&gt;email: sharedWith@ts.net&lt;br&gt;sharedBy: Carsten&lt;br&gt;sharedById: User A&amp;nbsp;&lt;br&gt;status: pending&lt;br&gt;tabsetId: Tabset Y&lt;br&gt;tabsetName: Y&lt;br&gt;readonly: true/false" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="550" y="116" width="230" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="Share&lt;br&gt;Dialog" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="450" y="140" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="9" target="18" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="640" y="165" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="23" value="" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.email_2;" parent="1" vertex="1">
+          <mxGeometry x="500" y="60" width="31.84" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="25" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="120" y="360" width="670" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="26" value="&lt;b&gt;shared-with-queue&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="140" y="370" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="27" target="64" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="27" value="created: 123&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;email: sharedWith@ts.net&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;sharedBy: Carsten&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;sharedById: User A&amp;nbsp;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;status: pending&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;tabsetId: Tabset Y&lt;br&gt;tabsetName: Y&lt;br&gt;readonly: true/false" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="580" y="370" width="200" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.57;entryY=0.025;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="18" target="27" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="210" as="sourcePoint" />
+            <mxPoint x="700" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="31" value="Copy&lt;br&gt;writeOnShare2G" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="580" y="290" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="32" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="120" y="600" width="670" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="33" value="&lt;b&gt;User B&lt;br&gt;&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="130" y="610" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="34" value="" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="200" y="610" width="230" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="35" value="Tabsets" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="210" y="620" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="36" value="&lt;div style=&quot;background-color:#ffffff;color:#080808&quot;&gt;&lt;pre style=&quot;font-family:&#39;JetBrains Mono&#39;,monospace;font-size:9.8pt;&quot;&gt;&lt;span style=&quot;color:#871094;&quot;&gt;userCreated&lt;/span&gt;&lt;/pre&gt;&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="365" y="500" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.557;exitY=1.018;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="27" target="34" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="660" y="510" as="sourcePoint" />
+            <mxPoint x="240" y="560" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="678" y="540" />
+              <mxPoint x="305" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="38" target="9" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="40" y="650" />
+              <mxPoint x="40" y="300" />
+              <mxPoint x="220" y="300" />
+              <mxPoint x="220" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="38" value="REF to Tabset Y&lt;br&gt;access: write" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="280" y="640" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="39" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="120" y="760" width="670" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="40" value="&lt;b&gt;shared-With&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="130" y="780" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="42" value="/shared-with/&amp;lt;User B&amp;gt;/tabsets/&amp;lt;Tabset Y&amp;gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="190.00000000000003" y="770" width="360" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="46" value="&lt;font color=&quot;#0000ff&quot;&gt;we need to create this entry in the&lt;br&gt;users A store for permission&lt;br&gt;reasons&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="570" y="50" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="47" value="/users/&amp;lt;User A&amp;gt;/tabset-shares/&amp;lt;Tabset Y&amp;gt;/&lt;font style=&quot;color: rgb(0, 204, 0);&quot;&gt;uid&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="380" y="90" width="490" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="50" value="&lt;font color=&quot;#0000ff&quot;&gt;done by a function, &lt;br&gt;no permission issues&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="620" y="270" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="53" value="sharing: set to &quot;USER&quot;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="420" y="250" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="56" value="&lt;font color=&quot;#0000ff&quot;&gt;interpreted by rules file&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="250" y="810" width="230" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="58" value="access: write&lt;br&gt;sharedById: User A" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="540" y="770" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="59" value="loaded tabset in app for User B" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="500" y="610" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="60" value="...&lt;br&gt;shareReference&lt;br&gt;..." style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="510" y="640" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="61" value="Text" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="200" y="760" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="62" value="object with&amp;nbsp;&lt;br&gt;keys = base64(email)&lt;br&gt;???" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;size=13;" parent="1" vertex="1">
+          <mxGeometry x="830" y="115" width="130" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="63" value="" style="endArrow=none;dashed=1;html=1;dashPattern=1 3;strokeWidth=2;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.991;exitY=0.333;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="18" target="62" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="620" as="sourcePoint" />
+            <mxPoint x="700" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="49" value="/shared-with-queue/&lt;font style=&quot;color: rgb(0, 204, 0);&quot;&gt;uid&lt;/font&gt;/invitations/&amp;lt;tabsetId&amp;gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="200" y="417.5" width="410" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="64" value="User B&lt;br&gt;exists&lt;br&gt;already" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="840" y="395" width="80" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

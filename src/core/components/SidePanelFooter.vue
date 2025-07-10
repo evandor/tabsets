@@ -514,6 +514,7 @@ const logout = () => {
 const offsetBottom = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-bottom:20px;' : '')
 const gotoStripe = () => openURL(process.env.STRIPE_CUSTOMER_PORTAL!)
 // const openPwaUrl = () => NavigationService.openOrCreateTab([process.env.TABSETS_PWA_URL || 'https://www.skysail.io'])
+// @ts-expect-error xxx
 const showLoginBtn = () => EXTENSION_NAME !== 'tabsets'
 const showSettingsButton = () => route?.path !== '/sidepanel/welcome' || useAuthStore().isAuthenticated()
 
