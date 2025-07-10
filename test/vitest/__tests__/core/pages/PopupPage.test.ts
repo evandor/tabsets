@@ -13,6 +13,7 @@ import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 installQuasarPlugin()
 
