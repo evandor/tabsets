@@ -4,6 +4,7 @@ import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import ThumbnailsPersistence from 'src/thumbnails/persistence/ThumbnailsPersistence'
 import { useAuthStore } from 'stores/authStore'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 class FirestoreThumbnailsPersistence extends ThumbnailsPersistence {
   private firebaseServices: IFirebaseServices = null as unknown as IFirebaseServices
@@ -62,7 +63,7 @@ class FirestoreThumbnailsPersistence extends ThumbnailsPersistence {
 
   private async saveQuote(quote: object) {
     if (useAuthStore().user?.uid) {
-      const userDoc = doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid)
+      const userDoc = doc(useFirebaseServices().firebaseServices.getFirestore(), 'users', useAuthStore().user.uid)
       //console.log('userDoc', userDoc, useAuthStore().user?.uid)
       await setDoc(userDoc, quote, { merge: true })
     }

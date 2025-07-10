@@ -12,7 +12,6 @@ import {
   setDoc,
 } from 'firebase/firestore'
 import { LocalStorage, uid } from 'quasar'
-import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { useEmailTemplates } from 'src/tabsets/emails/EmailTemplates'
 import { Tab } from 'src/tabsets/models/Tab'
 import { AugmentedData, Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
@@ -20,39 +19,42 @@ import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 const STORE_IDENT = 'tabsets'
 
 const installationId = (LocalStorage.getItem(APP_INSTALLATION_ID) as string) || '---'
 
-function tabsetDoc(tabsetId: string) {
-  return doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, tabsetId)
+function tabsetDoc(firebaseServices: IFirebaseServices, tabsetId: string) {
+  return doc(firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT, tabsetId)
 }
 
-function publicTabsetDoc(sharedId: string, sharedBy: string) {
-  return doc(FirebaseServices.getFirestore(), 'users', sharedBy, 'tabsets', sharedId)
+function publicTabsetDoc(firebaseServices: IFirebaseServices, sharedId: string, sharedBy: string) {
+  return doc(firebaseServices.getFirestore(), 'users', sharedBy, 'tabsets', sharedId)
 }
 
-function tabsetsCollection() {
-  return collection(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT)
+function tabsetsCollection(firebaseServices: IFirebaseServices) {
+  return collection(firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, STORE_IDENT)
 }
 
-function publicTabsetsCollection() {
-  return collection(FirebaseServices.getFirestore(), 'public-tabsets')
+function publicTabsetsCollection(firebaseServices: IFirebaseServices) {
+  return collection(firebaseServices.getFirestore(), 'public-tabsets')
 }
 
-function publicTabsetsDoc(docId: string) {
-  return doc(FirebaseServices.getFirestore(), 'public-tabsets', docId)
+function publicTabsetsDoc(firebaseServices: IFirebaseServices, docId: string) {
+  return doc(firebaseServices.getFirestore(), 'public-tabsets', docId)
 }
 
 class FirestoreTabsetsPersistence implements TabsetsPersistence {
+  private firebaseServices: IFirebaseServices = null as unknown as IFirebaseServices
   getServiceName(): string {
     return 'FirestoreTabsetsPersistence'
   }
 
-  async init() {
+  async init(firebaseServices: IFirebaseServices) {
     // console.debug(` ...initialized Tabsets: ${this.getServiceName()}`, '✅')
     //this.indexedDB = useDB(undefined).db as typeof IndexedDbPersistenceService
+    this.firebaseServices = firebaseServices
     return Promise.resolve('')
   }
 
@@ -65,7 +67,7 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     console.log(' ...loading tabsets', this.getServiceName(), isAnonymous)
     let docs: QuerySnapshot
     if (isAnonymous) {
-      const publicTabsetsRefs = await getDocs(publicTabsetsCollection())
+      const publicTabsetsRefs = await getDocs(publicTabsetsCollection(this.firebaseServices))
       for (const d of publicTabsetsRefs.docs) {
         const doc = d.data()
         //console.log('doc', doc)
@@ -75,7 +77,7 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
         useTabsetsStore().setTabset(publicTS)
       }
     } else {
-      docs = await getDocs(tabsetsCollection())
+      docs = await getDocs(tabsetsCollection(this.firebaseServices))
       for (const doc of docs.docs) {
         let newItem = doc.data()
         newItem.id = doc.id
@@ -98,7 +100,7 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     // useUiStore().syncing = true
     // tabset.origin = this.installationId
     console.log(`saving tabset ${tabset.id} in installation {this.installationId}`)
-    await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
+    await setDoc(tabsetDoc(this.firebaseServices, tabset.id), JSON.parse(JSON.stringify(tabset)))
     // useUiStore().syncing = false
   }
 
@@ -114,17 +116,17 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     if (tabset.sharing?.shareReference) {
       tabset.lastChangeBy = useAuthStore().user.uid
       await setDoc(
-        doc(FirebaseServices.getFirestore(), tabset.sharing?.shareReference),
+        doc(this.firebaseServices.getFirestore(), tabset.sharing?.shareReference),
         JSON.parse(JSON.stringify(tabset)),
       )
     } else {
-      await setDoc(tabsetDoc(tabset.id), JSON.parse(JSON.stringify(tabset)))
+      await setDoc(tabsetDoc(this.firebaseServices, tabset.id), JSON.parse(JSON.stringify(tabset)))
     }
   }
 
   async deleteTabset(tabsetId: string): Promise<any> {
     //useUiStore().syncing = true
-    await deleteDoc(tabsetDoc(tabsetId))
+    await deleteDoc(tabsetDoc(this.firebaseServices, tabsetId))
     //useUiStore().syncing = false
   }
 
@@ -141,7 +143,7 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     // if (new Date().getTime() != 0) {
     //   return
     // }
-    const firestore: Firestore = FirebaseServices.getFirestore()
+    const firestore: Firestore = this.firebaseServices.getFirestore()
 
     ts.sharing.sharing = sharingType
     ts.sharing.sharedBy = sharedBy
@@ -228,7 +230,7 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
       return Promise.reject('this email address does not seem valid')
     }
 
-    const firestore: Firestore = FirebaseServices.getFirestore()
+    const firestore: Firestore = this.firebaseServices.getFirestore()
     const sharedTsRef = doc(firestore, 'users', useAuthStore().user.uid, 'tabset-shares', ts.id)
     // await updateDoc(sharedTsRef, JSON.parse(JSON.stringify(shared)))
 
@@ -261,19 +263,19 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
 
   async loadPublicTabset(sharedId: string, sharedBy: string | undefined = undefined): Promise<Tabset> {
     if (!sharedBy) {
-      const sharedData = await getDoc(publicTabsetsDoc(sharedId))
+      const sharedData = await getDoc(publicTabsetsDoc(this.firebaseServices, sharedId))
       if (sharedData.data()) {
         const sBy = sharedData.data()!['sharedBy']
-        return (await getDoc(publicTabsetDoc(sharedId, sBy))).data() as Tabset
+        return (await getDoc(publicTabsetDoc(this.firebaseServices, sharedId, sBy))).data() as Tabset
       }
     }
-    const res = await getDoc(publicTabsetDoc(sharedId, sharedBy!))
+    const res = await getDoc(publicTabsetDoc(this.firebaseServices, sharedId, sharedBy!))
     return res.data() as Tabset
   }
 
   async reloadTabset(tabsetId: string): Promise<Tabset> {
     console.debug('reloading tabset', tabsetId)
-    const res = await getDoc(tabsetDoc(tabsetId))
+    const res = await getDoc(tabsetDoc(this.firebaseServices, tabsetId))
     if (res.data() && res.data()!['reference']) {
       return this.loadFromReference(res.data() as { reference: DocumentReference; readonly: boolean; sharedAt: number })
     }

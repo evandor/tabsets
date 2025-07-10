@@ -77,7 +77,6 @@ class AppService {
     // Snapshots
     await useSnapshotsStore().initialize(useDB().snapshotsDb)
     await useSnapshotsService().init()
-
     // should be initialized before search submodule
     await useThumbnailsService().init(useDB().thumbnailsDb)
 
@@ -112,10 +111,9 @@ class AppService {
   }
 
   private async initCoreSerivces(quasar: QVueGlobals, router: Router) {
-    //console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
+    console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
 
     const authenticated = useAuthStore().isAuthenticated()
-
     await useWindowsStore().initialize()
     useWindowsStore().initListeners()
 
@@ -142,6 +140,7 @@ class AppService {
     })
     await useSpacesStore().initialize(useDB().spacesDb)
 
+    console.log("hier1")
     const tabsetsStore = useTabsetsStore()
     watch(tabsetsStore.tabsets, (newTabsets: Map<string, any>) => {
       const tsInfo = _.map(
@@ -152,6 +151,7 @@ class AppService {
     })
     await tabsetsStore.initialize(authenticated ? useDB().tabsetsDb : useDB().localTabsetsDb)
     await useTabsetService().init()
+    console.log("hier2")
 
     await useTabsStore2().initialize()
 
@@ -194,7 +194,8 @@ class AppService {
     }
 
     if (useAuthStore().user?.uid) {
-      FirebaseListener.startListening()
+      // TODO
+      //FirebaseListener.startListening()
     }
 
     // const tagCats = LocalStorage.getItem(TAGS_CATEGORIES)

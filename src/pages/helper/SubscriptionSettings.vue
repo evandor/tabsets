@@ -103,10 +103,10 @@ import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { Account } from 'src/core/models/Account'
 import { NotificationType, useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useNavigationService } from 'src/core/services/NavigationService'
-import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { useAuthStore } from 'stores/authStore'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 const emailVerified = ref(false)
 const plans = ref<any[]>([])
@@ -133,13 +133,13 @@ watchEffect(async () => {
   console.log('------>')
   plans.value = []
   const productSnapshots: QuerySnapshot<DocumentData, DocumentData> = await getDocs(
-    query(collection(FirebaseServices.getFirestore(), 'products'), where('active', '==', true)),
+    query(collection(useFirebaseServices().firebaseServices.getFirestore(), 'products'), where('active', '==', true)),
   )
   for (const doc of productSnapshots.docs) {
     console.log('***', doc.id, ' => ', doc.data())
     const p: { [k: string]: any } = { name: doc.data().name, id: doc.id, metadata: doc.data().metadata }
     const r: any = await getDocs(
-      query(collection(FirebaseServices.getFirestore(), 'products', doc.id, 'prices'), where('active', '==', true)),
+      query(collection(useFirebaseServices().firebaseServices.getFirestore(), 'products', doc.id, 'prices'), where('active', '==', true)),
     )
     const prices: object[] = []
     r.forEach((d: any) => {
@@ -164,7 +164,7 @@ watchEffect(async () => {
   activeSubscriptions.value = []
   const t = await getDocs(
     query(
-      collection(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, 'subscriptions'),
+      collection(useFirebaseServices().firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, 'subscriptions'),
       where('status', '==', 'active'),
     ),
   )
@@ -197,7 +197,7 @@ const openPaymentLink = async () => {
   //openURL(process.env.STRIPE_SYNC_PRODUCT_LINK + '?prefilled_email=' + (useAuthStore().user?.email || ''))
 
   const sessionRef = await addDoc(
-    collection(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, 'checkout_sessions'),
+    collection(useFirebaseServices().firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, 'checkout_sessions'),
     {
       price: plans.value[0].prices[0].priceId, //'price_1PfKwdCRr6mfm8sfCLKbBtDu',
       success_url: 'https://Tabsets.me/', //window.location.origin,

@@ -6,6 +6,7 @@ import { ChangeInfo } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useAuthStore } from 'stores/authStore'
 import { ref } from 'vue'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 /**
  * events are triggered 'in the background', and should be used to update the applications state.
@@ -27,7 +28,7 @@ export const useEventsStore = defineStore('events', () => {
     let reloadTabset = false
     const userId = useAuthStore().user?.uid
     if (userId && unsubscribe === undefined) {
-      unsubscribe = onSnapshot(collection(FirebaseServices.getFirestore(), 'users', userId, 'events'), (docs) => {
+      unsubscribe = onSnapshot(collection(useFirebaseServices().firebaseServices.getFirestore(), 'users', userId, 'events'), (docs) => {
         // events.value = []
         //const source = doc.metadata.hasPendingWrites ? 'Local' : 'Server'
         const docsToDelete: QueryDocumentSnapshot[] = []

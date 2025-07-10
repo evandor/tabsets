@@ -55,6 +55,7 @@ import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useAuthStore } from 'stores/authStore'
 import { ref, watchEffect } from 'vue'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 const tabset = ref<Tabset | undefined>(undefined)
 const sharedBy = ref<string>('')
@@ -71,7 +72,7 @@ watchEffect(() => {
 
 const updateSharedInfo = async () => {
   if (currentTabsetId.value && useAuthStore().user?.uid) {
-    const fs = FirebaseServices.getFirestore()
+    const fs = useFirebaseServices().firebaseServices.getFirestore()
     tabset.value = useTabsetsStore().getCurrentTabset
     sharedBy.value = tabset.value?.sharing?.sharedBy || ''
     //console.log('updating shared info')
@@ -117,7 +118,7 @@ const removeShare = async (email: string) => {
   if (currentTabsetId.value) {
     console.log('removing share', email, currentTabsetId)
     const docRef = doc(
-      FirebaseServices.getFirestore(),
+      useFirebaseServices().firebaseServices.getFirestore(),
       'users',
       useAuthStore().user.uid,
       'tabset-shares',

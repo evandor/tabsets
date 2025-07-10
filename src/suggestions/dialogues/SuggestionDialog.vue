@@ -51,6 +51,7 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useAuthStore } from 'stores/authStore'
 import { PropType } from 'vue'
 import { useRouter } from 'vue-router'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 defineEmits([...useDialogPluginComponent.emits])
 
@@ -99,7 +100,7 @@ const applySuggestion = async () => {
         await useSuggestionsStore().updateSuggestionState(res.id, 'CHECKED')
         const invitationId = res.url.split('invitations://')[1]
         await setDoc(
-          doc(FirebaseServices.getFirestore(), `users/${useAuthStore().user.uid}/invitations/${invitationId}`),
+          doc(useFirebaseServices().firebaseServices.getFirestore(), `users/${useAuthStore().user.uid}/invitations/${invitationId}`),
           { state: 'accepted' },
           { merge: true },
         )

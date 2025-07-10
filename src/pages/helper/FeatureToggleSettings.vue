@@ -93,6 +93,7 @@ import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Message } from 'src/tabsets/models/Message'
 import { useAuthStore } from 'stores/authStore'
 import { ref, watchEffect } from 'vue'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 const { inBexMode } = useUtils()
 const settingsStore = useSettingsStore()
@@ -121,7 +122,7 @@ const updateSettings2 = (ident: SettingIdent, active: boolean) => {
 const triggerMessage = (msg: string) => {
   const message = new Message(uid(), new Date().getTime(), 0, 'new', msg)
   setDoc(
-    doc(FirebaseServices.getFirestore(), `users/${useAuthStore().user.uid}/messages/${message.id}`),
+    doc(useFirebaseServices().firebaseServices.getFirestore(), `users/${useAuthStore().user.uid}/messages/${message.id}`),
     JSON.parse(JSON.stringify(message)),
   )
 }

@@ -14,6 +14,7 @@ import { Account, UserData } from 'src/core/models/Account'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { computed, ref } from 'vue'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 export type AccessItem = 'TABS' | 'TABSETS' | 'SPACES' | 'SYNC' | 'SHARE' | 'FEATURE_TOGGLES' | 'THUMBNAILS'
 
@@ -28,6 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
   const avatar = ref('https://www.gravatar.com/avatar/unknown')
 
   // --- init ---
+  async function initialize() {}
   // async function initialize(ps: PersistenceService) {
   //   console.debug(' ...initializing AuthStore')
   //   storage = ps
@@ -173,8 +175,8 @@ export const useAuthStore = defineStore('auth', () => {
   )
 
   async function getCustomClaimRoles(): Promise<string[]> {
-    await FirebaseServices.getAuth().currentUser!.getIdToken(true)
-    const decodedToken = await FirebaseServices.getAuth().currentUser!.getIdTokenResult()
+    await useFirebaseServices().firebaseServices.getAuth().currentUser!.getIdToken(true)
+    const decodedToken = await useFirebaseServices().firebaseServices.getAuth().currentUser!.getIdTokenResult()
     //console.log('decodedToken.claims', decodedToken.claims)
     return (decodedToken.claims.stripeRole as string[]) || []
   }
@@ -209,14 +211,14 @@ export const useAuthStore = defineStore('auth', () => {
       authenticated.value = true
       user.value = JSON.parse(JSON.stringify(u))
       roles.value = await getCustomClaimRoles()
-      //console.log('user has roles: ', roles.value)
-      const fs = FirebaseServices.getFirestore()
+      console.log('user has roles: ', roles.value)
+      const fs = useFirebaseServices().firebaseServices.getFirestore()
       const d = doc(fs, 'users', u.uid)
       const userDoc = await getDoc(d)
       const userData = userDoc.data() as UserData
       const account = new Account(u.uid, userData)
       //console.debug('created account object', account)
-      const querySnapshot = await getDocs(collection(FirebaseServices.getFirestore(), 'users', u.uid, 'subscriptions'))
+      const querySnapshot = await getDocs(collection(useFirebaseServices().firebaseServices.getFirestore(), 'users', u.uid, 'subscriptions'))
       const products = new Set<string>()
       querySnapshot.forEach((doc) => {
         const subscriptionData = doc.data()
@@ -247,18 +249,44 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout(): Promise<any> {
-    return Promise.resolve()
+    console.log('logging out user')
+    avatar.value = 'https://www.gravatar.com/avatar/unknown'
+    return signOut(getAuth()).then(() => {
+      authenticated.value = false
+      user.value = null as unknown as User
+      LocalStorage.remove(CURRENT_USER_ID)
+      //console.log("logout", (process.env.MODE === 'bex') ? window.location.origin + "/www/index.html" : window.location.origin)
+      return Promise.resolve('')
+    })
+  }
+
+  function upsertAccount(acc: Account | undefined) {
+    console.log('upserting account', acc)
+    if (acc) {
+      //storage.upsertAccount(acc)
+    }
+    account.value = acc
+  }
+
+  function setProducts(ps: string[]) {
+    products.value = ps
   }
 
   return {
     initialize,
-    user,
     isAuthenticated,
     getUsername,
+    getAccessTokenSilently,
+    useAuthRequest,
+    setAuthRequest,
     setUser,
     logout,
+    user,
     getAccount,
     getUserData,
+    getRoles,
+    setProducts,
+    userMayAccess,
     limitExceeded,
     avatar,
   }

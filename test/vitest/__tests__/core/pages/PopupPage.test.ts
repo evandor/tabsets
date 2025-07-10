@@ -45,7 +45,7 @@ describe('PopupPage', () => {
 
     LocalStorage.setItem('ui.hideWelcomePage', true)
 
-    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))

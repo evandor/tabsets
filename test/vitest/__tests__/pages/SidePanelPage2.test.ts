@@ -12,6 +12,7 @@ import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 installQuasarPlugin()
 
@@ -42,7 +43,7 @@ describe('SidePanelPage2', () => {
 
     LocalStorage.setItem('ui.hideWelcomePage', true)
 
-    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))

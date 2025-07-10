@@ -4,6 +4,7 @@ import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { Message } from 'src/tabsets/models/Message'
 import { useAuthStore } from 'stores/authStore'
 import { computed, ref } from 'vue'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 /**
  * messages are displayed to the user to inform her about things happening.
@@ -33,7 +34,7 @@ export const useMessagesStore = defineStore('messages', () => {
     const userId = useAuthStore().user?.uid
     if (userId && unsubscribe === undefined) {
       unsubscribe = onSnapshot(
-        collection(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, 'messages'),
+        collection(useFirebaseServices().firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, 'messages'),
         (docs) => {
           messages.value = []
           //const source = doc.metadata.hasPendingWrites ? 'Local' : 'Server'

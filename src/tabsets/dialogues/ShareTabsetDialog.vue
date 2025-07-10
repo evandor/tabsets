@@ -77,6 +77,7 @@ import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { ShareWithTabsetCommand } from 'src/tabsets/commands/ShareWithTabsetCommand'
 import { useAuthStore } from 'stores/authStore'
 import { onMounted, ref } from 'vue'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 defineEmits([...useDialogPluginComponent.emits])
 
@@ -100,7 +101,7 @@ const pendingInvitations = ref<object[]>([])
 onMounted(async () => {
   console.log('checking existing invitations and shares...')
   const sharingDoc: DocumentSnapshot = await getDoc(
-    doc(FirebaseServices.getFirestore(), 'users', useAuthStore().user.uid, 'tabset-shares', props.tabsetId),
+    doc(useFirebaseServices().firebaseServices.getFirestore(), 'users', useAuthStore().user.uid, 'tabset-shares', props.tabsetId),
   )
   activeInvitations.value = []
   pendingInvitations.value = []

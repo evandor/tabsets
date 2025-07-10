@@ -9,6 +9,7 @@ import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 installQuasarPlugin()
 
@@ -19,7 +20,7 @@ describe('AssociateWindowWithTabsetCommand', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()

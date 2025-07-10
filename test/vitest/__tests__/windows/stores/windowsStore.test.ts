@@ -12,6 +12,7 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import IndexedDbWindowsPersistence from 'src/windows/persistence/IndexedDbWindowsPersistence'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 installQuasarPlugin()
 
@@ -126,7 +127,7 @@ describe('WindowsStore', () => {
     setActivePinia(createPinia())
     await useFeaturesStore().initialize(InMemoryFeaturesPersistence)
     useFeaturesStore().activateFeature(FeatureIdent.WINDOWS_MANAGEMENT)
-    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
     await IndexedDbWindowsPersistence.init()
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)

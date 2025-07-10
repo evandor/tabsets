@@ -5,6 +5,7 @@ import { SharingInfo } from 'src/tabsets/models/SharingInfo'
 import { Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 class IndexedDbTabsetsPersistence implements TabsetsPersistence {
   private STORE_IDENT = 'tabsets'
@@ -15,7 +16,7 @@ class IndexedDbTabsetsPersistence implements TabsetsPersistence {
     return this.constructor.name
   }
 
-  async init() {
+  async init(firebaseServices: IFirebaseServices) {
     this.db = await this.initDatabase()
     // console.debug(` ...initialized tabsets: ${this.getServiceName()}`, '✅')
     return Promise.resolve()

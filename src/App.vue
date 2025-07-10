@@ -59,7 +59,7 @@ LocalStorage.set('platform', platform)
 const { handleError } = useNotificationHandler()
 
 // TODO only in prod?
-if (process.env.TABSETS_STAGE !== 'EMULATOR') {
+if (process.env.TABSETS_STAGE !== 'EMULATOR' && process.env.TABSETS_STAGE !== 'DEV') {
   setupConsoleInterceptor(useUiStore())
 }
 

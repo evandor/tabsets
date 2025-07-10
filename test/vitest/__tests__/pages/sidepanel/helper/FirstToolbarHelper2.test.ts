@@ -6,6 +6,7 @@ import FirstToolbarHelper2 from 'src/core/pages/sidepanel/helper/FirstToolbarHel
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 installQuasarPlugin()
 
@@ -41,7 +42,7 @@ describe('FirstToolbarHelper2', () => {
   })
 
   it('should be mounted', async () => {
-    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     const wrapper = mount(FirstToolbarHelper2)
     console.log('hier', wrapper.html())

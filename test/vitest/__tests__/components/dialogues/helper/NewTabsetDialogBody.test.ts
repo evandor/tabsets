@@ -10,6 +10,7 @@ import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useRouter } from 'vue-router'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 
 installQuasarPlugin({ plugins: { Dialog, Notify } })
 
@@ -28,7 +29,7 @@ describe('NewTabsetDialogBody', () => {
     setActivePinia(createPinia())
     // @ts-expect-error TODO
     useRouter().push.mockReset()
-    await IndexedDbTabsetsPersistence.init()
+    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useTabsetService().init()

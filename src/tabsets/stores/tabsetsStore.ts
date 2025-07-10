@@ -16,6 +16,7 @@ import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 // import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { computed, ref, watch } from 'vue'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 /**
  * a pinia store for "Tabsets".
@@ -71,7 +72,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
    */
   async function initialize(ps: TabsetsPersistence) {
     storage = ps
-    await storage.init()
+    await storage.init(useFirebaseServices().firebaseServices)
     // TODO remove after version 0.5.0
     await storage.migrate()
   }
