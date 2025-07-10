@@ -77,6 +77,7 @@ class AppService {
     // Snapshots
     await useSnapshotsStore().initialize(useDB().snapshotsDb)
     await useSnapshotsService().init()
+
     // should be initialized before search submodule
     await useThumbnailsService().init(useDB().thumbnailsDb)
 
@@ -84,7 +85,6 @@ class AppService {
 
     if (inBexMode()) {
       chrome.tabs.query({ active: true, currentWindow: true }).then((currentTabs: chrome.tabs.Tab[]) => {
-        console.log('currentTab', currentTabs)
         if (currentTabs.length > 0 && currentTabs[0]!.id) {
           chrome.tabs
             .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
@@ -111,9 +111,10 @@ class AppService {
   }
 
   private async initCoreSerivces(quasar: QVueGlobals, router: Router) {
-    console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
+    //console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
 
     const authenticated = useAuthStore().isAuthenticated()
+
     await useWindowsStore().initialize()
     useWindowsStore().initListeners()
 
@@ -140,7 +141,6 @@ class AppService {
     })
     await useSpacesStore().initialize(useDB().spacesDb)
 
-    console.log("hier1")
     const tabsetsStore = useTabsetsStore()
     watch(tabsetsStore.tabsets, (newTabsets: Map<string, any>) => {
       const tsInfo = _.map(
@@ -151,7 +151,6 @@ class AppService {
     })
     await tabsetsStore.initialize(authenticated ? useDB().tabsetsDb : useDB().localTabsetsDb)
     await useTabsetService().init()
-    console.log("hier2")
 
     await useTabsStore2().initialize()
 
@@ -163,11 +162,6 @@ class AppService {
     useEventsStore().initialize()
 
     ChromeApi.init()
-
-    // if (useFeaturesStore().hasFeature(FeatureIdent.TAB_GROUPS)) {
-    //   // await groupsStore.initialize(useDB(undefined).db)
-    //   groupsStore.initListeners()
-    // }
 
     useUiStore().appLoading = undefined
 

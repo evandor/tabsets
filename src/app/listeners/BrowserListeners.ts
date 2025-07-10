@@ -106,6 +106,7 @@ function inIgnoredMessages(request: any) {
     request.name === 'reload-entities' ||
     request.name === 'api-changed' ||
     request.name === 'refresh-store' ||
+    request.name === 'progress-indicator' ||
     request.name === 'tabsets.app.change.currentTabset' ||
     request.action === 'highlight-annotation'
   )
@@ -213,7 +214,7 @@ class BrowserListeners {
 
   async initListeners() {
     if (process.env.MODE === 'bex') {
-      console.debug(' ...initializing chrome tab listeners')
+      // console.debug(' ...initializing chrome tab listeners')
 
       chrome.runtime.setUninstallURL('https://tabsets.web.app/#/uninstall')
 
