@@ -1,5 +1,6 @@
 import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
 import { createPinia, setActivePinia } from 'pinia'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useDB } from 'src/services/usePersistenceService'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'

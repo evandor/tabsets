@@ -1,5 +1,6 @@
 // 3 expected diffs to localstorage
 import { IDBPDatabase, openDB } from 'idb'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useDB } from 'src/services/usePersistenceService'
 import { SharingInfo } from 'src/tabsets/models/SharingInfo'
 import { Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'

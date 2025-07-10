@@ -12,6 +12,7 @@ import {
   setDoc,
 } from 'firebase/firestore'
 import { LocalStorage, uid } from 'quasar'
+import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useEmailTemplates } from 'src/tabsets/emails/EmailTemplates'
 import { Tab } from 'src/tabsets/models/Tab'
 import { AugmentedData, Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
