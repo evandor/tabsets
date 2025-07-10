@@ -68,6 +68,7 @@ export default defineConfig((ctx) => {
 
         //TABSETS_PWA_URL: process.env.TABSETS_PWA_URL,
         TABSETS_STAGE: process.env.STAGE,
+        TABSETS_USE_AUTH: false,
         LOCALE: process.env.LOCALE,
         SENTRY_DSN: process.env.SENTRY_DSN,
         GRAFANA_LOKI_USER: process.env.GRAFANA_LOKI_USER,
