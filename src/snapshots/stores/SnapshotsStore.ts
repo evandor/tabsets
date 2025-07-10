@@ -13,6 +13,7 @@ export const useSnapshotsStore = defineStore('snapshots', () => {
   const lastUpdate = ref(0)
 
   async function initialize(ps: SnapshotsPersistence) {
+    console.log('initializing', ps)
     storage = ps
     await storage.init(useFirebaseServices().firebaseServices)
     metadata.value = await storage.getMetadata()

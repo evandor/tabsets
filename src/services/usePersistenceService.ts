@@ -39,11 +39,11 @@ export function useDB(quasar: QVueGlobals | undefined = undefined) {
     spacesDb,
     tabsetsDb,
     localStorageTabsetsDb,
-    featuresDb,
     snapshotsDb,
-    suggestionsDb,
     thumbnailsDb,
     groupsIndexedDb,
     pagesDb,
+    featuresDb,
+    suggestionsDb,
   }
 }
