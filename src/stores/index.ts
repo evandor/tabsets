@@ -1,8 +1,5 @@
 import { defineStore } from '#q-app/wrappers'
 import { createPinia } from 'pinia'
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
-import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
-import { markRaw } from 'vue'
 
 /*
  * When adding new properties to stores, you should also
@@ -11,13 +8,13 @@ import { markRaw } from 'vue'
  */
 
 declare module 'pinia' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface PiniaCustomProperties {
     // set hello(value: string | Ref<string>)
     // get hello(): string
-
     // type the router added by the plugin above (#adding-new-external-properties)
     // router: Router
-    firebaseServices: IFirebaseServices
+    //firebaseServices: IFirebaseServices
   }
 }
 function SecretPiniaPlugin() {
@@ -32,10 +29,10 @@ export default defineStore((/* { ssrContext } */) => {
   //   store.router = markRaw(useRouter()) as Router
   // })
   // pinia.use(() => ({ hello: 'world' }))
-  pinia.use(({ store }) => {
-    // store.hello = 'world'
-    store.firebaseServices = markRaw(useFirebaseServices().firebaseServices)
-  })
+  // pinia.use(({ store }) => {
+  //   // store.hello = 'world'
+  //   store.firebaseServices = markRaw(useFirebaseServices().firebaseServices)
+  // })
 
   return pinia
 })
