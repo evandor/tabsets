@@ -4,6 +4,9 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="JqThh1k-Lj8XiByJB2Hw-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;startArrow=none;startFill=0;" edge="1" parent="1" source="JqThh1k-Lj8XiByJB2Hw-1" target="JqThh1k-Lj8XiByJB2Hw-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="JqThh1k-Lj8XiByJB2Hw-1" value="&lt;b&gt;SpacesStore&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;initialize(persistence)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="310" y="160" width="174" height="90" as="geometry" />
         </mxCell>
@@ -30,6 +33,12 @@
         </mxCell>
         <mxCell id="JqThh1k-Lj8XiByJB2Hw-9" value="&lt;div&gt;initialize with&lt;/div&gt;useDB().spacesDB" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="100" y="175" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="JqThh1k-Lj8XiByJB2Hw-10" value="&lt;b&gt;spaces: &lt;/b&gt;Map&amp;lt;string, Space&amp;gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;space: &lt;/b&gt;Space&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;currentFromLocalStorage&lt;/b&gt;: string&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="310" y="270" width="174" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="JqThh1k-Lj8XiByJB2Hw-12" value="&lt;div&gt;initialize with&lt;/div&gt;IFirestoreServices" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="605" y="280" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
