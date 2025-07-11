@@ -126,6 +126,7 @@ onMounted(() => {
 
   const hideWelcomePage: boolean | null = LocalStorage.getItem('ui.hideWelcomePage')
   if (!hideWelcomePage) {
+    console.log("hideWelcomePage")
     router.push('/sidepanel/welcome')
   }
 })

@@ -87,6 +87,7 @@ windowLocation.value = window.location.href
 setTimeout(() => {
   // redirect to welcome page if there are not tabsets
   if (useTabsetsStore().tabsets.size === 0) {
+    console.log("hier!!!")
     router.push('/sidepanel/welcome')
   }
 }, 1000)

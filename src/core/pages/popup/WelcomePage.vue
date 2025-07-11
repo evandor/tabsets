@@ -106,7 +106,6 @@ onMounted(() => {
   windowLocation.value = window.location.href
   LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
 })
-console.log('route1', route.fullPath)
 
 const createGettingStartedTabset = () => {
   // const tab1 = BrowserApi.createChromeTabObject('Getting Started', 'https://docs.tabsets.net/get-started')

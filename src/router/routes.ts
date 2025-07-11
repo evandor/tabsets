@@ -18,7 +18,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/popup/welcome',
     component: () => import('layouts/PlainLayout.vue'),
-    children: [{ path: '', component: () => import('src/core/pages/popup/WelcomePage.vue') }],
+    children: [{ path: '', component: () => import('src/core/pages/popup/WelcomeProPage.vue') }],
   },
   {
     path: '/popup/getstarted',
@@ -49,6 +49,11 @@ const routes: RouteRecordRaw[] = [
     path: '/popup/settings',
     component: () => import('layouts/PopupLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupSettingsPage.vue') }],
+  },
+  {
+    path: '/popup/login',
+    component: () => import('layouts/PopupLayout.vue'),
+    children: [{ path: '', component: () => import('src/core/pages/popup/PopupLoginPage.vue') }],
   },
 
   {

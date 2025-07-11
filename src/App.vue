@@ -16,7 +16,6 @@ import { useUtils } from 'src/core/services/Utils'
 import { useAppStore } from 'src/core/stores/appStore'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
-import FirebaseServices from 'src/services/firebase/FirebaseServices'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -92,15 +91,15 @@ onAuthStateChanged(auth, async (user) => {
     // User is signed out
     console.log('%conAuthStateChanged: logged out', 'border:1px solid green')
     if (inBexMode()) {
-      if (!(route.fullPath.startsWith('/pwa/imp/') || route.fullPath.startsWith('/mainpanel/login'))) {
-        const welcomePageHasBeenShown = LocalStorage.getItem('ui.welcomepro.shown') as boolean
-        if (welcomePageHasBeenShown) {
-          await router.push('/sidepanel/login')
-        } else {
-          console.log('redirecting to /sidepanel/welcomepro')
-          await router.push('/sidepanel/welcomepro')
-        }
-      }
+      // if (!(route.fullPath.startsWith('/pwa/imp/') || route.fullPath.startsWith('/mainpanel/login'))) {
+      //   const welcomePageHasBeenShown = LocalStorage.getItem('ui.welcomepro.shown') as boolean
+      //   if (welcomePageHasBeenShown) {
+      //     await router.push('/sidepanel/login')
+      //   } else {
+      //     console.log('redirecting to /sidepanel/welcomepro')
+      //     await router.push('/popup/welcome')
+      //   }
+      // }
     } else {
       const auth = getAuth()
       signInAnonymously(auth)

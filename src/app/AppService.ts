@@ -169,23 +169,25 @@ class AppService {
     // probably running an import ("/imp/:sharedId")
     // we do not want to go to the welcome back
     // console.log("checking for welcome page", useTabsetsStore().tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated)
-    if (
-      useTabsetsStore().tabsets.size === 0 &&
-      quasar.platform.is.bex &&
-      //useAuthStore().isAuthenticated() &&
-      !router.currentRoute.value.path.startsWith('/fullpage') &&
-      !router.currentRoute.value.path.startsWith('/mainpanel') &&
-      router.currentRoute.value.path !== '/'
-    ) {
-      console.log('pushing to welcome (pro) page', router.currentRoute.value.path)
-      const welcomePageHasBeenShown = LocalStorage.getItem('ui.welcomepro.shown') as boolean
-      if (welcomePageHasBeenShown) {
-        await router.push('/sidepanel/welcome')
-        return
-      }
-      await router.push('/sidepanel/welcomepro')
-      return
-    }
+    // if (
+    //   useTabsetsStore().tabsets.size === 0 &&
+    //   quasar.platform.is.bex &&
+    //   //useAuthStore().isAuthenticated() &&
+    //   !router.currentRoute.value.path.startsWith('/fullpage') &&
+    //   !router.currentRoute.value.path.startsWith('/mainpanel') &&
+    //   router.currentRoute.value.path !== '/'
+    // ) {
+    //   console.log('pushing to welcome (pro) page', router.currentRoute.value.path)
+    //   const welcomeProPageHasBeenShown = LocalStorage.getItem('ui.welcomepro.shown') as boolean
+    //   if (welcomeProPageHasBeenShown) {
+    //     console.log("hier", welcomeProPageHasBeenShown)
+    //     await router.push('/sidepanel/welcome')
+    //     return
+    //   }
+    //   console.log("hi3r")
+    //   await router.push('/sidepanel/welcomepro')
+    //   return
+    // }
 
     if (useAuthStore().user?.uid) {
       // TODO
