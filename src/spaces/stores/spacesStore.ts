@@ -2,7 +2,6 @@ import _ from 'lodash'
 import { defineStore } from 'pinia'
 import { LocalStorage, uid } from 'quasar'
 import { useNavigationService } from 'src/core/services/NavigationService'
-import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 import { Space } from 'src/spaces/models/Space'
 import SpacesPersistence from 'src/spaces/persistence/SpacesPersistence'
 import { useAuthStore } from 'src/stores/authStore'
@@ -47,7 +46,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   async function initialize(p: SpacesPersistence) {
     storage = p
 
-    await storage.init(useFirebaseServices().firebaseServices)
+    await storage.init()
 
     // TODO remove after version 0.4.12
     await storage.migrate()
