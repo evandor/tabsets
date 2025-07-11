@@ -1,5 +1,4 @@
 import { IDBPDatabase, openDB } from 'idb'
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { Space } from 'src/spaces/models/Space'
 import SpacesPersistence from 'src/spaces/persistence/SpacesPersistence'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
@@ -13,7 +12,7 @@ class IndexedDbSpacesPersistence implements SpacesPersistence {
     return 'IndexedDbSpacesStorage'
   }
 
-  async init(firebaseServices: IFirebaseServices) {
+  async init() {
     this.db = await this.initDatabase()
     // console.debug(` ...initialized spaces: ${this.getServiceName()}`, '✅')
     return Promise.resolve()

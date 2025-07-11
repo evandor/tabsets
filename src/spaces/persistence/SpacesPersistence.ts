@@ -1,10 +1,9 @@
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { Space } from 'src/spaces/models/Space'
 
 interface SpacesPersistence {
   getServiceName(): string
 
-  init(firebaseServices: IFirebaseServices): Promise<any>
+  init(): Promise<any>
 
   loadSpaces(): Promise<any>
   addSpace(space: Space): Promise<any>
