@@ -6,6 +6,10 @@ on:
 #      - main
   push:
     branches: ['**']
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - 'assets/**'
 jobs:
   coverage:
     runs-on: ubuntu-latest

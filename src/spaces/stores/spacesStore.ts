@@ -45,16 +45,6 @@ export const useSpacesStore = defineStore('spaces', () => {
    * @param ps a persistence storage
    */
   async function initialize(p: SpacesPersistence) {
-    // if (!isAuthenticated) {
-    //   console.debug("%not authenticated", "font-weight:bold")
-    //   storage = useDB(undefined).spacesIndexedDb
-    // } else if (syncType === SyncType.FIRESTORE) {
-    //   console.debug("%csyncType " + syncType, "font-weight:bold")
-    //   storage = useDB(undefined).spacesFirestoreDb
-    // } else {
-    //   console.debug("%cfallback, syncType " + syncType, "font-weight:bold")
-    //   storage = useDB().spacesIndexedDb
-    // }
     storage = p
 
     await storage.init(useFirebaseServices().firebaseServices)
