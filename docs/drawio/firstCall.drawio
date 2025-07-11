@@ -150,6 +150,9 @@
         <mxCell id="Y_jZ6DddgwMdGc90-z8W-18" value="SidePanelPage2.vue" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="410.95" y="1000" width="139.24" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="Y_jZ6DddgwMdGc90-z8W-25" value="ok, let&#39;s go" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="557.19" y="411" width="60" height="30" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
