@@ -1,5 +1,5 @@
 <template>
-  <!-- SidePanelPage2 -->
+  <!-- GetStartedPage -->
   <q-page class="darkInDarkMode brightInBrightMode" :style="paddingTop" style="min-width: 350px; max-width: 700px">
     <offline-info />
 
