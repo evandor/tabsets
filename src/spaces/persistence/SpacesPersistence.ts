@@ -10,6 +10,7 @@ interface SpacesPersistence {
   deleteSpace(spaceId: string): void
 
   migrate(): any
+  clear(name: string): void
 }
 
 export default SpacesPersistence
