@@ -54,11 +54,7 @@
         @click="backupAndClose">
         <q-item-section>&bull; Move all to Backup...</q-item-section>
       </q-item>
-      <q-item
-        :disable="useTabsStore2().browserTabs.length <= 1"
-        clickable
-        v-close-popup
-        @click="TabsetService.closeAllTabs()">
+      <q-item :disable="useTabsStore2().browserTabs.length <= 1" clickable v-close-popup>
         <q-item-section>&bull; Close all tabs ({{ useTabsStore2().browserTabs.length - 1 }})</q-item-section>
       </q-item>
     </q-list>
