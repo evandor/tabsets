@@ -8,7 +8,7 @@ class IndexedDbSpacesPersistence implements SpacesPersistence {
   private db: IDBPDatabase = null as unknown as IDBPDatabase
 
   getServiceName(): string {
-    return 'IndexedDbSpacesStorage'
+    return this.constructor.name
   }
 
   async init() {
@@ -34,10 +34,6 @@ class IndexedDbSpacesPersistence implements SpacesPersistence {
     return await this.db.put(this.STORE_IDENT, space, space.id).then(() => Promise.resolve())
   }
 
-  compactDb(): Promise<any> {
-    return Promise.resolve(undefined)
-  }
-
   clear(name: string) {
     this.db.clear(name).catch((e) => console.warn(e))
   }
@@ -54,18 +50,18 @@ class IndexedDbSpacesPersistence implements SpacesPersistence {
 
   async migrate() {
     // 0.4.11 - 0.5.0
-    const oldDB = await openDB('db')
-    if (!oldDB || !oldDB.objectStoreNames.contains(this.STORE_IDENT)) {
-      return // no migration necessary, no old data
-    }
-    const oldSpaces = await oldDB.getAll('spaces')
-    for (const oldSpace of oldSpaces) {
-      const optionalSpaceInNewDb = (await this.db.get(this.STORE_IDENT, oldSpace.id)) as Space | undefined
-      if (!optionalSpaceInNewDb) {
-        console.log('migrating old space', oldSpace.id, oldSpace.name)
-        await this.db.add(this.STORE_IDENT, oldSpace, oldSpace.id)
-      }
-    }
+    // const oldDB = await openDB('db')
+    // if (!oldDB || !oldDB.objectStoreNames.contains(this.STORE_IDENT)) {
+    //   return // no migration necessary, no old data
+    // }
+    // const oldSpaces = await oldDB.getAll('spaces')
+    // for (const oldSpace of oldSpaces) {
+    //   const optionalSpaceInNewDb = (await this.db.get(this.STORE_IDENT, oldSpace.id)) as Space | undefined
+    //   if (!optionalSpaceInNewDb) {
+    //     console.log('migrating old space', oldSpace.id, oldSpace.name)
+    //     await this.db.add(this.STORE_IDENT, oldSpace, oldSpace.id)
+    //   }
+    // }
   }
 }
 

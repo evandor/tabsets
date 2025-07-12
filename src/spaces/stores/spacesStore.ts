@@ -47,22 +47,15 @@ export const useSpacesStore = defineStore('spaces', () => {
     storage = p
     await storage.init()
     await storage.migrate()
-    const spaces = await storage.getSpaces()
-    spaces.forEach((s: Space) => {
-      useSpacesStore().putSpace(s)
-    })
-    console.log('loaded with', storeSize.value)
+    await loadSpaces()
   }
 
   /**
-   * reloads store
+   * reload store
    */
   async function reload() {
     console.debug('reloading spacesStore')
-    const spaces = await storage.getSpaces()
-    spaces.forEach((s: Space) => {
-      useSpacesStore().putSpace(s)
-    })
+    await loadSpaces()
   }
 
   /**
@@ -73,6 +66,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   watch(
     space,
     (spaceVal: Space) => {
+      console.log('spaceVal', spaceVal)
       if (spaceVal && spaceVal['id']) {
         localStorage.setItem('currentSpace', spaceVal['id'])
       } else {
@@ -82,18 +76,14 @@ export const useSpacesStore = defineStore('spaces', () => {
     { deep: true },
   )
 
-  const storeSize = computed(() => {
-    return JSON.stringify([...spaces.value]).length
-  })
+  const storeSize = computed(() => JSON.stringify([...spaces.value]).length)
 
   /**
    * does this label already exist as a space label?
    */
   const nameExists = computed(() => {
     return (searchName: string) => {
-      //console.log("checking for existence --- ", searchName)
       return _.find([...spaces.value.values()], (s: Space) => {
-        //console.log("comparing", s.label, searchName?.trim(), s.label === searchName?.trim())
         return s.label === searchName?.trim()
       })
     }
@@ -173,6 +163,14 @@ export const useSpacesStore = defineStore('spaces', () => {
       space.value = null as unknown as Space
     }
     storage.deleteSpace(spaceId)
+  }
+
+  async function loadSpaces() {
+    const spaces = await storage.getSpaces()
+    spaces.forEach((s: Space) => {
+      putSpace(s)
+    })
+    console.log('loaded with', storeSize.value)
   }
 
   return {
