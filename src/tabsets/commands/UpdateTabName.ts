@@ -3,7 +3,13 @@ import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import Analytics from 'src/core/utils/google-analytics'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { Tab } from 'src/tabsets/models/Tab'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+
+function setCustomTitle(tab: Tab, title: string, desc: string): Promise<any> {
+  tab.name = title
+  tab.longDescription = desc
+  return useTabsetService().saveCurrentTabset()
+}
 
 class UndoCommand implements Command<any> {
   constructor(
@@ -13,7 +19,7 @@ class UndoCommand implements Command<any> {
 
   execute(): Promise<ExecutionResult<any>> {
     console.info(this.tab, `reverting changed tab name to ${this.oldName}`)
-    return TabsetService.setCustomTitle(this.tab, this.oldName, '')
+    return setCustomTitle(this.tab, this.oldName, '')
       .then((res) => {
         Analytics.fireEvent('tabset_name_updated', {})
         if (this.tab.url) {
@@ -33,7 +39,8 @@ export class UpdateTabNameCommand implements Command<any> {
 
   async execute(): Promise<ExecutionResult<string>> {
     const oldTitle = this.tab.name ? this.tab.name : this.tab.title || '?'
-    return TabsetService.setCustomTitle(this.tab, this.newName, '')
+
+    return setCustomTitle(this.tab, this.newName, '')
       .then((ignored) => {
         console.log('custom title', this.tab)
         if (this.tab.url) {

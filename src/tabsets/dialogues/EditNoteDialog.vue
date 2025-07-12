@@ -54,7 +54,6 @@
 
 <script lang="ts" setup>
 import { date, useDialogPluginComponent, useQuasar } from 'quasar'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { ref, watchEffect } from 'vue'
 
@@ -95,18 +94,18 @@ const parseDate = (str: string): Date => {
 }
 
 const saveNote = () => {
-  TabsetService.saveNote(props.tabId, editor.value, props.schedule ? parseDate(scheduleFor.value) : undefined)
-    .then(() => {
-      $q.notify({
-        message: props.schedule ? 'The tab has been scheduled' : 'The note has been saved',
-        type: 'positive',
-      })
-    })
-    .catch(() => {
-      $q.notify({
-        message: 'There was a problem saving the note',
-        type: 'negative',
-      })
-    })
+  // TabsetService.saveNote(props.tabId, editor.value, props.schedule ? parseDate(scheduleFor.value) : undefined)
+  //   .then(() => {
+  //     $q.notify({
+  //       message: props.schedule ? 'The tab has been scheduled' : 'The note has been saved',
+  //       type: 'positive',
+  //     })
+  //   })
+  //   .catch(() => {
+  //     $q.notify({
+  //       message: 'There was a problem saving the note',
+  //       type: 'negative',
+  //     })
+  //   })
 }
 </script>

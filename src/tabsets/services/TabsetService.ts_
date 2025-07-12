@@ -1,0 +1,113 @@
+import _ from 'lodash'
+import { ContentItem } from 'src/content/models/ContentItem'
+import { useContentService } from 'src/content/services/ContentService'
+import { Tab } from 'src/tabsets/models/Tab'
+import { TabsetSharing } from 'src/tabsets/models/Tabset'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+
+class TabsetService {
+  isOpen(tabUrl: string): boolean {
+    const tabsStore = useTabsStore2()
+    return (
+      _.filter(tabsStore.browserTabs, (t: chrome.tabs.Tab) => {
+        return t?.url === tabUrl
+      }).length > 0
+    )
+  }
+
+  saveSelectedPendingTabs() {
+    // this.saveAllPendingTabs(true)
+  }
+
+  setOnlySelectedTab(tab: Tab) {
+    const currentTabset = useTabsetsStore().getCurrentTabset
+    if (currentTabset) {
+      _.forEach(currentTabset.tabs, (t: Tab) => {
+        //t.selected = t.id === tab.id;
+      })
+    }
+  }
+
+  async getContentFor(selectedTab: Tab): Promise<ContentItem | undefined> {
+    return this.getContentForUrl(selectedTab.id)
+  }
+
+  async getContentForUrl(tabId: string): Promise<ContentItem | undefined> {
+    return useContentService().getContent(tabId)
+  }
+
+  // nameForTabsetId(tsId: string): string {
+  //   return useTabsetsStore().tabsets.get(tsId)?.name || 'unknown'
+  // }
+
+  // async trackedIgnoredCount(): Promise<number> {
+  //   return this.iterateOverIgnoredUrl(0, (tab: chrome.tabs.Tab, ignoredUrls: string[], counter: number) => {
+  //     const url = new URL(tab.url!)
+  //     const normalizedUrl = url.protocol + '//' + url.hostname + url.pathname
+  //     if (ignoredUrls.indexOf(normalizedUrl) >= 0) {
+  //       counter++
+  //     }
+  //     return counter
+  //   })
+  // }
+
+  async closeAllTabs() {
+    //ChromeApi.closeAllTabs()
+  }
+
+  async moveTo(tabId: string, newIndex: number, useActiveFolder: string | undefined = undefined) {
+    console.log(`moving tabId ${tabId} to new index ${newIndex}`)
+    const currentTabset = useTabsetsStore().getCurrentTabset!
+    const activeFolder = useTabsetsStore().getActiveFolder(currentTabset, useActiveFolder)
+    console.log('activeFolder', activeFolder?.name, activeFolder?.id)
+    let tabs = activeFolder ? activeFolder.tabs : currentTabset.tabs
+    // console.log(
+    //   'tabs before',
+    //   _.map(tabs, (t: any) => t.url),
+    // )
+    //tabs = _.filter(tabs, (t: Tab) => t.columnId === column.id)
+    const oldIndex = _.findIndex(tabs, (t: any) => t.id === tabId)
+    if (oldIndex >= 0) {
+      // console.log('found old index', oldIndex)
+      const tab = tabs.splice(oldIndex, 1)[0]
+      tabs.splice(newIndex, 0, tab!)
+
+      // Sharing
+      if (currentTabset.sharing.sharedId && currentTabset.sharing.sharing === TabsetSharing.PUBLIC_LINK) {
+        currentTabset.sharing.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
+      }
+
+      await useTabsetService().saveCurrentTabset()
+    }
+  }
+
+  setView(tabsetId: string, view: string) {
+    console.log('setting view', tabsetId, view)
+    const tabset = useTabsetsStore().getTabset(tabsetId)
+    if (tabset) {
+      tabset.view = view
+      useTabsetService().saveTabset(tabset)
+    }
+  }
+
+  saveNote(tabId: string, note: string, scheduledFor: Date | undefined): Promise<void> {
+    // console.log("got", tabId, note)
+    const tab = _.find(useTabsetsStore().getCurrentTabset?.tabs, (t: Tab) => t.id === tabId)
+    if (tab) {
+      tab.note = note
+      if (scheduledFor) {
+        tab.scheduledFor = scheduledFor.getTime()
+      }
+      if (tab.url) {
+        // TODO
+        //useSearchStore().update(tab.url, 'note', note)
+      }
+      return useTabsetService().saveCurrentTabset()
+    }
+    return Promise.reject('did not find tab with id ' + tabId)
+  }
+}
+
+export default new TabsetService()

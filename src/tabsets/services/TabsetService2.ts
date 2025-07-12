@@ -14,10 +14,8 @@ import { useContentService } from 'src/content/services/ContentService'
 import { TabPredicate } from 'src/core/domain/Types'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
-import { useUtils } from 'src/core/services/Utils'
 import JsUtils from 'src/core/utils/JsUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-// import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAuthStore } from 'src/stores/authStore'
 import { GithubWriteEventCommand, TabEvent, TabsetEvent } from 'src/tabsets/commands/github/GithubWriteEventCommand'
@@ -37,8 +35,6 @@ export function useTabsetService() {
   const throttleOne50Millis = throttledQueue(1, 50, true)
 
   const initialized = ref(false)
-
-  const { extractSecondLevelDomain } = useUtils()
 
   const init = async () => {
     function selectFirstAvailableTabset() {

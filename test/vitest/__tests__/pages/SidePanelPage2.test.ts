@@ -43,7 +43,7 @@ describe('SidePanelPage2', () => {
 
     LocalStorage.setItem('ui.hideWelcomePage', true)
 
-    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
+    await IndexedDbTabsetsPersistence.init()
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))

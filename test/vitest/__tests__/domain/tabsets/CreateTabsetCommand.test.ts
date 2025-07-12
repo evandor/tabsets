@@ -19,7 +19,7 @@ describe('CreateTabsetCommand', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
+    await IndexedDbTabsetsPersistence.init()
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     await useSuggestionsStore().init(useDB(undefined).suggestionsDb)

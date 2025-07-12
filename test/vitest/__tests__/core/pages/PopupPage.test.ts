@@ -5,7 +5,6 @@ import { LocalStorage } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
 import { useContentStore } from 'src/content/stores/contentStore'
 import PopupPage from 'src/core/pages/popup/PopupPage.vue'
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useDB } from 'src/services/usePersistenceService'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
@@ -46,7 +45,7 @@ describe('PopupPage', () => {
 
     LocalStorage.setItem('ui.hideWelcomePage', true)
 
-    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
+    await IndexedDbTabsetsPersistence.init()
     db = useDB(undefined).tabsetsDb
     await useTabsetsStore().initialize(db)
     // await usePermissionsStore().initialize(new LocalStoragePersistenceService(useQuasar()))

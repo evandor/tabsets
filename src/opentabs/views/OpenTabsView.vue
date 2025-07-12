@@ -78,7 +78,6 @@
 import _ from 'lodash'
 import Analytics from 'src/core/utils/google-analytics'
 import OpenTabCard2 from 'src/opentabs/components/OpenTabCard2.vue'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
@@ -144,7 +143,7 @@ const tabAddedToTabset = (a: any) => {
 const hasSelectable = () => (userCanSelect.value = true)
 
 const saveSelectedTabs = () => {
-  TabsetService.saveSelectedPendingTabs()
+  // TabsetService.saveSelectedPendingTabs()
 }
 
 const toggleInvert = (invert: boolean) => {

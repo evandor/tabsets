@@ -1,13 +1,13 @@
 import _ from 'lodash'
 import { uid } from 'quasar'
 import AppEventDispatcher from 'src/app/AppEventDispatcher'
+import { useContentService } from 'src/content/services/ContentService'
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import Analytics from 'src/core/utils/google-analytics'
 import { DeleteTabCommand } from 'src/tabsets/commands/DeleteTabCommand'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
@@ -26,6 +26,14 @@ class UndoCommand implements Command<any> {
       .execute()
       .then((res: any) => Promise.resolve(new ExecutionResult(res, 'Tab was deleted again')))
   }
+}
+
+async function saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> {
+  const currentTs = useTabsetsStore().getCurrentTabset
+  if (currentTs) {
+    return useTabsetService().addToTabset(currentTs, tab, useIndex)
+  }
+  return Promise.reject('could not get current tabset')
 }
 
 export class CreateTabFromOpenTabsCommand implements Command<any> {
@@ -50,7 +58,7 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
         tab.tags = []
       }
 
-      return TabsetService.saveToCurrentTabset(tab, useIndex)
+      return saveToCurrentTabset(tab, useIndex)
         .then((res) => {
           if (tab.url) {
             useUiStore().clearHighlights()
@@ -77,28 +85,30 @@ export class CreateTabFromOpenTabsCommand implements Command<any> {
         .then((res) => {
           if (currentTabset) {
             Analytics.fireEvent('tabset_tab_created_from_opentabs', { tabsCount: currentTabset.tabs.length })
-            return TabsetService.getContentFor(tab).then((content) => {
-              if (content) {
-                return useTabsetService()
-                  .saveText(tab, content['content' as keyof object], content['metas' as keyof object])
-                  .then((res) => {
-                    return new ExecutionResult(
-                      'result',
-                      'Tab was added',
-                      new Map([['Undo', new UndoCommand(tab, currentTabset)]]),
-                    )
-                  })
-              } else {
-                return saveCurrentTabset().then(
-                  (result) =>
-                    new ExecutionResult(
-                      result,
-                      'Tab was added',
-                      new Map([['Undo', new UndoCommand(tab, currentTabset)]]),
-                    ),
-                )
-              }
-            })
+            return useContentService()
+              .getContent(tab.id)
+              .then((content) => {
+                if (content) {
+                  return useTabsetService()
+                    .saveText(tab, content['content' as keyof object], content['metas' as keyof object])
+                    .then((res) => {
+                      return new ExecutionResult(
+                        'result',
+                        'Tab was added',
+                        new Map([['Undo', new UndoCommand(tab, currentTabset)]]),
+                      )
+                    })
+                } else {
+                  return saveCurrentTabset().then(
+                    (result) =>
+                      new ExecutionResult(
+                        result,
+                        'Tab was added',
+                        new Map([['Undo', new UndoCommand(tab, currentTabset)]]),
+                      ),
+                  )
+                }
+              })
           } else {
             return Promise.reject('could not determine current tabset')
           }

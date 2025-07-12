@@ -56,6 +56,7 @@
 </template>
 
 <script lang="ts" setup>
+import _ from 'lodash'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { ViewContext } from 'src/core/models/ViewContext'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
@@ -63,8 +64,7 @@ import SidePanelTabListHelper from 'src/tabsets/layouts/SidePanelTabListHelper.v
 import { DynamicTabSourceType } from 'src/tabsets/models/DynamicTabSource'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab, TabSorting } from 'src/tabsets/models/Tab'
-import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTagsService } from 'src/tags/TagsService'
@@ -108,13 +108,40 @@ watch(
 const handleDragAndDrop = async (event: any) => {
   //console.log('SidePanelPageTabList d&d event:', event, props)
   const { moved, added } = event
+
+  async function moveTo2(tabId: string, newIndex: number, useActiveFolder: string | undefined = undefined) {
+    console.log(`moving tabId ${tabId} to new index ${newIndex}`)
+    const currentTabset = useTabsetsStore().getCurrentTabset!
+    const activeFolder = useTabsetsStore().getActiveFolder(currentTabset, useActiveFolder)
+    console.log('activeFolder', activeFolder?.name, activeFolder?.id)
+    let tabs = activeFolder ? activeFolder.tabs : currentTabset.tabs
+    // console.log(
+    //   'tabs before',
+    //   _.map(tabs, (t: any) => t.url),
+    // )
+    //tabs = _.filter(tabs, (t: Tab) => t.columnId === column.id)
+    const oldIndex = _.findIndex(tabs, (t: any) => t.id === tabId)
+    if (oldIndex >= 0) {
+      // console.log('found old index', oldIndex)
+      const tab = tabs.splice(oldIndex, 1)[0]
+      tabs.splice(newIndex, 0, tab!)
+
+      // Sharing
+      if (currentTabset.sharing.sharedId && currentTabset.sharing.sharing === TabsetSharing.PUBLIC_LINK) {
+        currentTabset.sharing.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
+      }
+
+      await useTabsetService().saveCurrentTabset()
+    }
+  }
+
   if (moved) {
     //console.log(`moved event: '${moved.element.tab.id}' ${moved.oldIndex} -> ${moved.newIndex} (${props.activeFolder})`)
     const tabsInColumn = tabsForColumn()
     const movedElement: Tab = tabsInColumn[moved.oldIndex]!.tab
     const realNewIndex = tabsInColumn[moved.newIndex]!.index
     //console.log(`             '${movedElement.id}' ${moved.oldIndex} -> ${realNewIndex}`)
-    await TabsetService.moveTo(movedElement.id, realNewIndex, props.activeFolder)
+    moveTo2(movedElement.id, realNewIndex, props.activeFolder)
   }
   if (added) {
     //console.log(`added event: '${added.element.tab.id}' ${added.oldIndex} -> ${added.newIndex}`)

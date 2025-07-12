@@ -129,7 +129,7 @@ class AppService {
       )
       useEntityRegistryStore().tabsetRegistry = tsInfo
     })
-    await tabsetsStore.initialize(authenticated ? useDB().tabsetsDb : useDB().tabsetsDb)
+    await tabsetsStore.initialize(useDB().tabsetsDb)
     await useTabsetService().init()
 
     await useTabsStore2().initialize()

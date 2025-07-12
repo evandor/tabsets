@@ -38,9 +38,9 @@ import { useQuasar } from 'quasar'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { CreateTabFromOpenTabsCommand } from 'src/tabsets/commands/CreateTabFromOpenTabs'
 import { Tab, TabSorting } from 'src/tabsets/models/Tab'
-import { Tabset } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
 import TabListHelper from 'src/tabsets/pages/pwa/TabListHelper.vue'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import { PropType } from 'vue'
@@ -69,6 +69,32 @@ function adjustIndex(element: any, tabs: Tab[]) {
   } else {
     //console.log(" 1 - searching for ", tabs[element.newIndex - 1].id)
     return 1 + _.findIndex(useTabsetsStore().getCurrentTabs, (t: Tab) => t.id === tabs[element.newIndex - 1]!.id)
+  }
+}
+
+async function moveTo2(tabId: string, newIndex: number, useActiveFolder: string | undefined = undefined) {
+  console.log(`moving tabId ${tabId} to new index ${newIndex}`)
+  const currentTabset = useTabsetsStore().getCurrentTabset!
+  const activeFolder = useTabsetsStore().getActiveFolder(currentTabset, useActiveFolder)
+  console.log('activeFolder', activeFolder?.name, activeFolder?.id)
+  let tabs = activeFolder ? activeFolder.tabs : currentTabset.tabs
+  // console.log(
+  //   'tabs before',
+  //   _.map(tabs, (t: any) => t.url),
+  // )
+  //tabs = _.filter(tabs, (t: Tab) => t.columnId === column.id)
+  const oldIndex = _.findIndex(tabs, (t: any) => t.id === tabId)
+  if (oldIndex >= 0) {
+    // console.log('found old index', oldIndex)
+    const tab = tabs.splice(oldIndex, 1)[0]
+    tabs.splice(newIndex, 0, tab!)
+
+    // Sharing
+    if (currentTabset.sharing.sharedId && currentTabset.sharing.sharing === TabsetSharing.PUBLIC_LINK) {
+      currentTabset.sharing.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
+    }
+
+    await useTabsetService().saveCurrentTabset()
   }
 }
 
@@ -109,7 +135,7 @@ const handleDragAndDrop = (event: any) => {
         }
         break
     }
-    TabsetService.moveTo(moved.element.id, useIndex)
+    moveTo2(moved.element.id, useIndex)
   }
   if (added) {
     useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))

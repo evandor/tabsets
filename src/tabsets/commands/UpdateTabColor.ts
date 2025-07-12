@@ -2,7 +2,12 @@ import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import Analytics from 'src/core/utils/google-analytics'
 import { Tab } from 'src/tabsets/models/Tab'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+
+function setColor(tab: Tab, color: string): Promise<any> {
+  tab.color = color
+  return useTabsetService().saveCurrentTabset()
+}
 
 export class UpdateTabColorCommand implements Command<any> {
   constructor(
@@ -14,7 +19,7 @@ export class UpdateTabColorCommand implements Command<any> {
     if (!this.newColor) {
       return Promise.reject('no color given')
     }
-    return TabsetService.setColor(this.tab, this.newColor)
+    return setColor(this.tab, this.newColor)
       .then((ignored) => {
         Analytics.fireEvent('tabset_tab_color_updated', {})
         return Promise.resolve(new ExecutionResult(this.newColor!, "Tab's color was changed"))

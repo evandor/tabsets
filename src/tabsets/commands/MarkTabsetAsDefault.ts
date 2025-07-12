@@ -4,8 +4,6 @@ import { MarkTabsetAsFavoriteCommand } from 'src/tabsets/commands/MarkTabsetAsFa
 import { TabsetStatus } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 
-//import TabsetService from 'src/tabsets/services/TabsetService'
-
 class UndoCommand implements Command<TabsetStatus> {
   constructor(
     public tabsetId: string,

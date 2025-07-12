@@ -2,9 +2,14 @@ import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useLogger } from 'src/core/services/Logger'
 import { TabsetSharing } from 'src/tabsets/models/Tabset'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
 const { info } = useLogger()
+
+function share(tabsetId: string, sharing: TabsetSharing, sharedId: string | undefined, sharedBy: string) {
+  const tabset = useTabsetsStore().getTabset(tabsetId)!
+  return useTabsetsStore().share(tabset, sharing, sharedId, sharedBy)
+}
 
 export class UnShareTabsetCommand implements Command<any> {
   constructor(
@@ -13,7 +18,7 @@ export class UnShareTabsetCommand implements Command<any> {
   ) {}
 
   async execute(): Promise<ExecutionResult<any>> {
-    return TabsetService.share(this.tabsetId, TabsetSharing.UNSHARED, this.sharedId, 'undefined')
+    return share(this.tabsetId, TabsetSharing.UNSHARED, this.sharedId, 'undefined')
       .then((res: any) => {
         info('unsharing tabset')
         return res

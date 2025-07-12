@@ -68,7 +68,7 @@ import { uid } from 'quasar'
 import Analytics from 'src/core/utils/google-analytics'
 import { Tab, TabFavorite } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
@@ -98,7 +98,14 @@ watchEffect(() => {
   tab.value = route.query['tab'] ? (route.query['tab'] as string) : 'tabset'
 })
 
-const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
+const setView = (view: string) => {
+  //TabsetService.setView(tabsetId.value, view)
+  const tabset = useTabsetsStore().getTabset(tabsetId.value)
+  if (tabset) {
+    tabset.view = view
+    useTabsetService().saveTabset(tabset)
+  }
+}
 </script>
 
 <script setup lang="ts"></script>

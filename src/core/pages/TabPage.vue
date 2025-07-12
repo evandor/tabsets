@@ -293,12 +293,12 @@ import { date, openURL } from 'quasar'
 import { useUtils } from 'src/core/services/Utils'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import NavigationService from 'src/services/NavigationService'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { onMounted, reactive, ref, watchEffect } from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
 import { useRoute } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
 import { ContentItem } from 'src/content/models/ContentItem'
+import { useContentService } from 'src/content/services/ContentService'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import Analytics from 'src/core/utils/google-analytics'
 import { Tab } from 'src/tabsets/models/Tab'
@@ -407,7 +407,7 @@ const linkRows = ref<object[]>([])
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 watchEffect(async () => {
   if (selectedTab.value) {
-    const data: ContentItem | undefined = await TabsetService.getContentFor(selectedTab.value)
+    const data: ContentItem | undefined = await useContentService().getContent(selectedTab.value.id)
     if (data) {
       content.value = data
     }

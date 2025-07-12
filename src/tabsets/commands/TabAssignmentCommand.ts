@@ -1,11 +1,15 @@
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useUtils } from 'src/core/services/Utils'
-import { useSearchStore } from 'src/search/stores/searchStore'
 import { Tab } from 'src/tabsets/models/Tab'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 
 const { sendMsg } = useUtils()
+
+function setMatcher(tab: Tab, matcher: string | undefined): Promise<any> {
+  tab.matcher = matcher
+  return useTabsetService().saveCurrentTabset()
+}
 
 export class TabAssignmentCommand implements Command<any> {
   constructor(
@@ -15,7 +19,7 @@ export class TabAssignmentCommand implements Command<any> {
   ) {}
 
   async execute(): Promise<ExecutionResult<string | undefined>> {
-    return TabsetService.setMatcher(this.tab, this.matcher)
+    return setMatcher(this.tab, this.matcher)
       .then((ignored) => {
         sendMsg('reload-tabset', { tabsetId: this.tabsetId })
       })
