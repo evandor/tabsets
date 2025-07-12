@@ -1,7 +1,6 @@
 import { IDBPDatabase, openDB } from 'idb'
 import { Space } from 'src/spaces/models/Space'
 import SpacesPersistence from 'src/spaces/persistence/SpacesPersistence'
-import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 
 class IndexedDbSpacesPersistence implements SpacesPersistence {
   private STORE_IDENT = 'spaces'
@@ -48,13 +47,9 @@ class IndexedDbSpacesPersistence implements SpacesPersistence {
     return this.db.delete(this.STORE_IDENT, spaceId)
   }
 
-  async loadSpaces(): Promise<any> {
-    //console.debug(' ...loading spaces...')
-    const spaces = await this.db.getAll(this.STORE_IDENT)
-    spaces.forEach((s: Space) => {
-      useSpacesStore().putSpace(s)
-    })
-    return Promise.resolve()
+  async getSpaces(): Promise<Space[]> {
+    console.debug(' ...loading spaces...')
+    return this.db.getAll(this.STORE_IDENT)
   }
 
   async migrate() {

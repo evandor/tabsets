@@ -33,7 +33,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   const currentFromLocalStorage = LocalStorage.getItem('currentSpace')
 
   /**
-   * the (internal) storage for this store to use
+   * the persistence storage for this store
    */
   let storage: SpacesPersistence = null as unknown as SpacesPersistence
 
@@ -41,18 +41,17 @@ export const useSpacesStore = defineStore('spaces', () => {
 
   /**
    * initialize store with
-   * @param ps a persistence storage
+   * @param p the persistence storage
    */
   async function initialize(p: SpacesPersistence) {
     storage = p
-
     await storage.init()
-
-    // TODO remove after version 0.4.12
     await storage.migrate()
-
-    // console.debug(' ...initialized spaces: Store', '✅')
-    await storage.loadSpaces()
+    const spaces = await storage.getSpaces()
+    spaces.forEach((s: Space) => {
+      useSpacesStore().putSpace(s)
+    })
+    console.log('loaded with', storeSize.value)
   }
 
   /**
@@ -60,7 +59,10 @@ export const useSpacesStore = defineStore('spaces', () => {
    */
   async function reload() {
     console.debug('reloading spacesStore')
-    await storage.loadSpaces()
+    const spaces = await storage.getSpaces()
+    spaces.forEach((s: Space) => {
+      useSpacesStore().putSpace(s)
+    })
   }
 
   /**
@@ -80,6 +82,10 @@ export const useSpacesStore = defineStore('spaces', () => {
     { deep: true },
   )
 
+  const storeSize = computed(() => {
+    return JSON.stringify([...spaces.value]).length
+  })
+
   /**
    * does this label already exist as a space label?
    */
@@ -92,9 +98,6 @@ export const useSpacesStore = defineStore('spaces', () => {
       })
     }
   })
-
-  // function addSpace(label: string): Promise<any>;
-  // function addSpace(space: Space): Promise<any>;
 
   /**
    * create a new space; checks if label already exists
@@ -120,17 +123,16 @@ export const useSpacesStore = defineStore('spaces', () => {
     const newSpace = new Space(spaceId, label)
     spaces.value.set(spaceId, newSpace)
     await storage.addSpace(newSpace)
+    console.log('spaces store size', storeSize.value)
     return Promise.resolve(newSpace)
   }
 
   /**
    * create a new space; checks if label already exists
-   *
-   * @param s
    */
   function addSpace(s: Space, addToStorage = true): Promise<any> {
     return throttleOne10Millis(async () => {
-      //console.log("adding space", s.id, s.label)
+      console.log('adding space', s.id, s.label)
       //console.log("spaces:", [...spaces.value.values()].length)
       if (nameExists.value(s.label)) {
         const msg = `name '${s.label}' does already exist`
@@ -138,6 +140,7 @@ export const useSpacesStore = defineStore('spaces', () => {
         return Promise.resolve()
       }
       spaces.value.set(s.id, s)
+      console.log('size before adding', storeSize.value)
       if (addToStorage) {
         return storage.addSpace(s)
       }
@@ -183,5 +186,6 @@ export const useSpacesStore = defineStore('spaces', () => {
     putSpace,
     setSpace,
     deleteById,
+    storeSize,
   }
 })
