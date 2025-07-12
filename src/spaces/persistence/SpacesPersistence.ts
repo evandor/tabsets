@@ -5,16 +5,11 @@ interface SpacesPersistence {
 
   init(): Promise<any>
 
-  loadSpaces(): Promise<any>
+  getSpaces(): Promise<Space[]>
   addSpace(space: Space): Promise<any>
   deleteSpace(spaceId: string): void
 
-  // optional migration code for 0.4.11 to 0.5.0
   migrate(): any
-
-  compactDb(): Promise<any>
-
-  clear(name: string): void
 }
 
 export default SpacesPersistence

@@ -39,13 +39,8 @@ import { Router } from 'vue-router'
 const { inBexMode } = useUtils()
 
 class AppService {
-  router: Router = null as unknown as Router
-  //initialized = false
-
   async init(quasar: QVueGlobals, router: Router) {
     console.log(`%cinitializing AppService`, 'font-weight:bold')
-
-    this.router = router
 
     useUiStore().appLoading = `loading ${EXTENSION_NAME}...`
 
@@ -92,10 +87,10 @@ class AppService {
     // init services
     await useSuggestionsStore().init(useDB().suggestionsDb)
 
-    await this.initCoreSerivces(quasar, this.router)
+    await this.initCoreSerivces(quasar)
   }
 
-  private async initCoreSerivces(quasar: QVueGlobals, router: Router) {
+  private async initCoreSerivces(quasar: QVueGlobals) {
     //console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
 
     const authenticated = useAuthStore().isAuthenticated()
@@ -154,17 +149,17 @@ class AppService {
     // probably running an import ("/imp/:sharedId")
     // we do not want to go to the welcome back
     // console.log("checking for welcome page", useTabsetsStore().tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated)
-    if (
-      useTabsetsStore().tabsets.size === 0 &&
-      quasar.platform.is.bex &&
-      //useAuthStore().isAuthenticated() &&
-      !router.currentRoute.value.path.startsWith('/fullpage') &&
-      !router.currentRoute.value.path.startsWith('/mainpanel') &&
-      router.currentRoute.value.path !== '/'
-    ) {
-      // console.log('pushing to welcome page', router.currentRoute.value.path)
-      // await router.push('/sidepanel/welcome')
-    }
+    // if (
+    //   useTabsetsStore().tabsets.size === 0 &&
+    //   quasar.platform.is.bex &&
+    //   //useAuthStore().isAuthenticated() &&
+    //   !router.currentRoute.value.path.startsWith('/fullpage') &&
+    //   !router.currentRoute.value.path.startsWith('/mainpanel') &&
+    //   router.currentRoute.value.path !== '/'
+    // ) {
+    //   // console.log('pushing to welcome page', router.currentRoute.value.path)
+    //   // await router.push('/sidepanel/welcome')
+    // }
 
     // const tagCats = LocalStorage.getItem(TAGS_CATEGORIES)
     // if (!tagCats) {
