@@ -66,7 +66,6 @@
 import { useUtils } from 'src/core/services/Utils'
 import NavigationService from 'src/services/NavigationService'
 import { Tab, UrlExtension } from 'src/tabsets/models/Tab'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import TabFaviconWidget from 'src/tabsets/widgets/TabFaviconWidget.vue'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { PropType, ref } from 'vue'

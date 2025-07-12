@@ -42,8 +42,7 @@ import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import { useUtils } from 'src/core/services/Utils'
 import { useAuthStore } from 'src/stores/authStore'
 import { Tab } from 'src/tabsets/models/Tab'
-import { ChangeInfo } from 'src/tabsets/models/Tabset'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { ChangeInfo, Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { ref, watchEffect } from 'vue'
@@ -78,7 +77,16 @@ const createNewUrl = () => {
   tab.created = new Date().getTime()
   tab.createdBy = useAuthStore().user.email || undefined
   tab.extension = tab.determineUrlExtension(chromeTab)
-  TabsetService.saveToCurrentTabset(tab).then(() => {
+
+  async function saveToCurrentTabset(tab: Tab, useIndex: number | undefined = undefined): Promise<Tabset> {
+    const currentTs = useTabsetsStore().getCurrentTabset
+    if (currentTs) {
+      return useTabsetService().addToTabset(currentTs, tab, useIndex)
+    }
+    return Promise.reject('could not get current tabset')
+  }
+
+  saveToCurrentTabset(tab).then(() => {
     useTabsetsStore()
       .getCurrentTabsetId()
       .then((currentTabsetId: string | undefined) => {

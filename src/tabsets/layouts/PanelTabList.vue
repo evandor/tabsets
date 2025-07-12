@@ -48,7 +48,6 @@ import { CreateTabFromOpenTabsCommand } from 'src/tabsets/commands/CreateTabFrom
 import SidePanelTabListHelper from 'src/tabsets/layouts/SidePanelTabListHelper.vue'
 import { Tab, TabSorting } from 'src/tabsets/models/Tab'
 import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { PropType } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 

@@ -40,7 +40,6 @@ import { CreateTabFromOpenTabsCommand } from 'src/tabsets/commands/CreateTabFrom
 import { Tab, TabSorting } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import TabListHelper from 'src/tabsets/pages/pwa/TabListHelper.vue'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import InfoMessageWidget from 'src/ui/widgets/InfoMessageWidget.vue'
 import { PropType } from 'vue'

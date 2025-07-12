@@ -41,7 +41,6 @@ import Analytics from 'src/core/utils/google-analytics'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import TabList from 'src/tabsets/pages/pwa/TabList.vue'
 import TabsetPageCards from 'src/tabsets/pages/pwa/TabsetPageCards.vue'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { onMounted, onUnmounted, ref } from 'vue'
@@ -84,7 +83,14 @@ onUnmounted(() => {
   chrome.runtime.onMessage.removeListener(onMessageListener)
 })
 
-const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
+const setView = (view: string) => {
+  //TabsetService.setView(tabsetId.value, view)
+  const tabset = useTabsetsStore().getTabset(tabsetId.value)
+  if (tabset) {
+    tabset.view = view
+    useTabsetService().saveTabset(tabset)
+  }
+}
 
 const onMessage = async (request: any, sender: chrome.runtime.MessageSender, sendResponse: any) => {
   console.log(` <<< got message '${request.name}'`, request)

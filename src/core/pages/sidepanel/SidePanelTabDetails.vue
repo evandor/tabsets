@@ -327,10 +327,10 @@ import _ from 'lodash'
 import { useQuasar } from 'quasar'
 import { STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 import { TabReferenceType } from 'src/content/models/TabReference'
+import { useContentService } from 'src/content/services/ContentService'
 import { TagInfo } from 'src/core/models/TagInfo'
 import TabDetailsSearchIndex from 'src/core/pages/sidepanel/helper/TabDetailsSearchIndex.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
-import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { useUtils } from 'src/core/services/Utils'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
@@ -342,7 +342,6 @@ import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useAuthStore } from 'src/stores/authStore'
 import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import { Tab } from 'src/tabsets/models/Tab'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import TabFaviconWidget from 'src/tabsets/widgets/TabFaviconWidget.vue'
@@ -351,8 +350,6 @@ import { ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const { inBexMode } = useUtils()
-
-const { handleSuccess, handleError } = useNotificationHandler()
 
 const $q = useQuasar()
 const router = useRouter()
@@ -421,39 +418,30 @@ watchEffect(() => {
           thumbnail.value = ''
         }
       })
-    TabsetService.getContentFor(tab.value as Tab).then((data) => {
-      if (data) {
-        content.value = data['content' as keyof object]
-        //metas.value = data['metas' as keyof object]
-        metaRows.value = []
-        _.forEach(Object.keys(data['metas' as keyof object]), (k: any) => {
-          //console.log("k", k, data.metas[k])
-          metaRows.value.push({
-            name: k,
-            value: data['metas' as keyof object][k],
+    useContentService()
+      .getContent(tab.value.id)
+      .then((data) => {
+        if (data) {
+          content.value = data['content' as keyof object]
+          //metas.value = data['metas' as keyof object]
+          metaRows.value = []
+          _.forEach(Object.keys(data['metas' as keyof object]), (k: any) => {
+            //console.log("k", k, data.metas[k])
+            metaRows.value.push({
+              name: k,
+              value: data['metas' as keyof object][k],
+            })
           })
-        })
-        metaRows.value = _.sortBy(metaRows.value, (s: any) => s['name' as keyof object])
-      }
-    })
+          metaRows.value = _.sortBy(metaRows.value, (s: any) => s['name' as keyof object])
+        }
+      })
     useSnapshotsService()
       .getMetadataFor(tab.value.id)
       .then((mds: BlobMetadata[]) => {
         htmls.value = mds
       })
-
-    // useSnapshotsService().getPngsForTab(tab.value.id)
-    //     .then((blobs: SavedBlob[]) => pngs.value = blobs)
-    // useSnapshotsService().getPdfsForTab(tab.value.id)
-    //     .then((blobs: SavedBlob[]) => pdfs.value = blobs)
-    // useSnapshotsService().getBlobForTab(tab.value.id, BlobType.HTML)
-    //   .then((blobs: SavedBlob[]) => htmls.value = blobs)
   }
 })
-
-function isOpen(tab: Tab | undefined): boolean {
-  return TabsetService.isOpen(tab?.url || '')
-}
 
 const tabsetChips = (): object[] => {
   const badges: object[] = []

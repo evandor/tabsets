@@ -179,7 +179,6 @@ import FeatureToggleSettings from 'src/pages/helper/FeatureToggleSettings.vue'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { MarkTabsetAsDefaultCommand } from 'src/tabsets/commands/MarkTabsetAsDefault'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { DrawerTabs, useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, reactive, ref, watchEffect } from 'vue'
@@ -247,9 +246,19 @@ watchEffect(() => {
   indexSize.value = searchStore?.getIndex()?.size()
 })
 
+function createFile(data: string, filename: string) {
+  const file = window.URL.createObjectURL(new Blob([data]))
+  const docUrl = document.createElement('a')
+  docUrl.href = file
+  docUrl.setAttribute('download', filename)
+  document.body.appendChild(docUrl)
+  docUrl.click()
+  return Promise.resolve('done')
+}
+
 const downloadIndex = () => {
   const data = JSON.stringify(searchStore?.getIndex())
-  return TabsetService.createFile(data, 'tabsetIndex.json')
+  return createFile(data, 'tabsetIndex.json')
 }
 
 const clearIndex = () => searchStore.init()

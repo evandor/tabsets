@@ -1,6 +1,5 @@
 // 3 expected diffs to localstorage
 import { IDBPDatabase, openDB } from 'idb'
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useDB } from 'src/services/usePersistenceService'
 import { SharingInfo } from 'src/tabsets/models/SharingInfo'
 import { Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
@@ -16,7 +15,7 @@ class IndexedDbTabsetsPersistence implements TabsetsPersistence {
     return this.constructor.name
   }
 
-  async init(firebaseServices: IFirebaseServices) {
+  async init() {
     this.db = await this.initDatabase()
     // console.debug(` ...initialized tabsets: ${this.getServiceName()}`, '✅')
     return Promise.resolve()
