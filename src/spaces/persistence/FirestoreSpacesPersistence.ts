@@ -3,7 +3,6 @@ import { LocalStorage } from 'quasar'
 import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { Space } from 'src/spaces/models/Space'
 import SpacesPersistence from 'src/spaces/persistence/SpacesPersistence'
-import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
 import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
@@ -30,19 +29,21 @@ class FirestoreSpacesPersistence implements SpacesPersistence {
     return Promise.resolve('')
   }
 
-  async loadSpaces(): Promise<any> {
+  async getSpaces(): Promise<Space[]> {
     if (!useAuthStore().user) {
       return Promise.resolve([]) // user not authenticated
     }
     useUiStore().syncing = true
     LocalStorage.set('ui.spaces.lastUpdate', new Date().getTime())
+    const result: Space[] = []
     ;(await getDocs(spacesCollection(this.firebaseServices))).forEach((doc) => {
       let newItem = doc.data() as Space
       newItem.id = doc.id
-      useSpacesStore().addSpace(newItem)
+      // useSpacesStore().addSpace(newItem)
+      result.push(newItem)
     })
     useUiStore().syncing = false
-    return Promise.resolve(undefined)
+    return Promise.resolve(result)
   }
 
   async addSpace(entity: Space): Promise<any> {
@@ -56,10 +57,6 @@ class FirestoreSpacesPersistence implements SpacesPersistence {
     useUiStore().syncing = true
     await deleteDoc(spaceDoc(this.firebaseServices, entityId))
     useUiStore().syncing = false
-  }
-
-  compactDb(): Promise<any> {
-    return Promise.resolve(undefined)
   }
 
   migrate(): any {
