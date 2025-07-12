@@ -6,6 +6,7 @@ import SpacesPersistence from 'src/spaces/persistence/SpacesPersistence'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 const STORE_IDENT = 'spaces'
 
@@ -23,9 +24,9 @@ class FirestoreSpacesPersistence implements SpacesPersistence {
     return this.constructor.name
   }
 
-  async init(firebaseServices: IFirebaseServices) {
-    // console.debug(` ...initialized spaces: ${this.getServiceName()}`, '✅')
-    this.firebaseServices = firebaseServices
+  async init() {
+    this.firebaseServices = useFirebaseServices().firebaseServices
+    console.debug(` ...initialized spaces: ${this.getServiceName()}`, '✅')
     return Promise.resolve('')
   }
 
