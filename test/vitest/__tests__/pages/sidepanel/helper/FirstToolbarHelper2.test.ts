@@ -42,7 +42,7 @@ describe('FirstToolbarHelper2', () => {
   })
 
   it('should be mounted', async () => {
-    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
+    await IndexedDbTabsetsPersistence.init()
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     const wrapper = mount(FirstToolbarHelper2)
     console.log('hier', wrapper.html())

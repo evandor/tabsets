@@ -14,10 +14,8 @@ import { useContentService } from 'src/content/services/ContentService'
 import { TabPredicate } from 'src/core/domain/Types'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
-import { useUtils } from 'src/core/services/Utils'
 import JsUtils from 'src/core/utils/JsUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-// import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAuthStore } from 'src/stores/authStore'
 import { GithubWriteEventCommand, TabEvent, TabsetEvent } from 'src/tabsets/commands/github/GithubWriteEventCommand'
@@ -37,8 +35,6 @@ export function useTabsetService() {
   const throttleOne50Millis = throttledQueue(1, 50, true)
 
   const initialized = ref(false)
-
-  const { extractSecondLevelDomain } = useUtils()
 
   const init = async () => {
     function selectFirstAvailableTabset() {
@@ -73,7 +69,7 @@ export function useTabsetService() {
 
   /**
    * Will create a new tabset (or update an existing one with matching name) from
-   * the provided Chrome tabs.
+   * the provided Browser tabs.
    *
    * Use case: https://skysail.atlassian.net/wiki/spaces/TAB/pages/807927852/Creating+a+Tabset
    *
@@ -84,7 +80,7 @@ export function useTabsetService() {
    * @param color
    * @param spaceId
    */
-  const saveOrReplaceFromChromeTabs = async (
+  const saveOrReplaceFromBrowserTabs = async (
     name: string,
     chromeTabs: chrome.tabs.Tab[],
     color: string | undefined = undefined,
@@ -1078,7 +1074,7 @@ export function useTabsetService() {
 
   return {
     init,
-    saveOrReplaceFromChromeTabs,
+    saveOrReplaceFromChromeTabs: saveOrReplaceFromBrowserTabs,
     saveOrReplaceFromBookmarks,
     copyFromTabset,
     deleteFromTabset,

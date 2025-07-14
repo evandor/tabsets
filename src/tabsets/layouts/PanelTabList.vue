@@ -43,12 +43,14 @@
 </template>
 
 <script setup lang="ts">
+import _ from 'lodash'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { CreateTabFromOpenTabsCommand } from 'src/tabsets/commands/CreateTabFromOpenTabs'
 import SidePanelTabListHelper from 'src/tabsets/layouts/SidePanelTabListHelper.vue'
 import { Tab, TabSorting } from 'src/tabsets/models/Tab'
-import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { Tabset, TabsetSharing, TabsetType } from 'src/tabsets/models/Tabset'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { PropType } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 
@@ -63,13 +65,39 @@ const props = defineProps({
   tabset: { type: Object as PropType<Tabset>, required: false },
 })
 
+async function moveTo2(tabId: string, newIndex: number, useActiveFolder: string | undefined = undefined) {
+  console.log(`moving tabId ${tabId} to new index ${newIndex}`)
+  const currentTabset = useTabsetsStore().getCurrentTabset!
+  const activeFolder = useTabsetsStore().getActiveFolder(currentTabset, useActiveFolder)
+  console.log('activeFolder', activeFolder?.name, activeFolder?.id)
+  let tabs = activeFolder ? activeFolder.tabs : currentTabset.tabs
+  // console.log(
+  //   'tabs before',
+  //   _.map(tabs, (t: any) => t.url),
+  // )
+  //tabs = _.filter(tabs, (t: Tab) => t.columnId === column.id)
+  const oldIndex = _.findIndex(tabs, (t: any) => t.id === tabId)
+  if (oldIndex >= 0) {
+    // console.log('found old index', oldIndex)
+    const tab = tabs.splice(oldIndex, 1)[0]
+    tabs.splice(newIndex, 0, tab!)
+
+    // Sharing
+    if (currentTabset.sharing.sharedId && currentTabset.sharing.sharing === TabsetSharing.PUBLIC_LINK) {
+      currentTabset.sharing.sharing = TabsetSharing.PUBLIC_LINK_OUTDATED
+    }
+
+    await useTabsetService().saveCurrentTabset()
+  }
+}
+
 const handleDragAndDrop = (event: any) => {
   console.log('event', event)
   const { moved, added } = event
   if (moved) {
     console.log('d&d tabs moved', moved.element.id, moved.newIndex)
     let useIndex = moved.newIndex
-    TabsetService.moveTo(moved.element.id, useIndex)
+    moveTo2(moved.element.id, useIndex)
   }
   if (added) {
     useCommandExecutor().executeFromUi(new CreateTabFromOpenTabsCommand(added.element, added.newIndex))

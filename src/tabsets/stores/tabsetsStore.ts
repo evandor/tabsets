@@ -5,7 +5,6 @@ import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 import { useAuthStore } from 'src/stores/authStore'
 import { FolderNode } from 'src/tabsets/models/FolderNode'
 import { Tab, TabComment } from 'src/tabsets/models/Tab'
@@ -15,7 +14,6 @@ import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
-// import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { computed, ref, watch } from 'vue'
 
 /**
@@ -24,13 +22,13 @@ import { computed, ref, watch } from 'vue'
  * Elements are persisted to the storage provided in the initialize function
  */
 export const useTabsetsStore = defineStore('tabsets', () => {
-  const loaded = ref(false)
-  const lastUpdate = ref(new Date().getTime())
-
   /**
    * the (internal) storage for this store to use
    */
   let storage: TabsetsPersistence = null as unknown as TabsetsPersistence
+
+  const loaded = ref(false)
+  const lastUpdate = ref(new Date().getTime())
 
   /**
    * a named list of tabsets managed by this extension.
@@ -72,8 +70,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
    */
   async function initialize(ps: TabsetsPersistence) {
     storage = ps
-    await storage.init(useFirebaseServices().firebaseServices)
-    // TODO remove after version 0.5.0
+    await storage.init()
     await storage.migrate()
   }
 

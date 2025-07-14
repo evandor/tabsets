@@ -27,7 +27,7 @@ describe('UpdateTabUrl', () => {
 
   beforeEach(async () => {
     setActivePinia(createPinia())
-    await IndexedDbTabsetsPersistence.init(null as unknown as IFirebaseServices)
+    await IndexedDbTabsetsPersistence.init()
     await IndexedDbContentPersistence.init()
     await useContentService().init(IndexedDbContentPersistence)
     db = useDB().tabsetsDb

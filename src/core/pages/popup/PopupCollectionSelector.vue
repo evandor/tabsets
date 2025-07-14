@@ -4,7 +4,13 @@
     <div class="col q-ma-none q-pa-none text-center" style="border: 0 solid red">
       <div class="text-bold ellipsis">
         <template v-if="currentTabset">
+          <q-input v-if="collectionMode === 'add'" v-model="newCollection" dense ref="newCollectionInputRef">
+            <template v-slot:append>
+              <q-icon name="close" @click="quitAddCollection" class="cursor-pointer" />
+            </template>
+          </q-input>
           <q-select
+            v-else
             :style="tabsetColorStyle()"
             filled
             :disable="props.disable"
@@ -18,7 +24,9 @@
             <template v-slot:option="scope">
               <q-item v-bind="scope.itemProps">
                 <template v-if="scope.opt.label.length > 0">
-                  <q-item-section style="max-width: 20px" v-if="scope.opt.label !== 'Switch to'">
+                  <q-item-section
+                    style="max-width: 20px"
+                    v-if="scope.opt.label !== 'Switch to' && scope.opt.label !== 'Add'">
                     <q-icon
                       size="xs"
                       :color="scope.opt.icon_color ? scope.opt.icon_color : 'primary'"
@@ -57,6 +65,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useFocus } from '@vueuse/core'
 import { openURL, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
@@ -74,7 +83,7 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { ref, watchEffect } from 'vue'
+import { ref, shallowRef, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -116,6 +125,10 @@ const watermark = ref('')
 const tabsets = ref<Tabset[]>([])
 const animateMenuButton = ref(false)
 const sidepanelEnabled = ref(false)
+const collectionMode = ref<'add' | 'default'>('default')
+const newCollection = ref<string | undefined>(undefined)
+const newCollectionInputRef = shallowRef()
+const { focused } = useFocus(newCollectionInputRef)
 
 const tabsetSelectionModel = ref<SelectOption | undefined>(undefined)
 const tabsetSelectionOptions = ref<SelectOption[]>([])
@@ -150,7 +163,7 @@ watchEffect(() => {
     })
     .map((ts: Tabset) => {
       return {
-        label: ts.name,
+        label: ts.id === currentTabset.value?.id ? ts.name + ' (current)' : ts.name,
         value: ts.id,
         disable: ts.id === currentTabset.value?.id,
       }
@@ -160,33 +173,32 @@ watchEffect(() => {
   if (tabsetSelectionOptions.value.length == 1) {
     tabsetSelectionOptions.value = []
   }
+
   if (tabsetSelectionOptions.value.length > 1) {
     tabsetSelectionOptions.value.unshift({ label: 'Switch to', value: '', disable: true, icon: 'switch_horiz' })
   }
-
-  // if (tabsetSelectionOptions.value.length > 10) {
-  //   tabsetSelectionOptions.value = tabsetSelectionOptions.value.slice(0, 10)
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //   tabsetSelectionOptions.value.push({ label: 'show all...', value: '' })
-  // } else if (tabsetSelectionOptions.value.length > 4) {
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //   tabsetSelectionOptions.value.push({ label: 'more...', value: '' })
-  // }
 
   if (tabsets.value.length > 1) {
     tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
   }
 
-  tabsetSelectionOptions.value.push({ label: 'Show Collection', value: 'show-tabset', icon: 'o_eye' })
-  //tabsetSelectionOptions.value.push({ label: 'Add Collection', value: 'add-tabset', icon: 'o_add' })
-  tabsetSelectionOptions.value.push({ label: 'Manage Collections', value: 'popup-manage-tabsets', icon: 'o_edit' })
+  tabsetSelectionOptions.value.push({ label: 'Add', value: '', disable: true, icon: 'switch_horiz' })
+
+  tabsetSelectionOptions.value.push({ label: 'a new Collection', value: 'add-collection' })
+
   if (useFeaturesStore().hasFeature(FeatureIdent.FOLDER)) {
     tabsetSelectionOptions.value.push({
-      label: 'Add Folder to Collection',
+      label: 'new Folder to Collection',
       value: 'popup-add-folder',
       icon: 'sym_o_folder',
     })
   }
+
+  tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+
+  tabsetSelectionOptions.value.push({ label: 'Show Collection', value: 'show-tabset', icon: 'o_eye' })
+  //tabsetSelectionOptions.value.push({ label: 'Add Collection', value: 'add-tabset', icon: 'o_add' })
+  tabsetSelectionOptions.value.push({ label: 'Manage Collections', value: 'popup-manage-tabsets', icon: 'o_edit' })
   if (useFeaturesStore().hasFeature(FeatureIdent.VISUALIZATIONS)) {
     tabsetSelectionOptions.value.push({
       label: 'Folder Visualisation',
@@ -210,9 +222,7 @@ watchEffect(() => {
   animateMenuButton.value = useUiStore().animateMenuButton
 })
 
-watchEffect(() => {
-  currentTabset.value = useTabsetsStore().getCurrentTabset
-  //console.log('---got current tabset', currentTabset.value)
+function setModelFromCurrentTabset() {
   if (currentTabset.value) {
     tabsetSelectionModel.value = {
       label: currentTabset.value?.name || '?',
@@ -220,9 +230,13 @@ watchEffect(() => {
     }
     overlap.value = useTabsStore2().getOverlap(currentTabset.value)
     overlapTooltip.value = `${Math.round(100 * overlap.value)}% overlap between this tabset and the currently open tabs`
-  } else {
-    // redirectOnEmpty()
   }
+}
+
+watchEffect(() => {
+  currentTabset.value = useTabsetsStore().getCurrentTabset
+  //console.log('---got current tabset', currentTabset.value)
+  setModelFromCurrentTabset()
 })
 
 watchEffect(() => {
@@ -297,6 +311,10 @@ const switchTabset = async (tabset: object) => {
     // mode.value = 'add-tabset'
     return
   }
+  if (tsId === 'add-collection') {
+    collectionMode.value = 'add'
+    setTimeout(() => (focused.value = true), 600)
+  }
   if (tsId === 'delete-tabset' && currentTabset.value) {
     $q.dialog({
       component: DeleteTabsetDialog,
@@ -338,6 +356,11 @@ chrome.runtime.getContexts({}, (ctxs: object[]) => {
   sidepanelEnabled.value = ctxs.filter((c: object) => 'SIDE_PANEL' === c['contextType' as keyof object]).length > 0
   // console.log('sidepanelEnabled', sidepanelEnabled.value)
 })
+
+const quitAddCollection = () => {
+  collectionMode.value = 'default'
+  setModelFromCurrentTabset()
+}
 </script>
 
 <style scoped>
