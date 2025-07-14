@@ -227,7 +227,7 @@ const onMessageListener = (message: any) => {
   } else if (message.name === 'text-selection') {
     console.log('message', message)
   } else if (message.name === 'tabsets-imported') {
-    useSpacesStore().reload()
+    useSpacesStore().loadSpaces()
     useTabsetService().init()
     // router.push('/sidepanel/collections')
     window.location.reload()

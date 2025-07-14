@@ -69,7 +69,7 @@ export function useTabsetService() {
 
   /**
    * Will create a new tabset (or update an existing one with matching name) from
-   * the provided Chrome tabs.
+   * the provided Browser tabs.
    *
    * Use case: https://skysail.atlassian.net/wiki/spaces/TAB/pages/807927852/Creating+a+Tabset
    *
@@ -80,7 +80,7 @@ export function useTabsetService() {
    * @param color
    * @param spaceId
    */
-  const saveOrReplaceFromChromeTabs = async (
+  const saveOrReplaceFromBrowserTabs = async (
     name: string,
     chromeTabs: chrome.tabs.Tab[],
     color: string | undefined = undefined,
@@ -1074,7 +1074,7 @@ export function useTabsetService() {
 
   return {
     init,
-    saveOrReplaceFromChromeTabs,
+    saveOrReplaceFromChromeTabs: saveOrReplaceFromBrowserTabs,
     saveOrReplaceFromBookmarks,
     copyFromTabset,
     deleteFromTabset,

@@ -22,13 +22,13 @@ import { computed, ref, watch } from 'vue'
  * Elements are persisted to the storage provided in the initialize function
  */
 export const useTabsetsStore = defineStore('tabsets', () => {
-  const loaded = ref(false)
-  const lastUpdate = ref(new Date().getTime())
-
   /**
    * the (internal) storage for this store to use
    */
   let storage: TabsetsPersistence = null as unknown as TabsetsPersistence
+
+  const loaded = ref(false)
+  const lastUpdate = ref(new Date().getTime())
 
   /**
    * a named list of tabsets managed by this extension.
