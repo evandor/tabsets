@@ -1,3 +1,4 @@
+import { useStorage } from '@vueuse/core'
 import _ from 'lodash'
 import { defineStore } from 'pinia'
 import { LocalStorage, uid } from 'quasar'
@@ -144,6 +145,35 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
       //console.log('started timer', timer)
     }
   }
+
+  const anthropicKey = useStorage('ai.anthropicKey', undefined, localStorage)
+  // console.log('got', anthropicKey.value)
+  // if (anthropicKey.value) {
+  //   const anthropic = createAnthropic({
+  //     apiKey: anthropicKey.value,
+  //     headers: { 'anthropic-dangerous-direct-browser-access': 'true' },
+  //   })
+  //   const model = anthropic('claude-3-5-haiku-latest')
+  //   // const openAi = createOpenAI({
+  //   //   apiKey: anthropicKey.value,
+  //   // })
+  //   // const model = anthropic('claude-3-5-haiku-latest', {
+  //   //   headers: { 'anthropic-dangerous-direct-browser-access': 'true' },
+  //   // })
+  //   // const model = openAi('o3-mini')
+  //
+  //   const answerMyQuestion = async (prompt: string) => {
+  //     const { text } = await generateText({
+  //       model,
+  //       prompt,
+  //     })
+  //
+  //     return text
+  //   }
+  //   answerMyQuestion('what is the chemical formula for dihydrogen monoxide?').then((answer: string) => {
+  //     console.log(answer)
+  //   })
+  // }
 
   async function onTabActivated(activeInfo: chrome.tabs.TabActiveInfo) {
     console.log(` -> tabActivated: ${JSON.stringify(activeInfo)}`)
