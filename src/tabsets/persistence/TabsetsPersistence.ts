@@ -1,10 +1,10 @@
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
+// 2 expected diffs to localstorage
 import { Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
 
 interface TabsetsPersistence {
   getServiceName(): string
 
-  init(firebaseServices: IFirebaseServices): Promise<any>
+  init(): Promise<any>
 
   loadTabsets(): Promise<any>
 

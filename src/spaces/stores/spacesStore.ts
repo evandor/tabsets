@@ -1,10 +1,8 @@
 import _ from 'lodash'
 import { defineStore } from 'pinia'
-import { LocalStorage, uid } from 'quasar'
-import { useNavigationService } from 'src/core/services/NavigationService'
+import { LocalStorage } from 'quasar'
 import { Space } from 'src/spaces/models/Space'
 import SpacesPersistence from 'src/spaces/persistence/SpacesPersistence'
-import { useAuthStore } from 'src/stores/authStore'
 import throttledQueue from 'throttled-queue'
 import { computed, ref, watch } from 'vue'
 
@@ -40,21 +38,14 @@ export const useSpacesStore = defineStore('spaces', () => {
   const throttleOne10Millis = throttledQueue(1, 10, true)
 
   /**
-   * initialize store with
+   * initialize store with provided persistence storage and loads all spaces
+   *
    * @param p the persistence storage
    */
   async function initialize(p: SpacesPersistence) {
     storage = p
     await storage.init()
     await storage.migrate()
-    await loadSpaces()
-  }
-
-  /**
-   * reload store
-   */
-  async function reload() {
-    console.debug('reloading spacesStore')
     await loadSpaces()
   }
 
@@ -90,47 +81,12 @@ export const useSpacesStore = defineStore('spaces', () => {
   })
 
   /**
-   * create a new space; checks if label already exists
-   *
-   * @param label
-   */
-  async function createSpace(label: string): Promise<Space> {
-    const exceedInfo = useAuthStore().limitExceeded('SPACES', spaces.value.size)
-    if (exceedInfo.exceeded) {
-      await useNavigationService().browserTabFor(
-        chrome.runtime.getURL(
-          `/www/index.html#/mainpanel/settings?tab=account&exceeded=spaces&limit=${exceedInfo.limit}`,
-        ),
-      )
-      return Promise.reject('tabsetLimitExceeded')
-    }
-
-    const spaceId = uid()
-    console.log('adding space', spaceId, label)
-    if (nameExists.value(label)) {
-      return Promise.reject(`name '${label}'does already exist`)
-    }
-    const newSpace = new Space(spaceId, label)
-    spaces.value.set(spaceId, newSpace)
-    await storage.addSpace(newSpace)
-    console.log('spaces store size', storeSize.value)
-    return Promise.resolve(newSpace)
-  }
-
-  /**
-   * create a new space; checks if label already exists
+   * create a new space
    */
   function addSpace(s: Space, addToStorage = true): Promise<any> {
     return throttleOne10Millis(async () => {
       console.log('adding space', s.id, s.label)
-      //console.log("spaces:", [...spaces.value.values()].length)
-      if (nameExists.value(s.label)) {
-        const msg = `name '${s.label}' does already exist`
-        console.log('issue during adding spaces: ', msg)
-        return Promise.resolve()
-      }
       spaces.value.set(s.id, s)
-      console.log('size before adding', storeSize.value)
       if (addToStorage) {
         return storage.addSpace(s)
       }
@@ -165,23 +121,21 @@ export const useSpacesStore = defineStore('spaces', () => {
     storage.deleteSpace(spaceId)
   }
 
+  /**
+   * Loads spaces from the storage.
+   *
+   */
   async function loadSpaces() {
-    const spaces = await storage.getSpaces()
-    spaces.forEach((s: Space) => {
-      putSpace(s)
-    })
-    console.log('loaded with', storeSize.value)
+    ;(await storage.getSpaces()).forEach((s: Space) => putSpace(s))
   }
 
   return {
+    initialize,
     spaces,
     space,
     nameExists,
-    initialize,
-    reload,
-    createSpace,
+    loadSpaces,
     addSpace,
-    putSpace,
     setSpace,
     deleteById,
     storeSize,

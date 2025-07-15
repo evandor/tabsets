@@ -259,7 +259,6 @@ import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
 import TabExportList from 'src/tabsets/pages/pwa/TabExportList.vue'
 import TabList from 'src/tabsets/pages/pwa/TabList.vue'
 import TabsetPageCards from 'src/tabsets/pages/pwa/TabsetPageCards.vue'
-import TabsetService from 'src/tabsets/services/TabsetService'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import OpenRightDrawerWidget from 'src/ui/widgets/OpenRightDrawerWidget.vue'
@@ -320,8 +319,6 @@ const setFilter = (newValue: string) => {
 }
 
 const addUrlDialog = () => $q.dialog({ component: AddUrlDialog })
-
-const setView = (view: string) => TabsetService.setView(tabsetId.value, view)
 
 const toggleSorting = () => useCommandExecutor().executeFromUi(new ToggleSortingCommand(tabsetId.value))
 

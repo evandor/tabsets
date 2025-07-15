@@ -51,8 +51,10 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import Analytics from 'src/core/utils/google-analytics'
+import { DeleteSpaceCommand } from 'src/spaces/commands/DeleteSpaceCommand'
 import { Space } from 'src/spaces/models/Space'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
@@ -169,6 +171,7 @@ const updateSpaces = (spaceIndex: number, tabsetIndex: number) => {
 }
 
 const deleteSpace = () => {
-  useSpacesStore().deleteById(selectedSpace.value)
+  useCommandExecutor().executeFromUi(new DeleteSpaceCommand(selectedSpace.value))
+  selectedSpace.value = ''
 }
 </script>

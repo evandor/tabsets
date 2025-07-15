@@ -281,14 +281,23 @@ watchEffect(() => {
 watchEffect(() => {
   indexSize.value = searchStore?.getIndex()?.size()
 })
-
 watchEffect(() => {
   LocalStorage.set('ui.tabSwitcher', autoSwitcherOption.value)
 })
 
+function createFile(data: string, filename: string) {
+  const file = window.URL.createObjectURL(new Blob([data]))
+  const docUrl = document.createElement('a')
+  docUrl.href = file
+  docUrl.setAttribute('download', filename)
+  document.body.appendChild(docUrl)
+  docUrl.click()
+  return Promise.resolve('done')
+}
+
 const downloadIndex = () => {
   const data = JSON.stringify(searchStore?.getIndex())
-  return TabsetService.createFile(data, 'tabsetIndex.json')
+  return createFile(data, 'tabsetIndex.json')
 }
 
 const clearIndex = () => searchStore.init()

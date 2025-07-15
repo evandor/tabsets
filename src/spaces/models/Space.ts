@@ -2,7 +2,6 @@ import { STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 import { TABSET_NAME_MAX_LENGTH } from 'src/tabsets/models/Tabset'
 
 export class Space {
-  _id: string
   created: number
   updated: number
   description: string
@@ -11,7 +10,6 @@ export class Space {
     public id: string,
     public label: string,
   ) {
-    this._id = 'space' + new Date().toJSON()
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
     this.description = ''

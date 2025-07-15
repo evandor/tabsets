@@ -3,8 +3,28 @@ import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import Analytics from 'src/core/utils/google-analytics'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { Tab, UrlExtension } from 'src/tabsets/models/Tab'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import PlaceholderUtils from 'src/tabsets/utils/PlaceholderUtils'
 import { ListDetailLevel } from 'src/ui/stores/uiStore'
+
+function setUrl(
+  tab: Tab,
+  url: string,
+  placeholders: string[] = [],
+  placeholderValues: Map<string, string> = new Map(),
+  extension: UrlExtension = UrlExtension.HTML,
+): Promise<any> {
+  tab.url = url
+  tab.extension = extension
+  tab = PlaceholderUtils.apply(tab, placeholders, placeholderValues)
+  return useTabsetService().saveCurrentTabset()
+}
+
+function setCustomTitle(tab: Tab, title: string, desc: string): Promise<any> {
+  tab.name = title
+  tab.longDescription = desc
+  return useTabsetService().saveCurrentTabset()
+}
 
 class UndoCommand implements Command<any> {
   constructor(
@@ -16,7 +36,7 @@ class UndoCommand implements Command<any> {
   execute(): Promise<ExecutionResult<any>> {
     console.info(this.tab, `reverting changed tab url to ${this.oldUrl}`)
     this.tab.details = this.oldDetails
-    return TabsetService.setUrl(this.tab, this.oldUrl)
+    return setUrl(this.tab, this.oldUrl)
       .then((res) => {
         Analytics.fireEvent('tabset_tab_updated', {})
         if (this.tab.url) {
@@ -44,8 +64,8 @@ export class UpdateTabCommand implements Command<any> {
     const oldUrl = this.tab.url || ''
     const oldDetails = this.tab.details
     this.tab.details = this.details
-    await TabsetService.setCustomTitle(this.tab, this.newName, this.newDesc)
-    return TabsetService.setUrl(this.tab, this.newUrl, this.placeholders, this.placeholderValues, this.extension)
+    await setCustomTitle(this.tab, this.newName, this.newDesc)
+    return setUrl(this.tab, this.newUrl, this.placeholders, this.placeholderValues, this.extension)
       .then((ignored) => {
         if (this.tab.url) {
           useSearchStore().update(this.tab.url, 'url', this.newUrl)

@@ -11,6 +11,7 @@ import SuggestionsPersistence from 'src/suggestions/persistence/SuggestionsPersi
 import FirestoreTabsetsPersistence from 'src/tabsets/persistence/FirestoreTabsetsPersistence'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
 import { LocalStorageTabsetsPersistence } from 'src/tabsets/persistence/LocalStorageTabsetsPersistence'
+import TabsetsGroupsPersistence from 'src/tabsets/persistence/TabsetsGroupsPersistence'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import FirestoreThumbnailsPersistence from 'src/thumbnails/persistence/FirestoreThumbnailsPersistence'
 import ThumbnailsPersistence from 'src/thumbnails/persistence/ThumbnailsPersistence'

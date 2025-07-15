@@ -197,7 +197,7 @@
     </div>
 
     <q-page-sticky expand position="top" class="darkInDarkMode brightInBrightMode q-ma-none q-ml-md">
-      <PopupToolbar title="Tabsets" />
+      <PopupToolbar :title="toolbarTitle()" />
     </q-page-sticky>
   </q-page>
 </template>
@@ -226,6 +226,7 @@ import { SaveMHtmlCommand } from 'src/snapshots/commands/SaveMHtmlCommand'
 import { BlobMetadata } from 'src/snapshots/models/BlobMetadata'
 import { useSnapshotsService } from 'src/snapshots/services/SnapshotsService'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
+import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { DeleteTabCommand } from 'src/tabsets/commands/DeleteTabCommand'
 import { IgnoreTagCommand } from 'src/tabsets/commands/IgnoreTagCommand'
@@ -690,6 +691,16 @@ const tooltipFor = (info: TagInfo): string => {
 const toggleEditDescription = () => {
   editDescription.value = !editDescription.value
   // editDescriptionFocus.value = editDescription.value
+}
+
+const toolbarTitle = () => {
+  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
+    const space = useSpacesStore().space
+    if (space) {
+      return 'Tabsets: ' + space.label
+    }
+  }
+  return 'Tabsets'
 }
 </script>
 

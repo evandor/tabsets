@@ -23,15 +23,12 @@ async function setupStores() {
 vi.mock('vue-router')
 
 describe('SidePanelFooter', () => {
-  const skysailChromeTab = ChromeApi.createChromeTabObject('title', 'https://www.skysail.io/some-subpage', 'favicon')
-
   let db = null as unknown as TabsetsPersistence
   //let windowsDB = IndexedDbWindowsPersistence
   let wrapper: VueWrapper<any, any> = null as unknown as VueWrapper
   let manageWindowsButton: DOMWrapper<Element> = null as unknown as DOMWrapper<Element>
 
   const tab1 = ChromeApi.createChromeTabObject('skysail', 'https://www.skysail.io')
-  const window100: chrome.windows.Window = ChromeApi.createChromeWindowObject(100, 17, 28, [tab1])
 
   let currentWindows: any[]
 

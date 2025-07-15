@@ -1,12 +1,35 @@
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
-import TabsetService from 'src/tabsets/services/TabsetService'
+import { useTabsetService } from 'src/tabsets/services/TabsetService2'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+
+function toggleSorting(tabsetId: string): string | undefined {
+  const tabset = useTabsetsStore().getTabset(tabsetId)
+  if (tabset) {
+    switch (tabset.sorting) {
+      case 'custom':
+        tabset.sorting = 'alphabeticalUrl'
+        break
+      case 'alphabeticalUrl':
+        tabset.sorting = 'alphabeticalTitle'
+        break
+      case 'alphabeticalTitle':
+        tabset.sorting = 'custom'
+        break
+      default:
+        tabset.sorting = 'custom'
+    }
+    useTabsetService().saveTabset(tabset)
+    return tabset.sorting
+  }
+  return undefined
+}
 
 export class ToggleSortingCommand implements Command<string> {
   constructor(public tabsetId: string) {}
 
   async execute(): Promise<ExecutionResult<string>> {
-    const newSorting = TabsetService.toggleSorting(this.tabsetId)
+    const newSorting = toggleSorting(this.tabsetId)
     let msg = 'undefined'
     if (newSorting) {
       switch (newSorting) {

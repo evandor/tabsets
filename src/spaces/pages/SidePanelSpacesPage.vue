@@ -125,7 +125,7 @@
       <!--        </template>-->
       <!--      </FirstToolbarHelper2>-->
 
-      <ViewToolbarHelper>
+      <ViewToolbarHelper title="My Tabsets">
         <template v-slot:iconsRight>
           <q-btn
             v-if="useSpacesStore().spaces.size > 0"
