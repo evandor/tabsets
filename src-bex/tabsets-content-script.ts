@@ -158,6 +158,12 @@ overlay.appendChild(button)
 
 document.body.appendChild(overlay)
 
+const annotations: object[] = (LocalStorage.getItem('tabsets.annotations') as object[]) || []
+annotations.forEach((a: any) => {
+  console.log('annotation', a)
+  useAnnotationUtils().doRestoreFromString(a.range)
+})
+
 // Handle button click
 button.addEventListener('click', () => {
   const selection = window.getSelection()
@@ -165,20 +171,40 @@ button.addEventListener('click', () => {
 
   if (selectedText && selectedText.trim() !== '') {
     const annotationUtils = useAnnotationUtils()
-    console.log('Selected text saved:', selectedText)
-    // Here you can add your logic to handle the saved text
-    // For example, send it to the background script:
-    if (bridge.portList.indexOf('background') >= 0) {
-      bridge
-        .send({
-          event: 'text.saved',
-          to: 'background',
-          payload: { text: selectedText },
-        })
-        .catch((err: any) => {
-          console.log("[BEX-CT] Failed to send 'text.saved' message to background", err)
-        })
-    }
+    console.log('Selected text saved:', selectedText, annotationUtils.doSaveRange(), bridge.portList)
+
+    const range = annotationUtils.doSaveRange()
+    console.log('got range', range)
+    annotations.push({ text: selectedText, range: useAnnotationUtils().getCP2String(range) })
+    LocalStorage.setItem('tabsets.annotations', annotations)
+
+    // console.log('sending message sidePanelOpened')
+    // chrome.runtime
+    //   .sendMessage({ action: 'sidePanelOpened' })
+    //   .then((r: any) => console.log('got result', r))
+    //   .catch((e: any) => console.warn('error', e))
+
+    // if (bridge.portList.indexOf('background') >= 0) {
+    //   bridge
+    //     .send({
+    //       event: 'new-annotation',
+    //       to: 'background',
+    //       payload: { text: selectedText, range: annotationUtils.doSaveRange() },
+    //     })
+    //     .catch((err: any) => {
+    //       console.log("[BEX-CT] Failed to send 'text.saved' message to background", err)
+    //     })
+    // }
+
+    // bridge
+    //   .send({
+    //     event: 'new-annotation',
+    //     to: 'app',
+    //     payload: { text: selectedText, range: annotationUtils.doSaveRange() },
+    //   })
+    //   .catch((err: any) => {
+    //     console.log("[BEX-CT] Failed to send 'text.saved' message to background", err)
+    //   })
   }
 
   // Hide overlay after action

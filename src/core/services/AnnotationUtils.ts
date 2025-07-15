@@ -1,8 +1,10 @@
 export function useAnnotationUtils() {
-  var _caretPosition: { sC: any[]; sO: number; eC: any[]; eO: number }
+  type CaretPosition = { sC: any[]; sO: number; eC: any[]; eO: number }
+
+  var _caretPosition: CaretPosition
 
   const doSaveRange = () => {
-    var editor = document.getElementById('editor')
+    var editor = document //.getElementById('mw-content-text')
     var sel = window.getSelection()
     if (sel && sel.rangeCount > 0) {
       var range = window.getSelection()!.getRangeAt(0)
@@ -32,12 +34,14 @@ export function useAnnotationUtils() {
     if (el) {
       // el.value = getCP2String()
     }
+    console.log('_caret', _caretPosition)
     return _caretPosition
   }
 
-  const doRestoreRange = () => {
-    var editor = document.getElementById('editor')
-    var caretPosition = _caretPosition
+  const doRestoreRange = (caretPosition: { sC: any[]; sO: number; eC: any[]; eO: number }) => {
+    console.log('doREstoreRange', caretPosition)
+    var editor = document //.getElementById('editor')
+    //var caretPosition = _caretPosition
     var sel = window.getSelection()
     var range = document.createRange()
     var x,
@@ -96,6 +100,7 @@ export function useAnnotationUtils() {
       }
     }
     sel!.removeAllRanges()
+    console.log('adding range', sel, range)
     sel!.addRange(range)
   }
 
@@ -105,24 +110,29 @@ export function useAnnotationUtils() {
     sel!.removeRange(range)
   }
 
-  const doRestoreFromString = () => {
-    var el = document.getElementById('2string')
-    if (!el) {
-      return
+  const doRestoreFromString = (serialTx: string) => {
+    // var serialTx = el.value
+    console.log('got', serialTx.split(';'))
+
+    var _caretPosition: CaretPosition = {
+      sC: serialTx.split(';')[0]!.split(','),
+      // @ts-expect-error xxxx
+      sO: serialTx.split(';')[1]!.split(','),
+      eC: serialTx.split(';')[2]!.split(','),
+      // @ts-expect-error xxxx
+      eO: serialTx.split(';')[3]!.split(','),
     }
-    // @ts-expect-error xxx
-    var serialTx = el.value
 
-    _caretPosition.sC = serialTx.split(';')[0].split(',')
-    _caretPosition.sO = serialTx.split(';')[1].split(',')
-    _caretPosition.eC = serialTx.split(';')[2].split(',')
-    _caretPosition.eO = serialTx.split(';')[3].split(',')
+    // _caretPosition.sC = serialTx.split(';')[0]!.split(',')
+    // _caretPosition.sO = serialTx.split(';')[1]!.split(',')
+    // _caretPosition.eC = serialTx.split(';')[2]!.split(',')
+    // _caretPosition.eO = serialTx.split(';')[3]!.split(',')
 
-    // console.log('sC=' + _caretPosition.sC)
-    // console.log('sO=' + _caretPosition.sO)
-    // console.log('eC=' + _caretPosition.eC)
-    // console.log('eO=' + _caretPosition.eO)
-    doRestoreRange()
+    console.log('sC=', _caretPosition.sC)
+    console.log('sO=', _caretPosition.sO)
+    console.log('eC=', _caretPosition.eC)
+    console.log('eO=', _caretPosition.eO)
+    doRestoreRange(_caretPosition)
   }
 
   const getNodeIndex = (n: any) => {
@@ -133,16 +143,12 @@ export function useAnnotationUtils() {
     return i
   }
 
-  const getCP2String = () => {
-    return (
-      _caretPosition.sC.toString() +
-      ';' +
-      _caretPosition.sO +
-      ';' +
-      _caretPosition.eC.toString() +
-      ';' +
-      _caretPosition.eO
-    )
+  const getCP2String = (_cp: { sC: any[]; sO: number; eC: any[]; eO: number }) => {
+    console.log('sC=', _cp.sC)
+    console.log('sO=', _cp.sO)
+    console.log('eC=', _cp.eC)
+    console.log('eO=', _cp.eO)
+    return _cp.sC.toString() + ';' + _cp.sO + ';' + _cp.eC.toString() + ';' + _cp.eO
   }
   return {
     doSaveRange,
