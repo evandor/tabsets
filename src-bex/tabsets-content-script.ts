@@ -55,9 +55,11 @@ function sendUpdateIndicatorIconMessage(show: boolean = true) {
       }
     }
     console.log(`update.indicator.icon: managed ${managed}`)
-    bridge.send({ event: 'update.indicator.icon', to: 'background', payload: { managed } }).catch((err: any) => {
-      console.log("[BEX-CT] Failed to send 'update.indicator.icon' message to background", err)
-    })
+    bridge
+      .send({ event: 'update.indicator.icon', to: 'background', payload: { managed, url: window.location.href } })
+      .catch((err: any) => {
+        console.log("[BEX-CT] Failed to send 'update.indicator.icon' message to background", err)
+      })
   }
 }
 
