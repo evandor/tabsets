@@ -210,6 +210,10 @@ export const useWindowsStore = defineStore('windows', () => {
       `chrome windows listeners setup triggered (${trigger}), keepWindowsFromStorage: ${keepWindowsFromStorage}`,
     )
 
+    if (!chrome.windows) {
+      return
+    }
+
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({ populate: true })
     currentBrowserWindows.value = browserWindows
     //console.debug(` initializing current chrome windows with ${currentBrowserWindows.value?.length} window(s)`)

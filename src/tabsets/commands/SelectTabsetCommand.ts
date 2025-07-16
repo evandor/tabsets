@@ -20,7 +20,7 @@ export class SelectTabsetCommand implements Command<Tabset | undefined> {
   async execute(): Promise<ExecutionResult<Tabset | undefined>> {
     useTabsetService().selectTabset(this.tabsetId)
     const tabset = useTabsetsStore().getCurrentTabset
-    if (tabset && this.folderId) {
+    if (tabset) {
       tabset.folderActive = this.folderId
       await useTabsetsStore().saveTabset(tabset)
       const tabs: chrome.tabs.Tab[] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })

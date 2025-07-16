@@ -501,12 +501,15 @@ export function useTabsetService() {
     allowDuplicates = false, // used eg at Excalidraw Handler
   ): Promise<Tabset> => {
     const reject: string | undefined = await checkAddToTabsetConstraints(ts, tab, allowDuplicates)
+    console.log("da", reject)
     if (reject) {
       return Promise.reject(reject)
     }
+    console.log("da2")
 
     //handleTags(ts, tab)
     addToTabsetWithIndex(ts, tab, useIndex)
+    console.log("da3")
 
     if (LocalStorage.getItem(GITHUB_AUTO_SYNC) && !LocalStorage.getItem(GITHUB_AUTO_SYNC_READONLY)) {
       useCommandExecutor()
@@ -517,6 +520,7 @@ export function useTabsetService() {
         )
         .catch((err) => console.warn(err))
     }
+    console.log("da4")
 
     return Promise.resolve(ts)
   }

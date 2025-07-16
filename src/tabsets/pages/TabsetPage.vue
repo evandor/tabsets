@@ -2,7 +2,7 @@
 <!-- used in pwa, and bex full-page-applciation view -->
 <template>
   <!-- toolbar -->
-  <q-toolbar v-if="!currentTabsetId">
+  <q-toolbar v-if="!tabset">
     <div class="row fit">
       <q-toolbar-title>
         <div class="row justify-start items-baseline">
@@ -15,7 +15,6 @@
     </div>
   </q-toolbar>
   <q-toolbar v-else>
-    <!-- we've got a current tabset id -->
     <div class="row fit">
       <div class="col-xs-12 col-md-6 q-mt-xs">
         <q-toolbar-title>
@@ -115,7 +114,6 @@
 
         <q-btn
           v-if="
-            currentTabsetId !== '' &&
             useTabsetsStore().getTabset(currentTabsetId!) &&
             useTabsetsStore().getCurrentTabset!?.tabs?.length > 10 &&
             $q.screen.gt.xs
@@ -136,13 +134,8 @@
             Filter this tabset
           </q-tooltip>
         </q-btn>
-
         <q-icon
-          v-if="
-            currentTabsetId !== '' &&
-            tabset?.type !== TabsetType.DYNAMIC &&
-            useTabsetsStore().getTabset(currentTabsetId!)
-          "
+          v-if="tabset?.type !== TabsetType.DYNAMIC"
           class="cursor-pointer"
           size="22px"
           color="warning"
@@ -288,10 +281,21 @@ onUpdated(() => {
   JsUtils.runCssHighlight()
 })
 
+useTabsetsStore()
+  .getCurrentTabsetId()
+  .then((tabsetId: string | undefined) => {
+    console.log('got->', tabsetId)
+    currentTabsetId.value = tabsetId
+  })
+
 watchEffect(() => {
+  console.log('last updte', useTabsetsStore().lastUpdate)
   useTabsetsStore()
     .getCurrentTabsetId()
-    .then((tabsetId: string | undefined) => (currentTabsetId.value = tabsetId))
+    .then((tabsetId: string | undefined) => {
+      console.log('got1->', tabsetId)
+      currentTabsetId.value = tabsetId
+    })
 })
 
 watchEffect(() => {

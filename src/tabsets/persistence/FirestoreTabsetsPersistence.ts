@@ -20,6 +20,7 @@ import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 const STORE_IDENT = 'tabsets'
 
@@ -52,10 +53,10 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
     return 'FirestoreTabsetsPersistence'
   }
 
-  async init(firebaseServices: IFirebaseServices) {
+  async init() {
     // console.debug(` ...initialized Tabsets: ${this.getServiceName()}`, '✅')
     //this.indexedDB = useDB(undefined).db as typeof IndexedDbPersistenceService
-    this.firebaseServices = firebaseServices
+    this.firebaseServices = useFirebaseServices().firebaseServices
     return Promise.resolve('')
   }
 

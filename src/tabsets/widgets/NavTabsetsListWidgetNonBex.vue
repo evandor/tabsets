@@ -120,7 +120,6 @@ const selectTS = (tabset: Tabset) => {
   useSpacesStore().setSpace(props.spaceId)
   useCommandExecutor()
     .execute(new SelectTabsetCommand(tabset.id))
-    .then(() => {})
     .then(() => {
       useTabsetsUiStore().addTabsetToLastUsedList(tabset.id)
     })

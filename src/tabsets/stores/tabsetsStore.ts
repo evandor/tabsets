@@ -185,6 +185,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
   }
 
   async function saveTabset(ts: Tabset, changeInfo?: ChangeInfo) {
+    console.log("--->", ts.id)
     if (ts.id === currentTabsetId.value) {
       //console.debug('setting folderactive', ts.folderActive)
       currentTabsetFolderId.value = ts.folderActive
@@ -209,7 +210,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
   }
 
   async function selectCurrentTabset(tabsetId: string): Promise<Tabset | undefined> {
-    //console.log('selectCurrentTabset', tabsetId)
+    console.log('selectCurrentTabset', tabsetId)
     await useSelectedTabsetService().setCurrentTabsetId(tabsetId)
 
     const found = _.find([...tabsets.value.values()] as Tabset[], (k: Tabset) => {
