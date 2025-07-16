@@ -93,7 +93,7 @@
     "vue-draggable-next": "^2.2.1",
     "vue-grid-layout-v3": "^3.1.2",
     "vue-highlight-words": "^3.0.1",
-    "vue-i18n": "^11.1.1",
+    "vue-i18n": "^11.1.10",
     "vue-json-pretty": "^2.4.0",
     "vue-router": "^4.0.12",
     "vue-timeago3": "^2.3.2"
