@@ -81,10 +81,13 @@
 
 <script lang="ts" setup>
 import { captureFeedback, captureMessage } from '@sentry/vue'
+import { uid } from 'quasar'
 import { SettingIdent } from 'src/app/models/SettingIdent'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
+import { Suggestion, SuggestionType } from 'src/suggestions/domain/models/Suggestion'
+import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { ref, watchEffect } from 'vue'
 
 const settingsStore = useSettingsStore()
@@ -112,6 +115,35 @@ const triggerErrorHandler = () => handleError('an user-initiated error message f
 
 const triggerCatchAll = () => {
   throw new Error('user triggered catch-all-Error at' + new Date().getTime())
+}
+
+const clearSuggestions = () => {
+  useSuggestionsStore().clearAll()
+}
+
+const createSuggestion = async (type: SuggestionType) => {
+  switch (type) {
+    case 'TABSET_SHARED':
+      const s = new Suggestion(
+        uid(),
+        'New Shared Tabset',
+        'Carsten wants to share a new tabset with you',
+        uid(),
+        'TABSET_SHARED',
+      )
+      s.setImage('o_tabs')
+      s.applyLabel = 'accept'
+      await useSuggestionsStore().addSuggestion(s)
+      break
+    // case 'USE_EXTENSION':
+    //   await useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion('USE_EXTENSION_SUGGESTION'))
+    //   break
+    case 'FEATURE':
+      await useSuggestionsStore().addSuggestion(Suggestion.getStaticSuggestion('TRY_SPACES_FEATURE'))
+      break
+    default:
+      console.warn(`unknown type ${type}`)
+  }
 }
 
 const collectUserFeedback = async () => {
