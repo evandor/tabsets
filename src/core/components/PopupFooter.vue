@@ -59,7 +59,9 @@
           size="md"
           style="max-width: 32px"
           @click="openBrowserSidepanel()"
-          class="cursor-pointer" />
+          class="cursor-pointer">
+          <q-tooltip>open Sidepanel</q-tooltip>
+        </q-btn>
       </div>
     </div>
   </q-footer>
