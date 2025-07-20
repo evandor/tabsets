@@ -2,22 +2,25 @@
   <!-- PopupPage -->
   <q-page class="darkInDarkMode brightInBrightMode" :style="paddingTop" style="min-width: 400px; max-height: 700px">
     <offline-info />
-    <PopupInputLine title="Collection" class="q-mt-md">
-      <PopupCollectionSelector
-        @tabset-changed="tabsetChanged()"
-        :show-tabs-count="!currentTabsetHasFolders()"
-        :url="url" />
-    </PopupInputLine>
 
-    <PopupInputLine title="Folder" v-if="showFolders()">
-      <PopupFolderSelector
-        @tabset-changed="tabsetChanged()"
-        :show-tabs-count="currentTabsetHasFolders()"
-        :currentTabset="currentTabset!" />
-    </PopupInputLine>
+    <div class="q-ma-sm q-mt-md boxed">
+      <PopupInputLine title="Collection" class="q-mt-md">
+        <PopupCollectionSelector
+          @tabset-changed="tabsetChanged()"
+          :show-tabs-count="!currentTabsetHasFolders()"
+          :url="url" />
+      </PopupInputLine>
+
+      <PopupInputLine title="Folder" v-if="showFolders()">
+        <PopupFolderSelector
+          @tabset-changed="tabsetChanged()"
+          :show-tabs-count="currentTabsetHasFolders()"
+          :currentTabset="currentTabset!" />
+      </PopupInputLine>
+    </div>
 
     <!-- Icon, title and description -->
-    <div class="row q-ma-sm darkInDarkMode brightInBrightMode q-mt-md">
+    <div class="row q-ma-sm q-mt-md boxed">
       <div class="col-2 q-ma-sm">
         <q-img v-if="thumbnail" :src="thumbnail" no-native-menu />
         <q-img v-else :src="browserTab?.favIconUrl" no-native-menu />
@@ -27,15 +30,20 @@
           <div class="col">
             <AutogrowInput
               v-model="title"
-              :input-class="'text-bold'"
+              :input-class="'text-bold text-normal'"
               :class="'ellipsis'"
               :filled="false"
               data-testid="pageModelTitle" />
           </div>
-          <div v-if="!editDescription" class="col ellipsis-3-lines text-body2" @click="toggleEditDescription()">
-            {{ description }}
+          <div
+            style="border: 0 solid green"
+            v-if="!editDescription"
+            class="col ellipsis-3-lines text-body2"
+            :class="description ? '' : 'text-grey-8'"
+            @click="toggleEditDescription()">
+            {{ description ? description : 'no description provided' }}
           </div>
-          <div v-else>
+          <div v-else style="border: 0 solid red">
             <AutogrowInput
               @blur="toggleEditDescription()"
               ref="descriptionRef"
@@ -55,104 +63,106 @@
       </div>
     </div>
 
-    <!-- URL -->
-    <PopupInputLine title="URL" class="q-mt-md">
-      <AutogrowInput v-model="url" :class="'ellipsis'" :filled="true" data-testid="pageModelUrl" />
-    </PopupInputLine>
+    <div class="q-ma-sm q-mt-md boxed">
+      <!-- URL -->
+      <PopupInputLine title="URL" class="q-mt-md">
+        <AutogrowInput v-model="url" :class="'ellipsis'" :filled="true" data-testid="pageModelUrl" />
+      </PopupInputLine>
 
-    <!-- Note -->
-    <PopupInputLine title="Note">
-      <AutogrowInput v-model="note" :class="'ellipsis'" :filled="true" data-testid="pageModelNote" />
-    </PopupInputLine>
+      <!-- Note -->
+      <PopupInputLine title="Note">
+        <AutogrowInput v-model="note" :class="'ellipsis'" :filled="true" data-testid="pageModelNote" />
+      </PopupInputLine>
 
-    <!-- Tags -->
-    <PopupInputLine
-      v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)"
-      :loading="loading"
-      :title="tagsInfo.length > 1 ? tagsInfo.length + ' Tags' : 'Tags'">
-      <q-select
-        input-class="q-ma-none q-pa-none"
-        borderless
-        filled
-        dense
-        options-dense
-        v-model="tagsInfo"
-        use-input
-        use-chips
-        multiple
-        hide-dropdown-icon
-        input-debounce="0"
-        new-value-mode="add-unique"
-        @update:model-value="(val) => updatedTags(val)">
-        <template v-slot:selected>
-          <q-chip
-            v-for="info in tagsInfo.filter((t: TagInfo) =>
-              useSettingsStore().has('DEBUG_MODE') ? true : t.type == 'manual',
-            )"
-            @remove="removeTag(info)"
-            dense
-            square
-            outline
-            removable
-            :color="
-              info.type == 'manual'
-                ? 'primary'
-                : info.type == 'url'
-                  ? 'orange-8'
-                  : info.type == 'classification'
-                    ? 'green-8'
-                    : 'grey-8'
-            "
-            text-color="primary"
-            class="q-my-xs q-ml-xs q-mr-none">
-            {{ info.label }}
-            <q-tooltip class="tooltip-small" :delay="500">
-              {{ tooltipFor(info) }}
-            </q-tooltip>
-          </q-chip>
-        </template>
-      </q-select>
-    </PopupInputLine>
+      <!-- Tags -->
+      <PopupInputLine
+        v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)"
+        :loading="loading"
+        :title="tagsInfo.length > 1 ? tagsInfo.length + ' Tags' : 'Tags'">
+        <q-select
+          input-class="q-ma-none q-pa-none"
+          borderless
+          filled
+          dense
+          options-dense
+          v-model="tagsInfo"
+          use-input
+          use-chips
+          multiple
+          hide-dropdown-icon
+          input-debounce="0"
+          new-value-mode="add-unique"
+          @update:model-value="(val) => updatedTags(val)">
+          <template v-slot:selected>
+            <q-chip
+              v-for="info in tagsInfo.filter((t: TagInfo) =>
+                useSettingsStore().has('DEBUG_MODE') ? true : t.type == 'manual',
+              )"
+              @remove="removeTag(info)"
+              dense
+              square
+              outline
+              removable
+              :color="
+                info.type == 'manual'
+                  ? 'primary'
+                  : info.type == 'url'
+                    ? 'orange-8'
+                    : info.type == 'classification'
+                      ? 'green-8'
+                      : 'grey-8'
+              "
+              text-color="primary"
+              class="q-my-xs q-ml-xs q-mr-none">
+              {{ info.label }}
+              <q-tooltip class="tooltip-small" :delay="500">
+                {{ tooltipFor(info) }}
+              </q-tooltip>
+            </q-chip>
+          </template>
+        </q-select>
+      </PopupInputLine>
 
-    <!-- collections chips -->
-    <PopupInputLine :title="collectionsTitle()" v-if="showCollectionChips()">
-      <q-chip
-        v-for="chip in collectionChips.filter((c: object) => c['tabsetId' as keyof object] !== currentTabset?.id)"
-        class="cursor-pointer q-ml-xs q-mt-sm"
-        outline
-        dense
-        color="grey-8"
-        size="12px"
-        @click="switchTabset(chip['tabsetId' as keyof object])"
-        clickable>
-        {{ chip['label' as keyof object] }}
-      </q-chip>
-    </PopupInputLine>
+      <!-- collections chips -->
+      <PopupInputLine :title="collectionsTitle()" v-if="showCollectionChips()">
+        <q-chip
+          v-for="chip in collectionChips.filter((c: object) => c['tabsetId' as keyof object] !== currentTabset?.id)"
+          class="cursor-pointer q-ml-xs q-mt-sm"
+          outline
+          dense
+          color="grey-8"
+          size="12px"
+          @click="switchTabset(chip['tabsetId' as keyof object])"
+          clickable>
+          {{ chip['label' as keyof object] }}
+        </q-chip>
+      </PopupInputLine>
 
-    <PopupInputLine title="Snapshots" v-if="mds.length > 0">
-      <div class="row" v-for="snapshot in mds">
-        <div class="col-10 text-caption q-mt-sm text-grey-8">
-          {{ date.formatDate(snapshot.created, 'DD.MM.YYYY HH:MM') }}
+      <PopupInputLine title="Snapshots" v-if="mds.length > 0">
+        <div class="row" v-for="snapshot in mds">
+          <div class="col-10 text-caption q-mt-sm text-grey-8">
+            {{ date.formatDate(snapshot.created, 'DD.MM.YYYY HH:MM') }}
+          </div>
+          <div class="col text-right q-mt-sm">
+            <q-icon
+              name="o_open_in_new"
+              color="grey-8"
+              class="q-mr-md cursor-pointer"
+              @click="openMHtml(snapshot.id)" />
+            <q-icon name="o_delete" color="red" class="cursor-pointer" @click="deleteMHtml(snapshot.id)" />
+          </div>
         </div>
-        <div class="col text-right q-mt-sm">
-          <q-icon name="o_open_in_new" color="grey-8" class="q-mr-md cursor-pointer" @click="openMHtml(snapshot.id)" />
-          <q-icon name="o_delete" color="red" class="cursor-pointer" @click="deleteMHtml(snapshot.id)" />
-        </div>
-      </div>
-    </PopupInputLine>
+      </PopupInputLine>
+    </div>
 
     <!-- Actions -->
     <PopupInputLine title="Actions" class="q-mt-xs" v-if="tab">
-      <q-btn
+      <PopupActionButton
         v-if="useFeaturesStore().hasFeature(FeatureIdent.READING_MODE)"
         icon="o_article"
-        size="sm"
-        outline
-        @click="openAsArticle()"
-        color="grey-7"
-        class="cursor-pointer q-mt-xs">
+        @button-clicked="openAsArticle()">
         <q-tooltip class="tooltip-small" :delay="500">Open in Reading Mode</q-tooltip>
-      </q-btn>
+      </PopupActionButton>
       <q-btn
         v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_MHTML)"
         icon="o_save"
@@ -165,6 +175,17 @@
       </q-btn>
     </PopupInputLine>
 
+    <PopupInputLine title="Annotations" class="q-mt-xs" v-if="tab && tab.annotations?.length > 0">
+      <q-btn
+        icon="sym_o_sticky_note_2"
+        size="sm"
+        outline
+        @click="router.push('/popup/annotations')"
+        color="grey-7"
+        class="cursor-pointer q-mt-xs q-ml-sm">
+        <q-tooltip class="tooltip-small">Annotations available</q-tooltip>
+      </q-btn>
+    </PopupInputLine>
     <!-- buttons -->
     <div class="row q-my-md darkInDarkMode brightInBrightMode" style="border: 0 solid blue">
       <div class="col-2 q-ml-xs q-mt-sm text-right text-caption text-grey-8" style="border: 0 solid red"></div>
@@ -203,6 +224,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useFocus } from '@vueuse/core' // the page model
 import { TAGS_CATEGORIES } from 'boot/constants'
 import { date, LocalStorage, uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
@@ -211,6 +233,7 @@ import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { CategoryInfo, TagInfo } from 'src/core/models/TagInfo'
 import AutogrowInput from 'src/core/pages/popup/helper/AutogrowInput.vue'
+import PopupActionButton from 'src/core/pages/popup/helper/PopupActionButton.vue'
 import PopupCollectionSelector from 'src/core/pages/popup/PopupCollectionSelector.vue'
 import PopupFolderSelector from 'src/core/pages/popup/PopupFolderSelector.vue'
 import PopupInputLine from 'src/core/pages/popup/PopupInputLine.vue'
@@ -240,7 +263,9 @@ import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { UiDensity, useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
 import { onMounted, provide, ref, useTemplateRef, watchEffect } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router' // the page model
+
+const router = useRouter()
 
 // the page model
 const url = ref<string>('')
@@ -263,7 +288,7 @@ const collectionChips = ref<object[]>([])
 
 const editDescription = ref(false)
 const descriptionRef = useTemplateRef<HTMLElement>('descriptionRef')
-// const { focused: editDescriptionFocus } = useFocus(descriptionRef)
+const { focused: editDescriptionFocus } = useFocus(descriptionRef)
 
 const infoModes = ['saved', 'updated', 'count', 'lastActive']
 const infoMode = ref<string>(infoModes[0]!)
@@ -690,7 +715,9 @@ const tooltipFor = (info: TagInfo): string => {
 
 const toggleEditDescription = () => {
   editDescription.value = !editDescription.value
-  // editDescriptionFocus.value = editDescription.value
+  setTimeout(() => {
+    editDescriptionFocus.value = editDescription.value
+  }, 600)
 }
 
 const toolbarTitle = () => {

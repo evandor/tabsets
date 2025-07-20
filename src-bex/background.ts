@@ -147,3 +147,65 @@ bridge.on('reload-current-tabset', async ({ payload }) => {
   // //commentFrame?.style.setProperty('display', 'none')
   // return 'done'
 })
+
+bridge.on('new-annotation', async ({ payload }) => {
+  console.log('payload', payload)
+
+  let initialActiveTabId: number | undefined = undefined
+
+  function openSidePanel(tabId: number) {
+    console.log('opening', tabId)
+    chrome.sidePanel.setOptions({
+      tabId: tabId,
+      path: 'popup.html',
+      enabled: true,
+    })
+  }
+
+  // Set the panel behavior to open on action click
+  // chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).then(() => {
+  // Listen for messages from the side panel when it is opened
+  // chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Set the initial active tab ID when the side panel is first opened
+  // if (initialActiveTabId === null) {
+  // chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+  //   console.log('tabs', tabs)
+  //   if (tabs.length > 0) {
+  //     initialActiveTabId = tabs[0]!.id
+  //     openSidePanel(initialActiveTabId!)
+  //   }
+  // })
+  // }
+  // })
+  // })
+})
+
+// chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).then(() => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('got message', request)
+  function openSidePanel(tabId: number) {
+    const options = {
+      // tabId: tabId,
+      enabled: true,
+    }
+    console.log('triggering', tabId, options)
+    chrome.sidePanel
+      .setOptions(options)
+      .then((r: any) => console.log('r2', r))
+      .catch((e: any) => console.log('warning', e))
+  }
+
+  if (request.action === 'sidePanelOpened') {
+    // if (initialActiveTabId === null) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      if (tabs.length > 0) {
+        console.log('got tab', tabs[0])
+        // initialActiveTabId = tabs[0].id;
+        openSidePanel(tabs[0]!.id!)
+      }
+    })
+    // }
+  }
+  return true
+})
+// })

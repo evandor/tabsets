@@ -7,6 +7,7 @@ import { ExcalidrawStorage } from 'src/tabsets/actionHandling/model/ExcalidrawSt
 import { Page } from 'src/tabsets/models/cms/backend'
 import { Placeholders } from 'src/tabsets/models/Placeholders'
 import { TabLog } from 'src/tabsets/models/TabLog'
+import { Annotation } from 'src/tabsets/models/types/Annotations'
 import { useTagsService } from 'src/tags/TagsService'
 import { ListDetailLevel } from 'src/ui/stores/uiStore'
 
@@ -192,6 +193,8 @@ export class Tab {
   details: ListDetailLevel = 'DEFAULT'
 
   page: Page | undefined = undefined
+
+  annotations: Annotation[] = []
 
   constructor(
     public id: string,
