@@ -57,7 +57,9 @@
           size="md"
           style="max-width: 32px"
           @click="openBrowserSidepanel()"
-          class="cursor-pointer text-muted" />
+          class="cursor-pointer text-muted">
+          <q-tooltip>open Sidepanel</q-tooltip>
+        </q-btn>
       </div>
     </div>
   </q-footer>

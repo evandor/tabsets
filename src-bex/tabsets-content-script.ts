@@ -1,6 +1,8 @@
 import { createBridge } from '#q-app/bex/content'
 import { LocalStorage } from 'quasar'
+import { useAnnotationUtils } from 'src/core/services/AnnotationUtils'
 import { PageData } from 'src/tabsets/models/PageData'
+import { Annotation, toRangeDefinition } from 'src/tabsets/models/types/Annotations'
 
 // The use of the bridge is optional.
 const bridge = createBridge({ debug: false })
@@ -41,6 +43,8 @@ function getResponseData(): PageData {
       //tabsetsName: LocalStorage.getItem('tabsets_name'),
       tabsetsTabId: LocalStorage.getItem('tabsets_tabId'),
       tabsetsTimestamp: LocalStorage.getItem('tabsets_ts'),
+      tabsetsAnnotations: LocalStorage.getItem('tabsets.annotations'),
+      tabsetsManaged: LocalStorage.getItem('tabsets.managed'),
     },
   }
 }
@@ -121,4 +125,151 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ content: msg })
   }
   return true
+})
+
+// document.addEventListener('selectionchange', () => {
+//   const selection = window.getSelection()
+//   console.log('Selection changed:', selection?.toString())
+// })
+
+const overlay = document.createElement('div')
+overlay.style.cssText = `
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 9999;
+  display: none;
+`
+
+// Create button
+const button = document.createElement('button')
+button.textContent = 'Save'
+button.style.cssText = `
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+`
+
+overlay.appendChild(button)
+
+document.body.appendChild(overlay)
+
+const annotations: object[] = (LocalStorage.getItem('tabsets.annotations') as object[]) || []
+annotations.forEach((a: any) => {
+  console.log('annotation', a)
+  useAnnotationUtils().doRestoreFromString(a.range)
+})
+
+// Handle button click
+button.addEventListener('click', () => {
+  const selection = window.getSelection()
+  const selectedText = selection?.toString()
+
+  if (selectedText && selectedText.trim() !== '') {
+    const annotationUtils = useAnnotationUtils()
+    console.log('Selected text saved:', selectedText, annotationUtils.doSaveRange(), bridge.portList)
+
+    const range = annotationUtils.doSaveRange()
+    console.log('got range', range)
+    const annotation: Annotation = {
+      text: selectedText,
+      range: toRangeDefinition(useAnnotationUtils().getCP2String(range)),
+      timestamp: new Date().getTime(),
+      color: 'yellow',
+      remark: '',
+    }
+    annotations.push(annotation)
+    LocalStorage.setItem('tabsets.annotations', annotations)
+
+    // console.log('sending message sidePanelOpened')
+    // chrome.runtime
+    //   .sendMessage({ action: 'sidePanelOpened' })
+    //   .then((r: any) => console.log('got result', r))
+    //   .catch((e: any) => console.warn('error', e))
+
+    // if (bridge.portList.indexOf('background') >= 0) {
+    //   bridge
+    //     .send({
+    //       event: 'new-annotation',
+    //       to: 'background',
+    //       payload: { text: selectedText, range: annotationUtils.doSaveRange() },
+    //     })
+    //     .catch((err: any) => {
+    //       console.log("[BEX-CT] Failed to send 'text.saved' message to background", err)
+    //     })
+    // }
+
+    // bridge
+    //   .send({
+    //     event: 'new-annotation',
+    //     to: 'app',
+    //     payload: { text: selectedText, range: annotationUtils.doSaveRange() },
+    //   })
+    //   .catch((err: any) => {
+    //     console.log("[BEX-CT] Failed to send 'text.saved' message to background", err)
+    //   })
+  }
+
+  // Hide overlay after action
+  overlay.style.display = 'none'
+
+  // selection?.removeAllRanges();
+})
+
+document.addEventListener('selectionchange', () => {
+  const selection = window.getSelection()
+  const selectedText = selection?.toString()
+
+  if (selectedText && selectedText.trim() !== '') {
+    console.log('Selection changed:', selectedText)
+
+    // Get selection coordinates to position the overlay
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0)
+      const rect = range.getBoundingClientRect()
+
+      // Position overlay near the end of the selection
+      overlay.style.left = `${rect.right + window.scrollX}px`
+      overlay.style.top = `${rect.top + window.scrollY - overlay.offsetHeight}px`
+
+      // Show overlay
+      overlay.style.display = 'block'
+    }
+  } else {
+    // Don't hide immediately to allow clicking the button
+    // We'll hide it on mousedown outside the overlay
+  }
+})
+
+// Hide overlay when clicking outside (but not when clicking the overlay itself)
+document.addEventListener('mousedown', (event) => {
+  if (!overlay.contains(event.target as Node)) {
+    overlay.style.display = 'none'
+  }
+})
+
+// Alternative approach: use mouseup to show the overlay
+// This can be more reliable in some cases
+document.addEventListener('mouseup', () => {
+  const selection = window.getSelection()
+  const selectedText = selection?.toString()
+
+  if (selectedText && selectedText.trim() !== '') {
+    // Same positioning logic as in selectionchange
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0)
+      const rect = range.getBoundingClientRect()
+
+      overlay.style.left = `${rect.right + window.scrollX}px`
+      overlay.style.top = `${rect.top + window.scrollY - overlay.offsetHeight}px`
+      overlay.style.display = 'block'
+    }
+  }
 })
