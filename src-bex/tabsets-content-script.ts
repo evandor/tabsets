@@ -2,6 +2,7 @@ import { createBridge } from '#q-app/bex/content'
 import { LocalStorage } from 'quasar'
 import { useAnnotationUtils } from 'src/core/services/AnnotationUtils'
 import { PageData } from 'src/tabsets/models/PageData'
+import { Annotation, toRangeDefinition } from 'src/tabsets/models/types/Annotations'
 
 // The use of the bridge is optional.
 const bridge = createBridge({ debug: false })
@@ -42,6 +43,8 @@ function getResponseData(): PageData {
       //tabsetsName: LocalStorage.getItem('tabsets_name'),
       tabsetsTabId: LocalStorage.getItem('tabsets_tabId'),
       tabsetsTimestamp: LocalStorage.getItem('tabsets_ts'),
+      tabsetsAnnotations: LocalStorage.getItem('tabsets.annotations'),
+      tabsetsManaged: LocalStorage.getItem('tabsets.managed'),
     },
   }
 }
@@ -175,7 +178,14 @@ button.addEventListener('click', () => {
 
     const range = annotationUtils.doSaveRange()
     console.log('got range', range)
-    annotations.push({ text: selectedText, range: useAnnotationUtils().getCP2String(range) })
+    const annotation: Annotation = {
+      text: selectedText,
+      range: toRangeDefinition(useAnnotationUtils().getCP2String(range)),
+      timestamp: new Date().getTime(),
+      color: 'yellow',
+      remark: '',
+    }
+    annotations.push(annotation)
     LocalStorage.setItem('tabsets.annotations', annotations)
 
     // console.log('sending message sidePanelOpened')
