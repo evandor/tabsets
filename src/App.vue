@@ -137,6 +137,7 @@ if (useDarkMode === 'true') {
   setCssVar('negative', '#C10015')
   setCssVar('info', '#31CCEC')
   setCssVar('separator', '#AA0099')
+  // setCssVar('text-xxx', '#AA0099')
   // setCssVar('warning', 'green');
 }
 

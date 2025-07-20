@@ -45,21 +45,19 @@
       <div class="col text-right">
         <q-btn
           icon="o_settings"
-          color="grey"
           flat
           size="md"
           style="max-width: 32px"
           @click="goto('/popup/settings')"
-          class="cursor-pointer" />
+          class="cursor-pointer text-muted" />
         <q-btn
           v-if="!sidepanelEnabled"
           icon="open_in_new"
-          color="grey"
           flat
           size="md"
           style="max-width: 32px"
           @click="openBrowserSidepanel()"
-          class="cursor-pointer" />
+          class="cursor-pointer text-muted" />
       </div>
     </div>
   </q-footer>

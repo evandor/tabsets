@@ -83,7 +83,6 @@
 import { captureFeedback, captureMessage } from '@sentry/browser'
 import { doc, setDoc } from 'firebase/firestore'
 import { uid } from 'quasar'
-import { uid } from 'quasar'
 import { SettingIdent } from 'src/app/models/SettingIdent'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'

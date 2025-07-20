@@ -19,42 +19,6 @@
   margin: 0 auto;
 }
 
-.body--light .lightColors {
-  background-color: $grey-2;
-  border: 1px solid $grey-3;
-}
-
-.body--light .brightInBrightMode {
-  background-color: white;
-  color: black;
-  //font-size:3px;
-}
-
-.body--light .darkBlueInBrightMode {
-  color: $blue-10;
-}
-
-.body--light .greyBorderBottom {
-  border-bottom: 1px solid $bordergrey;
-}
-
-.body--dark .darkColors {
-  background-color: $grey-9;
-  border: 1px solid $grey-8;
-}
-
-.body--dark .darkInDarkMode {
-  background-color: black;
-  color: white;
-}
-
-.body--dark .brightBlueInDarkMode {
-  color: lightskyblue;
-}
-
-.body--dark .greyBorderBottom {
-  border-bottom: 1px solid #121212;
-}
 
 .body--dark::-webkit-scrollbar {
   height: 12px;
@@ -296,4 +260,95 @@
 .hint {
   border: 2px solid $warning;
   border-radius: 10px;
+}
+
+// new approach color scheme
+
+.body--light {
+  .text-default {
+    color: $lm-text-default !important;
+  }
+
+  .text-muted {
+    color: $lm-text-muted !important;
+  }
+
+  .bg-normal {
+    background: $lm-bg !important;
+  }
+
+  .bg-dark {
+    background: $lm-bg-dark !important;
+  }
+
+  .boxed {
+    color: $lm-text-default !important;
+    background: linear-gradient(135deg, $lm-bg, $lm-bg-light);
+    background-color: $lm-bg-dark !important;
+    border: 1px solid $lm-bg-light;
+    border-radius: 4px;
+  }
+
+  .lightColors {
+    background-color: $grey-2;
+    border: 1px solid $grey-3;
+  }
+
+  .brightInBrightMode {
+    background-color: $lm-bg;
+    color: $lm-text-default;
+  }
+
+  .darkBlueInBrightMode {
+    color: $blue-10;
+  }
+
+  .greyBorderBottom {
+    border-bottom: 1px solid $bordergrey;
+  }
+
+}
+
+.body--dark {
+
+  //$prefix: 'dm'
+
+  .text-default {
+    color: $dm-text-default !important;
+  }
+
+  .text-muted {
+    color: $dm-text-muted !important;
+  }
+
+  .boxed {
+    color: $dm-text-default !important;
+    background: linear-gradient(135deg, $dm-bg, $dm-bg-light);
+    background-color: $dm-bg-dark !important;
+    border: 1px solid $dm-bg-light;
+    border-radius: 4px;
+  }
+
+  .darkColors {
+    background-color: $grey-9;
+    border: 1px solid $grey-8;
+  }
+
+  .darkInDarkMode {
+    background-color: $dm-bg !important;
+    color: $dm-text-default !important;
+  }
+
+  .brightBlueInDarkMode {
+    color: lightskyblue;
+  }
+
+  .greyBorderBottom {
+    border-bottom: 1px solid #121212;
+  }
+
+}
+
+.bg-xxx {
+  background: $lm-bg !important;
 }

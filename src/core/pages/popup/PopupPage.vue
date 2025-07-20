@@ -2,22 +2,25 @@
   <!-- PopupPage -->
   <q-page class="darkInDarkMode brightInBrightMode" :style="paddingTop" style="min-width: 400px; max-height: 700px">
     <offline-info />
-    <PopupInputLine title="Collection" class="q-mt-md">
-      <PopupCollectionSelector
-        @tabset-changed="tabsetChanged()"
-        :show-tabs-count="!currentTabsetHasFolders()"
-        :url="url" />
-    </PopupInputLine>
 
-    <PopupInputLine title="Folder" v-if="showFolders()">
-      <PopupFolderSelector
-        @tabset-changed="tabsetChanged()"
-        :show-tabs-count="currentTabsetHasFolders()"
-        :currentTabset="currentTabset!" />
-    </PopupInputLine>
+    <div class="q-ma-sm q-mt-md boxed">
+      <PopupInputLine title="Collection" class="q-mt-md">
+        <PopupCollectionSelector
+          @tabset-changed="tabsetChanged()"
+          :show-tabs-count="!currentTabsetHasFolders()"
+          :url="url" />
+      </PopupInputLine>
+
+      <PopupInputLine title="Folder" v-if="showFolders()">
+        <PopupFolderSelector
+          @tabset-changed="tabsetChanged()"
+          :show-tabs-count="currentTabsetHasFolders()"
+          :currentTabset="currentTabset!" />
+      </PopupInputLine>
+    </div>
 
     <!-- Icon, title and description -->
-    <div class="row q-ma-sm darkInDarkMode brightInBrightMode q-mt-md">
+    <div class="row q-ma-sm q-mt-md boxed">
       <div class="col-2 q-ma-sm">
         <q-img v-if="thumbnail" :src="thumbnail" no-native-menu />
         <q-img v-else :src="browserTab?.favIconUrl" no-native-menu />
@@ -27,12 +30,15 @@
           <div class="col">
             <AutogrowInput
               v-model="title"
-              :input-class="'text-bold'"
+              :input-class="'text-bold text-normal'"
               :class="'ellipsis'"
               :filled="false"
               data-testid="pageModelTitle" />
           </div>
-          <div v-if="!editDescription" class="col ellipsis-3-lines text-body2" @click="toggleEditDescription()">
+          <div
+            v-if="!editDescription"
+            class="col ellipsis-3-lines text-body2 text-muted"
+            @click="toggleEditDescription()">
             {{ description }}
           </div>
           <div v-else>

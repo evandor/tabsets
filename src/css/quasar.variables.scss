@@ -17,9 +17,9 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary: #1B158F;
-$secondary: #635CE6;
-$accent: #9c27b0;
+$primary: hsl(228, 80%, 20%);
+$secondary: hsl(168, 50%, 10%);
+$accent: hsl(108, 80%, 20%);
 
 $dark: #1d1d1d;
 $dark-page: #121212;
@@ -33,6 +33,23 @@ $lightgrey: #efefef;
 $bordergrey: #e0e0e0;
 
 $separator: #e0e0e0;
+
+// dark mode (dm-)
+$dm-bg-dark: hsl(0, 0%, 0%);
+$dm-bg: hsl(0, 0%, 5%);
+$dm-bg-light: hsl(0, 0%, 10%);
+
+$dm-text-default: hsl(0, 0%, 90%);
+$dm-text-muted: hsl(0, 0%, 60%);
+
+// light mode (lm-)
+$lm-bg-dark: hsl(0, 0%, 90%);
+$lm-bg: hsl(0, 0%, 95%);
+$lm-bg-light: hsl(0, 0%, 100%);
+
+$lm-text-default: hsl(0, 0%, 10%);
+$lm-text-muted: hsl(0, 0%, 40%);
+
 
 //$body-font-size : 14px;
 //$dark-page: #333;
