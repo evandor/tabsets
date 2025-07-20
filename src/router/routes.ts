@@ -30,6 +30,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupCollectionPage.vue') }],
   },
   {
+    path: '/popup/annotations',
+    component: () => import('layouts/PopupLayout.vue'),
+    children: [{ path: '', component: () => import('src/core/pages/popup/PopupAnnotationsPage.vue') }],
+  },
+  {
     path: '/popup/tabsets',
     component: () => import('layouts/PopupLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupCollectionsPage.vue') }],

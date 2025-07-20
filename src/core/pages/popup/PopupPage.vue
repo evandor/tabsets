@@ -32,10 +32,15 @@
               :filled="false"
               data-testid="pageModelTitle" />
           </div>
-          <div v-if="!editDescription" class="col ellipsis-3-lines text-body2" @click="toggleEditDescription()">
-            {{ description }}
+          <div
+            style="border: 0 solid green"
+            v-if="!editDescription"
+            class="col ellipsis-3-lines text-body2"
+            :class="description ? '' : 'text-grey-8'"
+            @click="toggleEditDescription()">
+            {{ description ? description : 'no description provided' }}
           </div>
-          <div v-else>
+          <div v-else style="border: 0 solid red">
             <AutogrowInput
               @blur="toggleEditDescription()"
               ref="descriptionRef"
@@ -143,16 +148,12 @@
 
     <!-- Actions -->
     <PopupInputLine title="Actions" class="q-mt-xs" v-if="tab">
-      <q-btn
+      <PopupActionButton
         v-if="useFeaturesStore().hasFeature(FeatureIdent.READING_MODE)"
         icon="o_article"
-        size="sm"
-        outline
-        @click="openAsArticle()"
-        color="grey-7"
-        class="cursor-pointer q-mt-xs">
+        @button-clicked="openAsArticle()">
         <q-tooltip class="tooltip-small" :delay="500">Open in Reading Mode</q-tooltip>
-      </q-btn>
+      </PopupActionButton>
       <q-btn
         v-if="useFeaturesStore().hasFeature(FeatureIdent.SAVE_MHTML)"
         icon="o_save"
@@ -165,6 +166,17 @@
       </q-btn>
     </PopupInputLine>
 
+    <PopupInputLine title="Annotations" class="q-mt-xs" v-if="tab && tab.annotations?.length > 0">
+      <q-btn
+        icon="sym_o_sticky_note_2"
+        size="sm"
+        outline
+        @click="router.push('/popup/annotations')"
+        color="grey-7"
+        class="cursor-pointer q-mt-xs q-ml-sm">
+        <q-tooltip class="tooltip-small">Annotations available</q-tooltip>
+      </q-btn>
+    </PopupInputLine>
     <!-- buttons -->
     <div class="row q-my-md darkInDarkMode brightInBrightMode" style="border: 0 solid blue">
       <div class="col-2 q-ml-xs q-mt-sm text-right text-caption text-grey-8" style="border: 0 solid red"></div>
@@ -203,6 +215,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useFocus } from '@vueuse/core' // the page model
 import { TAGS_CATEGORIES } from 'boot/constants'
 import { date, LocalStorage, uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
@@ -211,6 +224,7 @@ import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { CategoryInfo, TagInfo } from 'src/core/models/TagInfo'
 import AutogrowInput from 'src/core/pages/popup/helper/AutogrowInput.vue'
+import PopupActionButton from 'src/core/pages/popup/helper/PopupActionButton.vue'
 import PopupCollectionSelector from 'src/core/pages/popup/PopupCollectionSelector.vue'
 import PopupFolderSelector from 'src/core/pages/popup/PopupFolderSelector.vue'
 import PopupInputLine from 'src/core/pages/popup/PopupInputLine.vue'
@@ -240,7 +254,9 @@ import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { UiDensity, useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
 import { onMounted, provide, ref, useTemplateRef, watchEffect } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router' // the page model
+
+const router = useRouter()
 
 // the page model
 const url = ref<string>('')
@@ -263,7 +279,7 @@ const collectionChips = ref<object[]>([])
 
 const editDescription = ref(false)
 const descriptionRef = useTemplateRef<HTMLElement>('descriptionRef')
-// const { focused: editDescriptionFocus } = useFocus(descriptionRef)
+const { focused: editDescriptionFocus } = useFocus(descriptionRef)
 
 const infoModes = ['saved', 'updated', 'count', 'lastActive']
 const infoMode = ref<string>(infoModes[0]!)
@@ -690,7 +706,9 @@ const tooltipFor = (info: TagInfo): string => {
 
 const toggleEditDescription = () => {
   editDescription.value = !editDescription.value
-  // editDescriptionFocus.value = editDescription.value
+  setTimeout(() => {
+    editDescriptionFocus.value = editDescription.value
+  }, 600)
 }
 
 const toolbarTitle = () => {
