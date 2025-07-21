@@ -99,7 +99,7 @@
     "vue-timeago3": "^2.3.2"
   },
   "devDependencies": {
-    "@eslint/js": "^9.26.0",
+    "@eslint/js": "^9.31.0",
     "@grafana/faro-rollup-plugin": "^0.5.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@intlify/unplugin-vue-i18n": "^6.0.3",
