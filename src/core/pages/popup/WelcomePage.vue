@@ -2,7 +2,7 @@
   <q-page style="min-width: 350px">
     <div v-if="showWatermark" id="watermark">{{ watermark }}</div>
 
-    <div class="q-ma-none q-pa-md fit">
+    <div class="q-ma-none q-pa-md fit boxed">
       <div class="row q-mt-lg q-ml-sm">
         <div class="row fit">
           <div class="col-12 text-body2 text-center">The Art Of Linking</div>
@@ -13,8 +13,18 @@
       <div
         class="q-pa-none q-ma-sm row items-start relative-position overflow-hidden cursor-pointer non-selectable"
         @click.stop="selected()">
-        <transition name="q-transition--scale" class="popupbox">
-          <!-- documentation -->
+        <!-- documentation -->
+        <AnimatedContent
+          :distance="100"
+          direction="vertical"
+          :reverse="false"
+          :duration="0.8"
+          ease="power3.out"
+          :initial-opacity="0"
+          :animate-opacity="true"
+          :scale="1"
+          :threshold="0.1"
+          :delay="0">
           <q-card class="my-card fit popupbox">
             <q-card-section class="q-pb-none">
               <div class="q-row">
@@ -46,7 +56,7 @@
               </div>
             </q-card-section>
           </q-card>
-        </transition>
+        </AnimatedContent>
       </div>
       <div class="row q-mr-sm">
         <div class="col-12 text-center">
@@ -78,6 +88,7 @@
 
 <script lang="ts" setup>
 import { LocalStorage, openURL } from 'quasar'
+import AnimatedContent from 'src/Animations/AnimatedContent/AnimatedContent.vue'
 import { TITLE_IDENT } from 'src/boot/constants'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'

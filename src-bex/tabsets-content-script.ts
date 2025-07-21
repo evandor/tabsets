@@ -2,7 +2,7 @@ import { createBridge } from '#q-app/bex/content'
 import { LocalStorage } from 'quasar'
 import { useAnnotationUtils } from 'src/core/services/AnnotationUtils'
 import { PageData } from 'src/tabsets/models/PageData'
-import { Annotation, toRangeDefinition } from 'src/tabsets/models/types/Annotations'
+import { Annotation, toRangeDefinition, toRGBDefinition } from 'src/tabsets/models/types/Annotations'
 
 // The use of the bridge is optional.
 const bridge = createBridge({ debug: false })
@@ -144,7 +144,7 @@ overlay.style.cssText = `
   display: none;
 `
 
-// Create button
+// save button
 const button = document.createElement('button')
 button.textContent = 'Save'
 button.style.cssText = `
@@ -159,15 +159,38 @@ button.style.cssText = `
 
 overlay.appendChild(button)
 
+overlay.insertAdjacentHTML(
+  'afterbegin',
+  `
+<div>Remark</div>
+<textarea name="remark" id="tabsets.annotation.remark"></textarea>
+<br>
+<datalist id="colors">
+  <option value="#e6e6b3">
+  <option value="#b3e6b3">
+  <option value="#b3e6e6">
+  <option value="#b3b3e6">
+</datalist>
+
+<div class="colorpicker-wrapper">
+  <input type="color" id="tabsets.annotation.color" class="colorpicker" name="head" value="#e6e6b3" list="colors">
+</div>
+<br>
+<input type="submit" id="tabsets.annotation.submitbutton" value="Save Annotation" style="margin:2px;text-align: right">
+`,
+)
+
 document.body.appendChild(overlay)
 
 const annotations: object[] = (LocalStorage.getItem('tabsets.annotations') as object[]) || []
 annotations.forEach((a: any) => {
-  console.log('annotation', a)
+  console.log('annotation:', a.range)
   useAnnotationUtils().doRestoreFromString(a.range)
 })
 
 // Handle button click
+const remark = document.getElementById('tabsets.annotation.remark') as HTMLInputElement
+const color = document.getElementById('tabsets.annotation.color') as HTMLInputElement
 button.addEventListener('click', () => {
   const selection = window.getSelection()
   const selectedText = selection?.toString()
@@ -178,12 +201,13 @@ button.addEventListener('click', () => {
 
     const range = annotationUtils.doSaveRange()
     console.log('got range', range)
+    console.log('remark', remark.value)
     const annotation: Annotation = {
       text: selectedText,
       range: toRangeDefinition(useAnnotationUtils().getCP2String(range)),
       timestamp: new Date().getTime(),
-      color: 'yellow',
-      remark: '',
+      color: toRGBDefinition(color.value),
+      remark: remark.value || 'xxx',
     }
     annotations.push(annotation)
     LocalStorage.setItem('tabsets.annotations', annotations)
