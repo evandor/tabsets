@@ -7,13 +7,23 @@ export function toRangeDefinition(value: string): RangeDefinition {
   if (split.length != 4) {
     throw new Error('Invalid range format')
   }
-
   return value as RangeDefinition
 }
+
+declare const rgbKey: unique symbol
+type RGBDefinition = string & { readonly [rgbKey]: 'rgb' }
+
+export function toRGBDefinition(value: string): RGBDefinition {
+  if (value.length != 7 || !value.startsWith('#')) {
+    throw new Error('Invalid RGB format')
+  }
+  return value as RGBDefinition
+}
+
 export type Annotation = {
   text: string
   range: RangeDefinition
-  color: 'yellow' | 'green' | 'blue'
+  color: RGBDefinition
   remark: string
   timestamp: number
 }

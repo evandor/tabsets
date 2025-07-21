@@ -99,7 +99,7 @@ export function useAnnotationUtils() {
         console.log('caret restore not allowed')
       }
     }
-    sel!.removeAllRanges()
+    //sel!.removeAllRanges()
     console.log('adding range', sel, range)
     sel!.addRange(range)
   }

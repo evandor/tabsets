@@ -74,6 +74,12 @@
         <AutogrowInput v-model="note" :class="'ellipsis'" :filled="true" data-testid="pageModelNote" />
       </PopupInputLine>
 
+      <PopupInputLine title="Annotations" v-if="tab && tab.annotations.length > 0">
+        <div class="ellipsis text-caption" v-for="a in tab.annotations">
+          {{ a.text }}
+        </div>
+      </PopupInputLine>
+
       <!-- Tags -->
       <PopupInputLine
         v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)"
@@ -175,17 +181,6 @@
       </q-btn>
     </PopupInputLine>
 
-    <PopupInputLine title="Annotations" class="q-mt-xs" v-if="tab && tab.annotations?.length > 0">
-      <q-btn
-        icon="sym_o_sticky_note_2"
-        size="sm"
-        outline
-        @click="router.push('/popup/annotations')"
-        color="grey-7"
-        class="cursor-pointer q-mt-xs q-ml-sm">
-        <q-tooltip class="tooltip-small">Annotations available</q-tooltip>
-      </q-btn>
-    </PopupInputLine>
     <!-- buttons -->
     <div class="row q-my-md darkInDarkMode brightInBrightMode" style="border: 0 solid blue">
       <div class="col-2 q-ml-xs q-mt-sm text-right text-caption text-grey-8" style="border: 0 solid red"></div>

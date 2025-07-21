@@ -178,11 +178,11 @@ export function useTagsService() {
         nlp.plugin(stats)
         doc = nlp(text)
         doc.compute('syllables') //kaboom
-        console.log('===>', doc.json({ syllables: true }))
-        console.log('===>', doc.compute('tfidf').json())
+        //console.log('===>', doc.json({ syllables: true }))
+        //console.log('===>', doc.compute('tfidf').json())
 
         let m = doc.match('[#Noun+]', 0)
-        console.log('===>', m.text())
+        //console.log('===>', m.text())
         const res: TagInfo[] = m
           .text()
           .replace(/[^\w\s]/gi, '')
@@ -191,7 +191,7 @@ export function useTagsService() {
           .map((word: string) => {
             return { label: word.toLowerCase(), type: 'languageModel', score: 1 }
           })
-        console.log('res', res)
+        //console.log('res', res)
         return res
     }
   }

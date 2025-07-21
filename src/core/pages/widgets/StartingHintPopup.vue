@@ -7,8 +7,18 @@
     </div>
 
     <div class="q-pa-none q-ma-sm row items-start relative-position overflow-hidden cursor-pointer non-selectable">
-      <transition name="q-transition--scale" class="popupbox">
-        <!-- documentation -->
+      <!-- documentation -->
+      <AnimatedContent
+        :distance="100"
+        direction="vertical"
+        :reverse="false"
+        :duration="0.8"
+        ease="power3.out"
+        :initial-opacity="0"
+        :animate-opacity="true"
+        :scale="1"
+        :threshold="0.1"
+        :delay="0">
         <q-card class="my-card fit popupbox">
           <q-card-section class="q-pb-none">
             <div class="q-row q-my-md">
@@ -40,7 +50,7 @@
             </div>
           </q-card-section>
         </q-card>
-      </transition>
+      </AnimatedContent>
     </div>
     <div class="row q-mr-sm">
       <div class="col-12 text-center">
@@ -71,6 +81,7 @@
 
 <script lang="ts" setup>
 import { LocalStorage, openURL } from 'quasar'
+import AnimatedContent from 'src/Animations/AnimatedContent/AnimatedContent.vue'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { ref } from 'vue'
