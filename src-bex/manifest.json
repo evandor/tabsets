@@ -10,7 +10,8 @@
     "content_scripts": [
       {
         "matches": ["<all_urls>", "*://*/*"],
-        "js": ["tabsets-content-script.ts"]
+        "js": ["tabsets-content-script.ts"],
+        "css": [ "assets/content.css" ]
       },
       {
         "matches": ["*://rapidapi.com/*"],

@@ -1,7 +1,7 @@
 <template>
   <!-- PopupPage -->
   <q-page class="darkInDarkMode brightInBrightMode" :style="paddingTop" style="min-width: 400px; max-height: 700px">
-    <offline-info />
+    <offline-info class="q-mt-lg" />
 
     <div class="q-ma-sm q-mt-md boxed">
       <PopupInputLine title="Collection" class="q-mt-md">
@@ -319,7 +319,15 @@ function langFromHostname(url: string | undefined): string {
   return 'en'
 }
 
+function updateOnlineStatus(e: any) {
+  const { type } = e
+  useUiStore().networkOnline = type === 'online'
+}
+
 onMounted(() => {
+  window.addEventListener('offline', (e) => updateOnlineStatus(e))
+  window.addEventListener('online', (e) => updateOnlineStatus(e))
+
   Analytics.firePageViewEvent('PopupPage', document.location.href)
   //switch early
   if (!LocalStorage.getItem('ui.hideWelcomePage')) {

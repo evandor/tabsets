@@ -53,3 +53,17 @@
   left: 0;
   right:0;
 }
+
+
+::highlight(hightlight-1) {
+  background-color: #e6e6b3;
+}
+::highlight(hightlight-2) {
+  background-color: #6B6134;
+}
+::highlight(hightlight-3) {
+  background-color: #b3e6e6;
+}
+::highlight(hightlight-4) {
+  background-color: #b3b3e6;
+}

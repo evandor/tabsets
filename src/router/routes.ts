@@ -45,6 +45,12 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupSettingsPage.vue') }],
   },
 
+  {
+    path: '/overlay/annotations',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('src/annotations/AnnotationOverlay.vue') }],
+  },
+
   /** FullPage **/
   {
     path: '/fullpage',

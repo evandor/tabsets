@@ -1,3 +1,4 @@
+// Inspiration: https://jsfiddle.net/Abeeee/2gr1vchm/
 export function useAnnotationUtils() {
   type CaretPosition = { sC: any[]; sO: number; eC: any[]; eO: number }
 
@@ -34,12 +35,12 @@ export function useAnnotationUtils() {
     if (el) {
       // el.value = getCP2String()
     }
-    console.log('_caret', _caretPosition)
+    // console.log('_caret', _caretPosition)
     return _caretPosition
   }
 
-  const doRestoreRange = (caretPosition: { sC: any[]; sO: number; eC: any[]; eO: number }) => {
-    console.log('doREstoreRange', caretPosition)
+  const doRestoreRange = (caretPosition: { sC: any[]; sO: number; eC: any[]; eO: number }): Range => {
+    // console.log('doREstoreRange', caretPosition)
     var editor = document //.getElementById('editor')
     //var caretPosition = _caretPosition
     var sel = window.getSelection()
@@ -101,18 +102,20 @@ export function useAnnotationUtils() {
     }
     //sel!.removeAllRanges()
     console.log('adding range', sel, range)
-    sel!.addRange(range)
+    //sel!.addRange(range)
+    return range
   }
 
   const doClearRange = () => {
+    console.log('range cleared')
     var sel = window.getSelection()
     var range = sel!.getRangeAt(0)
     sel!.removeRange(range)
   }
 
-  const doRestoreFromString = (serialTx: string) => {
+  const doRestoreFromString = (serialTx: string): Range => {
     // var serialTx = el.value
-    console.log('got', serialTx.split(';'))
+    // console.log('got', serialTx.split(';'))
 
     var _caretPosition: CaretPosition = {
       sC: serialTx.split(';')[0]!.split(','),
@@ -123,16 +126,12 @@ export function useAnnotationUtils() {
       eO: serialTx.split(';')[3]!.split(','),
     }
 
-    // _caretPosition.sC = serialTx.split(';')[0]!.split(',')
-    // _caretPosition.sO = serialTx.split(';')[1]!.split(',')
-    // _caretPosition.eC = serialTx.split(';')[2]!.split(',')
-    // _caretPosition.eO = serialTx.split(';')[3]!.split(',')
-
-    console.log('sC=', _caretPosition.sC)
-    console.log('sO=', _caretPosition.sO)
-    console.log('eC=', _caretPosition.eC)
-    console.log('eO=', _caretPosition.eO)
-    doRestoreRange(_caretPosition)
+    // console.log('sC=', _caretPosition.sC)
+    // console.log('sO=', _caretPosition.sO)
+    // console.log('eC=', _caretPosition.eC)
+    // console.log('eO=', _caretPosition.eO)
+    const range = doRestoreRange(_caretPosition)
+    return range
   }
 
   const getNodeIndex = (n: any) => {
