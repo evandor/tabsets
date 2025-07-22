@@ -56,6 +56,7 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupLoginPage.vue') }],
   },
 
+  /** FullPage **/
   {
     path: '/fullpage',
     component: () => import('layouts/FullPageLayout.vue'),
