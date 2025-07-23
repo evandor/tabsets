@@ -57,7 +57,7 @@
     "@vue-flow/core": "^1.45.0",
     "@vueuse/components": "^13.5.0",
     "@vueuse/core": "^13.5.0",
-    "axios": "^1.7.9",
+    "axios": "^1.11.0",
     "buffer": "^6.0.3",
     "chart.js": "^4.4.7",
     "chartjs-chart-wordcloud": "^4.4.4",
