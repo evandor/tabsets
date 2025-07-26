@@ -64,6 +64,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             console.log("could not handle 'url-deleted'", err)
           })
         })
+    } else if (message.msg === 'captureClipping') {
+      // no op
     } else {
       console.log(`got unknown message '${message.name}' in background.ts`)
     }
@@ -205,6 +207,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
     })
     // }
+  } else if (request.msg === 'captureClipping') {
+    //
   }
   return true
 })

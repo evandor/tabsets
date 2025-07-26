@@ -5,6 +5,8 @@ import { defineStore } from 'pinia'
 import { uid } from 'quasar'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import BexFunctions from 'src/core/communication/BexFunctions'
+import { TagInfo } from 'src/core/models/TagInfo'
+import { useTagsService } from 'src/tags/TagsService'
 import { computed, ref, watchEffect } from 'vue'
 
 /**
@@ -16,6 +18,7 @@ import { computed, ref, watchEffect } from 'vue'
 export const useContentStore = defineStore('content', () => {
   const currentTabContent = ref<string>('')
   const currentTabMetas = ref<object>({})
+  const currentTabStorage = ref<object>({})
   const currentTabUrl = ref<string | undefined>(undefined)
   const currentTabFavIcon = ref<string | undefined>(undefined)
   const currentTabTitle = ref<string | undefined>(undefined)
@@ -23,6 +26,7 @@ export const useContentStore = defineStore('content', () => {
   const currentTabArticle = ref<object | undefined>(undefined)
   const articleSnapshot = ref<object | undefined>(undefined)
   const currentTabReferences = ref<TabReference[]>([])
+  const currentTabTags = ref<TagInfo[]>([])
 
   const setCurrentTabContent = (content: string | undefined) => {
     //console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
@@ -30,8 +34,13 @@ export const useContentStore = defineStore('content', () => {
   }
 
   const setCurrentTabMetas = (metas: object = {}) => {
-    console.debug('setting current tab metas: #', Object.keys(metas).length)
+    // console.debug('setting current tab metas: #', Object.keys(metas).length)
     currentTabMetas.value = metas
+  }
+
+  const setCurrentTabStorage = (storage: object = {}) => {
+    // console.debug('setting current tab storage: #', Object.keys(storage).length)
+    currentTabStorage.value = storage
   }
 
   const setCurrentTabUrl = (url: string | undefined) => {
@@ -39,20 +48,37 @@ export const useContentStore = defineStore('content', () => {
     currentTabUrl.value = url
   }
 
+  function pushTagsInfo() {
+    return (tag: TagInfo) => {
+      currentTabTags.value.push(tag)
+      currentTabTags.value = useTagsService().deduplicateTags(currentTabTags.value)
+    }
+  }
+
   const resetFor = async (browserTab: chrome.tabs.Tab) => {
-    console.log('reset', browserTab)
     currentTabUrl.value = browserTab.url
     currentTabFavIcon.value = browserTab.favIconUrl
     currentTabTitle.value = browserTab.title
     currentTabLastAccessed.value = browserTab.lastAccessed
     currentTabContent.value = ''
     currentTabMetas.value = {}
+    currentTabStorage.value = {}
     currentTabArticle.value = undefined
+    currentTabTags.value = []
 
-    if (browserTab.url) {
-      const r = await chrome.tabs.sendMessage(browserTab.id || 0, 'getExcerpt', {}) //, async (res) => {
-      //console.log('getContent returned result with length', r, r?.html.length, browserTab.id)
-      await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
+    console.log('000>>>', browserTab.id, browserTab.url)
+    if (browserTab.url && browserTab.id) {
+      try {
+        const r = await chrome.tabs.sendMessage(browserTab.id, 'getExcerpt', {}) //, async (res) => {
+        console.log('getContent returned result with length', r, r?.html.length, browserTab.id)
+        await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
+        console.log('pushing', currentTabMetas.value)
+        useTagsService()
+          .tagsFromKeywords(currentTabMetas.value['keywords' as keyof object] as string)
+          .forEach(pushTagsInfo())
+      } catch (err: any) {
+        console.log('got error: ', err)
+      }
     }
   }
 
@@ -163,7 +189,7 @@ export const useContentStore = defineStore('content', () => {
       if (type && type === 'application/ld+json') {
         try {
           const text = $(elem).contents().first().text()
-          // console.log("got", text)
+          console.log('got application/ld+json', text.length)
           const asJSON = JSON.parse(text)
           currentTabReferences.value.push(
             new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', asJSON),
@@ -265,6 +291,8 @@ export const useContentStore = defineStore('content', () => {
 
   const getCurrentTabContent = computed((): string | undefined => currentTabContent.value)
   const getCurrentTabMetas = computed((): object => currentTabMetas.value)
+  const getCurrentTabStorage = computed((): object => currentTabStorage.value)
+  const getCurrentTabLastAccessed = computed((): number | undefined => currentTabLastAccessed.value || 0)
   const getCurrentTabReferences = computed((): TabReference[] => currentTabReferences.value)
 
   return {
@@ -274,14 +302,18 @@ export const useContentStore = defineStore('content', () => {
     getCurrentTabContent,
     setCurrentTabMetas,
     getCurrentTabMetas,
+    setCurrentTabStorage,
+    getCurrentTabStorage,
     setCurrentTabUrl,
     getCurrentTabUrl,
     currentTabReferences,
     getCurrentTabReferences,
+    getCurrentTabLastAccessed,
     resetFor,
     currentTabFavIcon,
     currentTabMetas,
     currentTabTitle,
     articleSnapshot,
+    currentTabTags,
   }
 })

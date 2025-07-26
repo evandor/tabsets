@@ -332,7 +332,7 @@ export class AppFeatures {
 
     new Feature(
       FeatureIdent.WEBSITE_CLIP,
-      'DISABLED',
+      'EXPERIMENTAL',
       'Website Clip',
       'Create an image clip from a website and store it',
       'filter_center_focus',

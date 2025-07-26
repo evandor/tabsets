@@ -1,0 +1,105 @@
+[
+  {
+    "@context": "http://schema.org",
+    "@type": "Recipe",
+    "image": "https://img.chefkoch-cdn.de/rezepte/1078581213540738/bilder/954545/crop-960x540/kokos-traum.jpg",
+    "recipeCategory": "Torten",
+    "recipeIngredient": [
+      "75 g Mehl",
+      "2 Pck. Puddingpulver , Vanille oder Schoko ODER",
+      "75 g Speisestärke",
+      "3 Ei(er) , getrennt",
+      "1 Prise(n) Salz",
+      "2 Pck. Vanillezucker",
+      "125 g Zucker",
+      "25 g Kokosraspel",
+      "500 g Quark , egal welche Fettstufe",
+      "200 g Sahne",
+      "250 g Joghurt , Stracciatella-",
+      "175 g Zucker",
+      "3 Pck. Vanillezucker",
+      "etwas Butter-Vanille-Aroma oder Mark einer Vanilleschote",
+      "1 EL Zitronensaft",
+      "150 g Kokosraspel",
+      "6 Blatt Gelatine ODER",
+      "1 Pck. Gelatinepulver"
+    ],
+    "name": "Kokos Traum",
+    "description": "Kokos Traum - leichte Torte mit Quark und Kokos. Über 63 Bewertungen und für sehr lecker befunden. Mit ► Portionsrechner ► Kochbuch ► Video-Tipps!",
+    "recipeInstructions": "Zuerst den Biskuitboden herstellen: Für diesen in einer Schüssel Mehl mit Puddingpulver oder Stärke und den Kokosflocken vermischen. Die Eier trennen. Das Eiweiß in einer großen Schüssel mit 1 Prise Salz steif schlagen. Nach und nach den Zucker einrieseln lassen und kräftig weiter schlagen, bis der Zucker sich nahezu aufgelöst hat. Nun nach und nach die Eigelbe hineingeben und kräftig weiter schlagen. Als letztes das Mehl-Gemisch hineingeben und nur ganz kurz auf niedrigster Stufe schlagen! Man kann das Mehl auch mit einem Löffel vorsichtig unterheben, aber so funktioniert es auch, ohne dass der Schaum zusammen fällt. Den Biskuitteig in eine gut gefettete Springform geben (nur den Boden einfetten!) und im vorgeheizten Backofen auf der mittleren Schiene in 20-25 Minuten bei 190°C Ober/Unterhitze oder 170°C Umluft goldgelb backen (Stäbchenprobe machen). Danach komplett auskühlen lassen. Für die Creme die Gelatine nach Packungsanleitung 10 Minuten in kaltem Wasser quellen lassen. 50g der 150g Kokosflocken abwiegen und beiseite stellen, dient der Dekoration. In einem hohen Gefäß die Sahne steif schlagen. Kurz beiseite stellen. In einer großen Schüssel nun Zucker, Vanillezucker, Salz und Vanillearoma bzw. Mark einer Vanilleschote mit Quark aufschlagen. Stracciatelle - Joghurt hinzugeben, sowie den Zitronensaft und nochmals kräftig weiter schlagen. Die Gelatine vorsichtig erwärmen bis sie sich verflüssigt hat, nicht zu heiß werden lassen, da sie sonst nicht mehr binden kann. Dann löffelweise und unter ständigem Rühren zur Creme geben, dann kräftig schlagen. Als letztes vorsichtig die Sahne unterheben. Den komplett abgekühlten Boden mit einem Tortenring umlegen. (es geht auch der Ring der Springform) Nun gute 25g der weggelegten Kokosflocken auf dem Boden verteilen (ist aber kein muss) Nun die Creme vorsichtig darüber geben und gut glatt streichen. Als letztes nun gleichmäßig die übrigen Koksflocken darüber verteilen und ganz leicht andrücken. Die Torte an einen kühlen Ort stellen und fest werden lassen. Dafür reichen schon gute 4 Stunden, ich empfehle aber die Torte über Nacht ziehen zu lassen, da sie dann ihr ganzen Aroma besser entfalten kann. Die Torte ist sehr leicht, da nur wenig Sahne in die Creme enthalten ist und der Quark durch das aufschlagen sehr cremig wird. Die Torte ist auch für heiße Tage sehr gut geeignet. Wer es nicht so süß mag, kann den Zuckeranteil auch reduzieren, ich empfand 175g als genau richtig. Die Kombination aus Stracciatella und Kokos verleiht der Torte ein sehr feines Aroma und gibt ihr das gewisse etwas. Wer nicht extra Stracciatelle Joghurt kaufen möchte, kann auch statt dessen Schokolade fein hacken und unter die Creme heben. (Da es unterschiedliche Größen gibt von Stracciatelle Joghurt habe ich 200-250g angegeben, es ist also egal wie viel verwendet wird) Ich habe zusätzlich noch Pfirsiche auf die Torte gegeben, das gab ihr eine noch bessere Optik! Die Torte bekommt ein noch besseres Aroma wenn man anstatt dem Vanillepuddingpulver im Biskuit Schokopuddingpulver verwendet bzw. Stärke und 2-3 EL ungesüßtes Kakaopulver.",
+    "author": {
+      "@type": "Person",
+      "name": "Seelenschein"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Chefkoch.de"
+    },
+    "datePublished": "2008-06-15",
+    "prepTime": "P0DT0H45M",
+    "totalTime": "P0DT0H45M",
+    "recipeYield": "1",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingCount": 63,
+      "ratingValue": 4.38,
+      "reviewCount": 50,
+      "worstRating": 0,
+      "bestRating": 5
+    },
+    "keywords": [
+      "Backen",
+      "einfach",
+      "kalorienarm",
+      "fettarm",
+      "Torte"
+    ],
+    "reviews": [
+      {
+        "@type": "Review",
+        "reviewBody": "Also an sich ist es eine tolle Torte, allerdings ist der Boden - und ich hab mich komplett ans Rezept gehalten - was echt schade ist. Ich denke ich werde die Torte nochmal backen,- dann allerdings mit einem Rührteigboden. Die Creme ist Top! ",
+        "datePublished": "2022-06-15",
+        "author": {
+          "@type": "Person",
+          "name": "Sterndl1474"
+        }
+      },
+      {
+        "@type": "Review",
+        "reviewBody": "Ich mache den Kuchen schon seit Jahren immer wieder gern. Nur mit einem anderen Boden. Seit einiger Zeit nun die Variante ohne Milchprodukte (allergiebedingt): 750g veganen Lupinenjoghurt oder Joghurt aus Kokosmilch oder eine Mischung aus beiden 200g vegane Schlagcreme oder Cocoswhip, Rohrohrzucker oder anteilig diesem und Agavendicksaft Zitrone lass ich weg. Liebe Grüße ",
+        "datePublished": "2019-06-15",
+        "author": {
+          "@type": "Person",
+          "name": "alicia-grace"
+        }
+      },
+      {
+        "@type": "Review",
+        "reviewBody": "Die Füllung schmeckt sehr gut, aber der Boden ist für einen Biskuit sehr trocken. Trotzdem werde ich ihn mit meinem eigenen Biskuit Rezept wieder backen. LG Heide",
+        "datePublished": "2018-12-25",
+        "author": {
+          "@type": "Person",
+          "name": "heidrulle"
+        }
+      },
+      {
+        "@type": "Review",
+        "reviewBody": "Mein Freund hat 90% des Kuchen mit Begeisterung aufgegessen. Ich war nicht so der Fan vom Stracciatella Geschmack und von der Trockenheit des Bodens. ",
+        "datePublished": "2017-08-25",
+        "author": {
+          "@type": "Person",
+          "name": "mrxxxtrinity"
+        }
+      },
+      {
+        "@type": "Review",
+        "reviewBody": "Habe den Kuchen in meinem Cafe angeboten. Ich werde nur den Boden ändern. Uns ist er zum trocken. Die Creme ist super toll.",
+        "datePublished": "2017-01-24",
+        "author": {
+          "@type": "Person",
+          "name": "hexe_chrissi"
+        }
+      }
+    ]
+  }
+]

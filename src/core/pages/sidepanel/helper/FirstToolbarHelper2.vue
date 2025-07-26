@@ -35,6 +35,11 @@
                 :tabset="currentTabset"
                 :element="props.element"
                 level="root" />
+              <ShowRezepteAction
+                v-if="useFeaturesStore().hasFeature(FeatureIdent.GALLERY)"
+                :tabset="currentTabset"
+                :element="props.element"
+                level="root" />
               <!--              <CreateNoteAction-->
               <!--                :tabset="currentTabset"-->
               <!--                level="root"-->
@@ -142,6 +147,7 @@ import OpenAllInMenuAction from 'src/tabsets/actions/OpenAllInMenuAction.vue'
 import SearchAction from 'src/tabsets/actions/SearchAction.vue'
 import ShareTabsetAction from 'src/tabsets/actions/ShareTabsetAction.vue'
 import ShowGalleryAction from 'src/tabsets/actions/ShowGalleryAction.vue'
+import ShowRezepteAction from 'src/tabsets/actions/ShowRezepteAction.vue'
 import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import AddUrlDialog from 'src/tabsets/dialogues/AddUrlDialog.vue'
 import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
@@ -320,6 +326,7 @@ const overlapStyle = (d: any) => {
 watchEffect(() => {
   const windowId = useWindowsStore().currentBrowserWindow?.id || 0
   currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+  // console.log(' --- updated currentChromeTab', currentChromeTab.value?.url)
 })
 
 watchEffect(() => {
@@ -383,6 +390,7 @@ const switchTabset = async (tabset: object) => {
         tabsetColor: currentTabset.value.color,
         window: currentTabset.value.window,
         details: currentTabset.value.details || useUiStore().listDetailLevel,
+        contentClassification: currentTabset.value.contentClassification || 'unclassified',
         fromPanel: true,
       },
     })

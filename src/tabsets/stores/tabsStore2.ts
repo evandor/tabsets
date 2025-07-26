@@ -148,10 +148,15 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
   async function onTabActivated(activeInfo: chrome.tabs.TabActiveInfo) {
     console.log(` -> tabActivated: ${JSON.stringify(activeInfo)}`)
     const tab: chrome.tabs.Tab = await chrome.tabs.get(activeInfo.tabId)
-    useTabsetsUiStore().updateExtensionIcon(tab)
-    await useContentStore().resetFor(tab)
+    useTabsetsUiStore()
+      .updateExtensionIcon(tab)
+      .catch((err: any) => console.error('error', err))
+    await useContentStore()
+      .resetFor(tab)
+      .catch((err: any) => console.error('error', err))
     useTabsetService().urlWasActivated(tab.url)
     useTabsetsUiStore().setMatchingTabsFor(tab.url)
+    currentChromeTab.value = tab
     startTimer(tab.url)
   }
 

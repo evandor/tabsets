@@ -97,7 +97,7 @@ class BrowserApi {
   }
 
   startWebRequestListener() {
-    console.log(' ...adding WebRequestListener')
+    //console.log(' ...adding WebRequestListener')
     chrome.webRequest?.onCompleted.addListener(this.onCompletedListener, { urls: ['*://*/*'], types: ['main_frame'] }, [
       'extraHeaders',
       'responseHeaders',
@@ -141,7 +141,6 @@ class BrowserApi {
             //   contexts: ['all']
             // })
             if (useFeaturesStore().hasFeature(FeatureIdent.WEBSITE_CLIP)) {
-              console.debug(' > context menu: website_clip')
               chrome.contextMenus.create({
                 id: 'website_clip',
                 parentId: 'tabset_extension',
@@ -265,7 +264,7 @@ class BrowserApi {
               }
             })
           } else if (e.menuItemId === 'website_clip') {
-            console.log('creating Clip', tab)
+            console.log('creating Clip', tab?.id)
             if (tab && tab.id) {
               this.executeClippingJS(tab.id)
             }
@@ -526,7 +525,7 @@ class BrowserApi {
   async checkMonitors() {
     const allTabsets: Tabset[] = [...useTabsetsStore().tabsets.values()] as Tabset[]
     const checkedTabs: { url: string; newHash: string; tabId: string; tabsetId: string }[] = []
-    console.log(`running monitor for ${allTabsets.length} tabsets`)
+    //console.log(`running monitor for ${allTabsets.length} tabsets`)
     for (const ts of allTabsets) {
       for (const monitoredTab of ts.monitoredTabs || []) {
         const tabAndTabsetId: TabAndTabsetId | undefined = useTabsetsStore().getTabAndTabsetId(monitoredTab.tabId)
@@ -554,7 +553,7 @@ class BrowserApi {
         }
       }
     }
-    console.log('checkedTabs', checkedTabs)
+
     for (const changedTab of checkedTabs) {
       const existingContent = await useContentService().getContentFor(changedTab.url)
       console.log('existingcontent', existingContent)

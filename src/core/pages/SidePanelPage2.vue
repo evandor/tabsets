@@ -2,7 +2,7 @@
   <!-- SidePanelPage2 -->
   <q-page
     class="darkInDarkMode brightInBrightMode"
-    :class="uiDensity === 'dense' ? 'q-mx-none' : 'q-mx-md'"
+    :class="uiDensity === 'dense' ? 'q-px-none' : 'q-px-md'"
     :style="paddingTop"
     style="border: 0 solid black">
     <offline-info />
@@ -18,6 +18,9 @@
     <div class="q-ma-none q-pa-none q-pt-xs">
       <template v-if="useTabsetsStore().tabsets.size > 0">
         <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
+          <div class="col-12 text-center" v-if="currentTabset && currentTabset.contentClassification === 'recipe'">
+            <q-btn label="Alle Rezepte" color="primary" size="xs" @click="openRecipeOverview()" />
+          </div>
           <template v-if="currentTabset">
             <SidePanelPageContent
               v-if="useFolderExpansion === 'goInto'"
@@ -36,16 +39,7 @@
           </template>
 
           <template v-if="useSettingsStore().has('DEBUG_MODE')">
-            <div class="row q-pa-none q-ma-none fit">
-              <div
-                class="col-12 q-pa-none q-mx-md q-mt-md q-mb-none text-caption ellipsis-2-lines"
-                style="font-size: smaller">
-                {{ useContentStore().getCurrentTabUrl }}
-              </div>
-              <div class="col-12 q-pa-none q-mx-md q-my-none text-caption" style="font-size: smaller">
-                {{ useContentStore().getCurrentTabContent?.length }}
-              </div>
-            </div>
+            <DebugInfo />
           </template>
         </div>
       </template>
@@ -72,17 +66,18 @@
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { useContentStore } from 'src/content/stores/contentStore'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import FirstToolbarHelper2 from 'src/core/pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import SearchToolbarHelper from 'src/core/pages/sidepanel/helper/SearchToolbarHelper.vue'
 import SidePanelPageContent from 'src/core/pages/SidePanelPageContent.vue'
 import SidePanelPageContentExpand from 'src/core/pages/SidePanelPageContentExpand.vue'
+import DebugInfo from 'src/core/pages/widgets/DebugInfo.vue'
 import StartingHint from 'src/core/pages/widgets/StartingHint.vue'
 import { useUtils } from 'src/core/services/Utils'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import Analytics from 'src/core/utils/google-analytics'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
@@ -99,7 +94,6 @@ const { inBexMode } = useUtils()
 const router = useRouter()
 
 const filter = ref<string>('')
-const showSearchBox = ref(false)
 const tabsets = ref<Tabset[]>([])
 const currentTabset = ref<Tabset | undefined>(undefined)
 const currentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
@@ -202,6 +196,7 @@ watchEffect(() => {
 
 function inIgnoredMessages(message: any) {
   return (
+    message.msg === 'captureClipping' ||
     message.msg === 'captureThumbnail' ||
     message.name === 'reload-spaces' ||
     message.name === 'zero-shot-classification'
@@ -380,8 +375,10 @@ const setPaddingTop = () => {
   //paddingTop.value = showSearchToolbarHelper.value ? 'padding-top: 80px' : 'padding-top: 48px'
 }
 
-const clickedSomewhere = () => {
-  console.log('clicked!!')
+const openRecipeOverview = () => {
+  NavigationService.openOrCreateTab([
+    chrome.runtime.getURL(`www/index.html#/mainpanel/rezepte/${currentTabset.value!.id}`),
+  ])
 }
 
 setPaddingTop()

@@ -7,6 +7,7 @@ import { DynamicTabSource } from 'src/tabsets/models/DynamicTabSource'
 import { SharingInfo } from 'src/tabsets/models/SharingInfo'
 import { Tab } from 'src/tabsets/models/Tab'
 import { TabsetColumn } from 'src/tabsets/models/TabsetColumn'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { ListDetailLevel } from 'src/ui/stores/uiStore'
 
 export enum TabsetStatus {
@@ -95,6 +96,8 @@ export class Tabset {
   sorting: string = 'custom'
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT
+
+  contentClassification: ContentClassification = 'unclassified'
 
   bookmarkId: string | undefined = undefined
 

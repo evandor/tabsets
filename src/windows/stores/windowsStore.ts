@@ -206,9 +206,9 @@ export const useWindowsStore = defineStore('windows', () => {
     // if (!useFeaturesStore().hasFeature(FeatureIdent.WINDOWS_MANAGEMENT) || !inBexMode()) {
     //   return
     // }
-    console.debug(
-      `chrome windows listeners setup triggered (${trigger}), keepWindowsFromStorage: ${keepWindowsFromStorage}`,
-    )
+    // console.debug(
+    //   `chrome windows listeners setup triggered (${trigger}), keepWindowsFromStorage: ${keepWindowsFromStorage}`,
+    // )
 
     if (!chrome.windows) {
       return
@@ -454,7 +454,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function updateWindowIndex(windowId: number, indexToUse: number) {
-    console.log('updating window index', windowId, indexToUse)
+    //console.log('updating window index', windowId, indexToUse)
     return storage.getWindow(windowId).then((w: Window | undefined) => {
       if (w) {
         w.index = indexToUse

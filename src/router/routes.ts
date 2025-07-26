@@ -160,10 +160,21 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue'),
       },
       {
+        path: 'rezepte/:tabsetId',
+        component: () => import('layouts/RezepteLayout.vue'),
+        children: [{ path: '', component: () => import('src/pages/rezepte/IndexPage.vue') }],
+      },
+      {
         path: 'visualizations/folders',
         component: () => import('src/tabsets/pages/MainPanelFolderVisualisationPage.vue'),
       },
     ],
+  },
+
+  {
+    path: '/recipe',
+    component: () => import('layouts/RezepteLayout.vue'),
+    children: [{ path: ':id', component: () => import('pages/rezepte/RecipeDetail.vue') }],
   },
 
   /** Overlay **/

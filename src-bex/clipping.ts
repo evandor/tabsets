@@ -1,6 +1,3 @@
-// @ts-expect-error TODO
-import { bexContent } from 'quasar/wrappers'
-
 class Clipper {
   clippingArea: any
   clickedX = 0
@@ -159,13 +156,12 @@ class Crosshair {
   }
 }
 
-export default bexContent((bridge: any) => {
-  console.log('tabsets: initializing content script for clipping')
-  const clipper = new Clipper()
-  try {
-    clipper.remove()
-  } catch (e) {
-    // ignore
-  }
-  clipper.start()
-})
+// export default bexContent((bridge: any) => {
+console.log('tabsets: initializing content script for clipping')
+const clipper = new Clipper()
+try {
+  clipper.remove()
+} catch (e) {
+  // ignore
+}
+clipper.start()
