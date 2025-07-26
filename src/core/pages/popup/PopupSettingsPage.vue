@@ -6,6 +6,7 @@
     <div class="justify-start items-start greyBorderTop">
       <q-tabs align="left" inline-label v-model="tab" no-caps>
         <q-tab name="appearance" :label="t('appearance')" />
+        <q-tab name="ai" label="AI Integration" v-if="useFeaturesStore().hasFeature(FeatureIdent.AI)" />
         <q-tab name="tags" label="Tags" v-if="useFeaturesStore().hasFeature(FeatureIdent.TAGS)" />
         <q-tab name="features" label="More Features" />
         <q-tab name="ignored" label="Ignored Urls" v-if="showIgnored()" />
@@ -18,6 +19,10 @@
 
     <div v-if="tab === 'appearance'">
       <AppearanceSettings :dense="true" />
+    </div>
+
+    <div v-if="tab === 'ai'">
+      <AiSettings :dense="true" />
     </div>
 
     <div v-if="tab === 'tags'">
@@ -152,6 +157,7 @@ import { onMounted, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
+import AiSettings from 'pages/helper/AiSettings.vue'
 import TagsSettings from 'pages/helper/TagsSettings.vue'
 import { AppFeatures } from 'src/app/models/AppFeatures'
 import { SettingIdent } from 'src/app/models/SettingIdent'

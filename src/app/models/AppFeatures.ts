@@ -435,9 +435,9 @@ export class AppFeatures {
     ),
     new Feature(
       FeatureIdent.AI,
-      'DISABLED',
+      'EXPERIMENTAL',
       'AI Features',
-      'active additional AI Features like language detection, summaries etc.',
+      'active additional AI Features like language detection, summaries etc. You need to provide an API Key for your favorite AI provider',
       'sym_o_play_circle',
       '',
       ['all', 'popup'],
