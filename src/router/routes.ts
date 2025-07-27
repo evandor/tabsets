@@ -198,13 +198,16 @@ const routes: RouteRecordRaw[] = [
   /** Public (PWA) **/
   {
     path: '/p', // p <=> 'public'
-    component: () => import('layouts/PublicLayout.vue'),
+    component: () => import('layouts/BibblyLayout.vue'),
     children: [
       // {
       //   path: 'imp',
       //   component: () => import('layouts/PlainLayout.vue'),
       //   children: [{ path: ':sharedId', component: () => import('pages/public/ImportPublicTabsetPage.vue') }],
       // },
+      { path: 'home', component: () => import('src/pages/WelcomePageDesktop.vue') },
+      { path: 'login', component: () => import('src/pages/LoginPage.vue') },
+      { path: 'register', component: () => import('src/pages/RegisterPage.vue') },
       { path: 'tabsets', component: () => import('src/tabsets/pages/PublicTabsetPage.vue') },
       { path: 'tabsets/:id', component: () => import('src/tabsets/pages/PublicTabsetPage.vue') },
       { path: 'tabs/:tabId', component: () => import('src/tabsets/pages/PublicTabsetPage.vue') },

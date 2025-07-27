@@ -36,18 +36,21 @@ watchEffect(async () => {
     $q.loading.hide()
     if (user.isAnonymous) {
       console.log('user anonymous', user.isAnonymous)
-      router.push('/p/tabsets')
+      // router.push('/p/tabsets')
+      router.push('/p/home')
     } else {
       console.log('user authenticated, redirecting to', currentTabsetId)
       if (currentTabsetId) {
         router.push(`/tabsets/${currentTabsetId}`)
       } else {
-        router.push('/tabsets')
+        // router.push('/tabsets')
+        router.push('/home')
       }
     }
   } else {
     $q.loading.hide()
-    router.push('/p/tabsets')
+    // router.push('/p/tabsets')
+    router.push('/p/home')
   }
 })
 </script>
