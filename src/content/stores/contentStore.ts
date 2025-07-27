@@ -66,16 +66,23 @@ export const useContentStore = defineStore('content', () => {
     currentTabArticle.value = undefined
     currentTabTags.value = []
 
-    console.log('000>>>', browserTab.id, browserTab.url)
+    console.log('000>>>', browserTab.id, browserTab.url, browserTab)
     if (browserTab.url && browserTab.id) {
       try {
         const r = await chrome.tabs.sendMessage(browserTab.id, 'getExcerpt', {}) //, async (res) => {
         console.log('getContent returned result with length', r, r?.html.length, browserTab.id)
         await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
-        console.log('pushing', currentTabMetas.value)
-        useTagsService()
-          .tagsFromKeywords(currentTabMetas.value['keywords' as keyof object] as string)
-          .forEach(pushTagsInfo())
+
+        currentTabTags.value = useTagsService().analyse(
+          currentTabMetas.value,
+          currentTabArticle.value,
+          currentTabUrl.value,
+        )
+
+        // console.log('pushing', currentTabMetas.value)
+        // useTagsService()
+        //   .tagsFromKeywords(currentTabMetas.value['keywords' as keyof object] as string)
+        //   .forEach(pushTagsInfo())
       } catch (err: any) {
         console.log('got error: ', err)
       }

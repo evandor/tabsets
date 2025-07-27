@@ -194,9 +194,16 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     browserTabs.value = await queryTabs()
     await setCurrentTab()
 
+    useTabsetsUiStore()
+      .updateExtensionIcon(chromeTab)
+      .catch((err: any) => console.error('error', err))
+    await useContentStore()
+      .resetFor(chromeTab)
+      .catch((err: any) => console.error('error', err))
+
     useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
     useTabsetService().urlWasActivated(chromeTab.url)
-    useTabsetsUiStore().updateExtensionIcon(chromeTab)
+    currentChromeTab.value = chromeTab
 
     await checkSwitchTabsetSuggestion(chromeTab.windowId)
   }
