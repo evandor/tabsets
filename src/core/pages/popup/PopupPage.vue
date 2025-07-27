@@ -710,8 +710,11 @@ const tooltipFor = (info: TagInfo): string => {
         tooltip += ' (score ' + Math.round(info.score * 1000) / 10 + '%)'
       }
       break
+    case 'languageModel':
+      tooltip = "LanguageModel, derived from site's description using static analysis"
+      break
     default:
-      tooltip = ''
+      tooltip = info.type
   }
   return tooltip
 }

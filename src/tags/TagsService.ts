@@ -6,8 +6,11 @@ import stats from 'compromise-stats'
 import nlpDE from 'de-compromise'
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { CategoryInfo, TagInfo, TagType } from 'src/core/models/TagInfo'
 import { useUtils } from 'src/core/services/Utils'
+import ContentUtils from 'src/core/utils/ContentUtils'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
@@ -219,6 +222,69 @@ export function useTagsService() {
     }
   }
 
+  function langFromHostname(url: string | undefined): string {
+    if (url) {
+      try {
+        const hostname = new URL(url).hostname
+        return hostname.split('.')[hostname.split('.').length - 1] || 'en'
+      } catch (e) {
+        return 'en'
+      }
+    }
+    return 'en'
+  }
+
+  const analyse = (metas: object, article: object | undefined, url: string | undefined): TagInfo[] => {
+    function pushTagsInfo() {
+      return (ti: TagInfo) => tagsInfo.push(ti)
+    }
+
+    console.log('analysing...')
+    const tagsInfo: TagInfo[] = []
+    let description: string = metas['description' as keyof object] || '' //alternatives?
+    let text = description
+    if (article && article['content' as keyof object]) {
+      text = ContentUtils.html2text(article['content' as keyof object])
+    }
+
+    if (url) {
+      tagsFromUrl(url).forEach(pushTagsInfo())
+    }
+
+    if (metas['keywords' as keyof object]) {
+      tagsFromKeywords(metas['keywords' as keyof object] as string).forEach(pushTagsInfo())
+    }
+
+    const currentTabset = useTabsetsStore().getCurrentTabset
+    if (currentTabset) {
+      tagsFromHierarchy(currentTabset).forEach(pushTagsInfo())
+    }
+
+    if (description) {
+      if (useFeaturesStore().hasFeature(FeatureIdent.AI) && description && description.trim().length > 10) {
+        try {
+          // @ts-expect-error xxx
+          LanguageDetector.create().then((detector: any) => {
+            detector.detect(text).then((results: any[]) => {
+              if (results.length > 0) {
+                var language = results[0].detectedLanguage
+                var confidence = results[0].confidence || 0
+                tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
+                tagsFromLanguageModel(description, language).forEach(pushTagsInfo())
+              }
+            })
+          })
+        } catch (e) {
+          tagsFromLanguageModel(description, langFromHostname(url)).forEach(pushTagsInfo())
+          console.log('error with language detection')
+        }
+      } else if (description && description.trim().length > 10) {
+        tagsFromLanguageModel(description, langFromHostname(url)).forEach(pushTagsInfo())
+      }
+    }
+    return deduplicateTags(tagsInfo)
+  }
+
   return {
     deduplicateTags,
     tagsFromKeywords,
@@ -229,5 +295,6 @@ export function useTagsService() {
     tagsFromLanguageModel,
     getDynamicTabsBy,
     addToIgnored,
+    analyse,
   }
 }

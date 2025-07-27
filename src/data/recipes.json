@@ -1,0 +1,147 @@
+[
+  {
+    "id": "1",
+    "title": "Spaghetti Bolognese",
+    "category": "Hauptgericht",
+    "ingredients": [
+      { "amount": "400 g", "product": "Spaghetti" },
+      { "amount": "500 g", "product": "gemischtes Hackfleisch" },
+      { "amount": "80 g", "product": "italienischer Pancetta" },
+      { "amount": "1 Stange", "product": "Staudensellerie" },
+      { "amount": "220 g", "product": "Möhre, ﻿(geschält ca. 200)" },
+      { "amount": "1 mittelgroße", "product": "Zwiebel, geschält ﻿ca. 200 g)" },
+      { "amount": "2", "product": "Knoblauchzehen" },
+      { "amount": "2 EL", "product": "Tomatenmark" },
+      { "amount": "200 ml", "product": "trockener Rotwein" },
+      { "amount": "800 ml", "product": "stückige Tomaten (Heinz)" },
+      { "amount": "100 ml", "product": "Rinderfond (oder Brühe oder Wasser)" },
+      { "amount": "1 Stück", "product": "Rinde vom Parmesan" },
+      { "amount": "1", "product": "Lorbeerblatt (getrocknet)" },
+      { "amount": "2 EL", "product": "getrockneter Oregano" },
+      { "amount": "60 g", "product": "Parmesan" },
+      { "amount": "", "product": "Olivenöl" },
+      { "amount": "", "product": "Salz" },
+      { "amount": "", "product": "schwarzer Pfeffer" },
+      { "amount": "", "product": "1 Prise Zucker" }
+    ],
+    "instructions": [
+      "Die Zwiebel, Möhre, Sellerie, Pancetta und Knoblauch fein würfeln.",
+      "Olivenöl in einer Pfanne erhitzen und die gewürfelten Zutaten bei mittlerer Hitze anbraten, bis sie weich sind.",
+      "Das Hackfleisch dazugeben und krümelig braten.",
+      "Tomatenmark einrühren und kurz mitrösten.",
+      "Mit Rotwein ablöschen und kurz einkochen lassen.",
+      "Stückige Tomaten, Rinderfond, Parmesanrinde, Lorbeerblatt und Oregano hinzufügen.",
+      "Mit Salz, Pfeffer und einer Prise Zucker würzen.",
+      "Die Sauce bei geringer Hitze ca. 1,5–2 Stunden köcheln lassen.",
+      "Parmesan reiben und zum Schluss in die Sauce rühren.",
+      "Mit Spaghetti servieren."
+    ],
+    "prepTime": 15,
+    "cookTime": 30,
+    "portions": 2,
+    "image": "https://www.malteskitchen.de/wp-content/uploads/2022/09/spaghetti-bolognese-1277.jpg",
+    "source": "https://www.malteskitchen.de/spaghetti-bolognese/",
+    "domain": "malteskitchen.de"
+  },
+  {
+    "id": "2",
+    "title": "Kaiserschmarrn",
+    "category": "Dessert",
+    "ingredients": [
+      { "amount": "4", "product": "Eier" },
+      { "amount": "250 ml", "product": "Milch" },
+      { "amount": "150 g", "product": "Mehl" },
+      { "amount": "1 EL", "product": "Zucker" },
+      { "amount": "", "product": "Butter" },
+      { "amount": "", "product": "Rosinen" },
+      { "amount": "", "product": "Puderzucker" }
+    ],
+    "instructions": [
+      "Eier trennen, Eischnee schlagen.",
+      "Eigelb mit Milch, Mehl und Zucker verrühren.",
+      "Eischnee unterheben.",
+      "In Butter braten, in Stücke reißen.",
+      "Rosinen dazugeben und mit Puderzucker bestäuben."
+    ],
+    "prepTime": 10,
+    "cookTime": 20,
+    "portions": 3,
+    "image": "https://img.chefkoch-cdn.de/rezepte/1900361309694639/bilder/1356391/crop-960x640/altbaerlis-kaiserschmarrn.jpg",
+    "source": "https://www.madamecuisine.de/apfel-zimt-tarte/",
+    "domain": "madamecuisine.de"
+  },
+  {
+    "id": "3",
+    "title": "Gemüsecurry",
+    "category": "Vegetarisch",
+    "ingredients": [
+      { "amount": "1", "product": "Zucchini" },
+      { "amount": "2", "product": "Karotten" },
+      { "amount": "1", "product": "Paprika" },
+      { "amount": "1 Dose", "product": "Kokosmilch" },
+      { "amount": "2 TL", "product": "Currypaste" },
+      { "amount": "1", "product": "Zwiebel" },
+      { "amount": "", "product": "Öl" },
+      { "amount": "", "product": "Salz" }
+    ],
+    "instructions": [
+      "Gemüse klein schneiden, in Öl anbraten.",
+      "Currypaste hinzufügen.",
+      "Mit Kokosmilch ablöschen und köcheln lassen.",
+      "Mit Salz abschmecken."
+    ],
+    "prepTime": 15,
+    "cookTime": 20,
+    "portions": 6,
+    "image": "https://img.chefkoch-cdn.de/rezepte/3322191493307183/bilder/1014237/crop-958x539/schnelles-gemuesecurry.jpg",
+    "source": "https://www.chefkoch.de/rezepte/3322191493307183/Schnelles-Gemuesecurry.html",
+    "domain": "chefkoch.de"
+  },
+  {
+    "id": "4",
+    "title": "Caesar Salad",
+    "category": "Salat",
+    "ingredients": [
+      { "amount": "250 g", "product": "Römersalat" },
+      { "amount": "50 g", "product": "Weißbrot (für Croutons)" },
+      { "amount": "50 g", "product": "Parmesan" },
+      { "amount": "20 g", "product": "Butter" },
+      { "amount": "", "product": "Caesar-Dressing" }
+    ],
+    "instructions": [
+      "Salat waschen, Hähnchen anbraten und schneiden.",
+      "Toastwürfel rösten.",
+      "Alles mit Dressing vermengen.",
+      "Mit Parmesan bestreuen."
+    ],
+    "prepTime": 10,
+    "cookTime": 10,
+    "portions": 3,
+    "image": "https://img.chefkoch-cdn.de/rezepte/881931193745079/bilder/1489601/crop-642x428/cesar-salat.jpg",
+    "source": "https://www.chefkoch.de/rezepte/881931193745079/Cesar-Salat.html",
+    "domain": "chefkoch.de"
+  },
+  {
+    "id": "5",
+    "title": "Pfannkuchen",
+    "category": "Frühstück",
+    "ingredients": [
+      { "amount": "2", "product": "Eier" },
+      { "amount": "200 ml", "product": "Milch" },
+      { "amount": "125 g", "product": "Mehl" },
+      { "amount": "1", "product": "Prise Salz" },
+      { "amount": "", "product": "Butter zum Braten" }
+    ],
+    "instructions": [
+      "Eier, Milch, Mehl und Salz zu einem Teig verrühren.",
+      "In Butter goldbraun ausbacken.",
+      "Nach Wunsch mit Marmelade, Zucker oder Apfelmus servieren."
+    ],
+    "prepTime": 5,
+    "cookTime": 15,
+    "portions": 2,
+    "image": "https://img.chefkoch-cdn.de/rezepte/1208161226570428/bilder/1573862/crop-958x539/der-perfekte-pfannkuchen-gelingt-einfach-immer.jpg",
+    "source": "https://www.chefkoch.de/rezepte/1208161226570428/Der-perfekte-Pfannkuchen-gelingt-einfach-immer.html",
+    "domain": "chefkoch.de"
+  }
+]

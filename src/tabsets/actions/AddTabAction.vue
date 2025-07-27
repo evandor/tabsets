@@ -43,7 +43,7 @@ const alreadyInTabset = ref(false)
 const animateAddtabButton = ref(false)
 
 const clicked = () => {
-  console.log('clicked!')
+  console.log('clicked!!', props.currentChromeTab)
   if (props.currentChromeTab) {
     const newTab: Tab = new Tab(uid(), props.currentChromeTab)
     return useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))

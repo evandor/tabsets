@@ -3,6 +3,7 @@ import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useLogger } from 'src/core/services/Logger'
 import { useUtils } from 'src/core/services/Utils'
 import Analytics from 'src/core/utils/google-analytics'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 
 const { sendMsg } = useUtils()
@@ -29,12 +30,13 @@ export class RenameTabsetCommand implements Command<any> {
     public tabsetId: string,
     public newName: string,
     public newColor: string | undefined = undefined,
+    public contentClassification: ContentClassification = 'unclassified',
     public window: string = 'current',
   ) {}
 
   async execute(): Promise<ExecutionResult<string>> {
     return useTabsetService()
-      .rename(this.tabsetId, this.newName, this.newColor, this.window)
+      .rename(this.tabsetId, this.newName, this.newColor, this.contentClassification, this.window)
       .then((res) => {
         info('renamed tabset')
         sendMsg('tabset-renamed', {

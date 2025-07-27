@@ -78,7 +78,7 @@ class AppEventDispatcher {
             .catch((err: any) => console.warn('error in IgnoreUrlCommand', err))
           return Promise.resolve({})
         case 'run-metrics':
-          const stats = StatsUtils.calcStatsRows()
+          const stats = StatsUtils.calcStatsRows(0, 0)
           useMetrics().count('tabsets', stats.find((s) => s.name === 'Tabsets')?.count || 0)
           useMetrics().count('tabs', stats.find((s) => s.name === 'Tabs')?.count || 0)
           useMetrics().count('spaces', stats.find((s) => s.name === 'Spaces')?.count || 0)

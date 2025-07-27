@@ -73,29 +73,50 @@ const rows = ref<StatRow[]>([])
 const currentWindowName = ref('---')
 const statsSnapshot = ref<object | undefined>(undefined)
 
+const indexedDBQuota = ref<number>(0)
+const swRegQuota = ref<number>(0)
+
+const calcStorage = async () => {
+  return navigator.storage.estimate().then((v: StorageEstimate) => {
+    console.log('v', v)
+    // @ts-expect-error xxx
+    indexedDBQuota.value = Math.round((100 * (v?.usageDetails?.indexedDB || 0)) / (1024 * 1024)) / 100
+    // @ts-expect-error xxx
+    swRegQuota.value = Math.round((100 * (v?.usageDetails?.serviceWorkerRegistrations || 0)) / (1024 * 1024)) / 100
+  })
+}
+
 onMounted(() => {
   statsSnapshot.value = (localstorage.getItem('stats') as object) || undefined
-  rows.value = StatsUtils.calcStatsRows()
+  calcStorage().then(() => {
+    rows.value = StatsUtils.calcStatsRows(indexedDBQuota.value, swRegQuota.value)
+  })
 })
 
 watch(
   () => useWindowsStore().currentBrowserWindows,
   (newWindows, oldWindows) => {
-    rows.value = StatsUtils.calcStatsRows()
+    calcStorage().then(() => {
+      rows.value = StatsUtils.calcStatsRows(indexedDBQuota.value, swRegQuota.value)
+    })
   },
 )
 
 watch(
   () => useTabsetsStore().allTabsCount,
   (a, b) => {
-    rows.value = StatsUtils.calcStatsRows()
+    calcStorage().then(() => {
+      rows.value = StatsUtils.calcStatsRows(indexedDBQuota.value, swRegQuota.value)
+    })
   },
 )
 
 watch(
   () => useTabsetsStore().tabsets.size,
   (a, b) => {
-    rows.value = StatsUtils.calcStatsRows()
+    calcStorage().then(() => {
+      rows.value = StatsUtils.calcStatsRows(indexedDBQuota.value, swRegQuota.value)
+    })
   },
 )
 
@@ -110,25 +131,33 @@ watchEffect(() => {
 watch(
   () => useTabsStore2().tabsCount,
   (a, b) => {
-    rows.value = StatsUtils.calcStatsRows()
+    calcStorage().then(() => {
+      rows.value = StatsUtils.calcStatsRows(indexedDBQuota.value, swRegQuota.value)
+    })
   },
 )
 
 watch(
   () => useWindowsStore().currentBrowserWindows,
   (a, b) => {
-    rows.value = StatsUtils.calcStatsRows()
+    calcStorage().then(() => {
+      rows.value = StatsUtils.calcStatsRows(indexedDBQuota.value, swRegQuota.value)
+    })
   },
 )
 
 const saveStatsSnapshot = () => {
-  const newStats = {
-    date: new Date().getTime().toString(),
-    values: StatsUtils.calcStatsRows(),
-  }
-  localstorage.set('stats', newStats)
-  statsSnapshot.value = newStats
-  rows.value = StatsUtils.calcStatsRows()
+  calcStorage().then(() => {
+    const newStats = {
+      date: new Date().getTime().toString(),
+      values: StatsUtils.calcStatsRows(indexedDBQuota.value, swRegQuota.value),
+    }
+    localstorage.set('stats', newStats)
+    statsSnapshot.value = newStats
+    calcStorage().then(() => {
+      rows.value = StatsUtils.calcStatsRows(indexedDBQuota.value, swRegQuota.value)
+    })
+  })
 }
 
 const snapshotDate = () => {

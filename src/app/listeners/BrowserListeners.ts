@@ -365,13 +365,15 @@ class BrowserListeners {
     const blob = await this.capture(request)
     const currentTS = useTabsetsStore().getCurrentTabset
 
+    console.log('--- currentTS ---', sender.tab, currentTS)
+
     if (sender.tab && currentTS) {
-      //console.log('blob', blob)
+      console.log('blob', blob)
       const blobId = await useTabsetService().saveBlob(sender.tab, blob as Blob)
 
       const newTab = new Tab(uid(), sender.tab)
       newTab.image = 'blob://' + blobId
-      //console.log('newTab', newTab)
+      console.log('newTab', currentTS.id, newTab)
       this.addToTabset(currentTS.id, newTab)
     }
 

@@ -267,7 +267,7 @@
           </div>
         </template>
         <template v-else-if="ref.type === TabReferenceType.LINKING_DATA">
-          <div class="text-caption text-bold">found Linking Data:</div>
+          <div class="text-caption text-bold">found Linking Data ({{ ref.data['@type' as keyof object] }}):</div>
           <div class="text-caption">
             <div class="cursor-pointer" @click="openInJsonCrackEditor(JSON.stringify(ref.data))">
               {{ linkingHeading(ref.data) }}

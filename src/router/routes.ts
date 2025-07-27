@@ -1,5 +1,5 @@
 import { useAuthStore } from 'stores/authStore'
-import { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -54,6 +54,11 @@ const routes: RouteRecordRaw[] = [
     path: '/popup/login',
     component: () => import('layouts/PopupLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupLoginPage.vue') }],
+  },
+  {
+    path: '/overlay/annotations',
+    component: () => import('layouts/PlainLayout.vue'),
+    children: [{ path: '', component: () => import('src/annotations/AnnotationOverlay.vue') }],
   },
 
   /** FullPage **/
@@ -178,6 +183,15 @@ const routes: RouteRecordRaw[] = [
         path: 'tabsets/overview/:tabsetId',
         component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue'),
       },
+      {
+        path: 'rezepte/:tabsetId',
+        component: () => import('layouts/RezepteLayout.vue'),
+        children: [{ path: '', component: () => import('src/pages/rezepte/IndexPage.vue') }],
+      },
+      {
+        path: 'visualizations/folders',
+        component: () => import('src/tabsets/pages/MainPanelFolderVisualisationPage.vue'),
+      },
     ],
   },
 
@@ -210,6 +224,12 @@ const routes: RouteRecordRaw[] = [
       { path: ':sharedId', component: () => import('pages/public/SharedTabsetInfoPage.vue') },
       { path: 'tabsets/:sharedId', component: () => import('src/tabsets/pages/SharedTabsetPage.vue') },
     ],
+  },
+
+  {
+    path: '/recipe',
+    component: () => import('layouts/RezepteLayout.vue'),
+    children: [{ path: ':id', component: () => import('pages/rezepte/RecipeDetail.vue') }],
   },
 
   /** PWA ??? */

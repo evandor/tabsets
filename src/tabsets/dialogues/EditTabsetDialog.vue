@@ -19,6 +19,17 @@
         <div class="text-body2 text-warning">{{ newTabsetDialogWarning() }}</div>
       </q-card-section>
 
+      <q-card-section>
+        <q-select
+          label="Classification"
+          filled
+          v-model="classificationOption"
+          :options="classificationOptions"
+          map-options
+          emit-value
+          style="width: 250px" />
+      </q-card-section>
+
       <!--      <q-card-section v-if="useUiStore().showDetailsPerTabset">-->
       <!--        <q-select-->
       <!--          label="Tabset's Detail Level"-->
@@ -91,6 +102,7 @@ import ColorSelector from 'src/core/dialog/ColorSelector.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { RenameTabsetCommand } from 'src/tabsets/commands/RenameTabsetCommand'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { ListDetailLevel } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
@@ -104,12 +116,14 @@ type Props = {
   tabsetColor?: string
   window?: string
   details: ListDetailLevel
+  contentClassification: ContentClassification
   fromPanel: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   details: 'MINIMAL',
   fromPanel: false,
+  contentClassification: 'unclassified',
 })
 
 const { dialogRef, onDialogHide, onDialogCancel } = useDialogPluginComponent()
@@ -118,7 +132,6 @@ const newTabsetName = ref(props.tabsetName)
 const newTabsetNameExists = ref(false)
 const hideWarning = ref(false)
 const windowMgtSelectionHasFocus = ref(false)
-// const windowMgtSelectionEdited = ref(false)
 const theColor = ref<string | undefined>(props.tabsetColor || undefined)
 const windowOptions = ref<string[]>([])
 const detailOption = ref<ListDetailLevel>(props.details)
@@ -128,6 +141,13 @@ const detailOptions = [
   { label: 'Some Details', value: 'SOME' },
   { label: 'All Details', value: 'MAXIMAL' },
   { label: 'Default', value: 'DEFAULT' },
+]
+
+const classificationOption = ref<ContentClassification>(props.contentClassification)
+
+const classificationOptions = [
+  { label: 'Unclassified', value: 'unclassified' },
+  { label: 'Rezepte', value: 'recipe' },
 ]
 
 watchEffect(() => {
@@ -154,7 +174,7 @@ watchEffect(() => {
 
 const updateTabset = () =>
   useCommandExecutor().executeFromUi(
-    new RenameTabsetCommand(props.tabsetId, newTabsetName.value, theColor.value, 'current'),
+    new RenameTabsetCommand(props.tabsetId, newTabsetName.value, theColor.value, classificationOption.value, 'current'),
   )
 
 const newTabsetDialogWarning = () => {
@@ -174,6 +194,7 @@ const disableSubmit = (): boolean => {
     newTabsetName.value.trim().length === 0 ||
     (newTabsetName.value.trim() === props.tabsetName &&
       theColor.value?.trim() === props.tabsetColor &&
+      props.contentClassification === classificationOption.value &&
       props.details === detailOption.value) ||
     newTabsetDialogWarning() !== '' ||
     windowMgtSelectionHasFocus.value

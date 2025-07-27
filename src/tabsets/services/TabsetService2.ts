@@ -16,6 +16,8 @@ import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import JsUtils from 'src/core/utils/JsUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { BlobType } from 'src/snapshots/models/BlobMetadata'
+import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useAuthStore } from 'src/stores/authStore'
 import { GithubWriteEventCommand, TabEvent, TabsetEvent } from 'src/tabsets/commands/github/GithubWriteEventCommand'
@@ -23,6 +25,7 @@ import { SaveOrReplaceResult } from 'src/tabsets/models/SaveOrReplaceResult'
 import { Tab } from 'src/tabsets/models/Tab'
 import { TabInFolder } from 'src/tabsets/models/TabInFolder'
 import { ChangeInfo, Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService' // let db: TabsetsPersistence = null as unknown as TabsetsPersistence
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
@@ -526,13 +529,17 @@ export function useTabsetService() {
   }
 
   const saveBlob = (tab: chrome.tabs.Tab | undefined, blob: Blob): Promise<string> => {
-    // if (tab && tab.url) {
-    //   const id: string = uid()
-    //   return db.saveBlob(id, tab.url, blob, BlobType.PNG, '')
-    //     .then(() => Promise.resolve(id))
-    //     .catch(err => Promise.reject(err))
-    // }
-    return Promise.reject('no tab or tab url')
+    if (!tab || !tab.url) {
+      return Promise.reject('no tab or tab url')
+    }
+    const id: string = uid()
+    return (
+      useSnapshotsStore()
+        .savePng(id, tab.url, blob, BlobType.PNG)
+        // return db.saveBlob(id, tab.url, blob, BlobType.PNG, '')
+        .then(() => Promise.resolve(id))
+        .catch((err: any) => Promise.reject(err))
+    )
   }
 
   const getBlob = (blobId: string): Promise<any> => {
@@ -976,6 +983,7 @@ export function useTabsetService() {
     tabsetId: string,
     tabsetName: string,
     newColor: string | undefined,
+    contentClassification: ContentClassification = 'unclassified',
     window: string = 'current',
   ): Promise<object> => {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')
@@ -989,6 +997,7 @@ export function useTabsetService() {
       tabset.name = trustedName
       tabset.color = trustedColor
       tabset.window = window
+      tabset.contentClassification = contentClassification
       //console.log("saving tabset", tabset)
       return saveTabset(tabset).then(() =>
         Promise.resolve({

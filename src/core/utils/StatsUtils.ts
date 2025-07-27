@@ -30,7 +30,8 @@ class StatsUtils {
     }
   }
 
-  calcStatsRows = (): StatRow[] => {
+  // TODO create a quota store instead of passing in these parameters
+  calcStatsRows = (indexedDBQuota: number, swRegQuota: number): StatRow[] => {
     const statsSnapshot = (LocalStorage.getItem('stats') as object) || undefined
 
     return [
@@ -51,12 +52,6 @@ class StatsUtils {
         count: useSpacesStore().spaces.size,
         snapshot: this.getFromSnapshot(statsSnapshot, 'Spaces'),
         quota: useAuthStore().limitExceeded('SPACES', useSpacesStore().spaces.size).quota,
-      },
-      {
-        name: 'Thumbnails (MByte)',
-        count: useAuthStore().getUserData().thumbnails,
-        snapshot: this.getFromSnapshot(statsSnapshot, 'Thumbnails'),
-        quota: useAuthStore().limitExceeded('THUMBNAILS', useAuthStore().getUserData().thumbnails).quota,
       },
       {
         name: 'Bookmarks',
@@ -83,6 +78,24 @@ class StatsUtils {
         count: useTabsStore2().tabsCount,
         snapshot: this.getFromSnapshot(statsSnapshot, 'Open Tabs'),
         quota: undefined,
+      },
+      {
+        name: 'local storage (MByte)',
+        count: indexedDBQuota,
+        snapshot: this.getFromSnapshot(statsSnapshot, 'indexedDBQuota'),
+        quota: undefined,
+      },
+      {
+        name: 'service worker (MByte)',
+        count: swRegQuota,
+        snapshot: this.getFromSnapshot(statsSnapshot, 'swRegQuota'),
+        quota: undefined,
+      },
+      {
+        name: 'Thumbnails (MByte)',
+        count: useAuthStore().getUserData().thumbnails,
+        snapshot: this.getFromSnapshot(statsSnapshot, 'Thumbnails'),
+        quota: useAuthStore().limitExceeded('THUMBNAILS', useAuthStore().getUserData().thumbnails).quota,
       },
     ]
   }
