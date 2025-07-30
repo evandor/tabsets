@@ -125,6 +125,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   return true
 })
 
+// const websiteData = getResponseData()
+//
+// useTagsService()
+//   .analyse(websiteData.metas, undefined, location.href)
+//   .then((answer) => {
+//     console.log('answer', answer)
+//   })
+
 // === Annotations code ===
 
 // // document.addEventListener('selectionchange', () => {

@@ -16,33 +16,30 @@
 
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none q-pt-xs">
-      <template v-if="useTabsetsStore().tabsets.size > 0">
-        <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
-          <div class="col-12 text-center" v-if="currentTabset && currentTabset.contentClassification === 'recipe'">
-            <q-btn label="Alle Rezepte" color="primary" size="xs" @click="openRecipeOverview()" />
-          </div>
-          <template v-if="currentTabset">
-            <SidePanelPageContent
-              v-if="useFolderExpansion === 'goInto'"
-              :tabset="currentTabset"
-              :key="currentTabset?.id"
-              :filter="filter"
-              @tabs-found="(n: number) => (filteredTabsCount = n)"
-              @folders-found="(n: number) => (filteredFoldersCount = n)" />
-            <SidePanelPageContentExpand
-              v-else
-              :tabset="currentTabset"
-              :key="currentTabset.id"
-              :filter="filter"
-              @tabs-found="(n: number) => (filteredTabsCount = n)"
-              @folders-found="(n: number) => (filteredFoldersCount = n)" />
-          </template>
-
-          <template v-if="useSettingsStore().has('DEBUG_MODE')">
-            <DebugInfo />
-          </template>
+      <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
+        <div class="col-12 text-center" v-if="currentTabset && currentTabset.contentClassification === 'recipe'">
+          <q-btn label="Alle Rezepte" color="primary" size="xs" @click="openRecipeOverview()" />
         </div>
-      </template>
+        <template v-if="currentTabset">
+          <SidePanelPageContent
+            v-if="useFolderExpansion === 'goInto'"
+            :tabset="currentTabset"
+            :key="currentTabset?.id"
+            :filter="filter"
+            @tabs-found="(n: number) => (filteredTabsCount = n)"
+            @folders-found="(n: number) => (filteredFoldersCount = n)" />
+          <SidePanelPageContentExpand
+            v-else
+            :tabset="currentTabset"
+            :key="currentTabset.id"
+            :filter="filter"
+            @tabs-found="(n: number) => (filteredTabsCount = n)"
+            @folders-found="(n: number) => (filteredFoldersCount = n)" />
+        </template>
+        <template v-if="useSettingsStore().has('DEBUG_MODE')">
+          <DebugInfo />
+        </template>
+      </div>
 
       <StartingHint v-if="showStartingHint()" />
     </div>
@@ -199,6 +196,7 @@ function inIgnoredMessages(message: any) {
     message.msg === 'captureClipping' ||
     message.msg === 'captureThumbnail' ||
     message.name === 'reload-spaces' ||
+    message.name === 'init-ai-module' ||
     message.name === 'zero-shot-classification'
   )
 }

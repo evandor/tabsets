@@ -25,7 +25,7 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   ;(async function () {
     if (message.name === 'init-ai-module') {
-      console.log('got message init-ai-module!!')
+      // console.log('got message init-ai-module!!')
       // try {
       //   await aiGateway.loadModule()
       //   sendResponse('ai module loaded')
@@ -184,7 +184,6 @@ bridge.on('new-annotation', async ({ payload }) => {
 
 // chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).then(() => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  console.log('got message', request)
   function openSidePanel(tabId: number) {
     const options = {
       // tabId: tabId,
@@ -208,7 +207,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     })
     // }
   } else if (request.msg === 'captureClipping') {
+  } else if (request.msg === 'init-ai-module') {
     //
+  } else {
+    console.log('got unhandled message', request)
   }
   return true
 })

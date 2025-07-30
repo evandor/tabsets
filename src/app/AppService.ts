@@ -9,6 +9,7 @@ import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { EXTENSION_NAME } from 'src/boot/constants'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
 import { useContentService } from 'src/content/services/ContentService'
+import { useContentStore } from 'src/content/stores/contentStore'
 import BexFunctions from 'src/core/communication/BexFunctions'
 import { SpaceInfo } from 'src/core/models/SpaceInfo'
 import { TabsetInfo } from 'src/core/models/TabsetInfo'
@@ -84,18 +85,25 @@ class AppService {
     await useContentService().init(IndexedDbContentPersistence)
 
     if (inBexMode()) {
-      chrome.tabs.query({ active: true, currentWindow: true }).then((currentTabs: chrome.tabs.Tab[]) => {
-        if (currentTabs.length > 0 && currentTabs[0]!.id) {
-          chrome.tabs
-            .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
-            .then((payload) => {
-              BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload })
-            })
-            .catch((err) => {
-              console.log('could not handle tab excerpt', err)
-            })
-        }
-      })
+      const currentTabs: chrome.tabs.Tab[] = await chrome.tabs.query({ active: true, currentWindow: true }) //.then((currentTabs: chrome.tabs.Tab[]) => {
+      if (currentTabs.length > 0 && currentTabs[0]!.id) {
+        useTabsetsUiStore()
+          .updateExtensionIcon(currentTabs[0]!)
+          .catch((err: any) => console.error('error', err))
+        await useContentStore()
+          .resetFor(currentTabs[0]!)
+          .catch((err: any) => console.error('error', err))
+
+        chrome.tabs
+          .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
+          .then((payload) => {
+            BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload })
+          })
+          .catch((err) => {
+            console.log('could not handle tab excerpt', err)
+          })
+      }
+      //})
     }
 
     await useRequestsService().init(IndexedDbRequestPersistence)

@@ -98,7 +98,8 @@
                   </q-select>
                 </template>
                 <template v-else>
-                  <q-spinner color="primary" size="1em" />
+                  <!--                  <q-spinner color="primary" size="1em" />-->
+                  ---
                 </template>
               </div>
             </div>
