@@ -1,7 +1,7 @@
 <template>
   <!-- PopupCollectionSelector -->
   <div class="row">
-    <div class="col q-ma-none q-pa-none text-center" style="border: 0 solid red">
+    <div class="col q-ma-none q-pa-none text-center">
       <div class="text-bold ellipsis">
         <template v-if="currentTabset">
           <q-input v-if="collectionMode === 'add'" v-model="newCollection" dense ref="newCollectionInputRef">

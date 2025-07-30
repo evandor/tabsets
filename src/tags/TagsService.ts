@@ -3,6 +3,10 @@ import nlp from 'compromise'
 import speech from 'compromise-speech'
 import stats from 'compromise-stats'
 // @ts-expect-error xxx
+import { Term } from 'compromise/types/misc'
+// @ts-expect-error xxx
+import View from 'compromise/types/view/one'
+// @ts-expect-error xxx
 import nlpDE from 'de-compromise'
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
@@ -63,7 +67,7 @@ export function useTagsService() {
   }
 
   const tagsFromKeywords = (keywordsString: string): TagInfo[] => {
-    console.log('tagsFromKeywords', keywordsString)
+    console.log(' <> tagsFromKeywords', keywordsString)
     const ignoredList: string[] = LocalStorage.getItem(TAGS_IGNORED) || []
     const keywords = [
       ...new Set(
@@ -74,18 +78,22 @@ export function useTagsService() {
           .filter((k: string) => ignoredList.indexOf(k) < 0),
       ),
     ]
-    return keywords.map((k: string) => {
+    const result: TagInfo[] = keywords.map((k: string) => {
       return { label: sanitizeContent(k.trim()), type: 'keyword', score: 1 }
     })
+    console.log(' <> tagsFromKeywords', result)
+    return result
   }
 
   const tagsFromHierarchy = (ts: Tabset): TagInfo[] => {
     const folderChain = useTabsetsStore().getFolderNameChain(ts, ts.folderActive || ts.id)
+    console.log(' <> tags from hierarchy:', folderChain.join(', '))
     const hierarchies: TagInfo[] = folderChain
       .map((name: string) => sanitizeContent(name.replaceAll(' ', '').trim().toLowerCase()))
       .map((name: string) => {
         return { label: sanitizeContent(name), type: 'hierarchy', score: 1 }
       })
+    console.log(' <> tags from hierarchy:', hierarchies)
     return hierarchies
   }
 
@@ -102,7 +110,10 @@ export function useTagsService() {
       if (topLevelDomain) {
         result.push({ label: topLevelDomain, type: 'url', score: 1 })
       }
-      console.log('checking path', theURL.pathname)
+      console.log(
+        ' <> tags from URL',
+        theURL.pathname.length > 40 ? theURL.pathname.substring(0, 40) + '...' : theURL.pathname,
+      )
       theURL.pathname
         .replace('.html', '')
         .split('/')
@@ -119,7 +130,7 @@ export function useTagsService() {
           result.push({ label: p, type: 'url', score: 1 })
         })
     } catch (e: any) {}
-    console.log('result', result)
+    console.log(' <> tags from URL:', result)
     return result
   }
 
@@ -156,47 +167,95 @@ export function useTagsService() {
   }
 
   const tagsFromLanguageModel = (text: string, language: string): TagInfo[] => {
-    let doc = null
-    console.log('>>>', text, language)
+    let result: TagInfo[] = []
+    console.log(` <> tags from description (${language})`, text.length > 40 ? text.substring(0, 40) + '...' : text)
+    let doc: View | undefined = undefined
     switch (language) {
       case 'de':
-        console.log('using german')
+        console.log(' <> using german')
         nlpDE.plugin(speech)
         nlpDE.plugin(stats)
         doc = nlpDE(text)
-        doc.compute('syllables') //kaboom
-        console.log('===>', doc.json({ syllables: true }))
-        console.log('===>', doc.compute('tfidf').json())
-
-        return sanitizeContent(doc.match('[#Noun+]', 0).text())
-          .split(' ')
-          .filter((word: string) => word.trim().length > 0 && word.trim().length < 26)
-          .map((word: string) => {
-            return { label: word.toLowerCase(), type: 'languageModel', score: 1 }
-          })
+        break
       default:
         //const nlp = import('compromise')
-        console.log('using german')
+        console.log(' %% using default')
         nlp.plugin(speech)
         nlp.plugin(stats)
+        // const nlpEx = nlp.extend(stats)
         doc = nlp(text)
-        doc.compute('syllables') //kaboom
-        //console.log('===>', doc.json({ syllables: true }))
-        //console.log('===>', doc.compute('tfidf').json())
-
-        let m = doc.match('[#Noun+]', 0)
-        //console.log('===>', m.text())
-        const res: TagInfo[] = m
-          .text()
-          .replace(/[^\w\s]/gi, '')
-          .split(' ')
-          .filter((word: string) => word.trim().length > 0 && word.trim().length < 26)
-          .map((word: string) => {
-            return { label: word.toLowerCase(), type: 'languageModel', score: 1 }
-          })
-        //console.log('res', res)
-        return res
     }
+    // doc.compute('syllables')
+    // console.log(' <> ===>', doc.json({ syllables: true }))
+    console.log(' <> ===>1', doc.compute('tfidf').json())
+
+    const tokenAnalysis = doc.compute('tfidf').json({
+      text: false,
+      normal: true,
+      implicit: false, // contractions, etc.
+      offset: false,
+      unique: true,
+      confidence: false,
+      terms: {
+        text: false,
+        normal: true,
+        clean: true,
+        implicit: false,
+        tags: true,
+        whitespace: false,
+        offset: false,
+        bestTag: true,
+      },
+    })
+    // const tokenAnalysis = doc.compute('tagRank').json()
+    console.log(' <> ===>2', tokenAnalysis)
+    // tokenAnalysis.result.forEach((token: any) => {})
+
+    console.log('keys', Object.keys(tokenAnalysis))
+    //const terms: TfidfToken[]
+    const terms: Term[] = []
+    const termList: string[] = []
+    Object.keys(tokenAnalysis).forEach((o: any) => {
+      console.log('key', tokenAnalysis[o])
+      tokenAnalysis[o]['terms'].forEach((term: Term) => {
+        console.log('--->', term)
+        if (
+          term.chunk !== 'Verb' &&
+          term.chunk !== 'Adjective' &&
+          term.chunk !== 'VerbInfinitive' &&
+          term.tags.indexOf('Adverb') < 0 &&
+          term.tags.indexOf('Adjective') < 0 &&
+          term.tags.indexOf('Preposition') < 0 &&
+          term.tags.indexOf('Ordinal') < 0 &&
+          term.tags.indexOf('Cardinal') < 0 &&
+          term.tags.indexOf('Determiner') < 0 &&
+          term.tags.indexOf('Conjunction') < 0 &&
+          term.tags.indexOf('Pronoun') < 0 &&
+          termList.findIndex((t: string) => t === term.normal) < 0
+        ) {
+          termList.push(term.normal)
+          terms.push(term)
+        }
+      })
+    })
+    const sortedTerms = terms.sort((a: Term, b: Term) => b['tfidf'] - a['tfidf'])
+    sortedTerms.forEach((t: Term) => {
+      console.log('===>', t.normal, t.tfidf)
+    })
+
+    const maxTerms = Math.min(10, sortedTerms.length)
+    const firstTerms = sortedTerms.slice(0, maxTerms)
+    return firstTerms.map((t: Term) => {
+      return { label: t.normal, type: 'languageModel', score: t.tfidf }
+    })
+    // result = sanitizeContent(doc.match('[#Noun+]', 0).text())
+    //   .split(' ')
+    //   .filter((word: string) => word.trim().length > 0 && word.trim().length < 26)
+    //   .map((word: string) => {
+    //     return { label: word.toLowerCase(), type: 'languageModel', score: 1 }
+    //   })
+    // console.log(' <> reuslt', result)
+    //return result
   }
 
   function getDynamicTabsBy(tags: string[]) {
@@ -234,12 +293,12 @@ export function useTagsService() {
     return 'en'
   }
 
-  const analyse = (metas: object, article: object | undefined, url: string | undefined): TagInfo[] => {
+  const analyse = async (metas: object, article: object | undefined, url: string | undefined): Promise<TagInfo[]> => {
     function pushTagsInfo() {
       return (ti: TagInfo) => tagsInfo.push(ti)
     }
 
-    console.log('analysing...')
+    console.log(' <> Starting Tags Analysis...')
     const tagsInfo: TagInfo[] = []
     let description: string = metas['description' as keyof object] || '' //alternatives?
     let text = description
@@ -261,19 +320,21 @@ export function useTagsService() {
     }
 
     if (description) {
+      console.log(' <> description found')
       if (useFeaturesStore().hasFeature(FeatureIdent.AI) && description && description.trim().length > 10) {
         try {
+          console.log(' <> hier!')
           // @ts-expect-error xxx
-          LanguageDetector.create().then((detector: any) => {
-            detector.detect(text).then((results: any[]) => {
-              if (results.length > 0) {
-                var language = results[0].detectedLanguage
-                var confidence = results[0].confidence || 0
-                tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
-                tagsFromLanguageModel(description, language).forEach(pushTagsInfo())
-              }
-            })
-          })
+          const detector: any = await LanguageDetector.create() //.then((detector: any) => {
+          const results: any[] = await detector.detect(text) //.then((results: any[]) => {
+          if (results.length > 0) {
+            var language = results[0].detectedLanguage
+            var confidence = results[0].confidence || 0
+            tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
+            tagsFromLanguageModel(description, language).forEach(pushTagsInfo())
+          }
+          // })
+          // })
         } catch (e) {
           tagsFromLanguageModel(description, langFromHostname(url)).forEach(pushTagsInfo())
           console.log('error with language detection')
@@ -282,7 +343,9 @@ export function useTagsService() {
         tagsFromLanguageModel(description, langFromHostname(url)).forEach(pushTagsInfo())
       }
     }
-    return deduplicateTags(tagsInfo)
+    const deduplicated = deduplicateTags(tagsInfo)
+    console.log(' <> overall result', deduplicated)
+    return deduplicated
   }
 
   return {

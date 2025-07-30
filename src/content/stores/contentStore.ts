@@ -56,6 +56,7 @@ export const useContentStore = defineStore('content', () => {
   }
 
   const resetFor = async (browserTab: chrome.tabs.Tab) => {
+    console.log('browserTab', browserTab)
     currentTabUrl.value = browserTab.url
     currentTabFavIcon.value = browserTab.favIconUrl
     currentTabTitle.value = browserTab.title
@@ -66,14 +67,14 @@ export const useContentStore = defineStore('content', () => {
     currentTabArticle.value = undefined
     currentTabTags.value = []
 
-    console.log('000>>>', browserTab.id, browserTab.url, browserTab)
+    //console.log('000>>>', browserTab.id, browserTab.url, browserTab)
     if (browserTab.url && browserTab.id) {
       try {
         const r = await chrome.tabs.sendMessage(browserTab.id, 'getExcerpt', {}) //, async (res) => {
-        console.log('getContent returned result with length', r, r?.html.length, browserTab.id)
+        console.log('getContent returned result with length', r?.html.length, browserTab.id)
         await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
 
-        currentTabTags.value = useTagsService().analyse(
+        currentTabTags.value = await useTagsService().analyse(
           currentTabMetas.value,
           currentTabArticle.value,
           currentTabUrl.value,
@@ -217,7 +218,7 @@ export const useContentStore = defineStore('content', () => {
     currentTabArticle.value = article?.title ? article : undefined
     if (currentTabArticle.value) {
       articleSnapshot.value = currentTabArticle.value
-      console.log('articleSnapshot:', articleSnapshot.value)
+      //console.log('articleSnapshot:', articleSnapshot.value)
     }
   }
 

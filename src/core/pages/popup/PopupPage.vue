@@ -3,8 +3,8 @@
   <q-page class="darkInDarkMode brightInBrightMode" :style="paddingTop" style="min-width: 400px; max-height: 700px">
     <offline-info class="q-mt-lg" />
 
-    <div class="q-ma-sm q-mt-md boxed">
-      <PopupInputLine title="Collection" class="q-mt-md">
+    <div class="q-pa-sm q-mx-md q-mt-none boxed" v-if="[...useTabsetsStore().tabsets.keys()].length > 0">
+      <PopupInputLine title="Collection">
         <PopupCollectionSelector
           @tabset-changed="tabsetChanged()"
           :show-tabs-count="!currentTabsetHasFolders()"
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Icon, title and description -->
-    <div class="row q-ma-sm q-mt-md boxed">
+    <div class="row q-pa-sm q-mx-md q-mt-xs boxed">
       <div class="col-2 q-ma-sm">
         <q-img v-if="thumbnail" :src="thumbnail" no-native-menu />
         <q-img v-else :src="browserTab?.favIconUrl" no-native-menu />
@@ -63,7 +63,7 @@
       </div>
     </div>
 
-    <div class="q-ma-sm q-mt-md boxed">
+    <div class="q-pa-sm q-mx-md q-mt-xs boxed">
       <!-- URL -->
       <PopupInputLine title="URL" class="q-mt-md">
         <AutogrowInput v-model="url" :class="'ellipsis'" :filled="true" data-testid="pageModelUrl" />
@@ -181,6 +181,12 @@
       </q-btn>
     </PopupInputLine>
 
+    <div class="row darkInDarkMode brightInBrightMode q-pt-none" style="border: 1px solid blue">
+      <div class="col q-mx-md q-px-none" style="border: 1px solid red">
+        <DebugInfo :in-popup="true" />
+      </div>
+    </div>
+
     <!-- buttons -->
     <div class="row q-my-md darkInDarkMode brightInBrightMode" style="border: 0 solid blue">
       <div class="col-2 q-ml-xs q-mt-sm text-right text-caption text-grey-8" style="border: 0 solid red"></div>
@@ -233,6 +239,7 @@ import PopupCollectionSelector from 'src/core/pages/popup/PopupCollectionSelecto
 import PopupFolderSelector from 'src/core/pages/popup/PopupFolderSelector.vue'
 import PopupInputLine from 'src/core/pages/popup/PopupInputLine.vue'
 import PopupToolbar from 'src/core/pages/popup/PopupToolbar.vue'
+import DebugInfo from 'src/core/pages/widgets/DebugInfo.vue' // the page model
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { NotificationType, useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useNavigationService } from 'src/core/services/NavigationService'
@@ -258,7 +265,7 @@ import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 import { UiDensity, useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
 import { onMounted, provide, ref, useTemplateRef, watchEffect } from 'vue'
-import { useRouter } from 'vue-router' // the page model
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
@@ -274,7 +281,7 @@ const currentTabset = ref<Tabset | undefined>(undefined)
 const browserTab = ref<chrome.tabs.Tab | undefined>(undefined)
 const tab = ref<Tab | undefined>(undefined)
 const tabsetsLastUpdate = ref(0)
-const paddingTop = ref('padding-top: 40px')
+const paddingTop = ref('padding-top: 50px')
 const uiDensity = ref<UiDensity>(useUiStore().uiDensity)
 const alreadyInTabset = ref<boolean>(false)
 const containedInTsCount = ref(0)

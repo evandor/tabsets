@@ -5,7 +5,17 @@
     <div class="col-4 text-caption">title</div>
     <div class="col-8 text-caption ellipsis" style="font-size: smaller">
       {{ useContentStore().currentTabTitle }}
+      <q-tooltip class="tooltip-small">{{ useContentStore().currentTabTitle }}</q-tooltip>
     </div>
+
+    <div class="col-4 text-caption">description</div>
+    <div class="col-8 text-caption ellipsis-3-lines" style="font-size: smaller">
+      {{ useContentStore().currentTabMetas['description' as keyof object] }}
+      <q-tooltip class="tooltip-small">{{
+        useContentStore().currentTabMetas['description' as keyof object]
+      }}</q-tooltip>
+    </div>
+
     <div class="col-4 text-caption">last accessed</div>
     <div class="col-8 text-caption ellipsis" style="font-size: smaller">
       {{ formatDistance(useContentStore().getCurrentTabLastAccessed || 0, new Date(), { addSuffix: true }) }}
@@ -38,11 +48,11 @@
 
     <div class="col-4 text-caption">Tags ({{ useContentStore().currentTabTags.length }})</div>
     <div class="col-8 text-caption" style="font-size: smaller">
-      {{
-        useContentStore()
-          .currentTabTags.map((ti: TagInfo) => ti.label + '(' + ti.type + ')')
-          .join(', ')
-      }}
+      <i>URL</i>: {{ tagsWithType('url') }}<br />
+      <i>Keywords</i>: {{ tagsWithType('keyword') }}<br />
+      <i>Hierarchy</i>: {{ tagsWithType('hierarchy') }}<br />
+      <i>Language</i>: {{ tagsWithType('langDetection') }}<br />
+      <i>LangModel</i>: {{ tagsWithType('languageModel') }}<br />
     </div>
 
     <div class="col-4 text-caption">Meta Data</div>
@@ -77,15 +87,21 @@
 import { formatDistance } from 'date-fns'
 import { QDialogOptions, useQuasar } from 'quasar'
 import { useContentStore } from 'src/content/stores/contentStore'
-import { TagInfo } from 'src/core/models/TagInfo'
+import { TagInfo, TagType } from 'src/core/models/TagInfo'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { RefreshTabCommand } from 'src/tabsets/commands/RefreshTabCommand'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 
+type Props = { inPopup?: boolean }
+const props = withDefaults(defineProps<Props>(), { inPopup: false })
+
 const $q = useQuasar()
 
 const infoDialog = (title: string, input: object) => {
+  if (props.inPopup) {
+    return
+  }
   let message = JSON.stringify(input, null, 2)
   let externalLink: string | undefined = undefined
   if (title === 'Tab Reference LINKING_DATA') {
@@ -101,7 +117,7 @@ const infoDialog = (title: string, input: object) => {
   if (externalLink) {
     dialogOptions.options = {
       type: 'checkbox',
-      model: [],
+      model: ['open'],
       // inline: true
       items: [{ label: 'Open', value: 'open', color: 'secondary' }],
     }
@@ -121,5 +137,12 @@ const reloadCurrentTab = () => {
       useCommandExecutor().executeFromUi(new RefreshTabCommand(tabs[0]!.id!, tabs[0]!.url!))
     }
   })
+}
+
+const tagsWithType = (type: TagType) => {
+  return useContentStore()
+    .currentTabTags.filter((ti: TagInfo) => ti.type === type)
+    .map((ti: TagInfo) => ti.label)
+    .join(', ')
 }
 </script>

@@ -91,10 +91,8 @@ import { LocalStorage, openURL } from 'quasar'
 import AnimatedContent from 'src/Animations/AnimatedContent/AnimatedContent.vue'
 import { TITLE_IDENT } from 'src/boot/constants'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import Analytics from 'src/core/utils/google-analytics'
-import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, ref, watchEffect } from 'vue'
@@ -121,18 +119,20 @@ onMounted(() => {
 const createGettingStartedTabset = () => {
   // const tab1 = BrowserApi.createChromeTabObject('Getting Started', 'https://docs.tabsets.net/get-started')
   // const tab2 = BrowserApi.createChromeTabObject('Release Notes', 'https://docs.tabsets.net/release-notes')
+  LocalStorage.setItem('ui.hideWelcomePage', true)
+  router.push('/popup/getstarted')
 
-  useCommandExecutor()
-    .executeFromUi(new CreateTabsetCommand('My first Tabset', []))
-    .then(() => {
-      LocalStorage.setItem('ui.hideWelcomePage', true)
-      console.log('route', route.fullPath)
-      // if (route.fullPath !== '/popup/welcome') {
-      router.push('/popup/getstarted')
-      // }
-      //useNavigationService().browserTabFor('https://docs.tabsets.net/get-started')
-    })
-    .catch((err: any) => console.warn('got error', err))
+  // useCommandExecutor()
+  //   .executeFromUi(new CreateTabsetCommand('My first Tabset', []))
+  //   .then(() => {
+  //     LocalStorage.setItem('ui.hideWelcomePage', true)
+  //     console.log('route', route.fullPath)
+  //     // if (route.fullPath !== '/popup/welcome') {
+  //     router.push('/popup/getstarted')
+  //     // }
+  //     //useNavigationService().browserTabFor('https://docs.tabsets.net/get-started')
+  //   })
+  //   .catch((err: any) => console.warn('got error', err))
 }
 
 watchEffect(() => {
