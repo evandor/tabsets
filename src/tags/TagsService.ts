@@ -8,10 +8,13 @@ import { Term } from 'compromise/types/misc'
 import View from 'compromise/types/view/one'
 // @ts-expect-error xxx
 import nlpDE from 'de-compromise'
+import { pipe } from 'fp-ts/function'
+import * as O from 'fp-ts/lib/Option'
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useCategorizationService } from 'src/categorization/CategorizationService'
+import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useContentStore } from 'src/content/stores/contentStore'
 import { CategoryInfo, TagInfo, TagType } from 'src/core/models/TagInfo'
@@ -453,44 +456,31 @@ export function useTagsService() {
     const tags = useContentStore().currentTabTags
     const metas = useContentStore().currentTabMetas
 
-    function linkinDataRefersTo(labelVal: string) {
-      return tags.filter((t: TagInfo) => t.type === 'linkingData' && t.label === labelVal).length > 0
-    }
-
-    function openGraphDataRefersTo(labelVal: string) {
-      return metas['og:type' as keyof object] && metas['og:type' as keyof object] === labelVal
-    }
-
-    function langeModelRefersTo(labelVals: string[]) {
-      const langModelTags: TagInfo[] = tags.filter((t: TagInfo) => t.type === 'languageModel')
-      return langModelTags.findIndex((t: TagInfo) => labelVals.indexOf(t.label) >= 0) >= 0
-    }
-
-    if (linkinDataRefersTo('Recipe')) {
-      return 'recipe'
-    }
-    if (linkinDataRefersTo('NewsArticle')) {
-      return 'news'
-    }
-    if (linkinDataRefersTo('Product')) {
-      return 'shopping'
-    }
-    if (openGraphDataRefersTo('article')) {
-      return 'news'
-    }
-    if (langeModelRefersTo(['nachrichten', 'news'])) {
-      return 'news'
-    }
-    // if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
-    //   const text = useContentStore().getCurrentTabContent
-    //   console.log(' <> analysing', text)
-    //   if (text) {
-    //     // const res = await useCategoriesService().categorize(text)
-    //     const res = catService.categorize(text)
-    //     console.log('res', res)
-    //   }
+    // function linkinDataRefersTo(labelVal: string) {
+    //   return tags.filter((t: TagInfo) => t.type === 'linkingData' && t.label === labelVal).length > 0
     // }
-    return 'uncategorized'
+
+    // function openGraphDataRefersTo(labelVal: string) {
+    //   return metas['og:type' as keyof object] && metas['og:type' as keyof object] === labelVal
+    // }
+    //
+    // function langeModelRefersTo(labelVals: string[]) {
+    //   const langModelTags: TagInfo[] = tags.filter((t: TagInfo) => t.type === 'languageModel')
+    //   return langModelTags.findIndex((t: TagInfo) => labelVals.indexOf(t.label) >= 0) >= 0
+    // }
+
+    function tagLabelsFilteredBy(tagType: TagType) {
+      return tags.filter((t: TagInfo) => t.type === tagType).map((t: TagInfo) => t.label)
+    }
+
+    const categorization = pipe(
+      useDynamicConfig().getCategory('linkingData', tagLabelsFilteredBy('linkingData')),
+      O.orElse(() => useDynamicConfig().getCategory('openGraph', [metas['og:type' as keyof object] as string])),
+      O.orElse(() => useDynamicConfig().getCategory('langModel', tagLabelsFilteredBy('languageModel'))),
+      O.getOrElse(() => 'uncategorized' as TabCategory),
+    )
+    console.log('cat', categorization)
+    return categorization
   }
 
   return {
