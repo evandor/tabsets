@@ -44,6 +44,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PopupLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupSettingsPage.vue') }],
   },
+  {
+    path: '/popup/debug',
+    component: () => import('layouts/PopupLayout.vue'),
+    children: [{ path: '', component: () => import('src/core/pages/popup/PopupDebugPage.vue') }],
+  },
 
   {
     path: '/overlay/annotations',

@@ -44,6 +44,15 @@
       </div>
       <div class="col text-right">
         <q-btn
+          v-if="useSettingsStore().has('DEBUG_MODE')"
+          icon="o_bug_report"
+          color="grey"
+          flat
+          size="md"
+          style="max-width: 32px"
+          @click="goto('/popup/debug')"
+          class="cursor-pointer" />
+        <q-btn
           icon="o_settings"
           color="grey"
           flat
@@ -72,6 +81,7 @@ import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { ToastType } from 'src/core/models/Toast'
 import { useUtils } from 'src/core/services/Utils'
+import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watchEffect } from 'vue'

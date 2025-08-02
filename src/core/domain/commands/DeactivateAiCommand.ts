@@ -6,7 +6,7 @@ export class DeactivateAiCommand implements Command<boolean> {
 
   async execute(): Promise<ExecutionResult<boolean>> {
     console.log('deactivating AI')
-    chrome.storage.local.remove('tabsets.ai.active')
+    chrome.storage.local.remove('tabsets.ext.ai.active')
     return Promise.resolve(new ExecutionResult(true, 'done'))
   }
 }

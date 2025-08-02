@@ -2,6 +2,11 @@
   <div class="row q-pa-none q-ma-none q-mt-lg fit boxed">
     <div class="col-12 text-caption text-bold">DEBUG</div>
 
+    <div class="col-4 text-caption">current tabset</div>
+    <div class="col-8 text-caption ellipsis" style="font-size: smaller">
+      {{ useTabsetsStore().currentTabsetName }} ({{ useTabsetsStore().getCurrentTabset?.type }})
+    </div>
+
     <div class="col-4 text-caption">title</div>
     <div class="col-8 text-caption ellipsis" style="font-size: smaller">
       {{ useContentStore().currentTabTitle }}
@@ -89,6 +94,10 @@
         <i>categorizations</i>:
         {{ useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object] }}
       </div>
+      <div class="ellipsis">
+        <i>installation#</i>:
+        {{ useContentStore().getCurrentTabStorage['tabsetsInstallationId' as keyof object] }}
+      </div>
     </div>
     <div class="col-4 text-caption">tabReferences</div>
     <div class="col-8 text-caption ellipsis-3-lines" style="font-size: smaller">
@@ -108,6 +117,7 @@ import { TagInfo, TagType } from 'src/core/models/TagInfo'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { RefreshTabCommand } from 'src/tabsets/commands/RefreshTabCommand'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useTagsService } from 'src/tags/TagsService'
 import { ref, watchEffect } from 'vue'
@@ -144,7 +154,7 @@ const infoDialog = (title: string, input: object) => {
   }
   let dialogOptions: QDialogOptions = {
     title,
-    message: '<pre>' + message + '<pre>',
+    message: '<pre style="font-size:12px">' + message + '<pre>',
     cancel: true,
     html: true,
   }
@@ -157,7 +167,6 @@ const infoDialog = (title: string, input: object) => {
     }
   }
   $q.dialog(dialogOptions).onOk((res: string[]) => {
-    console.log('res', res)
     if (res.indexOf('open') >= 0 && externalLink) {
       useNavigationService().browserTabFor(externalLink)
     }

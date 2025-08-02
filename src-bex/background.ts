@@ -201,7 +201,8 @@ bridge.on('tabsets.bex.categoriesList', async (payload: object) => {
 
 bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
   const pl = payload['payload' as keyof object]
-  console.log(`[BEX] <<< 'tabsets.bex.tab.excerpt': #html=${(pl['html' as keyof object] as string).length}`) //, bridge.portList)
+  console.log(`[BEX] <<< 'tabsets.bex.tab.excerpt': #html=${(pl['html' as keyof object] as string).length}`) //, bridge.portList)0
+
   const metas = payload['payload' as keyof object]['metas' as keyof object]
   //console.log('metas', metas)
   if (metas['description' as keyof object]) {

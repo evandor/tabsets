@@ -12,10 +12,14 @@ const { sendMsg } = useUtils()
 const { info } = useLogger()
 
 export class CreateSpecialTabsetCommand implements Command<Tabset> {
-  constructor(public tabsetId: SpecialTabsetId) {}
+  constructor(
+    public tabsetId: SpecialTabsetId,
+    public icon: string = 'sym_o_list',
+  ) {}
 
   async execute(): Promise<ExecutionResult<Tabset>> {
     const tabset = await useTabsetsStore().createSpecialTabset(this.tabsetId)
+    tabset.icon = this.icon
     if (tabset) {
       await useTabsetService().saveTabset(tabset)
       Analytics.fireEvent('tabset_created', { tabsCount: 0 })
@@ -25,7 +29,7 @@ export class CreateSpecialTabsetCommand implements Command<Tabset> {
       AppEventDispatcher.dispatchEvent('run-metrics')
     }
 
-    const executionResult = new ExecutionResult(tabset, 'Dynamic Tabset was created')
+    const executionResult = new ExecutionResult(tabset, '(Special) Tabset was created')
     return Promise.resolve(executionResult)
   }
 }

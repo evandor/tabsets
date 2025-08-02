@@ -27,7 +27,8 @@ import { ActionProps } from 'src/tabsets/actions/models/ActionProps'
 import FabLikeBtn from 'src/tabsets/actions/widgets/FabLikeBtn.vue'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { Tab } from 'src/tabsets/models/Tab'
-import { Tabset } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTagsService } from 'src/tags/TagsService'
@@ -46,11 +47,13 @@ const animateAddtabButton = ref(false)
 const clicked = async () => {
   console.log('clicked!!', props.currentChromeTab)
 
-  async function tabInTabset(name: string, newTab: Tab) {
+  async function tabInTabset(name: string, classification: ContentClassification, newTab: Tab) {
     let tabset = useTabsetsStore().getTabset(name)
     console.log('found tabset for id', name, tabset)
     if (!tabset) {
       tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
+      tabset.type = TabsetType.SPECIAL
+      tabset.contentClassification = classification
     }
     return useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, tabset))
   }
@@ -61,11 +64,11 @@ const clicked = async () => {
     console.log('found category', tabCategory)
     switch (tabCategory) {
       case 'recipe':
-        return await tabInTabset('recipes', newTab)
+        return await tabInTabset('recipes', 'recipe', newTab)
       case 'news':
-        return await tabInTabset('news', newTab)
+        return await tabInTabset('news', 'news', newTab)
       case 'shopping':
-        return await tabInTabset('shopping', newTab)
+        return await tabInTabset('shopping', 'shopping', newTab)
       default:
         // noop
         break

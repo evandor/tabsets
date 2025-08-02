@@ -76,6 +76,7 @@ class AppService {
           .resetFor(currentTabs[0]!)
           .catch((err: any) => console.error('error', err))
 
+        console.log(` >>> chrome.tab.sendMessage 'getExcerpt' to tab ${currentTabs[0]!.id}`)
         chrome.tabs
           .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
           .then((payload) => {

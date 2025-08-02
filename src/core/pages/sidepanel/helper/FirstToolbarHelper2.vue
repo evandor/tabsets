@@ -62,7 +62,7 @@
           <div class="col-12 text-subtitle1">
             <div class="q-ml-xs q-mt-none">
               <div class="text-bold ellipsis">
-                <template v-if="currentTabset">
+                <template v-if="currentTabset && currentTabset.id !== 'UNCATEGORIZED'">
                   <q-select
                     :style="tabsetColorStyle()"
                     filled
@@ -111,11 +111,14 @@
           style="border: 0 solid green">
           <slot name="iconsRight">
             <SidePanelToolbarFab2
-              v-if="currentChromeTab && currentTabset"
-              @button-clicked="(args: ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)"
+              v-if="currentChromeTab"
+              @button-clicked="
+                (args: ActionHandlerButtonClickedHolder) =>
+                  handleButtonClicked(currentTabset || useTabsetsStore().getSpecialTabset('UNCATEGORIZED'), args)
+              "
               :currentChromeTab="currentChromeTab"
               :disable="props.disable"
-              :tabset="currentTabset" />
+              :tabset="currentTabset || useTabsetsStore().getSpecialTabset('UNCATEGORIZED')" />
             <transition
               v-else-if="!currentTabset || currentTabset.type !== TabsetType.SPECIAL"
               appear

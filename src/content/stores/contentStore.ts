@@ -75,6 +75,7 @@ export const useContentStore = defineStore('content', () => {
         await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
 
         currentTabTags.value = await useTagsService().analyse(
+          currentTabTitle.value || '',
           currentTabMetas.value,
           currentTabArticle.value,
           currentTabReferences.value,

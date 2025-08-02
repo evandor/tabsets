@@ -372,6 +372,7 @@ export function useTagsService() {
   }
 
   const analyse = async (
+    title: string,
     metas: object,
     article: object | undefined,
     tabReferences: TabReference[],
@@ -384,8 +385,8 @@ export function useTagsService() {
     console.log(' <> Starting Tags Analysis...')
     const tagsInfo: TagInfo[] = []
     let description: string = metas['description' as keyof object] || '' //alternatives?
-    let text = description
-    if (article && article['content' as keyof object]) {
+    let text = title.trim().length > 0 ? title + '. ' + description : description
+    if (text.length < 3 && article && article['content' as keyof object]) {
       const textTokens = ContentUtils.html2text(article['content' as keyof object])
 
       const tokens = textTokens.split(' ')
@@ -450,19 +451,35 @@ export function useTagsService() {
 
   function getCurrentTabCategory(): TabCategory {
     const tags = useContentStore().currentTabTags
+    const metas = useContentStore().currentTabMetas
 
-    function linkindDataRefersTo(labelVal: string) {
+    function linkinDataRefersTo(labelVal: string) {
       return tags.filter((t: TagInfo) => t.type === 'linkingData' && t.label === labelVal).length > 0
     }
 
-    if (linkindDataRefersTo('Recipe')) {
+    function openGraphDataRefersTo(labelVal: string) {
+      return metas['og:type' as keyof object] && metas['og:type' as keyof object] === labelVal
+    }
+
+    function langeModelRefersTo(labelVals: string[]) {
+      const langModelTags: TagInfo[] = tags.filter((t: TagInfo) => t.type === 'languageModel')
+      return langModelTags.findIndex((t: TagInfo) => labelVals.indexOf(t.label) >= 0) >= 0
+    }
+
+    if (linkinDataRefersTo('Recipe')) {
       return 'recipe'
     }
-    if (linkindDataRefersTo('NewsArticle')) {
+    if (linkinDataRefersTo('NewsArticle')) {
       return 'news'
     }
-    if (linkindDataRefersTo('Product')) {
+    if (linkinDataRefersTo('Product')) {
       return 'shopping'
+    }
+    if (openGraphDataRefersTo('article')) {
+      return 'news'
+    }
+    if (langeModelRefersTo(['nachrichten', 'news'])) {
+      return 'news'
     }
     // if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
     //   const text = useContentStore().getCurrentTabContent

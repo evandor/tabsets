@@ -73,7 +73,7 @@ export class DownloadAIModelsCommand implements Command<boolean> {
       // const result2 = await session.prompt('That sounds great, but oh no, it is actually going to rain! New advice?')
       // console.log(result2)
 
-      chrome.storage.local.set({ 'tabsets.ai.active': true }).then(() => {
+      chrome.storage.local.set({ 'tabsets.ext.ai.active': true }).then(() => {
         useCategorizationService().initializeLanguageModel()
       })
 

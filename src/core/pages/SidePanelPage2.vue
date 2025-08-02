@@ -17,9 +17,25 @@
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none q-pt-xs">
       <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
-        <div class="col-12 text-center" v-if="currentTabset && currentTabset.contentClassification === 'recipe'">
-          <q-btn label="Alle Rezepte" color="primary" size="xs" @click="openRecipeOverview()" />
-        </div>
+        <q-list bordered class="rounded-borders fit">
+          <q-expansion-item
+            v-for="sts in specialTabsets"
+            @click="openRecipeOverview(sts)"
+            :icon="sts.icon"
+            :label="sts.name"
+            :caption="sts.tabs.length + ' tab(s)'">
+            <SidePanelPageContent
+              :tabset="sts"
+              :key="sts?.id"
+              :filter="filter"
+              @tabs-found="(n: number) => (filteredTabsCount = n)"
+              @folders-found="(n: number) => (filteredFoldersCount = n)" />
+          </q-expansion-item>
+        </q-list>
+
+        <!--        <div class="col-12 text-center" v-for="sts in specialTabsets">-->
+        <!--          <q-btn :label="sts.name" color="primary" size="xs" @click="openRecipeOverview()" />-->
+        <!--        </div>-->
         <template v-if="currentTabset">
           <SidePanelPageContent
             v-if="useFolderExpansion === 'goInto'"
@@ -77,7 +93,7 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
-import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
@@ -101,6 +117,7 @@ const useFolderExpansion = ref<FolderAppearance>(useUiStore().folderStyle)
 const showSearchToolbarHelper = ref<boolean>(useUiStore().quickAccessFor('search'))
 const paddingTop = ref('padding-top: 80px')
 const uiDensity = ref<UiDensity>(useUiStore().uiDensity)
+const specialTabsets = ref<Tabset[]>([])
 
 provide('ui.density', uiDensity)
 
@@ -119,6 +136,10 @@ onMounted(() => {
   if (!hideWelcomePage) {
     router.push('/sidepanel/welcome')
   }
+})
+
+watchEffect(() => {
+  specialTabsets.value = [...useTabsetsStore().tabsets.values()].filter((ts: Tabset) => ts.type === TabsetType.SPECIAL)
 })
 
 watch(
@@ -373,10 +394,8 @@ const setPaddingTop = () => {
   //paddingTop.value = showSearchToolbarHelper.value ? 'padding-top: 80px' : 'padding-top: 48px'
 }
 
-const openRecipeOverview = () => {
-  NavigationService.openOrCreateTab([
-    chrome.runtime.getURL(`www/index.html#/mainpanel/rezepte/${currentTabset.value!.id}`),
-  ])
+const openRecipeOverview = (ts: Tabset) => {
+  NavigationService.openOrCreateTab([chrome.runtime.getURL(`www/index.html#/mainpanel/rezepte/${ts.id}`)])
 }
 
 setPaddingTop()
