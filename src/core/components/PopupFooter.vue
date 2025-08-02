@@ -68,6 +68,7 @@
 </template>
 
 <script setup lang="ts">
+import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { ToastType } from 'src/core/models/Toast'
 import { useUtils } from 'src/core/services/Utils'
@@ -78,6 +79,7 @@ import { useRouter } from 'vue-router'
 
 const { openSidepanel } = useUtils()
 
+const $q = useQuasar()
 const router = useRouter()
 const sidepanelEnabled = ref(false)
 const opentabsView = ref(false)
@@ -157,6 +159,14 @@ const toastBannerClass = () => {
 }
 
 const openBrowserSidepanel = async () => {
+  if ($q.platform.is.firefox || $q.platform.is.opera) {
+    // @ts-expect-error firefox only
+    browser.sidebarAction.open().then(() => {
+      sidepanelEnabled.value = !sidepanelEnabled.value
+      window.close()
+    })
+    return
+  }
   openSidepanel().then(() => {
     sidepanelEnabled.value = !sidepanelEnabled.value
     window.close()

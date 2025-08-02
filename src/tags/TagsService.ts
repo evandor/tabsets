@@ -11,12 +11,15 @@ import nlpDE from 'de-compromise'
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { useCategorizationService } from 'src/categorization/CategorizationService'
+import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
+import { useContentStore } from 'src/content/stores/contentStore'
 import { CategoryInfo, TagInfo, TagType } from 'src/core/models/TagInfo'
 import { useUtils } from 'src/core/services/Utils'
 import ContentUtils from 'src/core/utils/ContentUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
-import { Tab } from 'src/tabsets/models/Tab'
+import { Tab, TabCategory } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
@@ -47,8 +50,11 @@ function addByTypeIfNotExisting(type: TagType, tags: TagInfo[], tagsToUse: TagIn
 }
 
 function sanitizeContent(s: string): string {
+  // console.log('s', typeof s, s)
   return s.replace(/[^\wäöüßÄÖÜ\s]/gi, '')
 }
+
+// const catService = new CategorizationService()
 
 export function useTagsService() {
   const deduplicateTags = (tags: TagInfo[]): TagInfo[] => {
@@ -63,6 +69,7 @@ export function useTagsService() {
     addByTypeIfNotExisting('keyword', tags, tagsToUse)
     addByTypeIfNotExisting('langDetection', tags, tagsToUse)
     addByTypeIfNotExisting('classification', tags, tagsToUse)
+    addByTypeIfNotExisting('linkingData', tags, tagsToUse)
     return tagsToUse
   }
 
@@ -85,6 +92,67 @@ export function useTagsService() {
     return result
   }
 
+  const tagsFromReferences = (tfs: TabReference[]): TagInfo[] => {
+    //console.log(' <> tagsFromReferences', tfs)
+
+    const linkingData: TabReference[] = tfs.filter((tR: TabReference) => tR.type === TabReferenceType.LINKING_DATA)
+    const result: TagInfo[] = linkingData
+      .flatMap((tR: TabReference) => {
+        // console.log('tR->', typeof tR.data, tR.data)
+        if (Array.isArray(tR.data)) {
+          return [...tR.data]
+        } else {
+          return [tR.data]
+        }
+      })
+      .map((data: object) => {
+        const linkedDataType = data['@type' as keyof object]
+        //console.log('linkedDataType->', linkedDataType)
+        switch (typeof linkedDataType) {
+          case 'string':
+            const catAsString = data['@type' as keyof object] as unknown as string
+            return { label: sanitizeContent(catAsString), type: 'linkingData', score: 1 }
+          case 'object':
+            const cat = data['@type' as keyof object] as unknown as object
+            const keys: string[] = Object.keys(cat)
+            if (keys.length > 0) {
+              const value = cat[keys[0] as keyof object]
+              return { label: sanitizeContent(value), type: 'linkingData', score: 1 }
+            }
+            return { label: '', type: 'linkingData', score: 0 }
+          default:
+            return { label: '', type: 'linkingData', score: 0 }
+        }
+      })
+
+    // console.log('---r', r)
+
+    // const result: TagInfo[] = tfs
+    //   .filter((tR: TabReference) => tR.type === TabReferenceType.LINKING_DATA)
+    //   .filter((tR: TabReference) => tR.data && tR.data['@type' as keyof object])
+    //   .map((tR: TabReference) => {
+    //     const linkedDataType = tR.data['@type' as keyof object]
+    //     console.log('linkedDataType->', linkedDataType)
+    //     switch (typeof linkedDataType) {
+    //       case 'string':
+    //         const catAsString = tR.data['@type' as keyof object]! as unknown as string
+    //         return { label: sanitizeContent(catAsString), type: 'linkingData', score: 1 }
+    //       case 'object':
+    //         const cat = tR.data['@type' as keyof object]! as unknown as object
+    //         const keys: string[] = Object.keys(cat)
+    //         if (keys.length > 0) {
+    //           const value = cat[keys[0] as keyof object]
+    //           return { label: sanitizeContent(value), type: 'linkingData', score: 1 }
+    //         }
+    //         return { label: '', type: 'linkingData', score: 0 }
+    //       default:
+    //         return { label: '', type: 'linkingData', score: 0 }
+    //     }
+    //   })
+    //console.log(' <> tagsFromReferences', result)
+    return result.filter((t: TagInfo) => t.label.length > 2)
+  }
+
   const tagsFromHierarchy = (ts: Tabset): TagInfo[] => {
     const folderChain = useTabsetsStore().getFolderNameChain(ts, ts.folderActive || ts.id)
     console.log(' <> tags from hierarchy:', folderChain.join(', '))
@@ -97,7 +165,11 @@ export function useTagsService() {
     return hierarchies
   }
 
-  const tagsFromUrl = (url: any): TagInfo[] => {
+  const tagsFromUrl = (url: string | undefined, language: string): TagInfo[] => {
+    console.log(' <> tags from URL', url, language)
+    if (!url) {
+      return []
+    }
     const result: TagInfo[] = []
     const domain = extractSecondLevelDomain(url)
     if (domain) {
@@ -114,7 +186,7 @@ export function useTagsService() {
         ' <> tags from URL',
         theURL.pathname.length > 40 ? theURL.pathname.substring(0, 40) + '...' : theURL.pathname,
       )
-      theURL.pathname
+      const urlParts = theURL.pathname
         .replace('.html', '')
         .split('/')
         .flatMap((path: string) => {
@@ -123,12 +195,24 @@ export function useTagsService() {
         .flatMap((path: string) => {
           return path.split('_')
         })
-        .map((p: string) => p.trim().toLowerCase())
-        .map((p: string) => p.replace(/\d/g, '')) // no numbers please
-        .filter((p: string) => p.length > 2 && p.length <= 26)
-        .forEach((p: string) => {
-          result.push({ label: p, type: 'url', score: 1 })
-        })
+        .join(' ')
+
+      return tagsFromLanguageModel(urlParts, language, 'url')
+      // theURL.pathname
+      //   .replace('.html', '')
+      //   .split('/')
+      //   .flatMap((path: string) => {
+      //     return path.split('-')
+      //   })
+      //   .flatMap((path: string) => {
+      //     return path.split('_')
+      //   })
+      //   .map((p: string) => p.trim().toLowerCase())
+      //   .map((p: string) => p.replace(/\d/g, '')) // no numbers please
+      //   .filter((p: string) => p.length > 2 && p.length <= 26)
+      //   .forEach((p: string) => {
+      //     result.push({ label: p, type: 'url', score: 1 })
+      //   })
     } catch (e: any) {}
     console.log(' <> tags from URL:', result)
     return result
@@ -166,20 +250,20 @@ export function useTagsService() {
     ]
   }
 
-  const tagsFromLanguageModel = (text: string, language: string): TagInfo[] => {
+  const tagsFromLanguageModel = (text: string, language: string, source: TagType): TagInfo[] => {
     let result: TagInfo[] = []
-    console.log(` <> tags from description (${language})`, text.length > 40 ? text.substring(0, 40) + '...' : text)
+    //console.log(` <> tags from description (${language})`, text.length > 40 ? text.substring(0, 40) + '...' : text)
     let doc: View | undefined = undefined
     switch (language) {
       case 'de':
-        console.log(' <> using german')
+        //console.log(' <> using german')
         nlpDE.plugin(speech)
         nlpDE.plugin(stats)
         doc = nlpDE(text)
         break
       default:
         //const nlp = import('compromise')
-        console.log(' %% using default')
+        //console.log(' %% using default')
         nlp.plugin(speech)
         nlp.plugin(stats)
         // const nlpEx = nlp.extend(stats)
@@ -187,7 +271,7 @@ export function useTagsService() {
     }
     // doc.compute('syllables')
     // console.log(' <> ===>', doc.json({ syllables: true }))
-    console.log(' <> ===>1', doc.compute('tfidf').json())
+    //console.log(' <> ===>1', doc.compute('tfidf').json())
 
     const tokenAnalysis = doc.compute('tfidf').json({
       text: false,
@@ -208,18 +292,19 @@ export function useTagsService() {
       },
     })
     // const tokenAnalysis = doc.compute('tagRank').json()
-    console.log(' <> ===>2', tokenAnalysis)
+    //console.log(' <> ===>2', tokenAnalysis)
     // tokenAnalysis.result.forEach((token: any) => {})
 
-    console.log('keys', Object.keys(tokenAnalysis))
+    // console.log('keys', Object.keys(tokenAnalysis))
     //const terms: TfidfToken[]
     const terms: Term[] = []
     const termList: string[] = []
     Object.keys(tokenAnalysis).forEach((o: any) => {
-      console.log('key', tokenAnalysis[o])
+      //console.log('key', tokenAnalysis[o])
       tokenAnalysis[o]['terms'].forEach((term: Term) => {
-        console.log('--->', term)
+        // console.log('--->', term)
         if (
+          term.normal.length > 2 &&
           term.chunk !== 'Verb' &&
           term.chunk !== 'Adjective' &&
           term.chunk !== 'VerbInfinitive' &&
@@ -231,6 +316,7 @@ export function useTagsService() {
           term.tags.indexOf('Determiner') < 0 &&
           term.tags.indexOf('Conjunction') < 0 &&
           term.tags.indexOf('Pronoun') < 0 &&
+          term.tags.indexOf('QuestionWord') < 0 &&
           termList.findIndex((t: string) => t === term.normal) < 0
         ) {
           termList.push(term.normal)
@@ -239,23 +325,15 @@ export function useTagsService() {
       })
     })
     const sortedTerms = terms.sort((a: Term, b: Term) => b['tfidf'] - a['tfidf'])
-    sortedTerms.forEach((t: Term) => {
-      console.log('===>', t.normal, t.tfidf)
-    })
+    // sortedTerms.forEach((t: Term) => {
+    //   console.log('===>', t.normal, t.tfidf)
+    // })
 
     const maxTerms = Math.min(10, sortedTerms.length)
     const firstTerms = sortedTerms.slice(0, maxTerms)
     return firstTerms.map((t: Term) => {
-      return { label: t.normal, type: 'languageModel', score: t.tfidf }
+      return { label: t.normal, type: source, score: t.tfidf }
     })
-    // result = sanitizeContent(doc.match('[#Noun+]', 0).text())
-    //   .split(' ')
-    //   .filter((word: string) => word.trim().length > 0 && word.trim().length < 26)
-    //   .map((word: string) => {
-    //     return { label: word.toLowerCase(), type: 'languageModel', score: 1 }
-    //   })
-    // console.log(' <> reuslt', result)
-    //return result
   }
 
   function getDynamicTabsBy(tags: string[]) {
@@ -293,7 +371,12 @@ export function useTagsService() {
     return 'en'
   }
 
-  const analyse = async (metas: object, article: object | undefined, url: string | undefined): Promise<TagInfo[]> => {
+  const analyse = async (
+    metas: object,
+    article: object | undefined,
+    tabReferences: TabReference[],
+    url: string | undefined,
+  ): Promise<TagInfo[]> => {
     function pushTagsInfo() {
       return (ti: TagInfo) => tagsInfo.push(ti)
     }
@@ -303,12 +386,25 @@ export function useTagsService() {
     let description: string = metas['description' as keyof object] || '' //alternatives?
     let text = description
     if (article && article['content' as keyof object]) {
-      text = ContentUtils.html2text(article['content' as keyof object])
+      const textTokens = ContentUtils.html2text(article['content' as keyof object])
+
+      const tokens = textTokens.split(' ')
+      //console.log('got token', tokens)
+      let res = ''
+      const tokenSet = new Set()
+      tokens.forEach((t: string) => {
+        if (t.length >= 4 && t.length <= 24) {
+          res += t + ' '
+          tokenSet.add(t.toLowerCase())
+        }
+      })
+      // // console.log("got token2", tokenSet)
+      // return tokenSet
+
+      text = Array.from(tokenSet).join(' ')
     }
 
-    if (url) {
-      tagsFromUrl(url).forEach(pushTagsInfo())
-    }
+    tagsFromReferences(tabReferences).forEach(pushTagsInfo())
 
     if (metas['keywords' as keyof object]) {
       tagsFromKeywords(metas['keywords' as keyof object] as string).forEach(pushTagsInfo())
@@ -319,33 +415,65 @@ export function useTagsService() {
       tagsFromHierarchy(currentTabset).forEach(pushTagsInfo())
     }
 
-    if (description) {
-      console.log(' <> description found')
-      if (useFeaturesStore().hasFeature(FeatureIdent.AI) && description && description.trim().length > 10) {
-        try {
-          console.log(' <> hier!')
-          // @ts-expect-error xxx
-          const detector: any = await LanguageDetector.create() //.then((detector: any) => {
-          const results: any[] = await detector.detect(text) //.then((results: any[]) => {
-          if (results.length > 0) {
-            var language = results[0].detectedLanguage
-            var confidence = results[0].confidence || 0
-            tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
-            tagsFromLanguageModel(description, language).forEach(pushTagsInfo())
-          }
-          // })
-          // })
-        } catch (e) {
-          tagsFromLanguageModel(description, langFromHostname(url)).forEach(pushTagsInfo())
-          console.log('error with language detection')
+    // language
+    let language = langFromHostname(url)
+    let confidence = 0
+    if (useFeaturesStore().hasFeature(FeatureIdent.AI) && text && text.trim().length > 10) {
+      try {
+        console.log(' <> hier!')
+        // @ts-expect-error xxx
+        const detector: any = await LanguageDetector.create() //.then((detector: any) => {
+        const results: any[] = await detector.detect(text) //.then((results: any[]) => {
+        if (results.length > 0) {
+          language = results[0].detectedLanguage
+          confidence = results[0].confidence || 0
+          tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
         }
-      } else if (description && description.trim().length > 10) {
-        tagsFromLanguageModel(description, langFromHostname(url)).forEach(pushTagsInfo())
-      }
+      } catch (e) {}
     }
+
+    if (url) {
+      tagsFromUrl(url, language).forEach(pushTagsInfo())
+    }
+    if (text) {
+      tagsFromLanguageModel(text, language, 'languageModel').forEach(pushTagsInfo())
+    }
+
+    const r = await useCategorizationService().categorize(text)
+    console.log('r', r)
+
+    console.log(' <> overall result', tagsInfo)
     const deduplicated = deduplicateTags(tagsInfo)
     console.log(' <> overall result', deduplicated)
     return deduplicated
+  }
+
+  function getCurrentTabCategory(): TabCategory {
+    const tags = useContentStore().currentTabTags
+
+    function linkindDataRefersTo(labelVal: string) {
+      return tags.filter((t: TagInfo) => t.type === 'linkingData' && t.label === labelVal).length > 0
+    }
+
+    if (linkindDataRefersTo('Recipe')) {
+      return 'recipe'
+    }
+    if (linkindDataRefersTo('NewsArticle')) {
+      return 'news'
+    }
+    if (linkindDataRefersTo('Product')) {
+      return 'shopping'
+    }
+    // if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
+    //   const text = useContentStore().getCurrentTabContent
+    //   console.log(' <> analysing', text)
+    //   if (text) {
+    //     // const res = await useCategoriesService().categorize(text)
+    //     const res = catService.categorize(text)
+    //     console.log('res', res)
+    //   }
+    // }
+    return 'uncategorized'
   }
 
   return {
@@ -359,5 +487,6 @@ export function useTagsService() {
     getDynamicTabsBy,
     addToIgnored,
     analyse,
+    getCurrentTabCategory,
   }
 }

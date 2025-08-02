@@ -359,7 +359,7 @@ onMounted(() => {
 
   // url tags
   if (browserTab.value?.url) {
-    useTagsService().tagsFromUrl(browserTab.value.url).forEach(pushTagsInfo())
+    useTagsService().tagsFromUrl(browserTab.value.url, 'de').forEach(pushTagsInfo())
   }
 })
 
@@ -535,19 +535,21 @@ watchEffect(() => {
               var language = results[0].detectedLanguage
               var confidence = results[0].confidence || 0
               useTagsService().tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
-              useTagsService().tagsFromLanguageModel(description.value, language).forEach(pushTagsInfo())
+              useTagsService()
+                .tagsFromLanguageModel(description.value, language, 'languageModel')
+                .forEach(pushTagsInfo())
             }
           })
         })
       } catch (e) {
         useTagsService()
-          .tagsFromLanguageModel(description.value, langFromHostname(browserTab.value?.url))
+          .tagsFromLanguageModel(description.value, langFromHostname(browserTab.value?.url), 'languageModel')
           .forEach(pushTagsInfo())
         console.log('error with language detection')
       }
     } else if (description.value && description.value.trim().length > 10) {
       useTagsService()
-        .tagsFromLanguageModel(description.value, langFromHostname(browserTab.value?.url))
+        .tagsFromLanguageModel(description.value, langFromHostname(browserTab.value?.url), 'languageModel')
         .forEach(pushTagsInfo())
     }
   }

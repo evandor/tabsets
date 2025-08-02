@@ -98,15 +98,23 @@ class BrowserApi {
 
   startWebRequestListener() {
     //console.log(' ...adding WebRequestListener')
-    chrome.webRequest?.onCompleted.addListener(this.onCompletedListener, { urls: ['*://*/*'], types: ['main_frame'] }, [
-      'extraHeaders',
-      'responseHeaders',
-    ])
-    chrome.webRequest.onBeforeRedirect.addListener(
-      this.onBeforeRedirectListener,
-      { urls: ['*://*/*'], types: ['main_frame'] },
-      ['extraHeaders', 'responseHeaders'],
-    )
+    try {
+      chrome.webRequest?.onCompleted.addListener(
+        this.onCompletedListener,
+        {
+          urls: ['*://*/*'],
+          types: ['main_frame'],
+        },
+        ['extraHeaders', 'responseHeaders'],
+      )
+      chrome.webRequest.onBeforeRedirect.addListener(
+        this.onBeforeRedirectListener,
+        { urls: ['*://*/*'], types: ['main_frame'] },
+        ['extraHeaders', 'responseHeaders'],
+      )
+    } catch (err) {
+      // Firefox?
+    }
   }
 
   stopWebRequestListener() {

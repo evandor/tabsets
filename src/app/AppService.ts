@@ -2,9 +2,11 @@ import _ from 'lodash'
 import { QVueGlobals } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
 import BrowserListeners from 'src/app/listeners/BrowserListeners'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import BookmarksService from 'src/bookmarks/services/BookmarksService'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { EXTENSION_NAME } from 'src/boot/constants'
+import { useCategorizationService } from 'src/categorization/CategorizationService'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
 import { useContentService } from 'src/content/services/ContentService'
 import { useContentStore } from 'src/content/stores/contentStore'
@@ -148,6 +150,10 @@ class AppService {
 
     useMessagesStore().initialize()
     useEventsStore().initialize()
+
+    if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
+      useCategorizationService().initializeLanguageModel()
+    }
 
     ChromeApi.init()
 

@@ -1,3 +1,4 @@
+import { useCategorizationService } from 'src/categorization/CategorizationService'
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
@@ -71,6 +72,10 @@ export class DownloadAIModelsCommand implements Command<boolean> {
 
       // const result2 = await session.prompt('That sounds great, but oh no, it is actually going to rain! New advice?')
       // console.log(result2)
+
+      chrome.storage.local.set({ 'tabsets.ai.active': true }).then(() => {
+        useCategorizationService().initializeLanguageModel()
+      })
 
       return Promise.resolve(new ExecutionResult(true, 'done'))
     } catch (e: any) {

@@ -11,9 +11,9 @@
     <div class="col-4 text-caption">description</div>
     <div class="col-8 text-caption ellipsis-3-lines" style="font-size: smaller">
       {{ useContentStore().currentTabMetas['description' as keyof object] }}
-      <q-tooltip class="tooltip-small">{{
-        useContentStore().currentTabMetas['description' as keyof object]
-      }}</q-tooltip>
+      <q-tooltip class="tooltip-small"
+        >{{ useContentStore().currentTabMetas['description' as keyof object] }}
+      </q-tooltip>
     </div>
 
     <div class="col-4 text-caption">last accessed</div>
@@ -35,6 +35,11 @@
     <!--    <div class="col-8 text-caption ellipsis" style="font-size: smaller">-->
     <!--      {{ useTabsetsStore().get}}-->
     <!--    </div>-->
+    <div class="col-4 text-caption">category</div>
+    <div class="col-8 text-caption text-bold" style="font-size: smaller">
+      {{ useTagsService().getCurrentTabCategory() }}/{{ aiCategory }}
+    </div>
+
     <div class="col-4 text-caption">content length</div>
     <div class="col-8 text-caption" style="font-size: smaller">
       {{ useContentStore().getCurrentTabContent?.length }}
@@ -48,6 +53,7 @@
 
     <div class="col-4 text-caption">Tags ({{ useContentStore().currentTabTags.length }})</div>
     <div class="col-8 text-caption" style="font-size: smaller">
+      <i>LD+JSON</i>: {{ tagsWithType('linkingData') }}<br />
       <i>URL</i>: {{ tagsWithType('url') }}<br />
       <i>Keywords</i>: {{ tagsWithType('keyword') }}<br />
       <i>Hierarchy</i>: {{ tagsWithType('hierarchy') }}<br />
@@ -65,12 +71,23 @@
 
     <div class="col-4 text-caption">storage</div>
     <div class="col-8 text-caption" style="font-size: smaller">
-      <div class="ellipsis">
+      <div
+        class="ellipsis"
+        @click="infoDialog('Storage', useContentStore().getCurrentTabStorage['tabsetsManaged' as keyof object])">
+        <i>managed:</i>
         {{ useContentStore().getCurrentTabStorage['tabsetsManaged' as keyof object] }}
       </div>
       <div class="ellipsis">
-        annotations:
+        <i>annotations</i>:
         {{ (useContentStore().getCurrentTabStorage['tabsetsAnnotations' as keyof object] as object[])?.length || 0 }}
+      </div>
+      <div
+        class="ellipsis cursor-pointer"
+        @click="
+          infoDialog('Categorization', useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object])
+        ">
+        <i>categorizations</i>:
+        {{ useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object] }}
       </div>
     </div>
     <div class="col-4 text-caption">tabReferences</div>
@@ -92,11 +109,28 @@ import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { RefreshTabCommand } from 'src/tabsets/commands/RefreshTabCommand'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useTagsService } from 'src/tags/TagsService'
+import { ref, watchEffect } from 'vue'
 
 type Props = { inPopup?: boolean }
 const props = withDefaults(defineProps<Props>(), { inPopup: false })
 
 const $q = useQuasar()
+
+const aiCategory = ref<string>('---')
+
+watchEffect(() => {
+  const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
+  if (tsCat) {
+    const url = useContentStore().getCurrentTabUrl
+    console.log('got tsCat', tsCat, url)
+    const cat = tsCat[url as keyof object]
+    console.log('got cat', cat)
+    if (cat) {
+      aiCategory.value = cat['category']
+    }
+  }
+})
 
 const infoDialog = (title: string, input: object) => {
   if (props.inPopup) {

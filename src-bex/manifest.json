@@ -14,6 +14,10 @@
         "css": [ "assets/content.css" ]
       },
       {
+        "matches": ["<all_urls>", "*://*/*"],
+        "js": ["tabsets-ai-content-script.ts"]
+      },
+      {
         "matches": ["*://rapidapi.com/*"],
         "js": ["tabsets-request-interceptor-inject.js","tabsets-request-interceptor.js"]
       },
@@ -79,6 +83,9 @@
     "optional_host_permissions": ["<all_urls>", "*://*/*"],
     "background": {
       "scripts": ["background.ts"]
+    },
+    "action": {
+      "default_popup": "www/index.html#/popup"
     },
     "sidebar_action": {
       "default_icon": "icons/icon-48x48.png",
