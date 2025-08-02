@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { DeactivateAiCommand } from 'src/core/domain/commands/DeactivateAiCommand'
 import { DownloadAIModelsCommand } from 'src/core/domain/commands/DownloadAIModelsCommand'
 import { GrantPermissionCommand } from 'src/core/domain/commands/GrantPermissionCommand'
 import { RevokePermissionCommand } from 'src/core/domain/commands/RevokePermissionCommand'
@@ -441,7 +442,9 @@ export class AppFeatures {
       'sym_o_play_circle',
       '',
       ['all', 'popup'],
-    ).setActivateCommands([new DownloadAIModelsCommand()]),
+    )
+      .setActivateCommands([new DownloadAIModelsCommand()])
+      .setDeactivateCommands([new DeactivateAiCommand()]),
     new Feature(FeatureIdent.VISUALIZATIONS, 'EXPERIMENTAL', 'Visualizations', 'mind-map style', 'sym_o_graph_5', '', [
       'all',
       'popup',

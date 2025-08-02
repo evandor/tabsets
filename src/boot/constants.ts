@@ -43,6 +43,8 @@ const THUMBNAILS_LIMIT_NO_SUBSCRIPTION = 1 // pro only
 
 const NEW_TAB_EXTENSION_ID = 'ehmmamlcpigodgfgakpkbcgddoifmcpm'
 
+const LOCAL_STORAGE_CATEGORIZATION_KEY = 'tabsets.ai.categorization'
+
 export default boot(({}) => {})
 
 export {
@@ -75,4 +77,5 @@ export {
   NEW_TAB_EXTENSION_ID,
   TAGS_IGNORED,
   TAGS_CATEGORIES,
+  LOCAL_STORAGE_CATEGORIZATION_KEY,
 }

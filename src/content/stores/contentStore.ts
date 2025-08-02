@@ -77,6 +77,7 @@ export const useContentStore = defineStore('content', () => {
         currentTabTags.value = await useTagsService().analyse(
           currentTabMetas.value,
           currentTabArticle.value,
+          currentTabReferences.value,
           currentTabUrl.value,
         )
 
@@ -202,7 +203,7 @@ export const useContentStore = defineStore('content', () => {
           currentTabReferences.value.push(
             new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', asJSON),
           )
-          //console.log("Found TabReference", currentTabReferences.value)
+          //console.log('Found TabReference', currentTabReferences.value)
         } catch (err) {
           console.warn('could not parse linking data', err)
         }

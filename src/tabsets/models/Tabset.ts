@@ -18,6 +18,8 @@ export enum TabsetStatus {
   HIDDEN = 'HIDDEN',
 }
 
+export type SpecialTabsetId = 'FALLBACK'
+
 export enum TabsetType {
   DEFAULT = 'DEFAULT',
   SESSION = 'SESSION',

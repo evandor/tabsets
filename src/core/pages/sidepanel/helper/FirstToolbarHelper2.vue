@@ -99,7 +99,6 @@
                 </template>
                 <template v-else>
                   <!--                  <q-spinner color="primary" size="1em" />-->
-                  ---
                 </template>
               </div>
             </div>
@@ -112,7 +111,7 @@
           style="border: 0 solid green">
           <slot name="iconsRight">
             <SidePanelToolbarFab2
-              v-if="currentChromeTab && currentTabset && currentTabset.type !== TabsetType.SPECIAL"
+              v-if="currentChromeTab && currentTabset"
               @button-clicked="(args: ActionHandlerButtonClickedHolder) => handleButtonClicked(currentTabset!, args)"
               :currentChromeTab="currentChromeTab"
               :disable="props.disable"

@@ -7,6 +7,53 @@ const updateTrigger = 10
 // https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
 //console.log("ga: installing google analytics")
 
+let session: any
+
+let categoriesList: string = ''
+
+let languageModelAvailablity: string
+
+try {
+  // @ts-expect-error xxx
+  LanguageModel.availability().then((availability: string) => {
+    console.log('languageModel', availability)
+    languageModelAvailablity = availability
+  })
+} catch (err: any) {}
+
+function initModel(categories: string[]) {
+  if (languageModelAvailablity !== 'available') {
+    console.log('languageModel not available')
+    return
+  }
+  const catList = categories.join(', ')
+  const systemPrompt = `Your purpose is to categorize text, using only the following categories:
+        ${catList}.
+        The user will give you texts as input for you to categorize. Please output a JSON object with the following properties:
+        category, reason, score
+        `
+  console.log('systemPrompt', systemPrompt)
+  // @ts-expect-error xxx
+  LanguageModel.create({
+    monitor(m: any) {
+      m.addEventListener('downloadprogress', (e: any) => {
+        console.log(`Downloaded: ${e.loaded * 100}%`)
+      })
+    },
+    initialPrompts: [
+      {
+        role: 'system',
+        content: systemPrompt,
+      },
+    ],
+  })
+    .then((s: any) => {
+      console.log('=== setting session ===', s)
+      session = s
+    })
+    .catch((err: any) => console.warn('could not create AI session', err))
+}
+
 addEventListener('unhandledrejection', (event) => {
   console.log('[service-worker] ga: fire error event', event)
   // getting error: Service worker registration failed. Status code: 15
@@ -118,7 +165,7 @@ declare module '@quasar/app-vite' {
 const bridge = createBridge({ debug: false })
 
 bridge.on('update.indicator.icon', (payload: object) => {
-  //console.log(`[BEX] message!"`, payload, bridge.portList)
+  console.log(`[BEX] <<< 'update.indicator.icon': ${JSON.stringify(payload['payload' as keyof object])}`) //, bridge.portList)
   chrome.tabs.query({ active: true, lastFocusedWindow: true }).then((tabs: chrome.tabs.Tab[]) => {
     if (tabs.length > 0 && tabs[0]) {
       const msg = payload['payload' as keyof object]
@@ -131,6 +178,53 @@ bridge.on('update.indicator.icon', (payload: object) => {
       }
     }
   })
+})
+
+bridge.on('tabsets.bex.categoriesList', async (payload: object) => {
+  const pl = payload['payload' as keyof object]
+  console.log('pl', typeof pl, pl)
+  categoriesList = pl['categories' as keyof object]
+  console.log(`[BEX] <<< 'tabsets.bex.categoriesList': #categories=${categoriesList}`) //, bridge.portList)
+  if (!categoriesList) {
+    initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
+    return
+  }
+  console.log('categoriesList', categoriesList)
+
+  console.log('hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
+  if (Object.values(categoriesList).length > 0) {
+    initModel(Object.values(categoriesList))
+  } else {
+    initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
+  }
+})
+
+bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
+  const pl = payload['payload' as keyof object]
+  console.log(`[BEX] <<< 'tabsets.bex.tab.excerpt': #html=${(pl['html' as keyof object] as string).length}`) //, bridge.portList)
+  const metas = payload['payload' as keyof object]['metas' as keyof object]
+  //console.log('metas', metas)
+  if (metas['description' as keyof object]) {
+    const desc = metas['description' as keyof object]
+    if (!session) {
+      console.log('no session!')
+      return
+    }
+    console.log('=======================')
+    console.log(desc)
+    console.log('=======================')
+    const r = await session.prompt(desc)
+    console.log('r', r)
+    const json = JSON.parse(r.replace('```json', '').replace('```', '')) as {
+      category: string
+      reason: string
+      score: number
+      timestamp: number
+    }
+    json['timestamp'] = Date.now()
+    json['reason'] = ''
+    return json
+  }
 })
 
 bridge.on('reload-current-tabset', async ({ payload }) => {

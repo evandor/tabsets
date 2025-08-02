@@ -46,7 +46,7 @@ export class AddTabToTabsetCommand implements Command<any> {
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    //console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset!.id}', active folder: ${this.activeFolder}`)
+    console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset!.id}', active folder: ${this.activeFolder}`)
 
     let tabsetOrFolder = this.tabset!
     if (this.activeFolder) {
@@ -66,16 +66,11 @@ export class AddTabToTabsetCommand implements Command<any> {
     }
 
     try {
-      // manage (chrome) Group
-      // console.log('updating tab group for group id', this.tab.groupId)
-      // const currentGroup = useGroupsStore().currentGroupForId(this.tab.groupId)
-      // this.tab.groupName = currentGroup?.title || undefined
-      // if (currentGroup) {
-      //   await useGroupsStore().persistGroup(currentGroup)
-      // }
-
       // TabReferences
       this.tab.tabReferences = this.tab.tabReferences.concat(useContentStore().currentTabReferences)
+
+      // TagsInfo
+      this.tab.tagsInfo = useContentStore().currentTabTags
 
       // Article (ReaderMode)
       if (useFeaturesStore().hasFeature(FeatureIdent.READING_MODE)) {

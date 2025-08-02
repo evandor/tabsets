@@ -30,6 +30,7 @@ import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useTagsService } from 'src/tags/TagsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watchEffect } from 'vue'
 
@@ -42,10 +43,33 @@ const containedInTsCount = ref(0)
 const alreadyInTabset = ref(false)
 const animateAddtabButton = ref(false)
 
-const clicked = () => {
+const clicked = async () => {
   console.log('clicked!!', props.currentChromeTab)
+
+  async function tabInTabset(name: string, newTab: Tab) {
+    let tabset = useTabsetsStore().getTabset(name)
+    console.log('found tabset for id', name, tabset)
+    if (!tabset) {
+      tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
+    }
+    return useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, tabset))
+  }
+
   if (props.currentChromeTab) {
     const newTab: Tab = new Tab(uid(), props.currentChromeTab)
+    const tabCategory = useTagsService().getCurrentTabCategory()
+    console.log('found category', tabCategory)
+    switch (tabCategory) {
+      case 'recipe':
+        return await tabInTabset('recipes', newTab)
+      case 'news':
+        return await tabInTabset('news', newTab)
+      case 'shopping':
+        return await tabInTabset('shopping', newTab)
+      default:
+        // noop
+        break
+    }
     return useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))
   }
   handleError('current browser tab not set!')
