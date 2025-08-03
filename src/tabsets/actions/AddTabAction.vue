@@ -54,6 +54,7 @@ const clicked = async () => {
       tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
       tabset.type = TabsetType.SPECIAL
       tabset.contentClassification = classification
+      await useTabsetsStore().saveTabset(tabset)
     }
     return useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, tabset))
   }

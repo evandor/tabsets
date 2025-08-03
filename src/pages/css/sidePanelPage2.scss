@@ -127,3 +127,16 @@ body {
     top: 0;
   }
 }
+
+.fade-enter-active {
+  transition: opacity 1.5s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 1s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

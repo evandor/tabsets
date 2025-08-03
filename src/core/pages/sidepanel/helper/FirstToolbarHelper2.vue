@@ -62,44 +62,39 @@
           <div class="col-12 text-subtitle1">
             <div class="q-ml-xs q-mt-none">
               <div class="text-bold ellipsis">
-                <template v-if="currentTabset && currentTabset.id !== 'UNCATEGORIZED'">
-                  <q-select
-                    :style="tabsetColorStyle()"
-                    filled
-                    :disable="props.disable"
-                    transition-show="scale"
-                    transition-hide="scale"
-                    :label="tabsetSelectLabel()"
-                    v-model="tabsetSelectionModel"
-                    @update:model-value="(newTabset: object) => switchTabset(newTabset)"
-                    :options="tabsetSelectionOptions"
-                    dense
-                    options-dense>
-                    <template v-slot:option="scope">
-                      <q-item v-bind="scope.itemProps">
-                        <template v-if="scope.opt.label.length > 0">
-                          <q-item-section style="max-width: 20px" v-if="scope.opt.label !== 'Switch to'">
-                            <q-icon
-                              size="xs"
-                              :color="scope.opt.icon_color ? scope.opt.icon_color : 'primary'"
-                              :name="scope.opt.icon"
-                              v-if="scope.opt.icon" />
-                          </q-item-section>
-                          <q-item-section>
-                            <q-item-label>{{ scope.opt.label }}</q-item-label>
-                            <q-item-label caption>{{ scope.opt.description }}</q-item-label>
-                          </q-item-section>
-                        </template>
-                        <q-item-section class="q-ma-none q-pa-none" v-else>
-                          <q-separator />
+                <q-select
+                  :style="tabsetColorStyle()"
+                  filled
+                  :disable="props.disable"
+                  transition-show="scale"
+                  transition-hide="scale"
+                  :label="tabsetSelectLabel()"
+                  v-model="tabsetSelectionModel"
+                  @update:model-value="(option: SelectOption) => switchTabset(option)"
+                  :options="tabsetSelectionOptions"
+                  dense
+                  options-dense>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <template v-if="scope.opt.label.length > 0">
+                        <q-item-section style="max-width: 20px" v-if="scope.opt.label !== 'Switch to'">
+                          <q-icon
+                            size="xs"
+                            :color="scope.opt.icon_color ? scope.opt.icon_color : 'primary'"
+                            :name="scope.opt.icon"
+                            v-if="scope.opt.icon" />
                         </q-item-section>
-                      </q-item>
-                    </template>
-                  </q-select>
-                </template>
-                <template v-else>
-                  <!--                  <q-spinner color="primary" size="1em" />-->
-                </template>
+                        <q-item-section>
+                          <q-item-label>{{ scope.opt.label }}</q-item-label>
+                          <q-item-label caption>{{ scope.opt.description }}</q-item-label>
+                        </q-item-section>
+                      </template>
+                      <q-item-section class="q-ma-none q-pa-none" v-else>
+                        <q-separator />
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
               </div>
             </div>
           </div>
@@ -137,7 +132,9 @@
 import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
+import { useContentStore } from 'src/content/stores/contentStore'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { SelectOption, useTabsetSelector } from 'src/core/pages/common/useTabsetSelector'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
@@ -156,23 +153,16 @@ import AddUrlDialog from 'src/tabsets/dialogues/AddUrlDialog.vue'
 import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
 import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
 import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
-import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useTagsService } from 'src/tags/TagsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { inject, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-
-type SelectOption = {
-  label: string
-  value: string
-  disable?: boolean
-  icon?: string
-  icon_color?: string
-}
 
 const { t } = useI18n({ useScope: 'global' })
 
@@ -199,8 +189,7 @@ const watermark = ref('')
 const tabsets = ref<Tabset[]>([])
 const animateMenuButton = ref(false)
 
-const tabsetSelectionModel = ref<SelectOption | undefined>(undefined)
-const tabsetSelectionOptions = ref<SelectOption[]>([])
+// const tabsetSelectionOptions = ref<SelectOption[]>([])
 const stashedTabs = ref(false)
 
 let showSearchAction = !useUiStore().quickAccessFor('search')
@@ -209,97 +198,104 @@ const uiDensity = inject('ui.density')
 
 windowLocation.value = window.location.href
 
-const redirectOnEmpty = () => {
-  setTimeout(() => {
-    // redirect to welcome page if there are not tabsets
-    if (useTabsetsStore().tabsets.size === 0) {
-      console.log('redirecting to /sidepanel/welcome')
-      router.push('/sidepanel/welcome')
-    } else {
-      console.log('setting current tabset to first one')
-      const firstTabset = [...useTabsetsStore().tabsets.values()][0]!
-      useTabsetsStore().selectCurrentTabset(firstTabset.id)
-    }
-  }, 1000)
+let AutomaticSelectionOption = {
+  label: 'selected automatically',
+  value: 'automatic-selection',
+  icon: 'sym_o_stars_2',
 }
 
-// redirectOnEmpty()
+const { tabsetSelectionOptions, tabsetSelectionModel } = useTabsetSelector(props.element)
+
+watchEffect(() => {
+  const currentTabTags = useContentStore().currentTabTags
+  //console.log(':::currentTabTags', currentTabTags)
+  // const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
+  const tsCat = useTagsService().getCurrentTabCategory()
+  //console.log('tsCat', tsCat)
+  if (tsCat) {
+    AutomaticSelectionOption.label = 'automatic: ' + tsCat
+  }
+})
 
 watchEffect(() => {
   tabsets.value = [...useTabsetsStore().tabsets.values()] as Tabset[]
-  const useSpaces = useFeaturesStore().hasFeature(FeatureIdent.SPACES)
-  const space = useSpacesStore().space
 
   stashedTabs.value = tabsets.value.filter((ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
 
-  tabsetSelectionOptions.value = tabsets.value
-    .filter((ts: Tabset) =>
-      useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
-    )
-    .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
-    .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
-    .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
-    //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
-    .filter((ts: Tabset) => {
-      if (useSpaces && space) {
-        return ts.spaces.indexOf(space.id) >= 0
-      } else if (useSpaces && !space) {
-        return ts.spaces?.length === 0
-      }
-      return true
-    })
-    .map((ts: Tabset) => {
-      return {
-        label: ts.name,
-        value: ts.id,
-        disable: ts.id === currentTabset.value?.id,
-      }
-    })
-    .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
-
-  if (tabsetSelectionOptions.value.length == 1) {
-    tabsetSelectionOptions.value = []
-  }
-  if (tabsetSelectionOptions.value.length > 1) {
-    tabsetSelectionOptions.value.unshift({ label: 'Switch to', value: '', disable: true, icon: 'switch_horiz' })
-  }
-
-  // if (tabsetSelectionOptions.value.length > 10) {
-  //   tabsetSelectionOptions.value = tabsetSelectionOptions.value.slice(0, 10)
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //   tabsetSelectionOptions.value.push({ label: 'show all...', value: '' })
-  // } else if (tabsetSelectionOptions.value.length > 4) {
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //   tabsetSelectionOptions.value.push({ label: 'more...', value: '' })
+  // tabsetSelectionOptions.value = tabsets.value
+  //   .filter((ts: Tabset) =>
+  //     useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
+  //   )
+  //   .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
+  //   .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
+  //   .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
+  //   //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
+  //   .filter((ts: Tabset) => {
+  //     if (useSpaces && space) {
+  //       return ts.spaces.indexOf(space.id) >= 0
+  //     } else if (useSpaces && !space) {
+  //       return ts.spaces?.length === 0
+  //     }
+  //     return true
+  //   })
+  //   .map((ts: Tabset) => {
+  //     return {
+  //       label: ts.name,
+  //       value: ts.id,
+  //       disable: ts.id === currentTabset.value?.id,
+  //     }
+  //   })
+  //   .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+  //
+  // if (tabsetSelectionOptions.value.length == 1) {
+  //   tabsetSelectionOptions.value = []
   // }
-
-  if (tabsets.value.length > 1) {
-    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  }
-
-  if (props.element !== 'popup') {
-    tabsetSelectionOptions.value.push({ label: 'Edit Tabset', value: 'edit-tabset', icon: 'o_edit' })
-    tabsetSelectionOptions.value.push({ label: 'Create new Tabset', value: 'create-tabset', icon: 'o_add' })
-    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-    tabsetSelectionOptions.value.push({
-      label: 'Delete Tabset',
-      value: 'delete-tabset',
-      icon: 'o_delete',
-      icon_color: 'negative',
-    })
-  } else {
-    tabsetSelectionOptions.value.push({ label: 'Mange Tabsets', value: 'popup-manage-tabsets', icon: 'o_edit' })
-  }
-
-  if (stashedTabs.value) {
-    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-    tabsetSelectionOptions.value.push({ label: 'Stashed Tabs', value: 'stashed-tabs', icon: 'o_add' })
-  }
-
-  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-    tabsetSelectionOptions.value.push({ label: 'Select Space...', value: 'select-space', icon: 'o_space_dashboard' })
-  }
+  // if (tabsetSelectionOptions.value.length > 1) {
+  //   tabsetSelectionOptions.value.unshift({ label: 'Switch to', value: '', disable: true, icon: 'switch_horiz' })
+  // }
+  //
+  // // if (tabsetSelectionOptions.value.length > 10) {
+  // //   tabsetSelectionOptions.value = tabsetSelectionOptions.value.slice(0, 10)
+  // //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  // //   tabsetSelectionOptions.value.push({ label: 'show all...', value: '' })
+  // // } else if (tabsetSelectionOptions.value.length > 4) {
+  // //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  // //   tabsetSelectionOptions.value.push({ label: 'more...', value: '' })
+  // // }
+  //
+  // if (tabsets.value.length > 1) {
+  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  // }
+  //
+  // if (props.element !== 'popup') {
+  //   if (currentTabset.value) {
+  //     tabsetSelectionOptions.value.push({ label: 'Edit Tabset', value: 'edit-tabset', icon: 'o_edit' })
+  //     tabsetSelectionOptions.value.push({ label: 'Create new Tabset', value: 'create-tabset', icon: 'o_add' })
+  //     tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  //     tabsetSelectionOptions.value.push({
+  //       label: 'Delete Tabset',
+  //       value: 'delete-tabset',
+  //       icon: 'o_delete',
+  //       icon_color: 'negative',
+  //     })
+  //   } else {
+  //     tabsetSelectionOptions.value.push({ label: 'Create custom Tabset', value: 'create-tabset', icon: 'o_add' })
+  //   }
+  // } else {
+  //   tabsetSelectionOptions.value.push({ label: 'Mange Tabsets', value: 'popup-manage-tabsets', icon: 'o_edit' })
+  // }
+  //
+  // if (stashedTabs.value) {
+  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  //   tabsetSelectionOptions.value.push({ label: 'Stashed Tabs', value: 'stashed-tabs', icon: 'o_add' })
+  // }
+  //
+  // if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
+  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  //   tabsetSelectionOptions.value.push({ label: 'Select Space...', value: 'select-space', icon: 'o_space_dashboard' })
+  // }
+  //
+  // tabsetSelectionOptions.value.unshift(AutomaticSelectionOption)
 })
 
 watchEffect(() => {
@@ -310,14 +306,14 @@ watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
   //console.log('---got current tabset', currentTabset.value)
   if (currentTabset.value) {
-    tabsetSelectionModel.value = {
-      label: currentTabset.value?.name || '?',
-      value: currentTabset.value?.id || '-',
-    }
+    // tabsetSelectionModel.value = {
+    //   label: currentTabset.value?.name || '?',
+    //   value: currentTabset.value?.id || '-',
+    // }
     overlap.value = useTabsStore2().getOverlap(currentTabset.value)
     overlapTooltip.value = `${Math.round(100 * overlap.value)}% overlap between this tabset and the currently open tabs`
   } else {
-    // redirectOnEmpty()
+    // tabsetSelectionModel.value = AutomaticSelectionOption
   }
 })
 
@@ -363,8 +359,9 @@ const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'm
 
 const addUrlDialog = () => $q.dialog({ component: AddUrlDialog })
 
-const switchTabset = async (tabset: object) => {
-  const tsId = tabset['value' as keyof object]
+const switchTabset = async (option: SelectOption) => {
+  console.log('switching tabsets', option)
+  const tsId = option.value
   if (tsId === 'select-space') {
     await router.push('/sidepanel/spaces')
     return
@@ -378,10 +375,10 @@ const switchTabset = async (tabset: object) => {
         fromPanel: true,
       },
     })
-    tabsetSelectionModel.value = {
-      label: currentTabset.value?.name || '?',
-      value: currentTabset.value?.id || '-',
-    }
+    // tabsetSelectionModel.value = {
+    //   label: currentTabset.value?.name || '?',
+    //   value: currentTabset.value?.id || '-',
+    // }
     return
   }
   if (tsId === 'edit-tabset' && currentTabset.value) {
@@ -418,12 +415,17 @@ const switchTabset = async (tabset: object) => {
     router.push('/sidepanel/sessions')
     return
   }
+  if (tsId === 'automatic-selection') {
+    useTabsetsStore().unselectCurrentTabset()
+    currentTabset.value = undefined
+    return
+  }
   if (tsId === '') {
     await router.push('/sidepanel/collections')
     return
   }
   const result: ExecutionResult<Tabset | undefined> = await useCommandExecutor().execute(
-    new SelectTabsetCommand(tabset['value' as keyof object]),
+    new SelectTabsetCommand(option.value),
   )
   currentTabset.value = result.result
   emits('tabset-changed')
@@ -433,7 +435,7 @@ const tabsetSelectLabel = () => {
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
     return useSpacesStore().space?.label || 'no space selected'
   }
-  return 'Tabset'
+  return 'Collection'
 }
 
 const delayedRemoval = () => {

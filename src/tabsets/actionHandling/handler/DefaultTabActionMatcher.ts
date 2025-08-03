@@ -26,7 +26,7 @@ export class DefaultTabActionMatcher implements TabActionMatcher {
     if (useFeaturesStore().hasFeature(FeatureIdent.FOLDER)) {
       actions.unshift({ component: AddFolderAction, context: {} })
     }
-    console.log('adding addTabAction')
+    // console.log('adding addTabAction')
     actions.unshift({ component: AddTabAction, context: {} }) // first action
     return actions
   }

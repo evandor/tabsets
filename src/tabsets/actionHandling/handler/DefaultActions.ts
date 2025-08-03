@@ -5,7 +5,6 @@ import { ComponentWithContext } from 'src/tabsets/actionHandling/TabActionMatche
 import ConvertToCollectionAction from 'src/tabsets/actions/ConvertToCollectionAction.vue'
 import DeleteFolderAction from 'src/tabsets/actions/DeleteFolderAction.vue'
 import EditFolderAction from 'src/tabsets/actions/EditFolderAction.vue'
-import ExportTabsetAction from 'src/tabsets/actions/ExportTabsetAction.vue'
 import { ActionProps } from 'src/tabsets/actions/models/ActionProps'
 import NewTabAction from 'src/tabsets/actions/NewTabAction.vue'
 import OpenTabsetAction from 'src/tabsets/actions/OpenTabsetAction.vue'
@@ -25,7 +24,7 @@ export class DefaultActions {
     }
 
     if (useSettingsStore().has('DEV_MODE')) {
-      actions.push({ component: ExportTabsetAction, context: {} })
+      //actions.push({ component: ExportTabsetAction, context: {} })
     }
 
     if (LocalStorage.getItem('ui.newtab.installed') && actionProps.level === 'root') {

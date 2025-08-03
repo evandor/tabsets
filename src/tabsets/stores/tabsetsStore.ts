@@ -255,6 +255,14 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     return storage.shareWith(tabset, email, readonly, sharedBy)
   }
 
+  function unselectCurrentTabset() {
+    if (currentTabsetId.value) {
+      useSelectedTabsetService().clearCurrentTabsetId(currentTabsetId.value)
+    }
+    currentTabsetId.value = undefined
+    currentTabsetFolderId.value = undefined
+  }
+
   // *** getters ***
 
   const getCurrentTabs = computed((): Tab[] => {
@@ -605,5 +613,6 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     getParentChainForTabId,
     getPageTabs,
     getSpecialTabset,
+    unselectCurrentTabset,
   }
 })

@@ -71,15 +71,7 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   ;(async function () {
-    if (message.name === 'init-ai-module') {
-      // console.log('got message init-ai-module!!')
-      // try {
-      //   await aiGateway.loadModule()
-      //   sendResponse('ai module loaded')
-      // } catch (err: any) {
-      //   sendResponse('error: ' + err)
-      // }
-    } else if (message.name === 'zero-shot-classification') {
+    if (message.name === 'zero-shot-classification') {
       try {
         console.log('hier', modelPromise)
         // const result = await aiGateway.zeroShotClassification(message.data.text, message.data.candidates as string[])
@@ -302,8 +294,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     })
     // }
   } else if (request.msg === 'captureClipping') {
-  } else if (request.msg === 'init-ai-module') {
-    //
   } else {
     console.log('got unhandled message', request)
   }

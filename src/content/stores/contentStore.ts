@@ -27,6 +27,7 @@ export const useContentStore = defineStore('content', () => {
   const articleSnapshot = ref<object | undefined>(undefined)
   const currentTabReferences = ref<TabReference[]>([])
   const currentTabTags = ref<TagInfo[]>([])
+  const currentTabResettedAt = ref(new Date().getTime())
 
   const setCurrentTabContent = (content: string | undefined) => {
     //console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
@@ -56,7 +57,8 @@ export const useContentStore = defineStore('content', () => {
   }
 
   const resetFor = async (browserTab: chrome.tabs.Tab) => {
-    console.log('browserTab', browserTab)
+    console.log('resetting current data for', browserTab.url)
+    currentTabResettedAt.value = new Date().getTime()
     currentTabUrl.value = browserTab.url
     currentTabFavIcon.value = browserTab.favIconUrl
     currentTabTitle.value = browserTab.title
@@ -67,11 +69,13 @@ export const useContentStore = defineStore('content', () => {
     currentTabArticle.value = undefined
     currentTabTags.value = []
 
-    //console.log('000>>>', browserTab.id, browserTab.url, browserTab)
+    console.log('000>>>', browserTab.id, browserTab.url, browserTab)
     if (browserTab.url && browserTab.id) {
       try {
         const r = await chrome.tabs.sendMessage(browserTab.id, 'getExcerpt', {}) //, async (res) => {
-        console.log('getContent returned result with length', r?.html.length, browserTab.id)
+        // console.log(
+        //   `getContent returned result with length ${Math.round((r?.html.length || 0) / 1024)}kB (tabId ${browserTab.id})`,
+        // )
         await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
 
         currentTabTags.value = await useTagsService().analyse(
@@ -95,7 +99,7 @@ export const useContentStore = defineStore('content', () => {
   watchEffect(() => {
     currentTabReferences.value = []
     if (currentTabContent.value.trim().length > 0) {
-      console.debug(`updating content store... (length ${currentTabContent.value.trim().length})`)
+      //console.debug(`updating content store... (length ${currentTabContent.value.trim().length})`)
       const $ = cheerio.load(currentTabContent.value)
       checkLinks($)
       checkMeta($)
@@ -199,7 +203,7 @@ export const useContentStore = defineStore('content', () => {
       if (type && type === 'application/ld+json') {
         try {
           const text = $(elem).contents().first().text()
-          console.log('got application/ld+json', text.length)
+          //console.log('got application/ld+json', text.length)
           const asJSON = JSON.parse(text)
           currentTabReferences.value.push(
             new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', asJSON),
@@ -325,5 +329,6 @@ export const useContentStore = defineStore('content', () => {
     currentTabTitle,
     articleSnapshot,
     currentTabTags,
+    currentTabResettedAt,
   }
 })

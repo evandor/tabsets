@@ -8,11 +8,18 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
 
   fetch('https://raw.githubusercontent.com/evandor/tabsets/refs/heads/main/config/categoryMapping.data').then((res) => {
     res.text().then((body: string) => {
-      console.log('res', body)
+      //console.log('res', body)
       const lines = body.split('\n')
       try {
         lines.forEach((line: string) => {
           const parts = line.split(';')
+          if (line.trim().length === 0) {
+            return
+          }
+          if (parts.length !== 3) {
+            console.warn(`found wrong line for categoryMapping: '${line}'`)
+            return
+          }
           const type = parts[0]!
           const key = parts[1]!
           const cat = parts[2]!
@@ -21,20 +28,24 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
           }
           categoryMapping.value.get(type)!.set(key, cat as TabCategory)
         })
-        console.log('categoryMapping', categoryMapping.value)
+        console.log(`categoryMapping from input (${lines.length} lines)`)
       } catch (e) {
         console.log('could not read categoryMapping.data')
       }
     })
   })
 
+  const init = () => {
+    // triggers data fetching
+  }
+
   const getCategory = computed(() => {
     return (type: string, keys: string[]): O.Option<TabCategory> => {
-      console.log(`searching category for ${type}/${keys.join(',')}`)
+      //console.log(`searching category for ${type}/${keys.join(',')}`)
       const typeMapping = categoryMapping.value.get(type)
       if (typeMapping) {
         for (const key of keys) {
-          if (typeMapping.has(key.toLowerCase())) {
+          if (key && key.trim().length > 0 && typeMapping.has(key.toLowerCase())) {
             return O.of(typeMapping.get(key.toLowerCase())!)
           }
         }
@@ -45,5 +56,6 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
 
   return {
     getCategory,
+    init,
   }
 })

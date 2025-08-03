@@ -127,6 +127,11 @@ const createGettingStartedTabset = () => {
       LocalStorage.setItem('ui.hideWelcomePage', true)
       chrome.storage.local.remove('tabsets.ext.ai.active')
       console.log('route', route.fullPath)
+
+      // chrome.sidePanel.setOptions({
+      //   enabled: false,
+      // })
+
       // if (route.fullPath !== '/popup/welcome') {
       router.push('/popup/getstarted')
       // }

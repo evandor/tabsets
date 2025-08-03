@@ -169,7 +169,7 @@ export function useTagsService() {
   }
 
   const tagsFromUrl = (url: string | undefined, language: string): TagInfo[] => {
-    console.log(' <> tags from URL', url, language)
+    //console.log(' <> tags from URL', url, language)
     if (!url) {
       return []
     }
@@ -185,10 +185,10 @@ export function useTagsService() {
       if (topLevelDomain) {
         result.push({ label: topLevelDomain, type: 'url', score: 1 })
       }
-      console.log(
-        ' <> tags from URL',
-        theURL.pathname.length > 40 ? theURL.pathname.substring(0, 40) + '...' : theURL.pathname,
-      )
+      // console.log(
+      //   ' <> tags from URL',
+      //   theURL.pathname.length > 40 ? theURL.pathname.substring(0, 40) + '...' : theURL.pathname,
+      // )
       const urlParts = theURL.pathname
         .replace('.html', '')
         .split('/')
@@ -443,12 +443,13 @@ export function useTagsService() {
       tagsFromLanguageModel(text, language, 'languageModel').forEach(pushTagsInfo())
     }
 
-    const r = await useCategorizationService().categorize(text)
-    console.log('r', r)
-
-    console.log(' <> overall result', tagsInfo)
+    if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
+      const r = await useCategorizationService().categorize(text)
+      console.log('r', r)
+    }
+    //console.log(' <> overall result', tagsInfo)
     const deduplicated = deduplicateTags(tagsInfo)
-    console.log(' <> overall result', deduplicated)
+    //console.log(' <> overall result', deduplicated)
     return deduplicated
   }
 

@@ -14,25 +14,25 @@
       </div>
     </div>
 
+    <transition name="fade" appear>
+      <div
+        class="q-pa-none q-mb-md"
+        v-if="showAnalysisBrokenBanner"
+        style="border: 2px solid orange; border-radius: 3px">
+        <q-banner rounded class="text-black">
+          Current tab cannot be analyzed for content
+
+          <template v-slot:action>
+            <q-btn flat color="black" label="Dismiss" @click="showAnalysisBrokenBanner = false" />
+            <q-btn flat color="black" label="Reload" @click="reloadCurrentTab()" />
+          </template>
+        </q-banner>
+      </div>
+    </transition>
+
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none q-pt-xs">
       <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
-        <q-list bordered class="rounded-borders fit">
-          <q-expansion-item
-            v-for="sts in specialTabsets"
-            @click="openRecipeOverview(sts)"
-            :icon="sts.icon"
-            :label="sts.name"
-            :caption="sts.tabs.length + ' tab(s)'">
-            <SidePanelPageContent
-              :tabset="sts"
-              :key="sts?.id"
-              :filter="filter"
-              @tabs-found="(n: number) => (filteredTabsCount = n)"
-              @folders-found="(n: number) => (filteredFoldersCount = n)" />
-          </q-expansion-item>
-        </q-list>
-
         <!--        <div class="col-12 text-center" v-for="sts in specialTabsets">-->
         <!--          <q-btn :label="sts.name" color="primary" size="xs" @click="openRecipeOverview()" />-->
         <!--        </div>-->
@@ -52,6 +52,23 @@
             @tabs-found="(n: number) => (filteredTabsCount = n)"
             @folders-found="(n: number) => (filteredFoldersCount = n)" />
         </template>
+        <q-list class="rounded-borders fit">
+          <q-expansion-item
+            v-for="sts in specialTabsets"
+            hide-expand-icon
+            @click="openRecipeOverview(sts)"
+            header-class="text-bold"
+            :icon="sts.icon"
+            :label="sts.name">
+            <SidePanelPageContent
+              :tabset="sts"
+              :key="sts?.id"
+              :filter="filter"
+              @tabs-found="(n: number) => (filteredTabsCount = n)"
+              @folders-found="(n: number) => (filteredFoldersCount = n)" />
+          </q-expansion-item>
+        </q-list>
+
         <template v-if="useSettingsStore().has('DEBUG_MODE')">
           <DebugInfo />
         </template>
@@ -79,6 +96,7 @@
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { useContentStore } from 'src/content/stores/contentStore'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
 import FirstToolbarHelper2 from 'src/core/pages/sidepanel/helper/FirstToolbarHelper2.vue'
 import SearchToolbarHelper from 'src/core/pages/sidepanel/helper/SearchToolbarHelper.vue'
@@ -86,6 +104,7 @@ import SidePanelPageContent from 'src/core/pages/SidePanelPageContent.vue'
 import SidePanelPageContentExpand from 'src/core/pages/SidePanelPageContentExpand.vue'
 import DebugInfo from 'src/core/pages/widgets/DebugInfo.vue'
 import StartingHint from 'src/core/pages/widgets/StartingHint.vue'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import Analytics from 'src/core/utils/google-analytics'
@@ -93,6 +112,7 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
+import { RefreshTabCommand } from 'src/tabsets/commands/RefreshTabCommand'
 import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -118,6 +138,7 @@ const showSearchToolbarHelper = ref<boolean>(useUiStore().quickAccessFor('search
 const paddingTop = ref('padding-top: 80px')
 const uiDensity = ref<UiDensity>(useUiStore().uiDensity)
 const specialTabsets = ref<Tabset[]>([])
+const showAnalysisBrokenBanner = ref(false)
 
 provide('ui.density', uiDensity)
 
@@ -137,6 +158,19 @@ onMounted(() => {
     router.push('/sidepanel/welcome')
   }
 })
+
+function checkAnalysisBroken(a: number, b: number) {
+  showAnalysisBrokenBanner.value = false
+  if (currentTabset.value) {
+    setTimeout(() => {
+      if (currentTabset.value) {
+        showAnalysisBrokenBanner.value = false
+        return
+      }
+      showAnalysisBrokenBanner.value = useContentStore().getCurrentTabContent?.length === 0
+    }, 1000)
+  }
+}
 
 watchEffect(() => {
   specialTabsets.value = [...useTabsetsStore().tabsets.values()].filter((ts: Tabset) => ts.type === TabsetType.SPECIAL)
@@ -162,6 +196,7 @@ watchEffect(() => {
 
 watchEffect(() => {
   tabsetsLastUpdate.value = useTabsetsStore().lastUpdate
+  console.log('lastUpdate', tabsetsLastUpdate.value)
 })
 
 const getTabsetOrder = [
@@ -217,7 +252,6 @@ function inIgnoredMessages(message: any) {
     message.msg === 'captureClipping' ||
     message.msg === 'captureThumbnail' ||
     message.name === 'reload-spaces' ||
-    message.name === 'init-ai-module' ||
     message.name === 'zero-shot-classification'
   )
 }
@@ -375,6 +409,7 @@ const termChanged = (a: { term: string }) => (filter.value = a.term)
 
 const tabsetChanged = () => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
+  checkAnalysisBroken(0, 1)
 }
 
 const setPaddingTop = () => {
@@ -394,9 +429,27 @@ const setPaddingTop = () => {
   //paddingTop.value = showSearchToolbarHelper.value ? 'padding-top: 80px' : 'padding-top: 48px'
 }
 
+const reloadCurrentTab = () => {
+  chrome.tabs.query({ active: true, currentWindow: true }).then((tabs: chrome.tabs.Tab[]) => {
+    if (tabs.length > 0) {
+      showAnalysisBrokenBanner.value = false
+      useCommandExecutor().executeFromUi(new RefreshTabCommand(tabs[0]!.id!, tabs[0]!.url!))
+    }
+  })
+}
+
 const openRecipeOverview = (ts: Tabset) => {
   NavigationService.openOrCreateTab([chrome.runtime.getURL(`www/index.html#/mainpanel/rezepte/${ts.id}`)])
 }
+
+watch(
+  () => useContentStore().currentTabResettedAt,
+  (a: number, b: number) => {
+    checkAnalysisBroken(a, b)
+  },
+)
+
+checkAnalysisBroken(0, 1)
 
 setPaddingTop()
 </script>

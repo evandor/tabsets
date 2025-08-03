@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { EventBus, QForm, useDialogPluginComponent } from 'quasar'
+import { QForm, useDialogPluginComponent } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
@@ -102,13 +102,13 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { inject, ref, watchEffect } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { dialogRef, onDialogHide, onDialogCancel } = useDialogPluginComponent()
 const { inBexMode } = useUtils()
 
-const bus = inject('bus') as EventBus
+// const bus = inject('bus') as EventBus
 
 const props = defineProps({
   spaceId: { type: String, required: false },
