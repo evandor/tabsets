@@ -171,13 +171,13 @@ onMounted(() => {
 
 function checkAnalysisBroken(a: number, b: number) {
   showAnalysisBrokenBanner.value = false
-  console.log('showAnalysisBrokenBanner set to', showAnalysisBrokenBanner.value)
+  //console.log('showAnalysisBrokenBanner set to', showAnalysisBrokenBanner.value)
   setTimeout(() => {
     if (currentTabset.value || currentChromeTab.value?.url?.startsWith('chrome-extension://')) {
       showAnalysisBrokenBanner.value = false
       return
     }
-    console.log('showAnalysisBrokenBanner set to', useContentStore().getCurrentTabContent?.length === 0)
+    //console.log('showAnalysisBrokenBanner set to', useContentStore().getCurrentTabContent?.length === 0)
     showAnalysisBrokenBanner.value = useContentStore().getCurrentTabContent?.length === 0
   }, 1000)
 }
@@ -206,7 +206,6 @@ watchEffect(() => {
 
 watchEffect(() => {
   tabsetsLastUpdate.value = useTabsetsStore().lastUpdate
-  console.log('lastUpdate', tabsetsLastUpdate.value)
 })
 
 const getTabsetOrder = [
