@@ -33,6 +33,10 @@ export function useTabsetSelector(holder: ElementHolder) {
     icon: 'sym_o_stars_2',
   })
 
+  const setAutomaticSelectionLabel = (newLabel: string) => {
+    automaticSelectionOption.value.label = newLabel
+  }
+
   const calculate = () => {
     console.log(`:::calculating... tabsets#: ${tabsets.length}, currentTs: ${currentTabset.value?.id}`)
     tabsetSelectionOptions.value = tabsets
@@ -125,5 +129,6 @@ export function useTabsetSelector(holder: ElementHolder) {
   return {
     tabsetSelectionOptions,
     tabsetSelectionModel,
+    setAutomaticSelectionLabel,
   }
 }

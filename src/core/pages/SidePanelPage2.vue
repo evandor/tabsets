@@ -52,14 +52,23 @@
             @tabs-found="(n: number) => (filteredTabsCount = n)"
             @folders-found="(n: number) => (filteredFoldersCount = n)" />
         </template>
-        <q-list class="rounded-borders fit">
+
+        <div class="rounded-borders fit q-mt-lg">
           <q-expansion-item
             v-for="sts in specialTabsets"
-            hide-expand-icon
-            @click="openRecipeOverview(sts)"
+            class="shadow-1 overflow-hidden"
+            style="border-radius: 10px"
             header-class="text-bold"
             :icon="sts.icon"
             :label="sts.name">
+            <template v-slot:header>
+              <div class="row fit cursor-pointer" @click.stop="openRecipeOverview(sts)">
+                <div class="col-10 q-mt-xs">{{ capitalize(sts.name.toLowerCase()) }}</div>
+                <div class="col text-caption text-right q-mr-md q-mt-xs">
+                  {{ sts.tabs.length > 0 ? sts.tabs.length : '' }}
+                </div>
+              </div>
+            </template>
             <SidePanelPageContent
               :tabset="sts"
               :key="sts?.id"
@@ -67,7 +76,7 @@
               @tabs-found="(n: number) => (filteredTabsCount = n)"
               @folders-found="(n: number) => (filteredFoldersCount = n)" />
           </q-expansion-item>
-        </q-list>
+        </div>
 
         <template v-if="useSettingsStore().has('DEBUG_MODE')">
           <DebugInfo />
@@ -94,7 +103,7 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import { LocalStorage } from 'quasar'
+import { format, LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useContentStore } from 'src/content/stores/contentStore'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
@@ -123,6 +132,7 @@ import { onMounted, onUnmounted, provide, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
 const { inBexMode } = useUtils()
+const { capitalize } = format
 
 const router = useRouter()
 
@@ -161,15 +171,15 @@ onMounted(() => {
 
 function checkAnalysisBroken(a: number, b: number) {
   showAnalysisBrokenBanner.value = false
-  if (currentTabset.value) {
-    setTimeout(() => {
-      if (currentTabset.value) {
-        showAnalysisBrokenBanner.value = false
-        return
-      }
-      showAnalysisBrokenBanner.value = useContentStore().getCurrentTabContent?.length === 0
-    }, 1000)
-  }
+  console.log('showAnalysisBrokenBanner set to', showAnalysisBrokenBanner.value)
+  setTimeout(() => {
+    if (currentTabset.value || currentChromeTab.value?.url?.startsWith('chrome-extension://')) {
+      showAnalysisBrokenBanner.value = false
+      return
+    }
+    console.log('showAnalysisBrokenBanner set to', useContentStore().getCurrentTabContent?.length === 0)
+    showAnalysisBrokenBanner.value = useContentStore().getCurrentTabContent?.length === 0
+  }, 1000)
 }
 
 watchEffect(() => {

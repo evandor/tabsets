@@ -99,8 +99,6 @@ export enum TabFavorite {
   SPACE = 'SPACE',
 }
 
-export type TabCategory = 'uncategorized' | 'recipe' | 'news' | 'shopping'
-
 export class Tab {
   created: number
   updated: number

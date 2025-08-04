@@ -61,7 +61,7 @@ const clicked = async () => {
 
   if (props.currentChromeTab) {
     const newTab: Tab = new Tab(uid(), props.currentChromeTab)
-    const tabCategory = useTagsService().getCurrentTabCategory()
+    const tabCategory = useTagsService().getCurrentTabContentClassification()
     console.log('found category', tabCategory)
     switch (tabCategory) {
       case 'recipe':
@@ -70,6 +70,8 @@ const clicked = async () => {
         return await tabInTabset('news', 'news', newTab)
       case 'shopping':
         return await tabInTabset('shopping', 'shopping', newTab)
+      case 'restaurant':
+        return await tabInTabset('restaurants', 'restaurant', newTab)
       default:
         // noop
         break

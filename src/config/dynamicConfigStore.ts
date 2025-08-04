@@ -1,10 +1,10 @@
 import * as O from 'fp-ts/lib/Option'
 import { defineStore } from 'pinia'
-import { TabCategory } from 'src/tabsets/models/Tab'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { computed, ref } from 'vue'
 
 export const useDynamicConfig = defineStore('dynamicConfig', () => {
-  const categoryMapping = ref<Map<string, Map<string, TabCategory>>>(new Map())
+  const categoryMapping = ref<Map<string, Map<string, ContentClassification>>>(new Map())
 
   fetch('https://raw.githubusercontent.com/evandor/tabsets/refs/heads/main/config/categoryMapping.data').then((res) => {
     res.text().then((body: string) => {
@@ -26,7 +26,7 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
           if (!categoryMapping.value.has(type)) {
             categoryMapping.value.set(type, new Map())
           }
-          categoryMapping.value.get(type)!.set(key, cat as TabCategory)
+          categoryMapping.value.get(type)!.set(key, cat as ContentClassification)
         })
         console.log(`categoryMapping from input (${lines.length} lines)`)
       } catch (e) {
@@ -40,7 +40,7 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
   }
 
   const getCategory = computed(() => {
-    return (type: string, keys: string[]): O.Option<TabCategory> => {
+    return (type: string, keys: string[]): O.Option<ContentClassification> => {
       //console.log(`searching category for ${type}/${keys.join(',')}`)
       const typeMapping = categoryMapping.value.get(type)
       if (typeMapping) {

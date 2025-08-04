@@ -22,8 +22,9 @@ import { useUtils } from 'src/core/services/Utils'
 import ContentUtils from 'src/core/utils/ContentUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
-import { Tab, TabCategory } from 'src/tabsets/models/Tab'
+import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
 const { extractSecondLevelDomain } = useUtils()
@@ -453,22 +454,9 @@ export function useTagsService() {
     return deduplicated
   }
 
-  function getCurrentTabCategory(): TabCategory {
+  function getCurrentTabContentClassification(): ContentClassification {
     const tags = useContentStore().currentTabTags
     const metas = useContentStore().currentTabMetas
-
-    // function linkinDataRefersTo(labelVal: string) {
-    //   return tags.filter((t: TagInfo) => t.type === 'linkingData' && t.label === labelVal).length > 0
-    // }
-
-    // function openGraphDataRefersTo(labelVal: string) {
-    //   return metas['og:type' as keyof object] && metas['og:type' as keyof object] === labelVal
-    // }
-    //
-    // function langeModelRefersTo(labelVals: string[]) {
-    //   const langModelTags: TagInfo[] = tags.filter((t: TagInfo) => t.type === 'languageModel')
-    //   return langModelTags.findIndex((t: TagInfo) => labelVals.indexOf(t.label) >= 0) >= 0
-    // }
 
     function tagLabelsFilteredBy(tagType: TagType) {
       return tags.filter((t: TagInfo) => t.type === tagType).map((t: TagInfo) => t.label)
@@ -478,7 +466,7 @@ export function useTagsService() {
       useDynamicConfig().getCategory('linkingData', tagLabelsFilteredBy('linkingData')),
       O.orElse(() => useDynamicConfig().getCategory('openGraph', [metas['og:type' as keyof object] as string])),
       O.orElse(() => useDynamicConfig().getCategory('langModel', tagLabelsFilteredBy('languageModel'))),
-      O.getOrElse(() => 'uncategorized' as TabCategory),
+      O.getOrElse(() => 'uncategorized' as ContentClassification),
     )
     console.log('cat', categorization)
     return categorization
@@ -495,6 +483,6 @@ export function useTagsService() {
     getDynamicTabsBy,
     addToIgnored,
     analyse,
-    getCurrentTabCategory,
+    getCurrentTabContentClassification,
   }
 }

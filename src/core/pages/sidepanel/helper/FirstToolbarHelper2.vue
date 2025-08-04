@@ -198,22 +198,16 @@ const uiDensity = inject('ui.density')
 
 windowLocation.value = window.location.href
 
-let AutomaticSelectionOption = {
-  label: 'selected automatically',
-  value: 'automatic-selection',
-  icon: 'sym_o_stars_2',
-}
-
-const { tabsetSelectionOptions, tabsetSelectionModel } = useTabsetSelector(props.element)
+const { tabsetSelectionOptions, tabsetSelectionModel, setAutomaticSelectionLabel } = useTabsetSelector(props.element)
 
 watchEffect(() => {
   const currentTabTags = useContentStore().currentTabTags
   //console.log(':::currentTabTags', currentTabTags)
   // const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
-  const tsCat = useTagsService().getCurrentTabCategory()
+  const tsCat = useTagsService().getCurrentTabContentClassification()
   //console.log('tsCat', tsCat)
   if (tsCat) {
-    AutomaticSelectionOption.label = 'automatic: ' + tsCat
+    setAutomaticSelectionLabel(tsCat + ' (auto)')
   }
 })
 
