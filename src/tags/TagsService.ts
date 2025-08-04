@@ -466,7 +466,7 @@ export function useTagsService() {
       O.orElse(() => useDynamicConfig().getCategory('langModel', tagLabelsFilteredBy('languageModel'))),
       O.getOrElse(() => 'uncategorized' as ContentClassification),
     )
-    console.log('cat', categorization)
+    // console.log('cat', categorization)
     return categorization
   }
 

@@ -20,7 +20,7 @@ export function useTabsetSelector(holder: ElementHolder) {
   const useSpaces = useFeaturesStore().hasFeature(FeatureIdent.SPACES)
   const space = useSpacesStore().space
 
-  console.log(`called with ${holder}, tabsets: ${tabsets.length}`)
+  // console.log(`called with ${holder}, tabsets: ${tabsets.length}`)
 
   const currentTabset = ref<Tabset | undefined>(useTabsetsStore().getCurrentTabset)
   const tabsetSelectionOptions = ref<SelectOption[]>([])
@@ -38,7 +38,7 @@ export function useTabsetSelector(holder: ElementHolder) {
   }
 
   const calculate = () => {
-    console.log(`:::calculating... tabsets#: ${tabsets.length}, currentTs: ${currentTabset.value?.id}`)
+    // console.log(`:::calculating... tabsets#: ${tabsets.length}, currentTs: ${currentTabset.value?.id}`)
     tabsetSelectionOptions.value = tabsets
       .filter((ts: Tabset) =>
         useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
@@ -104,16 +104,16 @@ export function useTabsetSelector(holder: ElementHolder) {
     }
 
     tabsetSelectionOptions.value.unshift(automaticSelectionOption.value)
-    console.log(':::calculated', tabsetSelectionOptions.value.map((ts) => ts.label).join(','))
+    // console.log(':::calculated', tabsetSelectionOptions.value.map((ts) => ts.label).join(','))
   }
 
   watchEffect(() => {
-    console.log('-- watchEffect() called --')
+    // console.log('-- watchEffect() called --')
     calculate()
   })
 
   watchEffect(() => {
-    console.log('-- watchEffect()2 called --')
+    // console.log('-- watchEffect()2 called --')
     currentTabset.value = useTabsetsStore().getCurrentTabset
     //console.log('---got current tabset', currentTabset.value)
     if (currentTabset.value) {
