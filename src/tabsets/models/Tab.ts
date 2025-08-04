@@ -196,6 +196,8 @@ export class Tab {
 
   annotations: Annotation[] = []
 
+  derivedData: object = {}
+
   constructor(
     public id: string,
     chromeTab: chrome.tabs.Tab,

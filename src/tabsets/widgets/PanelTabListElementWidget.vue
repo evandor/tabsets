@@ -35,6 +35,15 @@
     <q-item-section side style="justify-content: start">
       <span>
         <q-icon
+          v-if="Object.keys(tab.derivedData).indexOf('place.longitude') >= 0"
+          @click="openLocation(tab.derivedData)"
+          name="sym_o_location_on"
+          size="20px"
+          class="q-ma-none q-pa-none cursor-pointer"
+          color="negative">
+          <q-tooltip class="tooltip-small">We have location information for this tab</q-tooltip>
+        </q-icon>
+        <q-icon
           v-if="props.tab.pinnedInList && useUiStore().folderStyle === 'goInto'"
           name="sym_o_keep"
           size="16px"
@@ -144,6 +153,13 @@ const toggleShowWith = (ident: string | undefined) => {
   if (ident) {
     toggleLists(ident)
   }
+}
+
+const openLocation = (data: object) => {
+  console.log('data', data)
+  const long = data['place.longitude' as keyof object] as unknown as number
+  const lat = data['place.latitude' as keyof object] as unknown as number
+  useNavigationService().browserTabFor(`https://www.google.de/maps/place/${lat},${long}`)
 }
 </script>
 

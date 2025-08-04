@@ -7,14 +7,8 @@
       {{ key }}
     </div>
     <div class="col text-caption">
-      <span v-if="isArray(data[key as keyof object])"
-        >{{ labelForArray(key) }} <q-icon size="xs" name="arrow_right" />
-
-        <q-expansion-item
-          dense
-          :label="data[key as keyof object]['@type']"
-          header-class="text-primary"
-          hide-expand-icon>
+      <span v-if="isArray(data[key as keyof object])">
+        <q-expansion-item dense :label="labelForArray(key)" header-class="text-primary" hide-expand-icon>
           <RecursiveTable :data="data[key as keyof object]" :asList="true" />
         </q-expansion-item>
       </span>
@@ -24,14 +18,17 @@
           :label="data[key as keyof object]['@type']"
           header-class="text-primary"
           hide-expand-icon>
-          <!--            <template v-slot:header>-->
-          <!--              <span>{{ data[key as keyof object]['@type'] }}</span>-->
-          <!--            </template>-->
           <RecursiveTable :data="data[key as keyof object]" />
         </q-expansion-item>
       </span>
       <span v-else>
         <span v-if="isLink(key)" class="text-blue-8 cursor-pointer" @click="openLink(data[key as keyof object])">
+          {{ data[key as keyof object] }}
+        </span>
+        <span
+          v-else-if="key === '@type'"
+          class="text-blue-8 cursor-pointer"
+          @click="openLink(data['@context' as keyof object] + '/' + data['@type' as keyof object])">
           {{ data[key as keyof object] }}
         </span>
         <span v-else>
@@ -59,3 +56,10 @@ const labelForArray = (key: string) => {
 }
 const openLink = (url: string) => useNavigationService().browserTabFor(url)
 </script>
+
+<style>
+.q-list--dense > .q-item,
+.q-item--dense {
+  padding: 2px 0 !important;
+}
+</style>

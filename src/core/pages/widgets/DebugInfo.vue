@@ -107,6 +107,10 @@
         </span>
       </template>
     </div>
+    <div class="col-4 text-caption">derived data</div>
+    <div class="col-8 text-caption ellipsis-3-lines" style="font-size: smaller">
+      {{ useContentStore().currentTabDerivedData }}
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -151,6 +155,7 @@ const infoDialog = (title: string, input: object) => {
   if (title === 'Tab Reference LINKING_DATA') {
     message = JSON.stringify(input['data' as keyof object], null, 2)
     externalLink = 'https://json-ld.org/playground/#startTab=tab-table&json-ld=' + encodeURIComponent(message)
+    // externalLink = chrome.runtime.getURL(`/www/index.html#/mainpanel/tab/${}?tab=linkedData`)
   }
   let dialogOptions: QDialogOptions = {
     title,

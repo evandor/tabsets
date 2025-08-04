@@ -26,6 +26,7 @@ function handleLdJsonMapping(line: string, ldJsonMapping: Map<string, Map<string
   if (line.trim().length === 0) {
     return
   }
+  console.log('parts', parts, parts.length)
   if (parts.length !== 5) {
     console.warn(`found wrong line for ldJsonMapping: '${line}'`)
     return
@@ -50,7 +51,10 @@ function handleLdJsonMapping(line: string, ldJsonMapping: Map<string, Map<string
   if (!theType.has(jsonPath)) {
     theType.set(jsonPath, new Map())
   }
-  const theDataType = theSchema.get(jsonPath)!
+  const theDataType = theType.get(jsonPath)!
+  // if (!theDataType.has(dataType)) {
+  //   theDataType.set(dataType, new Map())
+  // }
 
   theDataType.set(dataType, data)
 }
@@ -66,9 +70,9 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
         lines.forEach((line: string) => {
           handleCategoryMapping(line, categoryMapping.value)
         })
-        console.log(`categoryMapping from input (${lines.length} lines)`, categoryMapping.value)
+        console.log(`categoryMapping from input (${lines.length} lines) with rootSize`, categoryMapping.value.size)
       } catch (e) {
-        console.log('could not read categoryMapping.data')
+        console.log('could not read categoryMapping.data', e)
       }
     })
   })
@@ -81,9 +85,9 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
         lines.forEach((line: string) => {
           handleLdJsonMapping(line, lDJsonMapping.value)
         })
-        console.log(`lDJsonMapping from input (${lines.length} lines)`, lDJsonMapping.value)
+        console.log(`lDJsonMapping from input (${lines.length} lines) with rootSize`, lDJsonMapping.value.size)
       } catch (e) {
-        console.log('could not read lDJsonMapping.data')
+        console.log('could not read lDJsonMapping.data', e)
       }
     })
   })
@@ -107,8 +111,24 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
     }
   })
 
+  const getLinkedDataDefinition = computed(() => {
+    return (schema: string, type: string): Map<string, Map<string, any>> => {
+      const theSchema: Map<string, Map<string, Map<string, any>>> = lDJsonMapping.value.get(schema) || new Map()
+      if (theSchema) {
+        console.log('Hier1', type, theSchema)
+        const theType: Map<string, Map<string, any>> = theSchema.get(type) || new Map()
+        console.log('Hier2', theType)
+        if (theType) {
+          return theType
+        }
+      }
+      return new Map()
+    }
+  })
+
   return {
     getCategory,
+    getLinkedDataDefinition,
     init,
   }
 })

@@ -507,16 +507,19 @@ const openTabset = (chip: any) => {
 }
 
 const openInJsonCrackEditor = (data: string) => {
-  $q.dialog({
-    title: 'Open in external Editor?',
-    message: 'The current JSON-LD Data will be copied to your clipboard to be added by you to the external editor',
-    cancel: true,
-    persistent: true,
-  }).onOk(() => {
-    navigator.clipboard.writeText(data).then(() => {
-      useNavigationService().browserTabFor('https://jsoncrack.com/editor')
-    })
-  })
+  const url = chrome.runtime.getURL(`/www/index.html#/mainpanel/tab/${tabId.value}?tab=linkedData`)
+  useNavigationService().browserTabFor(url)
+  // $q.dialog({
+  //   title: 'Open in external Editor?',
+  //   message: 'The current JSON-LD Data will be copied to your clipboard to be added by you to the external editor',
+  //   cancel: true,
+  //   persistent: true,
+  // }).onOk(() => {
+  //   navigator.clipboard.writeText(data).then(() => {
+  //     const url = chrome.runtime.getURL(`/www/index.html#/mainpanel/tab/${tabId.value}?tab=linkedData`)
+  //     useNavigationService().browserTabFor(url)
+  //   })
+  // })
 }
 
 const linkingHeading = (data: object | undefined) => {
@@ -530,7 +533,7 @@ const linkingHeading = (data: object | undefined) => {
     if (items.map) {
       return items.map((o: object) => {
         const item = o['item' as keyof object]
-        if (item['headline']) {
+        if (item && item['headline']) {
           return item['headline']
         }
         return item

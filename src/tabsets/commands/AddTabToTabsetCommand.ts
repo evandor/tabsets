@@ -72,6 +72,9 @@ export class AddTabToTabsetCommand implements Command<any> {
       // TagsInfo
       this.tab.tagsInfo = useContentStore().currentTabTags
 
+      // Derived Data
+      this.tab.derivedData = useContentStore().currentTabDerivedData
+
       // Article (ReaderMode)
       if (useFeaturesStore().hasFeature(FeatureIdent.READING_MODE)) {
         console.log('checking article', useContentStore().currentTabArticle)
