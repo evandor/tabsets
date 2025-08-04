@@ -23,6 +23,7 @@ import { uid } from 'quasar'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
+import { useUtils } from 'src/core/services/Utils'
 import { ActionProps } from 'src/tabsets/actions/models/ActionProps'
 import FabLikeBtn from 'src/tabsets/actions/widgets/FabLikeBtn.vue'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
@@ -38,6 +39,7 @@ import { ref, watchEffect } from 'vue'
 const props = defineProps<ActionProps>()
 
 const { handleError } = useNotificationHandler()
+const { sendMsg } = useUtils()
 
 const label = ref('Add Tab')
 const containedInTsCount = ref(0)
@@ -76,7 +78,9 @@ const clicked = async () => {
         // noop
         break
     }
-    return useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))
+    const result = useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))
+    sendMsg('reload-application')
+    return result
   }
   handleError('current browser tab not set!')
 }

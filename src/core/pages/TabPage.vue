@@ -15,6 +15,7 @@
       <q-tab name="request" :label="requestDataLabel()" />
       <q-tab name="metalinks" :label="metaLinksDataLabel()" />
       <q-tab name="links" :label="linksDataLabel()" />
+      <q-tab name="linkedData" label="Linked Data" id="linkedData" />
       <q-tab name="debug" label="Debug" id="debugTab" />
     </q-tabs>
   </div>
@@ -275,6 +276,19 @@
     </div>
   </div>
 
+  <div v-else-if="tab === 'linkedData'">
+    <q-expansion-item
+      expand-separator
+      icon="drafts"
+      :label="ld.type"
+      header-class="text-primary"
+      v-for="ld in linkedData()">
+      <div class="q-mx-lg">
+        <RecursiveTable :data="ld.data" />
+      </div>
+    </q-expansion-item>
+  </div>
+
   <div v-else-if="tab === 'debug' && useSettingsStore().has('DEV_MODE')">
     <div class="q-pa-md q-gutter-sm">
       <q-banner rounded>The tabs internal representation</q-banner>
@@ -298,7 +312,9 @@ import VueJsonPretty from 'vue-json-pretty'
 import { useRoute } from 'vue-router'
 import 'vue-json-pretty/lib/styles.css'
 import { ContentItem } from 'src/content/models/ContentItem'
+import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useContentService } from 'src/content/services/ContentService'
+import RecursiveTable from 'src/core/pages/widgets/RecursiveTable.vue'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import Analytics from 'src/core/utils/google-analytics'
 import { Tab } from 'src/tabsets/models/Tab'
@@ -361,45 +377,6 @@ watchEffect(() => {
   // })
 })
 
-const metaColumns = ref([
-  {
-    name: 'name',
-    required: true,
-    label: 'Key',
-    align: 'left',
-    sortable: true,
-    field: 'name',
-  },
-  { name: 'value', align: 'left', label: 'Value', field: 'value', sortable: true },
-])
-
-const metaLinkColumns = ref([
-  { name: 'title', align: 'left', label: 'Title', field: 'title', sortable: true },
-  { name: 'href', align: 'left', label: 'Link', field: 'href', sortable: true },
-  { name: 'type', align: 'left', label: 'Type', field: 'type', sortable: true },
-  { name: 'rel', align: 'left', label: 'Rel', field: 'rel', sortable: true },
-])
-
-const linkColumns = ref([
-  { name: 'link', align: 'left', label: 'Link', field: 'link', sortable: true },
-  { name: 'count', align: 'left', label: 'Count', field: 'count', sortable: true },
-])
-
-const metaInitialPagination = {
-  sortBy: 'name',
-  descending: false,
-  page: 1,
-  rowsPerPage: 30,
-}
-
-const logsInitialPagination = {
-  sortBy: 'name',
-  descending: false,
-  page: 1,
-  rowsPerPage: 30,
-}
-
-const metaRows = ref<object[]>([])
 const requestRows = ref<object[]>([])
 const metaLinkRows = ref<object[]>([])
 const linkRows = ref<object[]>([])
@@ -415,20 +392,6 @@ watchEffect(async () => {
     //router.push("/tabset")
   }
 })
-
-const links = (): object[] => {
-  const result: object[] = []
-  if (linkRows.value) {
-    const keys = Object.keys(linkRows.value)
-    keys.forEach((k) => {
-      result.push({
-        link: k,
-        count: linkRows.value[k as keyof object],
-      })
-    })
-  }
-  return result
-}
 
 watchEffect(() => {
   const fuseIndex = searchStore?.getIndex()
@@ -477,15 +440,16 @@ const getForKey = (key: any) => {
 const requestDataLabel = () => 'Request Header (' + requestRows.value.length + ')'
 const metaLinksDataLabel = () => 'Meta Links (' + metaLinkRows.value.length + ')'
 const linksDataLabel = () => 'Links (' + Object.keys(linkRows.value || []).length + ')'
-const openNameLink = (key: string) =>
-  NavigationService.openOrCreateTab(['https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/' + key])
 
-const analyseTab = () => {
+const linkedData = (): { type: string; data: object }[] => {
   if (selectedTab.value) {
-    // searchStore.reindexTab(selectedTab.value)
-    //   .then((windowId: number) => {
-    //   })
+    return selectedTab.value.tabReferences
+      .filter((tR: TabReference) => tR.type === TabReferenceType.LINKING_DATA)
+      .map((tR: TabReference) => {
+        return { type: (tR.data['@type' as keyof object] as unknown as string) || '?', data: tR.data as object }
+      })
   }
+  return []
 }
 
 const openLink = (url: string) => openURL(url)

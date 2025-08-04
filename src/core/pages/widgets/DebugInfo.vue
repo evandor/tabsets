@@ -42,7 +42,7 @@
     <!--    </div>-->
     <div class="col-4 text-caption">category</div>
     <div class="col-8 text-caption text-bold" style="font-size: smaller">
-      {{ useTagsService().getCurrentTabCategory() }}/{{ aiCategory }}
+      {{ useTagsService().getCurrentTabContentClassification() }}/{{ aiCategory }}
     </div>
 
     <div class="col-4 text-caption">content length</div>

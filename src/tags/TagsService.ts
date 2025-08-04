@@ -449,9 +449,7 @@ export function useTagsService() {
       console.log('r', r)
     }
     //console.log(' <> overall result', tagsInfo)
-    const deduplicated = deduplicateTags(tagsInfo)
-    //console.log(' <> overall result', deduplicated)
-    return deduplicated
+    return deduplicateTags(tagsInfo)
   }
 
   function getCurrentTabContentClassification(): ContentClassification {

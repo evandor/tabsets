@@ -34,7 +34,7 @@
     <div class="q-ma-none q-pa-none q-pt-xs">
       <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
         <!--        <div class="col-12 text-center" v-for="sts in specialTabsets">-->
-        <!--          <q-btn :label="sts.name" color="primary" size="xs" @click="openRecipeOverview()" />-->
+        <!--          <q-btn :label="sts.name" color="primary" size="xs" @click="openGallery()" />-->
         <!--        </div>-->
         <template v-if="currentTabset">
           <SidePanelPageContent
@@ -62,7 +62,7 @@
             :icon="sts.icon"
             :label="sts.name">
             <template v-slot:header>
-              <div class="row fit cursor-pointer" @click.stop="openRecipeOverview(sts)">
+              <div class="row fit cursor-pointer" @click.stop="openGallery(sts)">
                 <div class="col-10 q-mt-xs">{{ capitalize(sts.name.toLowerCase()) }}</div>
                 <div class="col text-caption text-right q-mr-md q-mt-xs">
                   {{ sts.tabs.length > 0 ? sts.tabs.length : '' }}
@@ -448,8 +448,12 @@ const reloadCurrentTab = () => {
   })
 }
 
-const openRecipeOverview = (ts: Tabset) => {
-  NavigationService.openOrCreateTab([chrome.runtime.getURL(`www/index.html#/mainpanel/rezepte/${ts.id}`)])
+const openGallery = (ts: Tabset) => {
+  let url = `mainpanel/tabsets/overview/${ts.id}`
+  if (ts.id === 'recipes') {
+    url = `mainpanel/rezepte/${ts.id}`
+  }
+  NavigationService.openOrCreateTab([chrome.runtime.getURL(`www/index.html#/${url}`)])
 }
 
 watch(
