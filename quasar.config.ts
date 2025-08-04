@@ -5,8 +5,10 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from '#q-app/wrappers'
 import 'dotenv/config.js'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
+// import deadFile from 'vite-plugin-deadfile'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import version from 'vite-plugin-package-version'
+import unusedCode from 'vite-plugin-unused-code'
 
 export default defineConfig((ctx) => {
   return {
@@ -132,6 +134,14 @@ export default defineConfig((ctx) => {
             project: 'tabsets',
           },
         ],
+        // deadFile({
+        //   root: 'src',
+        //   output: 'dead-files.txt',
+        // }),
+        unusedCode({
+          patterns: ['src/**/*.*'],
+          exportJSON: 'docs',
+        }),
       ],
     },
 

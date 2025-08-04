@@ -125,6 +125,7 @@
     "typescript": "~5.5.4",
     "vite-plugin-checker": "^0.9.1",
     "vite-plugin-node-polyfills": "^0.24.0",
+    "vite-plugin-unused-code": "^0.1.6",
     "vitepress": "^2.0.0-alpha.7",
     "vitepress-plugin-mermaid": "^2.0.17",
     "vitest": "^3.0.7",
