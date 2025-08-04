@@ -99,8 +99,6 @@ export enum TabFavorite {
   SPACE = 'SPACE',
 }
 
-export type TabCategory = 'uncategorized' | 'recipe' | 'news' | 'shopping'
-
 export class Tab {
   created: number
   updated: number
@@ -197,6 +195,8 @@ export class Tab {
   page: Page | undefined = undefined
 
   annotations: Annotation[] = []
+
+  derivedData: object = {}
 
   constructor(
     public id: string,

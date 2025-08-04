@@ -103,11 +103,8 @@ import { useRoute, useRouter } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
-const login = ref(false)
-const addCurrentTabs = ref(false)
 const showWatermark = ref(false)
 const watermark = ref('')
 const openTabsCount = ref(0)
@@ -125,11 +122,16 @@ const createGettingStartedTabset = () => {
   // router.push('/popup/getstarted')
 
   useCommandExecutor()
-    .executeFromUi(new CreateSpecialTabsetCommand('FALLBACK'))
+    .executeFromUi(new CreateSpecialTabsetCommand('UNCATEGORIZED', 'sym_o_help_center'))
     .then(() => {
       LocalStorage.setItem('ui.hideWelcomePage', true)
-      chrome.storage.local.remove('tabsets.ai.active')
+      chrome.storage.local.remove('tabsets.ext.ai.active')
       console.log('route', route.fullPath)
+
+      // chrome.sidePanel.setOptions({
+      //   enabled: false,
+      // })
+
       // if (route.fullPath !== '/popup/welcome') {
       router.push('/popup/getstarted')
       // }

@@ -9,10 +9,10 @@ import BookmarksService from 'src/bookmarks/services/BookmarksService'
 import { useBookmarksStore } from 'src/bookmarks/stores/bookmarksStore'
 import { EXTENSION_NAME } from 'src/boot/constants'
 import { useCategorizationService } from 'src/categorization/CategorizationService'
+import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import IndexedDbContentPersistence from 'src/content/persistence/IndexedDbContentPersistence'
 import { useContentService } from 'src/content/services/ContentService'
 import { useContentStore } from 'src/content/stores/contentStore'
-import BexFunctions from 'src/core/communication/BexFunctions'
 import { SpaceInfo } from 'src/core/models/SpaceInfo'
 import { TabsetInfo } from 'src/core/models/TabsetInfo'
 import { useUtils } from 'src/core/services/Utils'
@@ -68,6 +68,7 @@ class AppService {
     useUiStore().appLoading = `loading ${EXTENSION_NAME}...`
 
     useAppStore().init()
+    useDynamicConfig().init()
 
     await BrowserListeners.initListeners()
 
@@ -96,14 +97,16 @@ class AppService {
           .resetFor(currentTabs[0]!)
           .catch((err: any) => console.error('error', err))
 
-        chrome.tabs
-          .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
-          .then((payload) => {
-            BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload })
-          })
-          .catch((err) => {
-            console.log('could not handle tab excerpt', err)
-          })
+        // happened already in resetFor
+        // console.log(` >>> chrome.tab.sendMessage 'getExcerpt' to tab ${currentTabs[0]!.id}`)
+        // chrome.tabs
+        //   .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
+        //   .then((payload) => {
+        //     BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload })
+        //   })
+        //   .catch((err) => {
+        //     console.log('could not handle tab excerpt', err)
+        //   })
       }
       //})
     }

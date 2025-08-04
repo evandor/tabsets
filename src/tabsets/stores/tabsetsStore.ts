@@ -43,6 +43,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
 
   const currentTabsetFolderId = ref<string | undefined>(undefined)
 
+  // not persisted?
   const reminderTabset = ref<Tabset>(new Tabset('reminders', 'reminder'))
 
   const getCurrentTabsetId = async (): Promise<string | undefined> => {
@@ -233,7 +234,12 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       const ts = k || new Tabset('', '', [])
       return ts.id === tabsetId
     })
+    if (found && found.type === TabsetType.SPECIAL) {
+      console.log('not setting current tabset to special one')
+      return
+    }
     if (found) {
+      await useSelectedTabsetService().setCurrentTabsetId(tabsetId)
       currentTabsetId.value = found.id
       currentTabsetFolderId.value = found.folderActive
       return Promise.resolve(found)
@@ -251,6 +257,14 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     return storage.shareWith(tabset, email, readonly, sharedBy)
   }
 
+  function unselectCurrentTabset() {
+    if (currentTabsetId.value) {
+      useSelectedTabsetService().clearCurrentTabsetId(currentTabsetId.value)
+    }
+    currentTabsetId.value = undefined
+    currentTabsetFolderId.value = undefined
+  }
+
   // *** getters ***
 
   const getCurrentTabs = computed((): Tab[] => {
@@ -266,6 +280,18 @@ export const useTabsetsStore = defineStore('tabsets', () => {
 
   const currentTabsetName = computed(() => {
     return currentTabsetId.value ? tabsets.value.get(currentTabsetId.value)?.name : undefined
+  })
+
+  const getSpecialTabset = computed(() => {
+    return (id: string): Tabset => {
+      const match: Tabset[] = [...tabsets.value.values()].filter(
+        (ts: Tabset) => ts.id === id && ts.type === TabsetType.SPECIAL,
+      )
+      if (match && match.length > 0) {
+        return match[0]!
+      }
+      return new Tabset(id, id, [])
+    }
   })
 
   const tabForUrlInSelectedTabset = computed(() => {
@@ -588,5 +614,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     lastUpdate,
     getParentChainForTabId,
     getPageTabs,
+    getSpecialTabset,
+    unselectCurrentTabset,
   }
 })

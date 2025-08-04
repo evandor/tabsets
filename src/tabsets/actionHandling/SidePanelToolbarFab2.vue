@@ -27,9 +27,9 @@
     <!--      &lt;!&ndash;      <div>{{ defaultAction.label }}</div>&ndash;&gt;-->
     <!--      &lt;!&ndash;                  <q-icon right class="q-ma-none q-pa-none" size="2em" name="o_south" />&ndash;&gt;-->
     <!--    </q-btn>-->
-    <template v-if="useSettingsStore().has('DEBUG_MODE')">
-      <q-tooltip class="tooltip-small">Debug: single button fab {{ actions[0] }}</q-tooltip>
-    </template>
+    <!--    <template v-if="useSettingsStore().has('DEBUG_MODE')">-->
+    <!--      <q-tooltip class="tooltip-small">Debug: single button fab {{ actions[0] }}</q-tooltip>-->
+    <!--    </template>-->
     <!--    &lt;!&ndash;    <q-tooltip class="tooltip-small" v-if="alreadyInTabset">Already in current tabset</q-tooltip>&ndash;&gt;-->
     <!--    &lt;!&ndash;    <q-tooltip class="tooltip-small" v-else-if="containedInTsCount > 0">&ndash;&gt;-->
     <!--    &lt;!&ndash;      {{ tooltipAlreadyInOtherTabsets(props.tabset!.name) }}&ndash;&gt;-->
@@ -122,7 +122,6 @@
 
 <script lang="ts" setup>
 import { useQuasar } from 'quasar'
-import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
 import { NoopAddUrlToTabsetHandler } from 'src/tabsets/actionHandling/handler/NoopAddUrlToTabsetHandler'
 import { ComponentWithContext, TabActionMatcher } from 'src/tabsets/actionHandling/TabActionMatcher'
@@ -160,7 +159,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  console.log('defaultAction!!', props.currentChromeTab.url, props.folder)
+  // console.log('defaultAction!!', props.currentChromeTab.url, props.folder)
   handler.value = getHandler(props.currentChromeTab.url, props.folder)
   // defaultAction.value = handler.value.defaultAction()
   // showExtraMenuItems()

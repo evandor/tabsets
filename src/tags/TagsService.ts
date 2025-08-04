@@ -8,10 +8,13 @@ import { Term } from 'compromise/types/misc'
 import View from 'compromise/types/view/one'
 // @ts-expect-error xxx
 import nlpDE from 'de-compromise'
+import { pipe } from 'fp-ts/function'
+import * as O from 'fp-ts/lib/Option'
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useCategorizationService } from 'src/categorization/CategorizationService'
+import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useContentStore } from 'src/content/stores/contentStore'
 import { CategoryInfo, TagInfo, TagType } from 'src/core/models/TagInfo'
@@ -19,8 +22,9 @@ import { useUtils } from 'src/core/services/Utils'
 import ContentUtils from 'src/core/utils/ContentUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
-import { Tab, TabCategory } from 'src/tabsets/models/Tab'
+import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 
 const { extractSecondLevelDomain } = useUtils()
@@ -166,7 +170,7 @@ export function useTagsService() {
   }
 
   const tagsFromUrl = (url: string | undefined, language: string): TagInfo[] => {
-    console.log(' <> tags from URL', url, language)
+    //console.log(' <> tags from URL', url, language)
     if (!url) {
       return []
     }
@@ -182,10 +186,10 @@ export function useTagsService() {
       if (topLevelDomain) {
         result.push({ label: topLevelDomain, type: 'url', score: 1 })
       }
-      console.log(
-        ' <> tags from URL',
-        theURL.pathname.length > 40 ? theURL.pathname.substring(0, 40) + '...' : theURL.pathname,
-      )
+      // console.log(
+      //   ' <> tags from URL',
+      //   theURL.pathname.length > 40 ? theURL.pathname.substring(0, 40) + '...' : theURL.pathname,
+      // )
       const urlParts = theURL.pathname
         .replace('.html', '')
         .split('/')
@@ -372,6 +376,7 @@ export function useTagsService() {
   }
 
   const analyse = async (
+    title: string,
     metas: object,
     article: object | undefined,
     tabReferences: TabReference[],
@@ -384,8 +389,8 @@ export function useTagsService() {
     console.log(' <> Starting Tags Analysis...')
     const tagsInfo: TagInfo[] = []
     let description: string = metas['description' as keyof object] || '' //alternatives?
-    let text = description
-    if (article && article['content' as keyof object]) {
+    let text = title.trim().length > 0 ? title + '. ' + description : description
+    if (text.length < 3 && article && article['content' as keyof object]) {
       const textTokens = ContentUtils.html2text(article['content' as keyof object])
 
       const tokens = textTokens.split(' ')
@@ -439,41 +444,30 @@ export function useTagsService() {
       tagsFromLanguageModel(text, language, 'languageModel').forEach(pushTagsInfo())
     }
 
-    const r = await useCategorizationService().categorize(text)
-    console.log('r', r)
-
-    console.log(' <> overall result', tagsInfo)
-    const deduplicated = deduplicateTags(tagsInfo)
-    console.log(' <> overall result', deduplicated)
-    return deduplicated
+    if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
+      const r = await useCategorizationService().categorize(text)
+      console.log('r', r)
+    }
+    //console.log(' <> overall result', tagsInfo)
+    return deduplicateTags(tagsInfo)
   }
 
-  function getCurrentTabCategory(): TabCategory {
+  function getCurrentTabContentClassification(): ContentClassification {
     const tags = useContentStore().currentTabTags
+    const metas = useContentStore().currentTabMetas
 
-    function linkindDataRefersTo(labelVal: string) {
-      return tags.filter((t: TagInfo) => t.type === 'linkingData' && t.label === labelVal).length > 0
+    function tagLabelsFilteredBy(tagType: TagType) {
+      return tags.filter((t: TagInfo) => t.type === tagType).map((t: TagInfo) => t.label)
     }
 
-    if (linkindDataRefersTo('Recipe')) {
-      return 'recipe'
-    }
-    if (linkindDataRefersTo('NewsArticle')) {
-      return 'news'
-    }
-    if (linkindDataRefersTo('Product')) {
-      return 'shopping'
-    }
-    // if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
-    //   const text = useContentStore().getCurrentTabContent
-    //   console.log(' <> analysing', text)
-    //   if (text) {
-    //     // const res = await useCategoriesService().categorize(text)
-    //     const res = catService.categorize(text)
-    //     console.log('res', res)
-    //   }
-    // }
-    return 'uncategorized'
+    const categorization = pipe(
+      useDynamicConfig().getCategory('linkingData', tagLabelsFilteredBy('linkingData')),
+      O.orElse(() => useDynamicConfig().getCategory('openGraph', [metas['og:type' as keyof object] as string])),
+      O.orElse(() => useDynamicConfig().getCategory('langModel', tagLabelsFilteredBy('languageModel'))),
+      O.getOrElse(() => 'uncategorized' as ContentClassification),
+    )
+    console.log('cat', categorization)
+    return categorization
   }
 
   return {
@@ -487,6 +481,6 @@ export function useTagsService() {
     getDynamicTabsBy,
     addToIgnored,
     analyse,
-    getCurrentTabCategory,
+    getCurrentTabContentClassification,
   }
 }

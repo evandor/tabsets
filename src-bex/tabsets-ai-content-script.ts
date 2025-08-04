@@ -2,7 +2,7 @@ import { createBridge } from '#q-app/bex/content'
 
 const bridge = createBridge({ debug: false })
 
-chrome.storage.local.get('tabsets.ai.active').then((active: object) => {
+chrome.storage.local.get('tabsets.ext.ai.active').then((active: object) => {
   console.log('active', active)
   if (true === active['tabsets.ai.active' as keyof object]) {
     console.log('hi3r')
@@ -12,7 +12,7 @@ chrome.storage.local.get('tabsets.ai.active').then((active: object) => {
         console.log(`[BEX-CT] Connected to background`)
         // chrome.storage.local.set({ 'tabsets.ai.active': true })
         //LocalStorage.setItem('tabsets.categories', ['recipe', 'food'])
-        chrome.storage.local.get('tabsets.categories').then((categories: { [p: string]: any }) => {
+        chrome.storage.local.get('tabsets.ext.categories').then((categories: { [p: string]: any }) => {
           console.log('categories', categories['tabsets.categories'])
           bridge
             .send({

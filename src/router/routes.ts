@@ -56,6 +56,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupLoginPage.vue') }],
   },
   {
+    path: '/popup/debug',
+    component: () => import('layouts/PopupLayout.vue'),
+    children: [{ path: '', component: () => import('src/core/pages/popup/PopupDebugPage.vue') }],
+  },
+  {
     path: '/overlay/annotations',
     component: () => import('layouts/PlainLayout.vue'),
     children: [{ path: '', component: () => import('src/annotations/AnnotationOverlay.vue') }],
@@ -66,6 +71,7 @@ const routes: RouteRecordRaw[] = [
     path: '/fullpage',
     component: () => import('layouts/FullPageLayout.vue'),
     children: [
+      { path: '', component: () => import('src/core/pages/FullpageStart.vue') },
       { path: 'tabsets/:tabsetId', component: () => import('src/tabsets/pages/TabsetPage.vue') },
       {
         path: 'spaces',

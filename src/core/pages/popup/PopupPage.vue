@@ -181,12 +181,6 @@
       </q-btn>
     </PopupInputLine>
 
-    <div class="row darkInDarkMode brightInBrightMode q-pt-none" style="border: 1px solid blue">
-      <div class="col q-mx-md q-px-none" style="border: 1px solid red">
-        <DebugInfo :in-popup="true" />
-      </div>
-    </div>
-
     <!-- buttons -->
     <div class="row q-my-md darkInDarkMode brightInBrightMode" style="border: 0 solid blue">
       <div class="col-2 q-ml-xs q-mt-sm text-right text-caption text-grey-8" style="border: 0 solid red"></div>
@@ -239,7 +233,6 @@ import PopupCollectionSelector from 'src/core/pages/popup/PopupCollectionSelecto
 import PopupFolderSelector from 'src/core/pages/popup/PopupFolderSelector.vue'
 import PopupInputLine from 'src/core/pages/popup/PopupInputLine.vue'
 import PopupToolbar from 'src/core/pages/popup/PopupToolbar.vue'
-import DebugInfo from 'src/core/pages/widgets/DebugInfo.vue' // the page model
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { NotificationType, useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useNavigationService } from 'src/core/services/NavigationService'

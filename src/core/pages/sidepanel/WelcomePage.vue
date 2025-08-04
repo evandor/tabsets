@@ -20,12 +20,12 @@
               <div class="q-col text-h6 text-center">Thank you for choosing Tabsets - we appreciate it</div>
             </div>
             <div class="q-row q-my-md">
-              <div class="q-col text-body1 text-center">
-                To get started with tabsets, please click on the Tabsets Icon to open the popup window.
-              </div>
+              <div class="q-col text-body1 text-center">To get started with tabsets, please open the popup window:</div>
             </div>
             <div class="q-row">
-              <div class="q-col text-body1 text-center q-mt-sm"></div>
+              <div class="q-col text-body1 text-center q-mt-sm">
+                <q-btn label="open Popup Window" color="primary" @click="openPopupWindow()" />
+              </div>
             </div>
             <div class="q-row q-mt-lg">
               <div
@@ -148,8 +148,13 @@ const stageIdentifier = () => (process.env.TABSETS_STAGE !== 'PRD' ? ' (' + proc
 
 const clicked = (url: string) => openURL(url)
 
-const importFromBackup = () => {
-  const url = chrome.runtime.getURL('/www/index.html#/mainpanel/settings?tab=importExport')
-  useNavigationService().browserTabFor(url)
+const openPopupWindow = async () => {
+  chrome.action.openPopup().then(() => {
+    // setTimeout(() => {
+    //   chrome.sidePanel.setOptions({
+    //     enabled: false,
+    //   })
+    // }, 1000)
+  })
 }
 </script>

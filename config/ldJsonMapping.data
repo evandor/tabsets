@@ -1,0 +1,2 @@
+https://schema.org;LocalBusiness;$.latitude;number;place.latitude
+https://schema.org;LocalBusiness;$.longitude;number;place.longitude

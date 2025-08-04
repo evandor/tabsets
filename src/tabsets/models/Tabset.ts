@@ -18,7 +18,7 @@ export enum TabsetStatus {
   HIDDEN = 'HIDDEN',
 }
 
-export type SpecialTabsetId = 'FALLBACK'
+export type SpecialTabsetId = 'UNCATEGORIZED'
 
 export enum TabsetType {
   DEFAULT = 'DEFAULT',
@@ -84,6 +84,8 @@ export class Tabset {
   folders: Tabset[] = []
   folderActive: string | undefined = undefined
   folderParent: string | undefined = undefined
+
+  icon: string = ''
 
   // additional initialization in "loadTabsets()" for older tabsets.
   // in the application, we can assume that columns is always set, at least with an empty array

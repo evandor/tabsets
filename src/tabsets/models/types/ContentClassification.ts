@@ -1,1 +1,1 @@
-export type ContentClassification = 'unclassified' | 'recipe'
+export type ContentClassification = 'unclassified' | 'recipe' | 'news' | 'shopping' | 'restaurant'

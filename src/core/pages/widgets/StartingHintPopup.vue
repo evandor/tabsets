@@ -2,7 +2,7 @@
   <div class="q-ma-md" v-if="!hide">
     <div class="row text-primary q-mb-md" style="border: 0 solid grey">
       <div class="col-12 text-center">
-        <span>We've created a first tabset for you, called<br />'My first tabset'</span>
+        <!--        <span>We've created a first tabset for you, called<br />'My first tabset'</span>-->
       </div>
     </div>
 
@@ -22,12 +22,12 @@
         <q-card class="my-card fit popupbox">
           <q-card-section class="q-pb-none">
             <div class="q-row q-my-md">
-              <div class="q-col text-body1 text-center">One last step</div>
+              <div class="q-col text-body1 text-center">One last hint</div>
             </div>
             <div class="q-row q-my-md">
               <div class="q-col text-body1 text-center">
-                Once you click the button, you'll be able to see details about the current tab. Click the plus sign to
-                add it to your tabset
+                Once you click the button, you'll be able to see details about the current tab. Click the add button to
+                add it to your tabset if you want
               </div>
             </div>
             <div class="q-row">

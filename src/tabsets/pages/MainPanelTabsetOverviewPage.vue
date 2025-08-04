@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { uid } from 'quasar'
+import { uid, useMeta } from 'quasar'
 import Analytics from 'src/core/utils/google-analytics'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import TabList from 'src/tabsets/pages/pwa/TabList.vue'
@@ -54,9 +54,16 @@ const tabset = ref<Tabset>(new Tabset(uid(), 'empty', []))
 const tabsetFolder = ref<Tabset>(new Tabset(uid(), 'empty', []))
 
 const tab = ref('')
+const title = ref('Tabsets')
 
 const onMessageListener = (request: any, sender: chrome.runtime.MessageSender, sendResponse: any) =>
   onMessage(request, sender, sendResponse)
+
+useMeta(() => {
+  return {
+    title: title.value,
+  }
+})
 
 onMounted(() => {
   Analytics.firePageViewEvent('MainPanelTabsetPage', document.location.href)
@@ -75,6 +82,7 @@ onMounted(() => {
   tab.value = tabset.value.view || 'grid'
   folderId.value = tabset.value.folderActive
   tabsetFolder.value = useTabsetsStore().getActiveFolder(tabset.value, folderId.value) || tabset.value
+  title.value = tabset.value.name
 })
 
 onUnmounted(() => {

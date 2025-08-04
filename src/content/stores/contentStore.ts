@@ -1,8 +1,10 @@
 import { Readability } from '@mozilla/readability'
 import * as cheerio from 'cheerio'
 import { CheerioAPI } from 'cheerio'
+import { JSONPath } from 'jsonpath-plus'
 import { defineStore } from 'pinia'
 import { uid } from 'quasar'
+import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import BexFunctions from 'src/core/communication/BexFunctions'
 import { TagInfo } from 'src/core/models/TagInfo'
@@ -27,6 +29,8 @@ export const useContentStore = defineStore('content', () => {
   const articleSnapshot = ref<object | undefined>(undefined)
   const currentTabReferences = ref<TabReference[]>([])
   const currentTabTags = ref<TagInfo[]>([])
+  const currentTabDerivedData = ref<{ [k: string]: any }>({})
+  const currentTabResettedAt = ref(new Date().getTime())
 
   const setCurrentTabContent = (content: string | undefined) => {
     //console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
@@ -48,15 +52,9 @@ export const useContentStore = defineStore('content', () => {
     currentTabUrl.value = url
   }
 
-  function pushTagsInfo() {
-    return (tag: TagInfo) => {
-      currentTabTags.value.push(tag)
-      currentTabTags.value = useTagsService().deduplicateTags(currentTabTags.value)
-    }
-  }
-
   const resetFor = async (browserTab: chrome.tabs.Tab) => {
-    console.log('browserTab', browserTab)
+    console.log('resetting current data for', browserTab.url)
+    currentTabResettedAt.value = new Date().getTime()
     currentTabUrl.value = browserTab.url
     currentTabFavIcon.value = browserTab.favIconUrl
     currentTabTitle.value = browserTab.title
@@ -66,15 +64,19 @@ export const useContentStore = defineStore('content', () => {
     currentTabStorage.value = {}
     currentTabArticle.value = undefined
     currentTabTags.value = []
+    currentTabDerivedData.value = {}
 
-    //console.log('000>>>', browserTab.id, browserTab.url, browserTab)
+    console.log('000>>>', browserTab.id, browserTab.url, browserTab)
     if (browserTab.url && browserTab.id) {
       try {
         const r = await chrome.tabs.sendMessage(browserTab.id, 'getExcerpt', {}) //, async (res) => {
-        console.log('getContent returned result with length', r?.html.length, browserTab.id)
+        // console.log(
+        //   `getContent returned result with length ${Math.round((r?.html.length || 0) / 1024)}kB (tabId ${browserTab.id})`,
+        // )
         await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
 
         currentTabTags.value = await useTagsService().analyse(
+          currentTabTitle.value || '',
           currentTabMetas.value,
           currentTabArticle.value,
           currentTabReferences.value,
@@ -94,7 +96,7 @@ export const useContentStore = defineStore('content', () => {
   watchEffect(() => {
     currentTabReferences.value = []
     if (currentTabContent.value.trim().length > 0) {
-      console.debug(`updating content store... (length ${currentTabContent.value.trim().length})`)
+      //console.debug(`updating content store... (length ${currentTabContent.value.trim().length})`)
       const $ = cheerio.load(currentTabContent.value)
       checkLinks($)
       checkMeta($)
@@ -193,17 +195,40 @@ export const useContentStore = defineStore('content', () => {
   }
 
   const checkScripts = ($: CheerioAPI) => {
+    function addLinkedData(item: any) {
+      const newTR = new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', item)
+      currentTabReferences.value.push(newTR)
+      console.log('Found TabReference', newTR)
+
+      const r = useDynamicConfig().getLinkedDataDefinition(item['@context'], item['@type'])
+      console.log('r', r)
+      const data: { [k: string]: any } = currentTabDerivedData.value.derivedData || {}
+      for (const [key, value] of r.entries()) {
+        const result = JSONPath({ path: key, json: item })
+        console.log('result', result, value)
+        if (result) {
+          for (const k of value.keys()) {
+            data[value.get(k)] = Array.isArray(result) ? result[0] : result
+          }
+        }
+      }
+      currentTabDerivedData.value = data
+    }
+
     for (const elem of $('script')) {
       const type = $(elem).attr('type')
       if (type && type === 'application/ld+json') {
         try {
           const text = $(elem).contents().first().text()
-          console.log('got application/ld+json', text.length)
+          //console.log('got application/ld+json', text.length)
           const asJSON = JSON.parse(text)
-          currentTabReferences.value.push(
-            new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', asJSON),
-          )
-          //console.log('Found TabReference', currentTabReferences.value)
+          if (Array.isArray(asJSON)) {
+            asJSON.forEach((item) => {
+              addLinkedData(item)
+            })
+          } else {
+            addLinkedData(asJSON)
+          }
         } catch (err) {
           console.warn('could not parse linking data', err)
         }
@@ -324,5 +349,7 @@ export const useContentStore = defineStore('content', () => {
     currentTabTitle,
     articleSnapshot,
     currentTabTags,
+    currentTabDerivedData,
+    currentTabResettedAt,
   }
 })

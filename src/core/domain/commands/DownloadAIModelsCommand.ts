@@ -9,14 +9,14 @@ export class DownloadAIModelsCommand implements Command<boolean> {
   constructor() {}
 
   async execute(): Promise<ExecutionResult<boolean>> {
-    console.log('about to send msg init-ai-module')
-    chrome.runtime.sendMessage({ name: 'init-ai-module' }, (callback: any) => {
-      if (chrome.runtime.lastError) {
-        console.warn('got error', chrome.runtime.lastError)
-      } else {
-        console.log('callback: ', callback)
-      }
-    })
+    // console.log('about to send msg init-ai-module')
+    // chrome.runtime.sendMessage({ name: 'init-ai-module' }, (callback: any) => {
+    //   if (chrome.runtime.lastError) {
+    //     console.warn('got error', chrome.runtime.lastError)
+    //   } else {
+    //     console.log('callback: ', callback)
+    //   }
+    // })
 
     console.log("checking availability of 'LanguageDetector' feature...")
     if (!('LanguageDetector' in self)) {
@@ -73,7 +73,7 @@ export class DownloadAIModelsCommand implements Command<boolean> {
       // const result2 = await session.prompt('That sounds great, but oh no, it is actually going to rain! New advice?')
       // console.log(result2)
 
-      chrome.storage.local.set({ 'tabsets.ai.active': true }).then(() => {
+      chrome.storage.local.set({ 'tabsets.ext.ai.active': true }).then(() => {
         useCategorizationService().initializeLanguageModel()
       })
 

@@ -23,11 +23,13 @@ import { uid } from 'quasar'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
+import { useUtils } from 'src/core/services/Utils'
 import { ActionProps } from 'src/tabsets/actions/models/ActionProps'
 import FabLikeBtn from 'src/tabsets/actions/widgets/FabLikeBtn.vue'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { Tab } from 'src/tabsets/models/Tab'
-import { Tabset } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTagsService } from 'src/tags/TagsService'
@@ -37,6 +39,7 @@ import { ref, watchEffect } from 'vue'
 const props = defineProps<ActionProps>()
 
 const { handleError } = useNotificationHandler()
+const { sendMsg } = useUtils()
 
 const label = ref('Add Tab')
 const containedInTsCount = ref(0)
@@ -46,31 +49,38 @@ const animateAddtabButton = ref(false)
 const clicked = async () => {
   console.log('clicked!!', props.currentChromeTab)
 
-  async function tabInTabset(name: string, newTab: Tab) {
+  async function tabInTabset(name: string, classification: ContentClassification, newTab: Tab) {
     let tabset = useTabsetsStore().getTabset(name)
     console.log('found tabset for id', name, tabset)
     if (!tabset) {
       tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
+      tabset.type = TabsetType.SPECIAL
+      tabset.contentClassification = classification
+      await useTabsetsStore().saveTabset(tabset)
     }
     return useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, tabset))
   }
 
   if (props.currentChromeTab) {
     const newTab: Tab = new Tab(uid(), props.currentChromeTab)
-    const tabCategory = useTagsService().getCurrentTabCategory()
+    const tabCategory = useTagsService().getCurrentTabContentClassification()
     console.log('found category', tabCategory)
     switch (tabCategory) {
       case 'recipe':
-        return await tabInTabset('recipes', newTab)
+        return await tabInTabset('recipes', 'recipe', newTab)
       case 'news':
-        return await tabInTabset('news', newTab)
+        return await tabInTabset('news', 'news', newTab)
       case 'shopping':
-        return await tabInTabset('shopping', newTab)
+        return await tabInTabset('shopping', 'shopping', newTab)
+      case 'restaurant':
+        return await tabInTabset('restaurants', 'restaurant', newTab)
       default:
         // noop
         break
     }
-    return useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))
+    const result = useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))
+    sendMsg('reload-application')
+    return result
   }
   handleError('current browser tab not set!')
 }
