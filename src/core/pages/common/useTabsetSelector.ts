@@ -40,7 +40,7 @@ export function useTabsetSelector(holder: ElementHolder) {
   const calculate = () => {
     const tabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
     const stashedTabs = ref(tabsets.filter((ts: Tabset) => ts.type === TabsetType.SESSION).length > 0)
-    console.log(`:::calculating... tabsets#: ${tabsets.length}, currentTs: ${currentTabset.value?.id}`)
+    //console.log(`:::calculating... tabsets#: ${tabsets.length}, currentTs: ${currentTabset.value?.id}`)
     tabsetSelectionOptions.value = tabsets
       .filter((ts: Tabset) =>
         useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
@@ -109,11 +109,14 @@ export function useTabsetSelector(holder: ElementHolder) {
     // console.log(':::calculated', tabsetSelectionOptions.value.map((ts) => ts.label).join(','))
   }
 
-  watch(() => useTabsetsStore().lastUpdate, (a:number, b:number) => {
-    console.log('-- watchEffect() A called --')
-    console.log("a,b", a,b)
-    calculate()
-  })
+  watch(
+    () => useTabsetsStore().lastUpdate,
+    (a: number, b: number) => {
+      // console.log('-- watchEffect() A called --')
+      // console.log('a,b', a, b)
+      calculate()
+    },
+  )
 
   watchEffect(() => {
     console.log('-- watchEffect() B called --')

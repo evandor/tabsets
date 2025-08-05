@@ -144,7 +144,7 @@ const tabsetsLastUpdate = ref(0)
 const filteredTabsCount = ref(0)
 const filteredFoldersCount = ref(0)
 const useFolderExpansion = ref<FolderAppearance>(useUiStore().folderStyle)
-const showSearchToolbarHelper = ref<boolean>(useUiStore().quickAccessFor('search'))
+const showSearchToolbarHelper = ref<boolean>(false)
 const paddingTop = ref('padding-top: 80px')
 const uiDensity = ref<UiDensity>(useUiStore().uiDensity)
 const specialTabsets = ref<Tabset[]>([])
@@ -171,9 +171,14 @@ onMounted(() => {
 
 function checkAnalysisBroken(a: number, b: number) {
   showAnalysisBrokenBanner.value = false
+
+  function tabUrlsStartsWithOneOf(prefixes: string[]) {
+    return prefixes.find((prefix: string) => currentChromeTab.value?.url?.startsWith(prefix)) !== undefined
+  }
+
   //console.log('showAnalysisBrokenBanner set to', showAnalysisBrokenBanner.value)
   setTimeout(() => {
-    if (currentTabset.value || currentChromeTab.value?.url?.startsWith('chrome-extension://')) {
+    if (currentTabset.value || tabUrlsStartsWithOneOf(['chrome-extension://', 'chrome://'])) {
       showAnalysisBrokenBanner.value = false
       return
     }
@@ -185,16 +190,6 @@ function checkAnalysisBroken(a: number, b: number) {
 watchEffect(() => {
   specialTabsets.value = [...useTabsetsStore().tabsets.values()].filter((ts: Tabset) => ts.type === TabsetType.SPECIAL)
 })
-
-watch(
-  () => useUiStore().quickAccessLastChange,
-  (a: any, b: any) => {
-    setTimeout(() => {
-      showSearchToolbarHelper.value = useUiStore().quickAccessFor('search')
-      setPaddingTop()
-    }, 500)
-  },
-)
 
 watchEffect(() => {
   useFolderExpansion.value = useUiStore().folderStyle
@@ -254,6 +249,10 @@ watchEffect(() => {
 watchEffect(() => {
   const windowId = useWindowsStore().currentBrowserWindow?.id || 0
   currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+})
+
+watchEffect(() => {
+  currentChromeTab.value = useTabsStore2().currentChromeTab
 })
 
 function inIgnoredMessages(message: any) {
@@ -345,12 +344,6 @@ const onMessageListener = (message: any) => {
           currentTs.folderActive = undefined
           useTabsetsStore().saveTabset(currentTs)
         }
-        break
-      case 'ui.quickAccess':
-        console.log('message', message)
-        showSearchToolbarHelper.value = message.data.value
-        setPaddingTop()
-        // console.log('showSearchToolbarHelper', showSearchToolbarHelper.value)
         break
       default:
         console.log(`unknown message identifier ${message.data.identifier}`)

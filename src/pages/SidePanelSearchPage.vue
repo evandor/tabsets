@@ -38,7 +38,6 @@ import ViewToolbarHelper from 'src/core/pages/sidepanel/helper/ViewToolbarHelper
 import Analytics from 'src/core/utils/google-analytics'
 import { Hit } from 'src/search/models/Hit'
 import { useSearchStore } from 'src/search/stores/searchStore'
-import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { onMounted, ref, watchEffect } from 'vue'
@@ -65,19 +64,6 @@ watchEffect(() => {
       id: t.id,
     }
   })
-  tabIdents.value = tabsets
-    .flatMap((ts: Tabset) => ts.tabs)
-    .filter((t: Tab) => t.quickaccess && t.quickaccess.trim().length > 0)
-    .map((t: Tab) => {
-      return {
-        name: t.name,
-        quickaccess: t.quickaccess,
-        url: t.url,
-        favIconUrl: t.favIconUrl,
-        description: t.description,
-        id: t.id,
-      }
-    })
 })
 
 const newSearch = (term: string) => {
@@ -89,25 +75,7 @@ const newSearch = (term: string) => {
     // quick access hits
     tabIdents.value.forEach((tabIdent: any) => {
       const name = tabIdent['name' as keyof object]
-      const quickaccess = tabIdent['quickaccess' as keyof object]
       const id = tabIdent['id' as keyof object]
-      if (quickaccess.toLowerCase().indexOf(term.toLowerCase()) >= 0) {
-        const theHit = new Hit(
-          uid(),
-          name,
-          tabIdent['url' as keyof object],
-          tabIdent['favIconUrl' as keyof object],
-          0,
-          0,
-          1,
-          [],
-          [],
-          [],
-          tabIdent['description' as keyof object],
-          'Quick Access',
-        )
-        tabsetHits.value.push(theHit)
-      }
     })
 
     // tabsets' names hits

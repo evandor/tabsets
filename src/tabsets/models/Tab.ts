@@ -178,7 +178,6 @@ export class Tab {
 
   tabReferences: TabReference[] = []
 
-  quickaccess: string = ''
   log: TabLog[] = []
 
   lastChangeBy: string = ''

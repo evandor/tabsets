@@ -12,6 +12,7 @@ import {
 import { ContentItem } from 'src/content/models/ContentItem'
 import { useContentService } from 'src/content/services/ContentService'
 import { TabPredicate } from 'src/core/domain/Types'
+import { TagInfo } from 'src/core/models/TagInfo'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import JsUtils from 'src/core/utils/JsUtils'
@@ -738,7 +739,7 @@ export function useTabsetService() {
           content: content.content || '',
           tabsets: [tabset.id],
           favIconUrl: tab.favIconUrl || '',
-          tags: tab.tags && Array.isArray(tab.tags) ? tab.tags.join(' ') : '',
+          tags: tab.tagsInfo.map((tag: TagInfo) => tag.label).join(' '),
         }
         // console.log("adding", addToIndex)
         minimalIndex.push(addToIndex)
@@ -811,7 +812,7 @@ export function useTabsetService() {
             content: '',
             tabsets: [tsId],
             favIconUrl: tab.favIconUrl || '',
-            tags: tab.tags && Array.isArray(tab.tags) ? tab.tags.join(' ') : '',
+            tags: tab.tagsInfo.map((tag: TagInfo) => tag.label).join(' '),
           })
           urlSet.add(tab.url)
         }

@@ -1,14 +1,11 @@
+import { pipe } from 'fp-ts/function'
+import * as E from 'fp-ts/lib/Either'
 import Fuse, { FuseIndex } from 'fuse.js'
 import { defineStore } from 'pinia'
 import { uid } from 'quasar'
 import { SearchDoc } from 'src/search/models/SearchDoc'
+import { searchUtils } from 'src/search/searchUtils'
 import { ref } from 'vue'
-
-function overwrite(ident: string, doc: SearchDoc, removed: SearchDoc[]) {
-  if (!doc[ident as keyof object]) {
-    doc[ident as keyof object] = removed[0]![ident as keyof object]
-  }
-}
 
 /**
  * A pinia store backed by a search engine index (fuse) based on URLs and document types
@@ -20,7 +17,7 @@ export const useSearchStore = defineStore('search', () => {
 
   const searchIndex = ref<FuseIndex<any>>(null as unknown as any)
 
-  const fuse = ref(null as unknown as Fuse<SearchDoc>)
+  const fuse = ref<Fuse<SearchDoc>>(null as unknown as Fuse<SearchDoc>)
 
   const stats = ref<Map<string, number>>(new Map())
 
@@ -68,6 +65,7 @@ export const useSearchStore = defineStore('search', () => {
 
   function addObjectToIndex(o: Object) {
     const parsed = JSON.parse(JSON.stringify(o))
+    console.log('adding to search', parsed)
     const doc: SearchDoc = Object.assign(new SearchDoc(uid(), '', '', '', '', '', '', '', [], '', ''), parsed)
     if (!doc.url) {
       throw new Error('object to be added to search index does not have an URL field set.')
@@ -75,42 +73,41 @@ export const useSearchStore = defineStore('search', () => {
     return addSearchDocToIndex(doc)
   }
 
-  function upsertObject(o: Object) {
-    const parsed = JSON.parse(JSON.stringify(o))
-    const doc: SearchDoc = Object.assign(new SearchDoc(uid(), '', '', '', '', '', '', '', [], '', ''), parsed)
-    if (!doc.url) {
+  function upsertObject(o: Object): SearchDoc {
+    const r = pipe(
+      searchUtils().objectToSearchDoc(o),
+      E.map((doc) => {
+        const newDoc = searchUtils().overwriteIfReplacing(fuse.value, doc)
+        return addSearchDocToIndex(newDoc)
+      }),
+    )
+    if (E.isLeft(r)) {
       throw new Error('object to be added to search index does not have an URL field set.')
     }
-
-    const removed = fuse.value.remove((d: any) => {
-      return d.url === doc.url
-    })
-    if (removed && removed[0]) {
-      overwrite('name', doc, removed)
-      overwrite('description', doc, removed)
-      overwrite('keywords', doc, removed)
-      overwrite('content', doc, removed)
-      overwrite('tags', doc, removed)
-    }
-    fuse.value.add(doc)
-    return addSearchDocToIndex(doc)
+    return r.right
   }
 
   /**
    * replace when url matches
    */
-  function addSearchDocToIndex(doc: SearchDoc) {
-    const removed = fuse.value?.remove((d: any) => {
-      return d.url === doc.url
-    })
-    if (removed && removed[0]) {
-      overwrite('name', doc, removed)
-      overwrite('description', doc, removed)
-      overwrite('keywords', doc, removed)
-      overwrite('content', doc, removed)
-      overwrite('tags', doc, removed)
-    }
-    fuse.value?.add(doc)
+  function addSearchDocToIndex(doc: SearchDoc): SearchDoc {
+    console.log('doc', doc)
+    const newDoc = searchUtils().overwriteIfReplacing(fuse.value, doc)
+    // const removed = fuse.value?.remove((d: any) => {
+    //   return d.url === doc.url
+    // })
+    // console.log('removed', removed)
+    // if (removed && removed[0]) {
+    //   overwrite('name', doc, removed)
+    //   overwrite('description', doc, removed)
+    //   overwrite('keywords', doc, removed)
+    //   overwrite('content', doc, removed)
+    //   //overwrite('tags', doc, removed)
+    // }
+    // check tabsetservice2#addToSearchIndex as well!
+    fuse.value.add(newDoc)
+    console.log('getIndex', getIndex())
+    return newDoc
   }
 
   function update(url: string, key: string, value: string) {

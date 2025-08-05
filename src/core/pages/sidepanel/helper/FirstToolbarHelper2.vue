@@ -17,27 +17,30 @@
             size="md"
             class="cursor-pointer"
             :class="{ shakeWithColor: animateMenuButton, 'cursor-pointer': true }" />
-          <q-menu v-if="currentTabset">
+          <q-menu>
             <q-list style="min-width: 200px" dense>
               <!--              <CreateTabsetAction :tabset="currentTabset" level="root" />-->
               <!--              <EditTabsetAction :tabset="currentTabset" level="root" :element="props.element" />-->
               <SearchAction
-                :tabset="currentTabset"
+                :tabset="currentTabset || new Tabset('dummy', 'dummy', [])"
                 level="root"
                 v-if="showSearchAction"
                 @clicked="delayedRemoval()"
                 :element="props.element" />
               <!--              <CreateSubfolderAction :tabset="currentTabset" level="root" :element="props.element" />-->
-              <OpenAllInMenuAction :tabset="currentTabset" level="root" :element="props.element" />
+              <OpenAllInMenuAction
+                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
+                level="root"
+                :element="props.element" />
               <ShareTabsetAction :tabset="currentTabset" level="root" :element="props.element" />
               <ShowGalleryAction
                 v-if="useFeaturesStore().hasFeature(FeatureIdent.GALLERY)"
-                :tabset="currentTabset"
+                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
                 :element="props.element"
                 level="root" />
               <ShowRezepteAction
                 v-if="useFeaturesStore().hasFeature(FeatureIdent.GALLERY)"
-                :tabset="currentTabset"
+                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
                 :element="props.element"
                 level="root" />
               <!--              <CreateNoteAction-->
@@ -45,12 +48,12 @@
               <!--                level="root"-->
               <!--                v-if="useSettingsStore().has('DEV_MODE')" />-->
               <CreatePageAction
-                :tabset="currentTabset"
+                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
                 level="root"
                 v-if="useFeaturesStore().hasFeature(FeatureIdent.PAGES)"
                 :element="props.element" />
               <ArchiveTabsetAction
-                :tabset="currentTabset"
+                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
                 level="root"
                 :element="props.element"
                 v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)" />
@@ -192,7 +195,7 @@ const animateMenuButton = ref(false)
 // const tabsetSelectionOptions = ref<SelectOption[]>([])
 const stashedTabs = ref(false)
 
-let showSearchAction = !useUiStore().quickAccessFor('search')
+let showSearchAction = ref(true)
 
 const uiDensity = inject('ui.density')
 
@@ -336,7 +339,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  showSearchAction = !useUiStore().quickAccessFor('search') && useTabsetsStore().allTabsCount > 0
+  showSearchAction.value = useTabsetsStore().allTabsCount > 0
 })
 
 function getActiveFolder(tabset: Tabset) {
@@ -433,7 +436,7 @@ const tabsetSelectLabel = () => {
 }
 
 const delayedRemoval = () => {
-  setTimeout(() => (showSearchAction = false), 500)
+  setTimeout(() => (showSearchAction.value = false), 500)
 }
 
 const tabsetColorStyle = () => {
