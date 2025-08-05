@@ -3,7 +3,7 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { ref, watchEffect } from 'vue'
+import { ref, watch, watchEffect } from 'vue'
 
 export type SelectOption = {
   label: string
@@ -16,7 +16,6 @@ export type SelectOption = {
 export type ElementHolder = 'contextmenu' | 'btn' | 'popup'
 
 export function useTabsetSelector(holder: ElementHolder) {
-  const tabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
   const useSpaces = useFeaturesStore().hasFeature(FeatureIdent.SPACES)
   const space = useSpacesStore().space
 
@@ -25,7 +24,6 @@ export function useTabsetSelector(holder: ElementHolder) {
   const currentTabset = ref<Tabset | undefined>(useTabsetsStore().getCurrentTabset)
   const tabsetSelectionOptions = ref<SelectOption[]>([])
   const tabsetSelectionModel = ref<SelectOption | undefined>(undefined)
-  const stashedTabs = ref(tabsets.filter((ts: Tabset) => ts.type === TabsetType.SESSION).length > 0)
 
   const automaticSelectionOption = ref({
     label: 'select automatically',
@@ -38,7 +36,9 @@ export function useTabsetSelector(holder: ElementHolder) {
   }
 
   const calculate = () => {
-    // console.log(`:::calculating... tabsets#: ${tabsets.length}, currentTs: ${currentTabset.value?.id}`)
+    const tabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
+    const stashedTabs = ref(tabsets.filter((ts: Tabset) => ts.type === TabsetType.SESSION).length > 0)
+    //console.log(`:::calculating... tabsets#: ${tabsets.length}, currentTs: ${currentTabset.value?.id}`)
     tabsetSelectionOptions.value = tabsets
       .filter((ts: Tabset) =>
         useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
@@ -107,13 +107,22 @@ export function useTabsetSelector(holder: ElementHolder) {
     // console.log(':::calculated', tabsetSelectionOptions.value.map((ts) => ts.label).join(','))
   }
 
+  watch(
+    () => useTabsetsStore().lastUpdate,
+    (a: number, b: number) => {
+      // console.log('-- watchEffect() A called --')
+      // console.log('a,b', a, b)
+      calculate()
+    },
+  )
+
   watchEffect(() => {
-    // console.log('-- watchEffect() called --')
+    //console.log('-- watchEffect() B called --')
     calculate()
   })
 
   watchEffect(() => {
-    // console.log('-- watchEffect()2 called --')
+    //console.log('-- watchEffect() C called --')
     currentTabset.value = useTabsetsStore().getCurrentTabset
     //console.log('---got current tabset', currentTabset.value)
     if (currentTabset.value) {

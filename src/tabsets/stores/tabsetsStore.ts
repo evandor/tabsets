@@ -93,6 +93,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     if (storage) {
       await storage.loadTabsets()
       loaded.value = true
+      lastUpdate.value = new Date().getTime()
     }
   }
 

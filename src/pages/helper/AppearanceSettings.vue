@@ -279,16 +279,9 @@ const fullUrls = ref(LocalStorage.getItem('ui.fullUrls') || false)
 const overlapIndicator = ref(LocalStorage.getItem('ui.overlapIndicator') || false)
 const showRecentTabsetsList = ref(useFeaturesStore().hasFeature(FeatureIdent.TABSET_LIST))
 
-const quickAccessSearch = ref(useUiStore().quickAccessFor('search'))
-
 let suggestionsCounter = 0
 
 const autoSwitcherOption = ref<number>((LocalStorage.getItem('ui.tabSwitcher') as number) || 5000)
-
-watchEffect(() => {
-  useUiStore().setQuickAccess('search', quickAccessSearch.value)
-  sendMsg('settings-changed', { identifier: 'ui.quickAccess', value: quickAccessSearch.value })
-})
 
 watchEffect(() => {
   if (installationTitle.value && installationTitle.value.trim().length > 0) {

@@ -99,14 +99,6 @@
   <q-separator />
 
   <q-list>
-    <q-expansion-item group="detailsGroup" label="Quick Access Shortcut" :default-opened="false">
-      <q-card>
-        <q-card-section>
-          <q-input filled dense v-model="quickaccess" />
-        </q-card-section>
-      </q-card>
-    </q-expansion-item>
-
     <q-expansion-item group="detailsGroup" label="Tags" :default-opened="false">
       <q-card>
         <q-card-section>
@@ -325,7 +317,6 @@
 import { formatDistance } from 'date-fns'
 import _ from 'lodash'
 import { useQuasar } from 'quasar'
-import { STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
 import { TabReferenceType } from 'src/content/models/TabReference'
 import { useContentService } from 'src/content/services/ContentService'
 import { TagInfo } from 'src/core/models/TagInfo'
@@ -357,7 +348,6 @@ const route = useRoute()
 
 const thumbnail = ref('')
 const content = ref('')
-const quickaccess = ref('')
 const metaRows = ref<object[]>([])
 const tab = ref<Tab | undefined>(undefined)
 const htmls = ref<BlobMetadata[]>([])
@@ -386,7 +376,6 @@ watchEffect(() => {
     } else {
       tags.value = []
     }
-    quickaccess.value = tab.value.quickaccess
   }
   if (tab.value) {
     useRequestsService()
@@ -394,16 +383,6 @@ watchEffect(() => {
       .then((res: RequestInfo) => {
         request.value = res
       })
-  }
-})
-
-watchEffect(() => {
-  if (quickaccess.value && tab.value) {
-    quickaccess.value = quickaccess.value.replace(' ', '').replace(STRIP_CHARS_IN_USER_INPUT, '')
-    tab.value.quickaccess = quickaccess.value
-    useTabsetService()
-      .saveCurrentTabset()
-      .catch((err) => console.error(err))
   }
 })
 

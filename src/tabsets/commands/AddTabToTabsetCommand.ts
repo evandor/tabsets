@@ -7,6 +7,7 @@ import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useContentStore } from 'src/content/stores/contentStore'
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { TagInfo } from 'src/core/models/TagInfo'
 import { useLogger } from 'src/core/services/Logger'
 import { useUtils } from 'src/core/services/Utils'
 import ContentUtils from 'src/core/utils/ContentUtils'
@@ -141,6 +142,7 @@ export class AddTabToTabsetCommand implements Command<any> {
         url: this.tab.url || '',
         description: this.tab.description,
         content: content ? content : '',
+        tags: this.tab.tagsInfo.map((tag: TagInfo) => tag.label).join(' '),
         tabsets: [this.tabset!.id],
         favIconUrl: this.tab.favIconUrl || '',
       })

@@ -201,11 +201,9 @@ export const useContentStore = defineStore('content', () => {
       console.log('Found TabReference', newTR)
 
       const r = useDynamicConfig().getLinkedDataDefinition(item['@context'], item['@type'])
-      console.log('r', r)
       const data: { [k: string]: any } = currentTabDerivedData.value.derivedData || {}
       for (const [key, value] of r.entries()) {
         const result = JSONPath({ path: key, json: item })
-        console.log('result', result, value)
         if (result) {
           for (const k of value.keys()) {
             data[value.get(k)] = Array.isArray(result) ? result[0] : result

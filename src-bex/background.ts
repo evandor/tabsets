@@ -69,7 +69,20 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch((error: any) => console.error(error))
 }
 
+// TODO remove listener (when?)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  function openSidePanel(tabId: number) {
+    const options = {
+      // tabId: tabId,
+      enabled: true,
+    }
+    console.log('triggering', tabId, options)
+    chrome.sidePanel
+      .setOptions(options)
+      .then((r: any) => console.log('r2', r))
+      .catch((e: any) => console.log('warning', e))
+  }
+
   ;(async function () {
     if (message.name === 'zero-shot-classification') {
       try {
@@ -103,6 +116,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             console.log("could not handle 'url-deleted'", err)
           })
         })
+    } else if (message.action === 'sidePanelOpened') {
+      // if (initialActiveTabId === null) {
+      chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (tabs.length > 0) {
+          console.log('got tab', tabs[0])
+          // initialActiveTabId = tabs[0].id;
+          openSidePanel(tabs[0]!.id!)
+        }
+      })
+      // }
     } else if (message.msg === 'captureClipping') {
       // no op
     } else {
@@ -268,35 +291,3 @@ bridge.on('new-annotation', async ({ payload }) => {
   // })
   // })
 })
-
-// chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).then(() => {
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  function openSidePanel(tabId: number) {
-    const options = {
-      // tabId: tabId,
-      enabled: true,
-    }
-    console.log('triggering', tabId, options)
-    chrome.sidePanel
-      .setOptions(options)
-      .then((r: any) => console.log('r2', r))
-      .catch((e: any) => console.log('warning', e))
-  }
-
-  if (request.action === 'sidePanelOpened') {
-    // if (initialActiveTabId === null) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      if (tabs.length > 0) {
-        console.log('got tab', tabs[0])
-        // initialActiveTabId = tabs[0].id;
-        openSidePanel(tabs[0]!.id!)
-      }
-    })
-    // }
-  } else if (request.msg === 'captureClipping') {
-  } else {
-    console.log('got unhandled message', request)
-  }
-  return true
-})
-// })
