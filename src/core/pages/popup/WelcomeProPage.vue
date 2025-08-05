@@ -126,14 +126,12 @@ import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+import { CreateSpecialTabsetCommand } from 'src/tabsets/commands/CreateSpecialTabsetCommand'
 
 const router = useRouter()
 
-const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
-const login = ref(false)
-const addCurrentTabs = ref(false)
 const showWatermark = ref(false)
 const watermark = ref('')
 const openTabsCount = ref(0)
@@ -158,30 +156,10 @@ watchEffect(() => {
   openTabsCount.value = useTabsStore2().browserTabs.length
 })
 
-// watchEffect(() => {
-//   // we might have been redirected here too early, redirecting
-//   // back as soon we know we actually do have some tabsets
-//   if (useTabsetsStore().tabsets.size > 0) {
-//     //console.log('routing back! We have tabsets!')
-//     router.back()
-//   }
-// })
-
 watchEffect(() => {
   showWatermark.value = useUiStore().getWatermark().length > 0
   watermark.value = useUiStore().getWatermark()
 })
-
-const addFirstTabset = () => {
-  useCommandExecutor()
-    .executeFromUi(new CreateTabsetCommand(tabsetName.value, addCurrentTabs.value ? useTabsStore2().browserTabs : []))
-    .then((res: any) => {
-      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
-      router.push('/sidepanel?first=true')
-    })
-}
-
-const newTabsetNameIsValid = () => tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
 
 //https://groups.google.com/a/chromium.org/g/chromium-extensions/c/nb058-YrrWc
 const selected = () => tabsetNameRef.value?.focus()

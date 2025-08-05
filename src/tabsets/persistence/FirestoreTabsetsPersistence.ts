@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { LocalStorage, uid } from 'quasar'
 import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 import { useEmailTemplates } from 'src/tabsets/emails/EmailTemplates'
 import { Tab } from 'src/tabsets/models/Tab'
 import { AugmentedData, Tabset, TabsetSharing } from 'src/tabsets/models/Tabset'
@@ -20,7 +21,6 @@ import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
-import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 const STORE_IDENT = 'tabsets'
 
@@ -78,7 +78,7 @@ class FirestoreTabsetsPersistence implements TabsetsPersistence {
         publicTS.loaded = new Date().getTime()
         useTabsetsStore().setTabset(publicTS)
       }
-    } else {
+    } else if (useAuthStore().user) {
       docs = await getDocs(tabsetsCollection(this.firebaseServices))
       for (const doc of docs.docs) {
         let newItem = doc.data()

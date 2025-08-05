@@ -32,8 +32,8 @@ class FirebaseCloudServices implements IFirebaseServices {
     this.auth = getAuth(this.firebaseApp)
     if (process.env.TABSETS_STAGE === 'EMULATOR') {
       useUiStore().setWatermark('emulator')
-      console.warn('using firebase emulators for auth, storage and firestore')
-      connectAuthEmulator(this.auth, 'http://127.0.0.1:9099')
+      // console.warn('using firebase emulators for auth, storage and firestore')
+      connectAuthEmulator(this.auth, 'http://127.0.0.1:9099', {disableWarnings: true})
       const db = getFirestore()
       connectFirestoreEmulator(db, '127.0.0.1', 8080)
       connectStorageEmulator(getStorage(), '127.0.0.1', 9199)

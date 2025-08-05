@@ -6,7 +6,7 @@
       {{ pageTitle }}
     </div>
 
-    <div class="q-ma-sm q-pa-sm box">
+    <div class="q-my-sm q-mx-xl q-pa-sm box">
       <q-tabs v-model="tab" dense>
         <q-tab name="login" label="Login" />
         <q-tab name="register" label="Create Account" />
@@ -197,14 +197,14 @@ import {
 } from 'firebase/auth/web-extension'
 import { LocalStorage, openURL, useQuasar } from 'quasar'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { NotificationType, useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'
+import { CreateSpecialTabsetCommand } from 'src/tabsets/commands/CreateSpecialTabsetCommand'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
 import { ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 
 const $q = useQuasar()
 
@@ -256,14 +256,12 @@ watchEffect(() => {
 
 const createGettingStartedTabset = () => {
   useCommandExecutor()
-    .executeFromUi(new CreateTabsetCommand('My first Tabset', []))
+    .executeFromUi(new CreateSpecialTabsetCommand('UNCATEGORIZED', 'sym_o_help_center'))
     .then(() => {
       LocalStorage.setItem('ui.hideWelcomePage', true)
+      chrome.storage.local.remove('tabsets.ext.ai.active')
       console.log('route', route.fullPath)
-      // if (route.fullPath !== '/popup/welcome') {
       router.push('/popup/getstarted')
-      // }
-      //useNavigationService().browserTabFor('https://docs.tabsets.net/get-started')
     })
     .catch((err: any) => console.warn('got error', err))
 }

@@ -161,8 +161,7 @@ class AppService {
       )
       useEntityRegistryStore().tabsetRegistry = tsInfo
     })
-    console.log('authenticated', authenticated)
-    await tabsetsStore.initialize(authenticated ? useDB().tabsetsDb : useDB().localTabsetsDb)
+    await tabsetsStore.initialize(useDB().tabsetsDb)
     await useTabsetService().init()
 
     await useTabsStore2().initialize()
