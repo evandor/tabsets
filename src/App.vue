@@ -16,10 +16,10 @@ import { useUtils } from 'src/core/services/Utils'
 import { useAppStore } from 'src/core/stores/appStore'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { usePermissionsStore } from 'src/core/stores/usePermissionsStore'
+import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 const version = import.meta.env.PACKAGE_VERSION
 
@@ -50,7 +50,6 @@ if (useSettingsStore().isDisabled('noMonitoring') && !process.env.DEV) {
 
 const $q = useQuasar()
 const router = useRouter()
-const route = useRoute()
 const { inBexMode, setupConsoleInterceptor } = useUtils()
 const platform = $q.platform
 LocalStorage.set('platform', platform)

@@ -1,8 +1,7 @@
 import { User } from 'firebase/auth/web-extension'
 import _ from 'lodash'
-import { LocalStorage, QVueGlobals } from 'quasar'
+import { QVueGlobals } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
-import FirebaseListener from 'src/app/FirebaseListener'
 import BrowserListeners from 'src/app/listeners/BrowserListeners'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import BookmarksService from 'src/bookmarks/services/BookmarksService'
@@ -47,7 +46,7 @@ class AppService {
   router: Router = null as unknown as Router
   initialized = false
 
-  async init(quasar: QVueGlobals, router: Router, forceReload=false, user: User | undefined = undefined) {
+  async init(quasar: QVueGlobals, router: Router, forceReload = false, user: User | undefined = undefined) {
     console.log(`initializing AppService: initialized=${this.initialized}, router set=${router !== undefined}`)
 
     if (this.initialized && !forceReload) {
@@ -120,10 +119,10 @@ class AppService {
     // init services
     await useSuggestionsStore().init(useDB().suggestionsDb)
 
-    await this.initCoreSerivces(quasar, this.router)
+    await this.initCoreSerivces(quasar)
   }
 
-  private async initCoreSerivces(quasar: QVueGlobals, router: Router) {
+  private async initCoreSerivces(quasar: QVueGlobals) {
     //console.log(`%cinitializing AppService: initCoreSerivces`, 'font-weight:bold')
 
     const authenticated = useAuthStore().isAuthenticated()
@@ -162,6 +161,7 @@ class AppService {
       )
       useEntityRegistryStore().tabsetRegistry = tsInfo
     })
+    console.log('authenticated', authenticated)
     await tabsetsStore.initialize(authenticated ? useDB().tabsetsDb : useDB().localTabsetsDb)
     await useTabsetService().init()
 

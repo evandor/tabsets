@@ -6,3 +6,16 @@ body {
   font-family: 'Inter', cursive;
 }
 
+.firebase-emulator-warning {
+  display: none;
+}
+
+#watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.2;
+  z-index: 99;
+  color: $blue-10;
+}
