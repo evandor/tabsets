@@ -1,7 +1,9 @@
-linkingData;recipe;recipe
+linkingData;foodestablishment;restaurant
 linkingData;newsarticle;news
 linkingData;news;news
 linkingData;product;shopping
+linkingData;recipe;recipe
+linkingData;restaurant;restaurant
 openGraph;article;news
 langModel;nachrichten;news
 langModel;news;news
