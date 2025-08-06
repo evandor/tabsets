@@ -3,62 +3,57 @@
   <div class="row">
     <div class="col q-ma-none q-pa-none text-center">
       <div class="text-bold ellipsis">
-        <template v-if="currentTabset">
-          <q-input v-if="collectionMode === 'add'" v-model="newCollection" dense ref="newCollectionInputRef">
-            <template v-slot:append>
-              <q-icon name="close" @click="quitAddCollection" class="cursor-pointer" />
-            </template>
-          </q-input>
-          <q-select
-            v-else
-            :style="tabsetColorStyle()"
-            filled
-            :disable="props.disable"
-            transition-show="scale"
-            transition-hide="scale"
-            v-model="tabsetSelectionModel"
-            @update:model-value="(newTabset: object) => switchTabset(newTabset)"
-            :options="tabsetSelectionOptions"
-            dense
-            options-dense>
-            <template v-slot:option="scope">
-              <q-item v-bind="scope.itemProps">
-                <template v-if="scope.opt.label.length > 0">
-                  <q-item-section
-                    style="max-width: 20px"
-                    v-if="scope.opt.label !== 'Switch to' && scope.opt.label !== 'Add'">
-                    <q-icon
-                      size="xs"
-                      :color="scope.opt.icon_color ? scope.opt.icon_color : 'primary'"
-                      :name="scope.opt.icon"
-                      v-if="scope.opt.icon" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>{{ scope.opt.label }}</q-item-label>
-                    <q-item-label caption>{{ scope.opt.description }}</q-item-label>
-                  </q-item-section>
-                </template>
-                <q-item-section class="q-ma-none q-pa-none" v-else>
-                  <q-separator />
+        <q-input v-if="collectionMode === 'add'" v-model="newCollection" dense ref="newCollectionInputRef">
+          <template v-slot:append>
+            <q-icon name="close" @click="quitAddCollection" class="cursor-pointer" />
+          </template>
+        </q-input>
+        <q-select
+          v-else
+          :style="tabsetColorStyle()"
+          filled
+          :disable="props.disable"
+          transition-show="scale"
+          transition-hide="scale"
+          v-model="tabsetSelectionModel"
+          @update:model-value="(newTabset: object) => switchTabset(newTabset)"
+          :options="tabsetSelectionOptions"
+          dense
+          options-dense>
+          <template v-slot:option="scope">
+            <q-item v-bind="scope.itemProps">
+              <template v-if="scope.opt.label.length > 0">
+                <q-item-section
+                  style="max-width: 20px"
+                  v-if="scope.opt.label !== 'Switch to' && scope.opt.label !== 'Add'">
+                  <q-icon
+                    size="xs"
+                    :color="scope.opt.icon_color ? scope.opt.icon_color : 'primary'"
+                    :name="scope.opt.icon"
+                    v-if="scope.opt.icon" />
                 </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-          <div
-            v-if="showTabsCount && currentTabset.tabs.length > 0"
-            class="text-left q-ml-sm text-caption vertical-middle text-grey-8 cursor-pointer"
-            @click="router.push('/popup/tabset')">
-            {{ currentTabset.tabs.length + ' ' + (currentTabset.tabs.length === 1 ? 'tab' : 'tabs') }}
-          </div>
-        </template>
+                <q-item-section>
+                  <q-item-label>{{ scope.opt.label }}</q-item-label>
+                  <q-item-label caption>{{ scope.opt.description }}</q-item-label>
+                </q-item-section>
+              </template>
+              <q-item-section class="q-ma-none q-pa-none" v-else>
+                <q-separator />
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+        <div
+          v-if="showTabsCount && currentTabset && currentTabset.tabs.length > 0"
+          class="text-left q-ml-sm text-caption vertical-middle text-grey-8 cursor-pointer"
+          @click="router.push('/popup/tabset')">
+          {{ currentTabset.tabs.length + ' ' + (currentTabset.tabs.length === 1 ? 'tab' : 'tabs') }}
+        </div>
         <!--        <template v-else-if="mode == 'add-tabset'">-->
         <!--          <transition appear enter-active-class="animated fadeInDown" leave-active-class="animated fadeInUp">-->
         <!--            <q-input @blur="blurNewTabset()" autofocus v-model="newTabsetName" dense label="Add new Collection" />-->
         <!--          </transition>-->
         <!--        </template>-->
-        <template v-else>
-          <q-spinner color="primary" size="1em" />
-        </template>
       </div>
     </div>
   </div>
@@ -70,6 +65,7 @@ import { openURL, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { useTabsetSelector } from 'src/core/pages/common/useTabsetSelector'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
@@ -78,9 +74,10 @@ import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
 import EditTabsetDialog from 'src/tabsets/dialogues/EditTabsetDialog.vue'
 import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
-import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useTagsService } from 'src/tags/TagsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { ref, shallowRef, watchEffect } from 'vue'
@@ -130,11 +127,16 @@ const newCollection = ref<string | undefined>(undefined)
 const newCollectionInputRef = shallowRef()
 const { focused } = useFocus(newCollectionInputRef)
 
-const tabsetSelectionModel = ref<SelectOption | undefined>(undefined)
-const tabsetSelectionOptions = ref<SelectOption[]>([])
 const stashedTabs = ref(false)
 
-const newTabsetName = ref<string | undefined>(undefined)
+const { tabsetSelectionOptions, tabsetSelectionModel, setAutomaticSelectionLabel } = useTabsetSelector('popup')
+
+watchEffect(() => {
+  const tsCat = useTagsService().getCurrentTabContentClassification()
+  if (tsCat) {
+    setAutomaticSelectionLabel(tsCat + ' (auto)')
+  }
+})
 
 windowLocation.value = window.location.href
 
@@ -145,77 +147,77 @@ watchEffect(() => {
 
   stashedTabs.value = tabsets.value.filter((ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
 
-  tabsetSelectionOptions.value = tabsets.value
-    .filter((ts: Tabset) =>
-      useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
-    )
-    .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
-    .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
-    .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
-    //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
-    .filter((ts: Tabset) => {
-      if (useSpaces && space) {
-        return ts.spaces.indexOf(space.id) >= 0
-      } else if (useSpaces && !space) {
-        return ts.spaces?.length === 0
-      }
-      return true
-    })
-    .map((ts: Tabset) => {
-      return {
-        label: ts.id === currentTabset.value?.id ? ts.name + ' (current)' : ts.name,
-        value: ts.id,
-        disable: ts.id === currentTabset.value?.id,
-      }
-    })
-    .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
-
-  if (tabsetSelectionOptions.value.length == 1) {
-    tabsetSelectionOptions.value = []
-  }
-
-  if (tabsetSelectionOptions.value.length > 1) {
-    tabsetSelectionOptions.value.unshift({ label: 'Switch to', value: '', disable: true, icon: 'switch_horiz' })
-  }
-
-  if (tabsets.value.length > 1) {
-    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  }
-
-  tabsetSelectionOptions.value.push({ label: 'Add', value: '', disable: true, icon: 'switch_horiz' })
-
-  tabsetSelectionOptions.value.push({ label: 'a new Collection', value: 'add-collection' })
-
-  if (useFeaturesStore().hasFeature(FeatureIdent.FOLDER)) {
-    tabsetSelectionOptions.value.push({
-      label: 'new Folder to Collection',
-      value: 'popup-add-folder',
-      icon: 'sym_o_folder',
-    })
-  }
-
-  tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-
-  tabsetSelectionOptions.value.push({ label: 'Show Collection', value: 'show-tabset', icon: 'o_eye' })
-  //tabsetSelectionOptions.value.push({ label: 'Add Collection', value: 'add-tabset', icon: 'o_add' })
-  tabsetSelectionOptions.value.push({ label: 'Manage Collections', value: 'popup-manage-tabsets', icon: 'o_edit' })
-  if (useFeaturesStore().hasFeature(FeatureIdent.VISUALIZATIONS)) {
-    tabsetSelectionOptions.value.push({
-      label: 'Folder Visualisation',
-      value: 'popup-visualize-folders',
-      icon: 'sym_o_graph_5',
-    })
-  }
-
-  if (stashedTabs.value) {
-    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-    tabsetSelectionOptions.value.push({ label: 'Stashed Tabs', value: 'stashed-tabs', icon: 'o_add' })
-  }
-
-  if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-    tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-    tabsetSelectionOptions.value.push({ label: 'Select Space...', value: 'select-space', icon: 'o_space_dashboard' })
-  }
+  // tabsetSelectionOptions.value = tabsets.value
+  //   .filter((ts: Tabset) =>
+  //     useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
+  //   )
+  //   .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
+  //   .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
+  //   .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
+  //   //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
+  //   .filter((ts: Tabset) => {
+  //     if (useSpaces && space) {
+  //       return ts.spaces.indexOf(space.id) >= 0
+  //     } else if (useSpaces && !space) {
+  //       return ts.spaces?.length === 0
+  //     }
+  //     return true
+  //   })
+  //   .map((ts: Tabset) => {
+  //     return {
+  //       label: ts.id === currentTabset.value?.id ? ts.name + ' (current)' : ts.name,
+  //       value: ts.id,
+  //       disable: ts.id === currentTabset.value?.id,
+  //     }
+  //   })
+  //   .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+  //
+  // if (tabsetSelectionOptions.value.length == 1) {
+  //   tabsetSelectionOptions.value = []
+  // }
+  //
+  // if (tabsetSelectionOptions.value.length > 1) {
+  //   tabsetSelectionOptions.value.unshift({ label: 'Switch to', value: '', disable: true, icon: 'switch_horiz' })
+  // }
+  //
+  // if (tabsets.value.length > 1) {
+  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  // }
+  //
+  // tabsetSelectionOptions.value.push({ label: 'Add', value: '', disable: true, icon: 'switch_horiz' })
+  //
+  // tabsetSelectionOptions.value.push({ label: 'a new Collection', value: 'add-collection' })
+  //
+  // if (useFeaturesStore().hasFeature(FeatureIdent.FOLDER)) {
+  //   tabsetSelectionOptions.value.push({
+  //     label: 'new Folder to Collection',
+  //     value: 'popup-add-folder',
+  //     icon: 'sym_o_folder',
+  //   })
+  // }
+  //
+  // tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  //
+  // tabsetSelectionOptions.value.push({ label: 'Show Collection', value: 'show-tabset', icon: 'o_eye' })
+  // //tabsetSelectionOptions.value.push({ label: 'Add Collection', value: 'add-tabset', icon: 'o_add' })
+  // tabsetSelectionOptions.value.push({ label: 'Manage Collections', value: 'popup-manage-tabsets', icon: 'o_edit' })
+  // if (useFeaturesStore().hasFeature(FeatureIdent.VISUALIZATIONS)) {
+  //   tabsetSelectionOptions.value.push({
+  //     label: 'Folder Visualisation',
+  //     value: 'popup-visualize-folders',
+  //     icon: 'sym_o_graph_5',
+  //   })
+  // }
+  //
+  // if (stashedTabs.value) {
+  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  //   tabsetSelectionOptions.value.push({ label: 'Stashed Tabs', value: 'stashed-tabs', icon: 'o_add' })
+  // }
+  //
+  // if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
+  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
+  //   tabsetSelectionOptions.value.push({ label: 'Select Space...', value: 'select-space', icon: 'o_space_dashboard' })
+  // }
 })
 
 watchEffect(() => {

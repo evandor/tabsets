@@ -16,7 +16,7 @@ export function useContentService() {
     const contentItems = await getContents()
     contentItems.forEach((c: ContentItem) => {
       if (existingUrls.indexOf(c.url) >= 0) {
-        console.log('dispatching add-to-search')
+        //console.log('dispatching add-to-search')
         AppEventDispatcher.dispatchEvent('add-to-search', {
           name: '',
           title: c.title || '',

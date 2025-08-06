@@ -1,2 +1,3 @@
 https://schema.org;LocalBusiness;$.latitude;number;place.latitude
 https://schema.org;LocalBusiness;$.longitude;number;place.longitude
+https://schema.org;Recipe;$.nutrition;object;recipe.nutrition
