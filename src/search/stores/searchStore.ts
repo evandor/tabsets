@@ -65,7 +65,7 @@ export const useSearchStore = defineStore('search', () => {
 
   function addObjectToIndex(o: Object) {
     const parsed = JSON.parse(JSON.stringify(o))
-    console.log('adding to search', parsed)
+    //console.log('adding to search', parsed)
     const doc: SearchDoc = Object.assign(new SearchDoc(uid(), '', '', '', '', '', '', '', [], '', ''), parsed)
     if (!doc.url) {
       throw new Error('object to be added to search index does not have an URL field set.')
@@ -91,22 +91,10 @@ export const useSearchStore = defineStore('search', () => {
    * replace when url matches
    */
   function addSearchDocToIndex(doc: SearchDoc): SearchDoc {
-    console.log('doc', doc)
+    // console.log('doc', doc)
     const newDoc = searchUtils().overwriteIfReplacing(fuse.value, doc)
-    // const removed = fuse.value?.remove((d: any) => {
-    //   return d.url === doc.url
-    // })
-    // console.log('removed', removed)
-    // if (removed && removed[0]) {
-    //   overwrite('name', doc, removed)
-    //   overwrite('description', doc, removed)
-    //   overwrite('keywords', doc, removed)
-    //   overwrite('content', doc, removed)
-    //   //overwrite('tags', doc, removed)
-    // }
-    // check tabsetservice2#addToSearchIndex as well!
     fuse.value.add(newDoc)
-    console.log('getIndex', getIndex())
+    // console.log('getIndex', getIndex())
     return newDoc
   }
 

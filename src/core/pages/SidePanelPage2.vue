@@ -183,7 +183,11 @@ function checkAnalysisBroken(a: number, b: number) {
       return
     }
     //console.log('showAnalysisBrokenBanner set to', useContentStore().getCurrentTabContent?.length === 0)
-    showAnalysisBrokenBanner.value = useContentStore().getCurrentTabContent?.length === 0
+    const isBroken = useContentStore().getCurrentTabContent?.length === 0
+    if (isBroken) {
+      useUiStore().setLoading('categorization', false)
+    }
+    showAnalysisBrokenBanner.value = isBroken
   }, 1000)
 }
 

@@ -102,8 +102,9 @@
     <div class="col-4 text-caption">tabReferences</div>
     <div class="col-8 text-caption ellipsis-3-lines" style="font-size: smaller">
       <template v-for="tr in useContentStore().getCurrentTabReferences">
-        <span class="cursor-pointer text-blue-8" @click="infoDialog('Tab Reference ' + tr.type, tr)"
-          >{{ tr.type }},
+        <span class="cursor-pointer text-blue-8" @click="infoDialog('Tab Reference ' + tr.type, tr)">
+          <span v-if="tr.type === 'LINKING_DATA'">{{ tr.data['@type' as keyof object] }} (LD),&nbsp;</span>
+          <span v-else>{{ tr.type }},&nbsp;</span>
         </span>
       </template>
     </div>

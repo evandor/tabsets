@@ -75,8 +75,12 @@
                   v-model="tabsetSelectionModel"
                   @update:model-value="(option: SelectOption) => switchTabset(option)"
                   :options="tabsetSelectionOptions"
+                  :loading="useUiStore().isLoading('categorization')"
                   dense
                   options-dense>
+                  <template v-slot:loading>
+                    <q-spinner color="primary" size="xs" />
+                  </template>
                   <template v-slot:option="scope">
                     <q-item v-bind="scope.itemProps">
                       <template v-if="scope.opt.label.length > 0">
@@ -218,81 +222,6 @@ watchEffect(() => {
   tabsets.value = [...useTabsetsStore().tabsets.values()] as Tabset[]
 
   stashedTabs.value = tabsets.value.filter((ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
-
-  // tabsetSelectionOptions.value = tabsets.value
-  //   .filter((ts: Tabset) =>
-  //     useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
-  //   )
-  //   .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
-  //   .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
-  //   .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
-  //   //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
-  //   .filter((ts: Tabset) => {
-  //     if (useSpaces && space) {
-  //       return ts.spaces.indexOf(space.id) >= 0
-  //     } else if (useSpaces && !space) {
-  //       return ts.spaces?.length === 0
-  //     }
-  //     return true
-  //   })
-  //   .map((ts: Tabset) => {
-  //     return {
-  //       label: ts.name,
-  //       value: ts.id,
-  //       disable: ts.id === currentTabset.value?.id,
-  //     }
-  //   })
-  //   .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
-  //
-  // if (tabsetSelectionOptions.value.length == 1) {
-  //   tabsetSelectionOptions.value = []
-  // }
-  // if (tabsetSelectionOptions.value.length > 1) {
-  //   tabsetSelectionOptions.value.unshift({ label: 'Switch to', value: '', disable: true, icon: 'switch_horiz' })
-  // }
-  //
-  // // if (tabsetSelectionOptions.value.length > 10) {
-  // //   tabsetSelectionOptions.value = tabsetSelectionOptions.value.slice(0, 10)
-  // //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  // //   tabsetSelectionOptions.value.push({ label: 'show all...', value: '' })
-  // // } else if (tabsetSelectionOptions.value.length > 4) {
-  // //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  // //   tabsetSelectionOptions.value.push({ label: 'more...', value: '' })
-  // // }
-  //
-  // if (tabsets.value.length > 1) {
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  // }
-  //
-  // if (props.element !== 'popup') {
-  //   if (currentTabset.value) {
-  //     tabsetSelectionOptions.value.push({ label: 'Edit Tabset', value: 'edit-tabset', icon: 'o_edit' })
-  //     tabsetSelectionOptions.value.push({ label: 'Create new Tabset', value: 'create-tabset', icon: 'o_add' })
-  //     tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //     tabsetSelectionOptions.value.push({
-  //       label: 'Delete Tabset',
-  //       value: 'delete-tabset',
-  //       icon: 'o_delete',
-  //       icon_color: 'negative',
-  //     })
-  //   } else {
-  //     tabsetSelectionOptions.value.push({ label: 'Create custom Tabset', value: 'create-tabset', icon: 'o_add' })
-  //   }
-  // } else {
-  //   tabsetSelectionOptions.value.push({ label: 'Mange Tabsets', value: 'popup-manage-tabsets', icon: 'o_edit' })
-  // }
-  //
-  // if (stashedTabs.value) {
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //   tabsetSelectionOptions.value.push({ label: 'Stashed Tabs', value: 'stashed-tabs', icon: 'o_add' })
-  // }
-  //
-  // if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //   tabsetSelectionOptions.value.push({ label: 'Select Space...', value: 'select-space', icon: 'o_space_dashboard' })
-  // }
-  //
-  // tabsetSelectionOptions.value.unshift(AutomaticSelectionOption)
 })
 
 watchEffect(() => {

@@ -26,6 +26,7 @@ import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useUiStore } from 'src/ui/stores/uiStore'
 
 const { extractSecondLevelDomain } = useUtils()
 
@@ -449,6 +450,7 @@ export function useTagsService() {
       console.log('r', r)
     }
     //console.log(' <> overall result', tagsInfo)
+    useUiStore().setLoading('categorization', false)
     return deduplicateTags(tagsInfo)
   }
 

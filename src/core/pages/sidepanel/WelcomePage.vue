@@ -67,13 +67,9 @@
 
 <script lang="ts" setup>
 import { LocalStorage, openURL } from 'quasar'
-import BrowserApi from 'src/app/BrowserApi'
-import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT } from 'src/boot/constants'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { TITLE_IDENT } from 'src/boot/constants'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import Analytics from 'src/core/utils/google-analytics'
-import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
@@ -82,14 +78,10 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const tabsetName = ref('')
 const tabsetNameRef = ref<HTMLElement>(null as unknown as HTMLInputElement)
 const windowLocation = ref('---')
-const login = ref(false)
-const addCurrentTabs = ref(false)
 const showWatermark = ref(false)
 const watermark = ref('')
-const showDocumentation = ref(true)
 const openTabsCount = ref(0)
 
 onMounted(() => {
@@ -97,20 +89,6 @@ onMounted(() => {
   windowLocation.value = window.location.href
   LocalStorage.set(TITLE_IDENT, 'Tabsets' + stageIdentifier())
 })
-
-const toggleDocumentation = () => (showDocumentation.value = !showDocumentation.value)
-
-const createGettingStartedTabset = () => {
-  const tab1 = BrowserApi.createChromeTabObject('Getting Started', 'https://docs.tabsets.net/get-started')
-  const tab2 = BrowserApi.createChromeTabObject('Release Notes', 'https://docs.tabsets.net/release-notes')
-
-  useCommandExecutor()
-    .executeFromUi(new CreateTabsetCommand('My first Tabset', [tab1, tab2]))
-    .then(() => {
-      router.push('/sidepanel')
-      //useNavigationService().browserTabFor('https://docs.tabsets.net/get-started')
-    })
-}
 
 watchEffect(() => {
   openTabsCount.value = useTabsStore2().browserTabs.length
@@ -129,17 +107,6 @@ watchEffect(() => {
   showWatermark.value = useUiStore().getWatermark().length > 0
   watermark.value = useUiStore().getWatermark()
 })
-
-const addFirstTabset = () => {
-  useCommandExecutor()
-    .executeFromUi(new CreateTabsetCommand(tabsetName.value, addCurrentTabs.value ? useTabsStore2().browserTabs : []))
-    .then((res: any) => {
-      useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
-      router.push('/sidepanel?first=true')
-    })
-}
-
-const newTabsetNameIsValid = () => tabsetName.value.length <= 32 && !STRIP_CHARS_IN_USER_INPUT.test(tabsetName.value)
 
 //https://groups.google.com/a/chromium.org/g/chromium-extensions/c/nb058-YrrWc
 const selected = () => tabsetNameRef.value?.focus()

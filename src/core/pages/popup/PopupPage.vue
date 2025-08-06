@@ -288,7 +288,8 @@ const { focused: editDescriptionFocus } = useFocus(descriptionRef)
 const infoModes = ['saved', 'updated', 'count', 'lastActive']
 const infoMode = ref<string>(infoModes[0]!)
 
-const loading = ref<boolean>(useUiStore().aiLoading)
+// TODO
+const loading = ref<boolean>(false) //useUiStore().aiLoading)
 
 const { handleSuccess } = useNotificationHandler()
 provide('ui.density', uiDensity)
@@ -361,12 +362,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  const loading = useUiStore().pageCaptureLoading
-  console.log('loading', loading)
-  pageCaptureInProgress.value = loading
-  if (!loading) {
-    console.log('hier')
-  }
+  pageCaptureInProgress.value = useUiStore().pageCaptureLoading
 })
 
 watchEffect(() => {

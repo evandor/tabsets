@@ -34,7 +34,7 @@ export enum DrawerTabs {
 
 export type ListDetailLevel = 'MINIMAL' | 'SOME' | 'MAXIMAL' | 'DEFAULT'
 
-export type QuickAccess = 'search'
+export type LoadingType = 'categorization'
 
 export enum FontSize {
   SMALLER = 'SMALLER',
@@ -71,6 +71,8 @@ export const useUiStore = defineStore('ui', () => {
   const warningCount = ref(0)
   const errorCount = ref(0)
   const showTabsetList = ref(true)
+
+  const loadingIndicators = ref<Map<LoadingType, boolean>>(new Map())
 
   // online offline
   const networkOnline = ref(navigator.onLine)
@@ -553,6 +555,14 @@ export const useUiStore = defineStore('ui', () => {
     showTabsetList.value = !hide
   }
 
+  function setLoading(type: LoadingType, isLoading: boolean) {
+    loadingIndicators.value.set(type, isLoading)
+  }
+
+  function isLoading(type: LoadingType): boolean {
+    return loadingIndicators.value.get(type) || false
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -642,5 +652,7 @@ export const useUiStore = defineStore('ui', () => {
     errorCount,
     hideTabsetList,
     showTabsetList,
+    setLoading,
+    isLoading,
   }
 })

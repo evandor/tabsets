@@ -9,6 +9,7 @@ import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import BexFunctions from 'src/core/communication/BexFunctions'
 import { TagInfo } from 'src/core/models/TagInfo'
 import { useTagsService } from 'src/tags/TagsService'
+import { useUiStore } from 'src/ui/stores/uiStore'
 import { computed, ref, watchEffect } from 'vue'
 
 /**
@@ -54,6 +55,9 @@ export const useContentStore = defineStore('content', () => {
 
   const resetFor = async (browserTab: chrome.tabs.Tab) => {
     console.log('resetting current data for', browserTab.url)
+
+    useUiStore().setLoading('categorization', true)
+
     currentTabResettedAt.value = new Date().getTime()
     currentTabUrl.value = browserTab.url
     currentTabFavIcon.value = browserTab.favIconUrl
@@ -198,7 +202,7 @@ export const useContentStore = defineStore('content', () => {
     function addLinkedData(item: any) {
       const newTR = new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', item)
       currentTabReferences.value.push(newTR)
-      console.log('Found TabReference', newTR)
+      //console.log('Found TabReference', newTR)
 
       const r = useDynamicConfig().getLinkedDataDefinition(item['@context'], item['@type'])
       const data: { [k: string]: any } = currentTabDerivedData.value.derivedData || {}
