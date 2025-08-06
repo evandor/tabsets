@@ -57,7 +57,8 @@
           <q-expansion-item
             v-for="sts in specialTabsets"
             class="shadow-1 overflow-hidden"
-            style="border-radius: 10px"
+            :class="bgColorForSpecialTab(sts)"
+            style="border-radius: 7px"
             header-class="text-bold"
             :icon="sts.icon"
             :label="sts.name">
@@ -451,6 +452,21 @@ const openGallery = (ts: Tabset) => {
     url = `mainpanel/rezepte/${ts.id}`
   }
   NavigationService.openOrCreateTab([chrome.runtime.getURL(`www/index.html#/${url}`)])
+}
+
+const bgColorForSpecialTab = (sts: Tabset) => {
+  const currentTabUrl = currentChromeTab.value?.url
+  if (currentTabUrl) {
+    console.log('1', currentTabUrl)
+    console.log('2', `${chrome.runtime.getURL('')}www/index.html#/mainpanel/tabsets/overview/${sts.name}`)
+    if (
+      currentTabUrl.startsWith(`${chrome.runtime.getURL('')}www/index.html#/mainpanel/tabsets/overview/${sts.name}`) ||
+      currentTabUrl.startsWith(`${chrome.runtime.getURL('')}www/index.html#/mainpanel/tabsets/overview/${sts.name}`)
+    ) {
+      return 'bg-blue-1'
+    }
+  }
+  return ''
 }
 
 watch(

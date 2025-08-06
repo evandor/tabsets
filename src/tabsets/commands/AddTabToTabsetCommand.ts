@@ -7,7 +7,6 @@ import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useContentStore } from 'src/content/stores/contentStore'
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
-import { TagInfo } from 'src/core/models/TagInfo'
 import { useLogger } from 'src/core/services/Logger'
 import { useUtils } from 'src/core/services/Utils'
 import ContentUtils from 'src/core/utils/ContentUtils'
@@ -15,6 +14,7 @@ import Analytics from 'src/core/utils/google-analytics'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useRequestsService } from 'src/requests/services/RequestsService'
 import { useRequestsStore } from 'src/requests/stores/requestsStore'
+import { searchUtils } from 'src/search/searchUtils'
 import { Tab } from 'src/tabsets/models/Tab'
 import { ChangeInfo, Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -136,16 +136,17 @@ export class AddTabToTabsetCommand implements Command<any> {
       }
 
       // add to search index via App Dispatcher
-      await AppEventDispatcher.dispatchEvent('add-to-search', {
-        name: this.tab.name || '',
-        title: this.tab.title || '',
-        url: this.tab.url || '',
-        description: this.tab.description,
-        content: content ? content : '',
-        tags: this.tab.tagsInfo.map((tag: TagInfo) => tag.label).join(' '),
-        tabsets: [this.tabset!.id],
-        favIconUrl: this.tab.favIconUrl || '',
-      })
+      await AppEventDispatcher.dispatchEvent('add-to-search', searchUtils().searchDocFrom(this.tab, content))
+      //{
+      //   name: this.tab.name || '',
+      //   title: this.tab.title || '',
+      //   url: this.tab.url || '',
+      //   description: this.tab.description,
+      //   content: content ? content : '',
+      //   tags: this.tab.tagsInfo.map((tag: TagInfo) => tag.label).join(' '),
+      //   tabsets: [this.tabset!.id],
+      //   favIconUrl: this.tab.favIconUrl || '',
+      // })
       info('tab created')
       localStorage.setItem('test.tabId', this.tab.id)
 

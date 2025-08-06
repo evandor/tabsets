@@ -12,11 +12,11 @@ import {
 import { ContentItem } from 'src/content/models/ContentItem'
 import { useContentService } from 'src/content/services/ContentService'
 import { TabPredicate } from 'src/core/domain/Types'
-import { TagInfo } from 'src/core/models/TagInfo'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import JsUtils from 'src/core/utils/JsUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
+import { searchUtils } from 'src/search/searchUtils'
 import { BlobType } from 'src/snapshots/models/BlobMetadata'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
@@ -727,16 +727,17 @@ export function useTabsetService() {
         }
         //const content = await useContentService().getContent(tab.id)
         const content = contents.find((item) => item.url === tab.url) || new ContentItem('', '', '', '', [], [])
-        const addToIndex = {
-          name: tab.name || '',
-          title: tab.title || '',
-          url: tab.url || '',
-          description: tab.description,
-          content: content.content || '',
-          tabsets: [tabset.id],
-          favIconUrl: tab.favIconUrl || '',
-          tags: tab.tagsInfo.map((tag: TagInfo) => tag.label).join(' '),
-        }
+        const addToIndex = searchUtils().searchDocFrom(tab, content)
+        // const addToIndex = {
+        //   name: tab.name || '',
+        //   title: tab.title || '',
+        //   url: tab.url || '',
+        //   description: tab.description,
+        //   content: content.content || '',
+        //   tabsets: [tabset.id],
+        //   favIconUrl: tab.favIconUrl || '',
+        //   tags: tab.tagsInfo.map((tag: TagInfo) => tag.label).join(' '),
+        // }
         // console.log("adding", addToIndex)
         minimalIndex.push(addToIndex)
         // console.log("minimalIndex", minimalIndex.length)
@@ -800,16 +801,7 @@ export function useTabsetService() {
       if (tab.url) {
         if (!urlSet.has(tab.url)) {
           //const doc = new SearchDoc("", "", tab.title || '', tab.url, "", "", "", [tsId], '', "")
-          minimalIndex.push({
-            name: tab.name || '',
-            title: tab.title || '',
-            url: tab.url || '',
-            description: tab.description,
-            content: '',
-            tabsets: [tsId],
-            favIconUrl: tab.favIconUrl || '',
-            tags: tab.tagsInfo.map((tag: TagInfo) => tag.label).join(' '),
-          })
+          minimalIndex.push(searchUtils().searchDocFrom(tab, new ContentItem('', '', '', '', {}, [])))
           urlSet.add(tab.url)
         }
       }
