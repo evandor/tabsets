@@ -179,6 +179,7 @@ function checkAnalysisBroken(a: number, b: number) {
   //console.log('showAnalysisBrokenBanner set to', showAnalysisBrokenBanner.value)
   setTimeout(() => {
     if (currentTabset.value || tabUrlsStartsWithOneOf(['chrome-extension://', 'chrome://'])) {
+      useUiStore().setLoading('categorization', false)
       showAnalysisBrokenBanner.value = false
       return
     }
