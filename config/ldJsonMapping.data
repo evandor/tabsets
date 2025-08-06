@@ -4,4 +4,3 @@ schema.org;Recipe;$.nutrition;object;recipe.nutrition
 schema.org;Recipe;$.author;object;recipe.author
 schema.org;Recipe;$.alternativeHeadline;object;recipe.alternativeHeadline
 schema.org;Recipe;$.image;string;recipe.image
-schema.org;Recipe;$.image;string;recipe.image
