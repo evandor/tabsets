@@ -109,7 +109,10 @@
       </template>
     </div>
     <div class="col-4 text-caption">derived data</div>
-    <div class="col-8 text-caption ellipsis-3-lines" style="font-size: smaller">
+    <div
+      class="col-8 text-caption ellipsis-3-lines cursor-pointer"
+      style="font-size: smaller"
+      @click="infoDialog('Derived Data', useContentStore().currentTabDerivedData)">
       {{ useContentStore().currentTabDerivedData }}
     </div>
   </div>
