@@ -1,3 +1,6 @@
 https://schema.org;LocalBusiness;$.latitude;number;place.latitude
 https://schema.org;LocalBusiness;$.longitude;number;place.longitude
 https://schema.org;Recipe;$.nutrition;object;recipe.nutrition
+https://schema.org;Recipe;$.author;object;recipe.author
+https://schema.org;Recipe;$.alternativeHeadline;object;recipe.alternativeHeadline
+https://schema.org;Recipe;$.image;string;recipe.image
