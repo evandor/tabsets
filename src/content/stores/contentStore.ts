@@ -202,9 +202,11 @@ export const useContentStore = defineStore('content', () => {
     function addLinkedData(item: any, data: { [k: string]: any }) {
       const newTR = new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', item)
       currentTabReferences.value.push(newTR)
-      // console.log('Found TabReference', newTR)
+      console.log('Found TabReference', newTR)
 
-      const r = useDynamicConfig().getLinkedDataDefinition(item['@context'], item['@type'])
+      const context = item['@context'].replace('https://', '').replace('http://', '')
+      const r = useDynamicConfig().getLinkedDataDefinition(context, item['@type'])
+      console.log('---> r', r)
       for (const [key, value] of r.entries()) {
         const result = JSONPath({ path: key, json: item })
         console.log(`--> (${key})`, result)
