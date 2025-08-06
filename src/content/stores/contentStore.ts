@@ -199,23 +199,27 @@ export const useContentStore = defineStore('content', () => {
   }
 
   const checkScripts = ($: CheerioAPI) => {
-    function addLinkedData(item: any) {
+    function addLinkedData(item: any, data: { [k: string]: any }) {
       const newTR = new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', item)
       currentTabReferences.value.push(newTR)
-      //console.log('Found TabReference', newTR)
+      // console.log('Found TabReference', newTR)
 
       const r = useDynamicConfig().getLinkedDataDefinition(item['@context'], item['@type'])
-      const data: { [k: string]: any } = currentTabDerivedData.value.derivedData || {}
       for (const [key, value] of r.entries()) {
         const result = JSONPath({ path: key, json: item })
+        console.log(`--> (${key})`, result)
         if (result) {
           for (const k of value.keys()) {
             data[value.get(k)] = Array.isArray(result) ? result[0] : result
+            console.log('hier:::', data[value.get(k)])
           }
         }
       }
       currentTabDerivedData.value = data
+      console.log('result', currentTabDerivedData.value)
     }
+
+    const data: { [k: string]: any } = currentTabDerivedData.value.derivedData || {}
 
     for (const elem of $('script')) {
       const type = $(elem).attr('type')
@@ -223,13 +227,14 @@ export const useContentStore = defineStore('content', () => {
         try {
           const text = $(elem).contents().first().text()
           //console.log('got application/ld+json', text.length)
+
           const asJSON = JSON.parse(text)
           if (Array.isArray(asJSON)) {
             asJSON.forEach((item) => {
-              addLinkedData(item)
+              addLinkedData(item, data)
             })
           } else {
-            addLinkedData(asJSON)
+            addLinkedData(asJSON, data)
           }
         } catch (err) {
           console.warn('could not parse linking data', err)
