@@ -77,7 +77,9 @@ export const useContentStore = defineStore('content', () => {
         // console.log(
         //   `getContent returned result with length ${Math.round((r?.html.length || 0) / 1024)}kB (tabId ${browserTab.id})`,
         // )
-        await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
+        BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r }).catch((err: any) =>
+          console.log('got issue with handleBexTabExceprt', err),
+        )
 
         currentTabTags.value = await useTagsService().analyse(
           currentTabTitle.value || '',

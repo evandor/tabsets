@@ -73,22 +73,10 @@ class AppService {
         useTabsetsUiStore()
           .updateExtensionIcon(currentTabs[0]!)
           .catch((err: any) => console.error('error', err))
-        await useContentStore()
+        useContentStore()
           .resetFor(currentTabs[0]!)
           .catch((err: any) => console.error('error', err))
-
-        // happened already in resetFor
-        // console.log(` >>> chrome.tab.sendMessage 'getExcerpt' to tab ${currentTabs[0]!.id}`)
-        // chrome.tabs
-        //   .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
-        //   .then((payload) => {
-        //     BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload })
-        //   })
-        //   .catch((err) => {
-        //     console.log('could not handle tab excerpt', err)
-        //   })
       }
-      //})
     }
 
     await useRequestsService().init(IndexedDbRequestPersistence)
@@ -129,18 +117,19 @@ class AppService {
      */
 
     watch(useSpacesStore().spaces, (newSpaces: Map<string, any>) => {
-      const spacesInfo = _.map([...newSpaces.values()], (ts: any) => new SpaceInfo(ts.id, ts.name))
-      useEntityRegistryStore().spacesRegistry = spacesInfo
+      useEntityRegistryStore().spacesRegistry = _.map(
+        [...newSpaces.values()],
+        (ts: any) => new SpaceInfo(ts.id, ts.name),
+      )
     })
     await useSpacesStore().initialize(useDB().spacesDb)
 
     const tabsetsStore = useTabsetsStore()
     watch(tabsetsStore.tabsets, (newTabsets: Map<string, any>) => {
-      const tsInfo = _.map(
+      useEntityRegistryStore().tabsetRegistry = _.map(
         [...newTabsets.values()],
         (ts: any) => new TabsetInfo(ts.id, ts.name, ts.window, ts.tabs.length),
       )
-      useEntityRegistryStore().tabsetRegistry = tsInfo
     })
     await tabsetsStore.initialize(useDB().tabsetsDb)
     await useTabsetService().init()
@@ -161,29 +150,6 @@ class AppService {
     ChromeApi.init()
 
     useUiStore().appLoading = undefined
-
-    // tabsets not in bex mode means running on "pwa.tabsets.net"
-    // probably running an import ("/imp/:sharedId")
-    // we do not want to go to the welcome back
-    // console.log("checking for welcome page", useTabsetsStore().tabsets.size === 0, quasar.platform.is.bex, !useAuthStore().isAuthenticated)
-    // if (
-    //   useTabsetsStore().tabsets.size === 0 &&
-    //   quasar.platform.is.bex &&
-    //   //useAuthStore().isAuthenticated() &&
-    //   !router.currentRoute.value.path.startsWith('/fullpage') &&
-    //   !router.currentRoute.value.path.startsWith('/mainpanel') &&
-    //   router.currentRoute.value.path !== '/'
-    // ) {
-    //   // console.log('pushing to welcome page', router.currentRoute.value.path)
-    //   // await router.push('/sidepanel/welcome')
-    // }
-
-    // const tagCats = LocalStorage.getItem(TAGS_CATEGORIES)
-    // if (!tagCats) {
-    //   LocalStorage.setItem(TAGS_CATEGORIES, [
-    //
-    //   ])
-    // }
 
     ChromeApi.buildContextMenu('AppService')
   }

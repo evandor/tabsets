@@ -457,8 +457,6 @@ const openGallery = (ts: Tabset) => {
 const bgColorForSpecialTab = (sts: Tabset) => {
   const currentTabUrl = currentChromeTab.value?.url
   if (currentTabUrl) {
-    console.log('1', currentTabUrl)
-    console.log('2', `${chrome.runtime.getURL('')}www/index.html#/mainpanel/tabsets/overview/${sts.name}`)
     if (
       currentTabUrl.startsWith(`${chrome.runtime.getURL('')}www/index.html#/mainpanel/tabsets/overview/${sts.name}`) ||
       currentTabUrl.startsWith(`${chrome.runtime.getURL('')}www/index.html#/mainpanel/tabsets/overview/${sts.name}`)
