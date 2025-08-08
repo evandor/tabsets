@@ -12,12 +12,14 @@ import { pipe } from 'fp-ts/function'
 import * as O from 'fp-ts/lib/Option'
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
+import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useContentStore } from 'src/content/stores/contentStore'
 import { CategoryInfo, TagInfo, TagType } from 'src/core/models/TagInfo'
 import { useUtils } from 'src/core/services/Utils'
 import ContentUtils from 'src/core/utils/ContentUtils'
+import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
@@ -429,15 +431,29 @@ export function useTagsService() {
       tagsFromLanguageModel(text, language, 'languageModel').forEach(pushTagsInfo())
     }
 
-    // if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
-    //   const category = getCurrentTabContentClassification()
-    //   console.log('fallback to AI', category)
-    //   if (category === 'unclassified') {
-    //     console.log('fallback to AI')
-    //     const r = await useCategorizationService().categorize(text)
-    //     console.log('r', r)
-    //   }
-    // }
+    let analysisNecessary = true
+    const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
+    console.log('tsCat', tsCat)
+    if (tsCat) {
+      const url = useContentStore().getCurrentTabUrl
+      console.log('got tsCat', tsCat, url)
+      const cat = tsCat[url as keyof object]
+      console.log('got cat', cat)
+      if (cat) {
+        analysisNecessary = false
+        // aiCategory.value = cat['category']
+      }
+    }
+
+    if (analysisNecessary && useFeaturesStore().hasFeature(FeatureIdent.AI)) {
+      const category = getCurrentTabContentClassification()
+      console.log('fallback to AI', category)
+      //   if (category === 'unclassified') {
+      //     console.log('fallback to AI')
+      //     const r = await useCategorizationService().categorize(text)
+      //     console.log('r', r)
+      //   }
+    }
     //console.log(' <> overall result', tagsInfo)
     useUiStore().setLoading('categorization', false)
     return deduplicateTags(tagsInfo)

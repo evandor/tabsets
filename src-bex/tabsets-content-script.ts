@@ -131,10 +131,6 @@ bridge
           //LocalStorage.setItem(LOCAL_STORAGE_CATEGORIZATION_KEY, json)
           const current: { [k: string]: object } = LocalStorage.getItem(LOCAL_STORAGE_CATEGORIZATION_KEY) || {}
           console.log('[BEX-CT] current', current)
-          // const index = current.indexOf(location.href)
-          // if (Object.keys(current).indexOf(location.href) ) {
-          //   current.push(location.href)
-          // }
           const toStore: { [k: string]: string } = {}
           current[location.href as keyof object] = answer
           LocalStorage.setItem(LOCAL_STORAGE_CATEGORIZATION_KEY, JSON.parse(JSON.stringify(current)))

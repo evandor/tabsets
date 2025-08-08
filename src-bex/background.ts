@@ -1,3 +1,7 @@
+/**
+ * The background script can access chrome.storage.local, but not LocalStorage (from quasar)
+ */
+
 import { createBridge } from '#q-app/bex/background'
 import Analytics from 'src/core/utils/google-analytics'
 
@@ -30,8 +34,9 @@ function initModel(categories: string[]) {
   const catList = categories.join(', ')
   const systemPrompt = `Your purpose is to categorize text, using only the following categories:
         ${catList}.
-        The user will give you texts as input for you to categorize. Please output a JSON object with the following properties:
-        category, reason, score
+        The user will give you texts as input for you to categorize. If you do not have a good match, propose a new categary.
+        Please output a JSON object with the following properties:
+        category, reason, score, proposedCategory
         `
   console.log('systemPrompt', systemPrompt)
   // @ts-expect-error xxx
@@ -226,7 +231,7 @@ bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
   console.log(`[BEX] <<< 'tabsets.bex.tab.excerpt': #html=${(pl['html' as keyof object] as string).length}`) //, bridge.portList)0
 
   const metas = payload['payload' as keyof object]['metas' as keyof object]
-  //console.log('metas', metas)
+  console.log('payload', payload)
   if (metas['description' as keyof object]) {
     const desc = metas['description' as keyof object]
     if (!session) {

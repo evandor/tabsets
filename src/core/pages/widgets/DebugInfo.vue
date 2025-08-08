@@ -38,8 +38,18 @@
     </div>
 
     <div class="col-4 text-caption">category</div>
-    <div class="col-8 text-caption text-bold" style="font-size: smaller">
-      {{ useTagsService().getCurrentTabContentClassification() }}/{{ aiCategory }}
+    <div class="col-8 text-caption" style="font-size: smaller">
+      From content: <span class="text-bold">{{ useTagsService().getCurrentTabContentClassification() }}</span
+      ><br />
+      From AI:
+      <span class="text-bold">
+        {{ aiCategory }}
+        <q-tooltip class="tooltip-small">{{
+          useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object][
+            useTabsStore2().currentChromeTab?.url || '---'
+          ]['reason' as keyof object]
+        }}</q-tooltip>
+      </span>
     </div>
 
     <div class="col-4 text-caption">content length</div>
