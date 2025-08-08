@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" version="28.0.7">
   <diagram name="Seite-1" id="Afa9OzGU9VT6Kw_RbNjM">
-    <mxGraphModel dx="2866" dy="1126" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2487" dy="1126" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -90,12 +90,6 @@
         </mxCell>
         <mxCell id="IBlNkK7QeybPXFP5_elm-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=0;entryDy=40;entryPerimeter=0;" parent="1" source="GqJf_n3KFXQSw2JaiG4w-3" target="rirR2vLzDSutbt5T1oVs-40" edge="1">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="FbNXz-g6V-c6oPykWnCw-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="AIQHAvgBHXDuTM8aEul7-1" target="rirR2vLzDSutbt5T1oVs-37">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="AIQHAvgBHXDuTM8aEul7-1" value="&lt;b&gt;tabsets-ai-content-script&amp;nbsp;&lt;/b&gt;&lt;br&gt;(running in each tab)&lt;br&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;if (AI active) { // from ext. storage&lt;/div&gt;&lt;div&gt;read categories (from ext. storage)&lt;/div&gt;&lt;div&gt;&amp;gt;&amp;gt;&amp;gt; tabsets.bex.categories -&amp;gt; background&lt;/div&gt;&lt;div&gt;}&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-          <mxGeometry x="-770" y="720" width="390" height="120" as="geometry" />
         </mxCell>
         <mxCell id="AIQHAvgBHXDuTM8aEul7-2" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;AppService.ts#init&lt;/b&gt;&lt;br&gt;(&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;called only first time tabsets opens, i.e.&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: rgb(179, 255, 102);&quot;&gt;reloading sidepanel)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;" parent="1" vertex="1">
           <mxGeometry x="-360" y="870" width="390" height="260" as="geometry" />
