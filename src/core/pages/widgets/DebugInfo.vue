@@ -36,10 +36,7 @@
       :class="useContentStore().getCurrentTabUrl !== useTabsStore2().currentChromeTab?.url ? 'text-negative' : ''">
       {{ useTabsStore2().currentChromeTab?.url }}
     </div>
-    <!--    <div class="col-4 text-caption">tabs store</div>-->
-    <!--    <div class="col-8 text-caption ellipsis" style="font-size: smaller">-->
-    <!--      {{ useTabsetsStore().get}}-->
-    <!--    </div>-->
+
     <div class="col-4 text-caption">category</div>
     <div class="col-8 text-caption text-bold" style="font-size: smaller">
       {{ useTagsService().getCurrentTabContentClassification() }}/{{ aiCategory }}
@@ -141,9 +138,9 @@ watchEffect(() => {
   const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
   if (tsCat) {
     const url = useContentStore().getCurrentTabUrl
-    console.log('got tsCat', tsCat, url)
+    //console.log('got tsCat', tsCat, url)
     const cat = tsCat[url as keyof object]
-    console.log('got cat', cat)
+    //console.log('got cat', cat)
     if (cat) {
       aiCategory.value = cat['category']
     }

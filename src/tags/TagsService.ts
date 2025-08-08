@@ -12,15 +12,12 @@ import { pipe } from 'fp-ts/function'
 import * as O from 'fp-ts/lib/Option'
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
-import { FeatureIdent } from 'src/app/models/FeatureIdent'
-import { useCategorizationService } from 'src/categorization/CategorizationService'
 import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useContentStore } from 'src/content/stores/contentStore'
 import { CategoryInfo, TagInfo, TagType } from 'src/core/models/TagInfo'
 import { useUtils } from 'src/core/services/Utils'
 import ContentUtils from 'src/core/utils/ContentUtils'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
@@ -110,50 +107,35 @@ export function useTagsService() {
           return [tR.data]
         }
       })
-      .map((data: object) => {
+      .flatMap((data: object) => {
         const linkedDataType = data['@type' as keyof object]
+        const linkedDataGraph = data['@graph' as keyof object]
         //console.log('linkedDataType->', linkedDataType)
         switch (typeof linkedDataType) {
           case 'string':
             const catAsString = data['@type' as keyof object] as unknown as string
-            return { label: sanitizeContent(catAsString), type: 'linkingData', score: 1 }
+            return [{ label: sanitizeContent(catAsString), type: 'linkingData', score: 1 }]
           case 'object':
             const cat = data['@type' as keyof object] as unknown as object
             const keys: string[] = Object.keys(cat)
             if (keys.length > 0) {
               const value = cat[keys[0] as keyof object]
-              return { label: sanitizeContent(value), type: 'linkingData', score: 1 }
+              return [{ label: sanitizeContent(value), type: 'linkingData', score: 1 }]
             }
-            return { label: '', type: 'linkingData', score: 0 }
+            return [{ label: '', type: 'linkingData', score: 0 }]
+          // case 'undefined':
+          //   if (linkedDataGraph && Array.isArray(linkedDataGraph)) {
+          //     return [...linkedDataGraph].map((e: object) => {
+          //       console.log('e', e)
+          //       return { label: e['@type' as keyof object] || '???', type: 'linkingData', score: 0 }
+          //     })
+          //   }
+          //   return [{ label: '', type: 'linkingData', score: 0 }]
           default:
-            return { label: '', type: 'linkingData', score: 0 }
+            return [{ label: '', type: 'linkingData', score: 0 }]
         }
       })
 
-    // console.log('---r', r)
-
-    // const result: TagInfo[] = tfs
-    //   .filter((tR: TabReference) => tR.type === TabReferenceType.LINKING_DATA)
-    //   .filter((tR: TabReference) => tR.data && tR.data['@type' as keyof object])
-    //   .map((tR: TabReference) => {
-    //     const linkedDataType = tR.data['@type' as keyof object]
-    //     console.log('linkedDataType->', linkedDataType)
-    //     switch (typeof linkedDataType) {
-    //       case 'string':
-    //         const catAsString = tR.data['@type' as keyof object]! as unknown as string
-    //         return { label: sanitizeContent(catAsString), type: 'linkingData', score: 1 }
-    //       case 'object':
-    //         const cat = tR.data['@type' as keyof object]! as unknown as object
-    //         const keys: string[] = Object.keys(cat)
-    //         if (keys.length > 0) {
-    //           const value = cat[keys[0] as keyof object]
-    //           return { label: sanitizeContent(value), type: 'linkingData', score: 1 }
-    //         }
-    //         return { label: '', type: 'linkingData', score: 0 }
-    //       default:
-    //         return { label: '', type: 'linkingData', score: 0 }
-    //     }
-    //   })
     //console.log(' <> tagsFromReferences', result)
     return result.filter((t: TagInfo) => t.label.length > 2)
   }
@@ -412,6 +394,8 @@ export function useTagsService() {
 
     tagsFromReferences(tabReferences).forEach(pushTagsInfo())
 
+    // console.log('hier', tagsInfo)
+
     if (metas['keywords' as keyof object]) {
       tagsFromKeywords(metas['keywords' as keyof object] as string).forEach(pushTagsInfo())
     }
@@ -423,20 +407,20 @@ export function useTagsService() {
 
     // language
     let language = langFromHostname(url)
-    let confidence = 0
-    if (useFeaturesStore().hasFeature(FeatureIdent.AI) && text && text.trim().length > 10) {
-      try {
-        console.log(' <> hier!')
-        // @ts-expect-error xxx
-        const detector: any = await LanguageDetector.create() //.then((detector: any) => {
-        const results: any[] = await detector.detect(text) //.then((results: any[]) => {
-        if (results.length > 0) {
-          language = results[0].detectedLanguage
-          confidence = results[0].confidence || 0
-          tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
-        }
-      } catch (e) {}
-    }
+    // let confidence = 0
+    // if (useFeaturesStore().hasFeature(FeatureIdent.AI) && text && text.trim().length > 10) {
+    //   try {
+    //     //console.log(' <> hier!')
+    //     // @ts-expect-error xxx
+    //     const detector: any = await LanguageDetector.create() //.then((detector: any) => {
+    //     const results: any[] = await detector.detect(text) //.then((results: any[]) => {
+    //     if (results.length > 0) {
+    //       language = results[0].detectedLanguage
+    //       confidence = results[0].confidence || 0
+    //       tagsFromLangDetection(language, confidence).forEach(pushTagsInfo())
+    //     }
+    //   } catch (e) {}
+    // }
 
     if (url) {
       tagsFromUrl(url, language).forEach(pushTagsInfo())
@@ -445,10 +429,15 @@ export function useTagsService() {
       tagsFromLanguageModel(text, language, 'languageModel').forEach(pushTagsInfo())
     }
 
-    if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
-      const r = await useCategorizationService().categorize(text)
-      console.log('r', r)
-    }
+    // if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
+    //   const category = getCurrentTabContentClassification()
+    //   console.log('fallback to AI', category)
+    //   if (category === 'unclassified') {
+    //     console.log('fallback to AI')
+    //     const r = await useCategorizationService().categorize(text)
+    //     console.log('r', r)
+    //   }
+    // }
     //console.log(' <> overall result', tagsInfo)
     useUiStore().setLoading('categorization', false)
     return deduplicateTags(tagsInfo)
@@ -462,14 +451,12 @@ export function useTagsService() {
       return tags.filter((t: TagInfo) => t.type === tagType).map((t: TagInfo) => t.label)
     }
 
-    const categorization = pipe(
+    return pipe(
       useDynamicConfig().getCategory('linkingData', tagLabelsFilteredBy('linkingData')),
       O.orElse(() => useDynamicConfig().getCategory('openGraph', [metas['og:type' as keyof object] as string])),
       O.orElse(() => useDynamicConfig().getCategory('langModel', tagLabelsFilteredBy('languageModel'))),
-      O.getOrElse(() => 'uncategorized' as ContentClassification),
+      O.getOrElse(() => 'unclassified' as ContentClassification),
     )
-    // console.log('cat', categorization)
-    return categorization
   }
 
   return {

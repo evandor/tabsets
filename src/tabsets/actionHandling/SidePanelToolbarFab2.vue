@@ -12,49 +12,8 @@
       :currentChromeTab="props.currentChromeTab"
       :level="'root'"
       element="btn" />
-
-    <!--    <q-btn-->
-    <!--      padding="xs"-->
-    <!--      fab-mini-->
-    <!--      unelevated-->
-    <!--      class="q-ma-none q-px-sm q-py-none"-->
-    <!--      icon="add"-->
-    <!--      :class="{ shakeWithColor: animateAddtabButton, 'cursor-pointer': !alreadyInTabset }"-->
-    <!--      :color="alreadyInTabset ? 'grey-5' : containedInTsCount > 0 ? 'primary' : 'warning'"-->
-    <!--      size="12px"-->
-    <!--      @click.stop="emits('buttonClicked', new ActionHandlerButtonClickedHolder2(actions[0]!))"-->
-    <!--      data-testid="saveInTabsetBtn">-->
-    <!--      &lt;!&ndash;      <div>{{ defaultAction.label }}</div>&ndash;&gt;-->
-    <!--      &lt;!&ndash;                  <q-icon right class="q-ma-none q-pa-none" size="2em" name="o_south" />&ndash;&gt;-->
-    <!--    </q-btn>-->
-    <!--    <template v-if="useSettingsStore().has('DEBUG_MODE')">-->
-    <!--      <q-tooltip class="tooltip-small">Debug: single button fab {{ actions[0] }}</q-tooltip>-->
-    <!--    </template>-->
-    <!--    &lt;!&ndash;    <q-tooltip class="tooltip-small" v-if="alreadyInTabset">Already in current tabset</q-tooltip>&ndash;&gt;-->
-    <!--    &lt;!&ndash;    <q-tooltip class="tooltip-small" v-else-if="containedInTsCount > 0">&ndash;&gt;-->
-    <!--    &lt;!&ndash;      {{ tooltipAlreadyInOtherTabsets(props.tabset!.name) }}&ndash;&gt;-->
-    <!--    &lt;!&ndash;    </q-tooltip>&ndash;&gt;-->
-    <!--    &lt;!&ndash;    <q-tooltip class="tooltip-small" v-else>&ndash;&gt;-->
-    <!--    &lt;!&ndash;      Add current Tab to '{{ tabsetNameOrChain(props.tabset as Tabset) }}'...&ndash;&gt;-->
-    <!--    &lt;!&ndash;    </q-tooltip>&ndash;&gt;-->
   </template>
   <template v-else>
-    <!--    <q-page-sticky position="bottom-right" :offset="[2, -30]">-->
-    <!--    <q-fab icon="keyboard_arrow_down" direction="down" color="primary" padding="xs" vertical-actions-align="right">-->
-    <!--      <template v-for="l in actions">-->
-    <!--        <template v-if="'context' in l">-->
-    <!--          <component-->
-    <!--            :key="l.component.name"-->
-    <!--            :is="l.component"-->
-    <!--            :tabset="props.tabset"-->
-    <!--            :folder="props.folder"-->
-    <!--            :currentChromeTab="props.currentChromeTab"-->
-    <!--            :level="'root'"-->
-    <!--            element="fab"-->
-    <!--            :context="'context' in l ? l.context : {}" />-->
-    <!--        </template>-->
-    <!--      </template>-->
-    <!--    </q-fab>-->
     <q-btn
       padding="xs"
       fab-mini
@@ -86,38 +45,6 @@
     </q-menu>
     <!--    </q-page-sticky>-->
   </template>
-
-  <!--  <template-->
-  <!--    v-if="-->
-  <!--      handler.actions(currentTabsetId, {-->
-  <!--        tabset: props.tabset,-->
-  <!--        level: 'root',-->
-  <!--        currentChromeTab: props.currentChromeTab,-->
-  <!--        element: 'contextmenu',-->
-  <!--      }).length == 0 && defaultAction-->
-  <!--    ">-->
-  <!--    <q-btn-->
-  <!--      padding="xs"-->
-  <!--      fab-mini-->
-  <!--      unelevated-->
-  <!--      @click.stop="emits('buttonClicked', new ActionHandlerButtonClickedHolder(handler, defaultAction))"-->
-  <!--      class="q-ma-none q-px-sm q-py-none"-->
-  <!--      :icon="defaultAction.icon"-->
-  <!--      :class="{ shakeWithColor: animateAddtabButton, 'cursor-pointer': !alreadyInTabset }"-->
-  <!--      :color="alreadyInTabset ? 'grey-5' : containedInTsCount > 0 ? 'primary' : 'warning'"-->
-  <!--      size="12px"-->
-  <!--      data-testid="saveInTabsetBtn">-->
-  <!--      &lt;!&ndash;      <div>{{ defaultAction.label }}</div>&ndash;&gt;-->
-  <!--      &lt;!&ndash;                  <q-icon right class="q-ma-none q-pa-none" size="2em" name="o_south" />&ndash;&gt;-->
-  <!--    </q-btn>-->
-  <!--    <q-tooltip class="tooltip-small" v-if="alreadyInTabset">Already in current tabset</q-tooltip>-->
-  <!--    <q-tooltip class="tooltip-small" v-else-if="containedInTsCount > 0">-->
-  <!--      {{ tooltipAlreadyInOtherTabsets(props.tabset!.name) }}-->
-  <!--    </q-tooltip>-->
-  <!--    <q-tooltip class="tooltip-small" v-else>-->
-  <!--      Add current Tab to '{{ tabsetNameOrChain(props.tabset as Tabset) }}'...-->
-  <!--    </q-tooltip>-->
-  <!--  </template>-->
 </template>
 
 <script lang="ts" setup>

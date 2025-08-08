@@ -53,10 +53,10 @@
             @folders-found="(n: number) => (filteredFoldersCount = n)" />
         </template>
 
-        <div class="rounded-borders fit q-mt-lg">
+        <div class="rounded-borders fit q-mt-lg" v-if="showSpecialTabsets()">
           <q-expansion-item
-            v-for="sts in specialTabsets"
-            class="shadow-1 overflow-hidden"
+            v-for="sts in specialTabsets.filter((sts: Tabset) => sts.tabs.length > 0)"
+            class="overflow-hidden"
             :class="bgColorForSpecialTab(sts)"
             style="border-radius: 7px"
             header-class="text-bold"
@@ -78,6 +78,13 @@
               @folders-found="(n: number) => (filteredFoldersCount = n)" />
           </q-expansion-item>
         </div>
+        <div
+          v-if="showSpecialTabsets()"
+          class="fit q-mt-lg text-center text-grey-7 cursor-pointer"
+          @click="newTabsetDialog()">
+          + Create Collection
+        </div>
+        <div class="fit text-center text-grey-7 text-body2" v-else>click the plus icon to add the current tab</div>
 
         <template v-if="useSettingsStore().has('DEBUG_MODE')">
           <DebugInfo />
@@ -104,7 +111,7 @@
 
 <script lang="ts" setup>
 import _ from 'lodash'
-import { format, LocalStorage } from 'quasar'
+import { format, LocalStorage, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useContentStore } from 'src/content/stores/contentStore'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
@@ -123,6 +130,7 @@ import NavigationService from 'src/services/NavigationService'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
 import { RefreshTabCommand } from 'src/tabsets/commands/RefreshTabCommand'
+import NewTabsetDialog from 'src/tabsets/dialogues/NewTabsetDialog.vue'
 import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -135,6 +143,7 @@ import { useRouter } from 'vue-router'
 const { inBexMode } = useUtils()
 const { capitalize } = format
 
+const $q = useQuasar()
 const router = useRouter()
 
 const filter = ref<string>('')
@@ -205,10 +214,6 @@ watchEffect(() => {
   currentTabset.value = useTabsetsStore().getCurrentTabset
 })
 
-watchEffect(() => {
-  tabsetsLastUpdate.value = useTabsetsStore().lastUpdate
-})
-
 const getTabsetOrder = [
   function (o: Tabset) {
     return !o || o.status === TabsetStatus.FAVORITE ? 0 : 1
@@ -229,6 +234,14 @@ function determineTabsets() {
     ['asc'],
   )
 }
+
+watchEffect(() => {
+  tabsetsLastUpdate.value = useTabsetsStore().lastUpdate
+  //console.log('tabsetsLastUpdate set to', tabsetsLastUpdate.value)
+  tabsets.value = determineTabsets()
+  specialTabsets.value = [...useTabsetsStore().tabsets.values()].filter((ts: Tabset) => ts.type === TabsetType.SPECIAL)
+  //console.log('got', tabsets.value)
+})
 
 watchEffect(() => {
   if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
@@ -465,6 +478,21 @@ const bgColorForSpecialTab = (sts: Tabset) => {
     }
   }
   return ''
+}
+
+const showSpecialTabsets = () => {
+  return specialTabsets.value.length > 1 || (specialTabsets.value[0] && specialTabsets.value[0].tabs?.length > 0)
+}
+
+const newTabsetDialog = () => {
+  $q.dialog({
+    component: NewTabsetDialog,
+    componentProps: {
+      tabsetId: useTabsetsStore().getCurrentTabset?.id,
+      spaceId: useSpacesStore().space?.id,
+      fromPanel: true,
+    },
+  })
 }
 
 watch(

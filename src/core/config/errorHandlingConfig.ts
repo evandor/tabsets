@@ -21,6 +21,8 @@ export function useErrorHandlingConfig() {
       integrations: integrations, //.concat([feedbackIntegration()]),
     })
 
+    console.log('sentry client set to', client)
+
     const scope = new Scope()
     scope.setClient(client)
     client.init()

@@ -14,7 +14,6 @@ declare module '@quasar/app-vite' {
 
 async function getAppId(): Promise<string> {
   const appId = await chrome.storage.local.get('tabsets.ext.app.id')
-  console.log('(999)', appId)
   return appId['tabsets.ext.app.id'] || '-'
 }
 
@@ -62,15 +61,15 @@ function sendUpdateIndicatorIconMessage(show: boolean = true) {
     if (show) {
       const managedTabs: string[] | null = LocalStorage.getItem('tabsets.managed')
       const appIdFromSite: string | null = LocalStorage.getItem('tabsets.app.id')
-      console.log('hier', managedTabs, window.location.href)
+      //console.log('hier', managedTabs, window.location.href)
       if (managedTabs && managedTabs.indexOf(window.location.href) >= 0) {
         // compare installation ids - if not matching, information is not valid anymore
         chrome.storage.local.get('tabsets.ext.app.id').then((currentAppId: { [p: string]: any }) => {
           const appId = currentAppId['tabsets.ext.app.id']
-          console.log('got currentAppId', appId)
-          console.log('got appIdFromSite', appIdFromSite)
+          console.log('[BEX-CT] got currentAppId', appId)
+          console.log('[BEX-CT] got appIdFromSite', appIdFromSite)
           if (appId !== appIdFromSite) {
-            console.warn('outdated info, deleting data from local storage')
+            console.warn('[BEX-CT] outdated info, deleting data from local storage')
             LocalStorage.removeItem('tabsets.annotations')
             LocalStorage.removeItem('tabsets.app.id')
             LocalStorage.removeItem('tabsets.managed')
@@ -78,14 +77,14 @@ function sendUpdateIndicatorIconMessage(show: boolean = true) {
           } else {
             managed = true
           }
-          console.log(`update.indicator.icon: managed ${managed}`)
+          console.log(`[BEX-CT] update.indicator.icon: managed ${managed}`)
           bridge.send({ event: 'update.indicator.icon', to: 'background', payload: { managed } }).catch((err: any) => {
             console.log("[BEX-CT] Failed to send 'update.indicator.icon' message to background", err)
           })
         })
       }
     } else {
-      console.log(`update.indicator.icon: managed ${managed}`)
+      console.log(`[BEX-CT] update.indicator.icon: managed ${managed}`)
       bridge.send({ event: 'update.indicator.icon', to: 'background', payload: { managed } }).catch((err: any) => {
         console.log("[BEX-CT] Failed to send 'update.indicator.icon' message to background", err)
       })
@@ -124,14 +123,14 @@ bridge
     bridge
       .send({ event: 'tabsets.bex.tab.excerpt', to: 'background', payload: responseMessage })
       .then((answer: object | undefined) => {
-        console.log('answer', answer)
+        console.log('[BEX-CT] answer', answer)
 
         if (answer) {
           // const json = JSON.parse(answer.replace('```json', '').replace('```', '')) as AiCategoryAnswer
           // console.log('json', json)
           //LocalStorage.setItem(LOCAL_STORAGE_CATEGORIZATION_KEY, json)
           const current: { [k: string]: object } = LocalStorage.getItem(LOCAL_STORAGE_CATEGORIZATION_KEY) || {}
-          console.log('current', current)
+          console.log('[BEX-CT] current', current)
           // const index = current.indexOf(location.href)
           // if (Object.keys(current).indexOf(location.href) ) {
           //   current.push(location.href)
@@ -152,7 +151,7 @@ bridge
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request === 'getExcerpt') {
     // alternative way to bridge tabsets.bex.tab.excerpt approach, called from bex
-    console.debug("tabsets: got request 'getExcerpt'")
+    console.debug("[BEX-CT] tabsets: got request 'getExcerpt'")
     const responseMessage = getResponseData()
     sendResponse(responseMessage)
   } else if (request.name === 'url-added') {
@@ -160,7 +159,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (current.indexOf(request.url) === -1) {
       current.push(request.url)
     }
-    console.log('updating tabsets.managed', current)
+    console.log('[BEX-CT] updating tabsets.managed', current)
     LocalStorage.setItem('tabsets.managed', current)
     getAppId().then((appId: string) => LocalStorage.setItem('tabsets.app.id', appId))
   } else if (request.name === 'url-deleted') {
@@ -177,7 +176,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       getAppId().then((appId: string) => LocalStorage.setItem('tabsets.app.id', appId))
     }
   } else {
-    const msg = 'unknown request in tabsets-content-scripts: ' + JSON.stringify(request)
+    const msg = '[BEX-CT] unknown request in tabsets-content-scripts: ' + JSON.stringify(request)
     console.log(msg)
     sendResponse({ content: msg })
   }

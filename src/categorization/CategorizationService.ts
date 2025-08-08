@@ -11,6 +11,7 @@ export function useCategorizationService() {
             console.log(`Downloaded: ${e.loaded * 100}%`)
           })
         },
+        // output_language: ['en'],
         initialPrompts: [
           {
             role: 'system',

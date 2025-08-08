@@ -58,7 +58,7 @@ const clicked = async () => {
       tabset.contentClassification = classification
       await useTabsetsStore().saveTabset(tabset)
     }
-    return useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, tabset))
+    return useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(newTab, tabset))
   }
 
   if (props.currentChromeTab) {
@@ -78,8 +78,8 @@ const clicked = async () => {
         // noop
         break
     }
-    const result = useCommandExecutor().execute(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))
-    sendMsg('reload-application')
+    const result = useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))
+    //sendMsg('reload-application')
     return result
   }
   handleError('current browser tab not set!')
@@ -102,6 +102,12 @@ const activeFolderNameFor = (ts: Tabset, activeFolder: string) => {
 }
 
 const tabsetNameOrChain = (tabset: Tabset) => {
+  if (tabset.id === 'UNCATEGORIZED') {
+    const classification = useTagsService().getCurrentTabContentClassification()
+    if (classification) {
+      return classification
+    }
+  }
   return tabset.folderActive ? activeFolderNameFor(tabset, tabset.folderActive) : tabset.name
 }
 

@@ -4,7 +4,7 @@
       <q-card class="q-dialog-plugin" style="max-width: 100%">
         <q-card-section>
           <div class="text-h6" v-if="props.windowId">Save Windows Tabs as Tabset</div>
-          <div class="text-h6" v-else>Add Tabset Collection</div>
+          <div class="text-h6" v-else>Add Collection</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">

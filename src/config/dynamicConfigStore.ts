@@ -105,6 +105,7 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
       if (typeMapping) {
         for (const key of keys) {
           if (key && key.trim().length > 0 && typeMapping.has(key.toLowerCase())) {
+            console.log('category found: ', type, key.toLowerCase(), typeMapping.get(key.toLowerCase()))
             return O.of(typeMapping.get(key.toLowerCase())!)
           }
         }
@@ -114,14 +115,15 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
   })
 
   const getLinkedDataDefinition = computed(() => {
-    console.log('lDJsonMapping.value', lDJsonMapping.value)
+    // console.log('lDJsonMapping.value', lDJsonMapping.value)
     return (schema: string, type: string): Map<string, Map<string, any>> => {
       const theSchema: Map<string, Map<string, Map<string, any>>> = lDJsonMapping.value.get(schema) || new Map()
-      console.log('schema', schema, theSchema)
+      // console.log('schema', schema, theSchema)
       if (theSchema) {
         const theType: Map<string, Map<string, any>> = theSchema.get(type) || new Map()
-        console.log('type', type, theType)
+        //console.log('type', type, theType)
         if (theType) {
+          //console.log('found: ', theType)
           return theType
         }
       }

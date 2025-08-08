@@ -147,6 +147,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       ts.spaces = [spaceId]
     }
     tabsets.value.set(ts.id, ts)
+    lastUpdate.value = new Date().getTime()
     // console.log("storage", storage)
     //await storage.addTabset(ts)
 

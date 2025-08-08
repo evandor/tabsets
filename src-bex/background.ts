@@ -22,6 +22,7 @@ try {
 } catch (err: any) {}
 
 function initModel(categories: string[]) {
+  console.log('initializing model')
   if (languageModelAvailablity !== 'available') {
     console.log('languageModel not available')
     return
@@ -128,6 +129,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // }
     } else if (message.msg === 'captureClipping') {
       // no op
+    } else if (message.msg === 'tab-added') {
+      // no op
+    } else if (message.msg === 'feature-activated') {
+      // no op
+    } else if (message.msg === 'reload-application') {
+      // no op
     } else {
       console.log(`got unknown message '${message.name}' in background.ts`)
     }
@@ -195,24 +202,24 @@ bridge.on('update.indicator.icon', (payload: object) => {
   })
 })
 
-bridge.on('tabsets.bex.categoriesList', async (payload: object) => {
-  const pl = payload['payload' as keyof object]
-  console.log('pl', typeof pl, pl)
-  categoriesList = pl['categories' as keyof object]
-  console.log(`[BEX] <<< 'tabsets.bex.categoriesList': #categories=${categoriesList}`) //, bridge.portList)
-  if (!categoriesList) {
-    initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
-    return
-  }
-  console.log('categoriesList', categoriesList)
-
-  console.log('hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
-  if (Object.values(categoriesList).length > 0) {
-    initModel(Object.values(categoriesList))
-  } else {
-    initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
-  }
-})
+// bridge.on('tabsets.bex.categoriesList', async (payload: object) => {
+//   const pl = payload['payload' as keyof object]
+//   console.log('pl', typeof pl, pl)
+//   categoriesList = pl['categories' as keyof object]
+//   console.log(`[BEX] <<< 'tabsets.bex.categoriesList': #categories=${categoriesList}`) //, bridge.portList)
+//   if (!categoriesList) {
+//     initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
+//     return
+//   }
+//   console.log('categoriesList', categoriesList)
+//
+//   console.log('hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
+//   if (Object.values(categoriesList).length > 0) {
+//     initModel(Object.values(categoriesList))
+//   } else {
+//     initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
+//   }
+// })
 
 bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
   const pl = payload['payload' as keyof object]
@@ -238,7 +245,7 @@ bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
       timestamp: number
     }
     json['timestamp'] = Date.now()
-    json['reason'] = ''
+    // json['reason'] = ''
     return json
   }
 })
@@ -290,4 +297,31 @@ bridge.on('new-annotation', async ({ payload }) => {
   // }
   // })
   // })
+})
+
+chrome.storage.local.get('tabsets.ext.ai.active').then((active: object) => {
+  console.log('[BEX-CT] active', active)
+  if (true === active['tabsets.ext.ai.active' as keyof object]) {
+    console.log('[BEX-CT] hi3r')
+
+    //chrome.storage.local.set({ 'tabsets.ext.ai.categories': ['recipe', 'news', 'food', 'programming'] })
+    chrome.storage.local.get('tabsets.ext.ai.categories').then((categories: { [p: string]: any }) => {
+      console.log('[BEX-CT] categories', categories['tabsets.ext.ai.categories'])
+
+      categoriesList = categories['tabsets.ext.ai.categories']
+      //console.log(`[BEX] <<< 'tabsets.bex.categoriesList': #categories=${categoriesList}`) //, bridge.portList)
+      if (!categoriesList) {
+        initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
+        return
+      }
+      console.log('categoriesList', categoriesList)
+
+      console.log('hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
+      if (Object.values(categoriesList).length > 0) {
+        initModel(Object.values(categoriesList))
+      } else {
+        initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
+      }
+    })
+  }
 })

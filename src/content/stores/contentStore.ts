@@ -77,9 +77,7 @@ export const useContentStore = defineStore('content', () => {
         // console.log(
         //   `getContent returned result with length ${Math.round((r?.html.length || 0) / 1024)}kB (tabId ${browserTab.id})`,
         // )
-        BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r }).catch((err: any) =>
-          console.log('got issue with handleBexTabExceprt', err),
-        )
+        await BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload: r })
 
         currentTabTags.value = await useTagsService().analyse(
           currentTabTitle.value || '',
@@ -88,11 +86,6 @@ export const useContentStore = defineStore('content', () => {
           currentTabReferences.value,
           currentTabUrl.value,
         )
-
-        // console.log('pushing', currentTabMetas.value)
-        // useTagsService()
-        //   .tagsFromKeywords(currentTabMetas.value['keywords' as keyof object] as string)
-        //   .forEach(pushTagsInfo())
       } catch (err: any) {
         console.log('got error: ', err)
       }
@@ -202,25 +195,38 @@ export const useContentStore = defineStore('content', () => {
 
   const checkScripts = ($: CheerioAPI) => {
     function addLinkedData(item: any, data: { [k: string]: any }) {
-      const newTR = new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', item)
-      currentTabReferences.value.push(newTR)
-      console.log('Found TabReference', newTR)
+      //console.log('item, data', item, data)
+      const newTRs: TabReference[] = []
+      if (item['@graph'] && Array.isArray(item['@graph'])) {
+        ;[...item['@graph']].map((e: any) => {
+          const newTR = new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', e)
+          currentTabReferences.value.push(newTR)
+          newTRs.push(newTR)
+        })
+      } else {
+        const newTR = new TabReference(uid(), TabReferenceType.LINKING_DATA, 'Linking Data', item)
+        currentTabReferences.value.push(newTR)
+        newTRs.push(newTR)
+      }
 
-      const context = item['@context'].replace('https://', '').replace('http://', '')
-      const r = useDynamicConfig().getLinkedDataDefinition(context, item['@type'])
-      console.log('---> r', r)
-      for (const [key, value] of r.entries()) {
-        const result = JSONPath({ path: key, json: item })
-        console.log(`--> (${key})`, result)
-        if (result) {
-          for (const k of value.keys()) {
-            data[value.get(k)] = Array.isArray(result) ? result[0] : result
-            console.log('hier:::', data[value.get(k)])
+      //console.log('Found TabReference', newTR)
+      newTRs.forEach((i: any) => {
+        const context = item['@context'].replace('https://', '').replace('http://', '')
+        const r = useDynamicConfig().getLinkedDataDefinition(context, i.data['@type'])
+        // console.log('---> r', r)
+        for (const [key, value] of r.entries()) {
+          const result = JSONPath({ path: key, json: i.data })
+          // console.log(`--> (${key})`, result)
+          if (result) {
+            for (const k of value.keys()) {
+              data[value.get(k)] = Array.isArray(result) ? result[0] : result
+              // console.log('hier:::', data[value.get(k)])
+            }
           }
         }
-      }
+      })
       currentTabDerivedData.value = data
-      console.log('result', currentTabDerivedData.value)
+      // console.log('result', currentTabDerivedData.value)
     }
 
     const data: { [k: string]: any } = currentTabDerivedData.value.derivedData || {}
