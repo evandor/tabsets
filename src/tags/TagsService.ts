@@ -23,7 +23,7 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
-import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
+import { ClassificationResult } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 
@@ -446,7 +446,7 @@ export function useTagsService() {
     }
 
     if (analysisNecessary && useFeaturesStore().hasFeature(FeatureIdent.AI)) {
-      const category = getCurrentTabContentClassification()
+      const category = getCurrentTabContentClassification().classification
       console.log('fallback to AI', category)
       //   if (category === 'unclassified') {
       //     console.log('fallback to AI')
@@ -459,7 +459,7 @@ export function useTagsService() {
     return deduplicateTags(tagsInfo)
   }
 
-  function getCurrentTabContentClassification(): ContentClassification {
+  function getCurrentTabContentClassification(): ClassificationResult {
     const tags = useContentStore().currentTabTags
     const metas = useContentStore().currentTabMetas
 
@@ -471,7 +471,9 @@ export function useTagsService() {
       useDynamicConfig().getCategory('linkingData', tagLabelsFilteredBy('linkingData')),
       O.orElse(() => useDynamicConfig().getCategory('openGraph', [metas['og:type' as keyof object] as string])),
       O.orElse(() => useDynamicConfig().getCategory('langModel', tagLabelsFilteredBy('languageModel'))),
-      O.getOrElse(() => 'unclassified' as ContentClassification),
+      O.getOrElse(() => {
+        return { classification: 'unclassified', matchedFrom: undefined } as ClassificationResult
+      }),
     )
   }
 

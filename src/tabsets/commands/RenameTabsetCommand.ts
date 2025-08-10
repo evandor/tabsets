@@ -30,7 +30,7 @@ export class RenameTabsetCommand implements Command<any> {
     public tabsetId: string,
     public newName: string,
     public newColor: string | undefined = undefined,
-    public contentClassification: ContentClassification = 'unclassified',
+    public contentClassification: ContentClassification | 'unclassified' = 'unclassified',
     public window: string = 'current',
   ) {}
 

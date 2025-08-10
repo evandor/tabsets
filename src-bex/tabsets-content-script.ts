@@ -3,7 +3,82 @@ import { LOCAL_STORAGE_CATEGORIZATION_KEY } from 'boot/constants'
 import { LocalStorage } from 'quasar'
 import { PageData } from 'src/tabsets/models/PageData'
 
-// The use of the bridge is optional.
+/**
+ * The content script can access chrome.storage.local and the LocalStorage (from quasar)
+ */
+
+const visibilityChangeListener = () => {
+  return () => {
+    if (document.visibilityState === 'visible') {
+      //console.log('[BEX-CT] Tab became visible/active')
+      setTimeout(() => sendUpdateIndicatorIconMessage(), 100)
+    } else if (document.visibilityState === 'hidden') {
+      //console.log('[BEX-CT] Tab became invisible')
+      sendUpdateIndicatorIconMessage(false)
+    }
+  }
+}
+
+const onMessageListener = (
+  request: any,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: any) => void,
+) => {
+  if (request === 'getExcerpt') {
+    // alternative way to bridge tabsets.bex.tab.excerpt approach, called from bex
+    console.debug("[BEX-CT] tabsets: got request 'getExcerpt'")
+    const responseMessage = getResponseData()
+    sendResponse(responseMessage)
+  } else if (request.name === 'url-added') {
+    const current: string[] = LocalStorage.getItem('tabsets.managed') || []
+    if (current.indexOf(request.url) === -1) {
+      current.push(request.url)
+    }
+    console.log('[BEX-CT] updating tabsets.managed', current)
+    LocalStorage.setItem('tabsets.managed', current)
+    getAppId().then((appId: string) => LocalStorage.setItem('tabsets.app.id', appId))
+  } else if (request.name === 'url-deleted') {
+    const current: string[] = LocalStorage.getItem('tabsets.managed') || []
+    const index = current.indexOf(request.url)
+    if (index !== -1) {
+      current.splice(index, 1)
+    }
+    if (current.length === 0) {
+      LocalStorage.removeItem('tabsets.managed')
+      chrome.storage.local.remove('tabsets.ext.app.id')
+    } else {
+      LocalStorage.setItem('tabsets.managed', current)
+      getAppId().then((appId: string) => LocalStorage.setItem('tabsets.app.id', appId))
+    }
+  } else {
+    const msg = '[BEX-CT] unknown request in tabsets-content-scripts: ' + JSON.stringify(request)
+    console.log('[BEX-CT] ', msg)
+    sendResponse({ content: msg })
+  }
+  return true
+}
+
+// === https://stackoverflow.com/questions/57468219/how-to-remove-orphaned-script-after-chrome-extension-update ===
+function unregisterOrphan() {
+  if (chrome.runtime.id) {
+    console.log('[BEX-CT] unregistering orphan, but we are still here!')
+    return
+  }
+  console.log('[BEX-CT] unregistering orphan')
+  window.removeEventListener(orphanMessageId, unregisterOrphan)
+  document.removeEventListener('mousemove', visibilityChangeListener)
+  try {
+    chrome.runtime.onMessage.removeListener(onMessageListener)
+  } catch (e) {
+    // 'try' is needed to avoid an exception being thrown in some cases
+  }
+  return true
+}
+var orphanMessageId = chrome.runtime.id + 'orphanCheck'
+window.dispatchEvent(new Event(orphanMessageId))
+window.addEventListener(orphanMessageId, unregisterOrphan)
+// === https://stackoverflow.com/questions/57468219/how-to-remove-orphaned-script-after-chrome-extension-update ===
+
 const bridge = createBridge({ debug: false })
 
 declare module '@quasar/app-vite' {
@@ -61,7 +136,7 @@ function sendUpdateIndicatorIconMessage(show: boolean = true) {
     if (show) {
       const managedTabs: string[] | null = LocalStorage.getItem('tabsets.managed')
       const appIdFromSite: string | null = LocalStorage.getItem('tabsets.app.id')
-      //console.log('hier', managedTabs, window.location.href)
+      //console.log('[BEX-CT] hier', managedTabs, window.location.href)
       if (managedTabs && managedTabs.indexOf(window.location.href) >= 0) {
         // compare installation ids - if not matching, information is not valid anymore
         chrome.storage.local.get('tabsets.ext.app.id').then((currentAppId: { [p: string]: any }) => {
@@ -92,22 +167,18 @@ function sendUpdateIndicatorIconMessage(show: boolean = true) {
   }
 }
 
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') {
-    //console.log('Tab became visible/active')
-    setTimeout(() => sendUpdateIndicatorIconMessage(), 100)
-  } else if (document.visibilityState === 'hidden') {
-    //console.log('Tab became invisible')
-    sendUpdateIndicatorIconMessage(false)
-  }
-})
+document.addEventListener('visibilitychange', visibilityChangeListener)
 
 bridge
   .connectToBackground()
   .then(() => {
     console.log(
-      `[BEX-CT] Connected to background (portName: ${bridge.portName}, portList: ${JSON.stringify(bridge.portList)})`,
+      `[BEX-CT] Connected to background (portName: ${bridge.portName}, portList: ${JSON.stringify(bridge.portList)}, url: ${location.href}, visible: ${document.visibilityState})`,
     )
+
+    if (document.visibilityState !== 'visible') {
+      console.log(`[BEX-CT] returning early, document not visible right now`)
+    }
 
     sendUpdateIndicatorIconMessage()
 
@@ -119,62 +190,34 @@ bridge
       })
     }
 
-    console.log(`[BEX-CT] >>> 'tabsets.bex.tab.excerpt' to 'background'`)
-    bridge
-      .send({ event: 'tabsets.bex.tab.excerpt', to: 'background', payload: responseMessage })
-      .then((answer: object | undefined) => {
-        console.log('[BEX-CT] answer', answer)
+    chrome.storage.local.get('tabsets.ext.ai.active').then((active: object) => {
+      console.log('[BEX-CT] checking AI settings', JSON.stringify(active))
+      if (true === active['tabsets.ext.ai.active' as keyof object]) {
+        console.log(`[BEX-CT] >>> 'tabsets.bex.tab.excerpt' to 'background'`)
+        bridge
+          .send({ event: 'tabsets.bex.tab.excerpt', to: 'background', payload: responseMessage })
+          .then((answer: object | undefined) => {
+            console.log('[BEX-CT] answer', answer)
 
-        if (answer) {
-          // const json = JSON.parse(answer.replace('```json', '').replace('```', '')) as AiCategoryAnswer
-          // console.log('json', json)
-          //LocalStorage.setItem(LOCAL_STORAGE_CATEGORIZATION_KEY, json)
-          const current: { [k: string]: object } = LocalStorage.getItem(LOCAL_STORAGE_CATEGORIZATION_KEY) || {}
-          console.log('[BEX-CT] current', current)
-          const toStore: { [k: string]: string } = {}
-          current[location.href as keyof object] = answer
-          LocalStorage.setItem(LOCAL_STORAGE_CATEGORIZATION_KEY, JSON.parse(JSON.stringify(current)))
-        }
-      })
-      .catch((err: any) => {
-        console.log('[BEX-CT] Failed to send message to background', err)
-      })
+            if (answer) {
+              // const json = JSON.parse(answer.replace('```json', '').replace('```', '')) as AiCategoryAnswer
+              // console.log('json', json)
+              //LocalStorage.setItem(LOCAL_STORAGE_CATEGORIZATION_KEY, json)
+              const current: { [k: string]: object } = LocalStorage.getItem(LOCAL_STORAGE_CATEGORIZATION_KEY) || {}
+              console.log('[BEX-CT] current', current)
+              const toStore: { [k: string]: string } = {}
+              current[location.href as keyof object] = answer
+              LocalStorage.setItem(LOCAL_STORAGE_CATEGORIZATION_KEY, JSON.parse(JSON.stringify(current)))
+            }
+          })
+          .catch((err: any) => {
+            console.log('[BEX-CT] Failed to send message to background', err)
+          })
+      }
+    })
   })
   .catch((err) => {
     console.error('[BEX-CT] Failed to connect to background:', err)
   })
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request === 'getExcerpt') {
-    // alternative way to bridge tabsets.bex.tab.excerpt approach, called from bex
-    console.debug("[BEX-CT] tabsets: got request 'getExcerpt'")
-    const responseMessage = getResponseData()
-    sendResponse(responseMessage)
-  } else if (request.name === 'url-added') {
-    const current: string[] = LocalStorage.getItem('tabsets.managed') || []
-    if (current.indexOf(request.url) === -1) {
-      current.push(request.url)
-    }
-    console.log('[BEX-CT] updating tabsets.managed', current)
-    LocalStorage.setItem('tabsets.managed', current)
-    getAppId().then((appId: string) => LocalStorage.setItem('tabsets.app.id', appId))
-  } else if (request.name === 'url-deleted') {
-    const current: string[] = LocalStorage.getItem('tabsets.managed') || []
-    const index = current.indexOf(request.url)
-    if (index !== -1) {
-      current.splice(index, 1)
-    }
-    if (current.length === 0) {
-      LocalStorage.removeItem('tabsets.managed')
-      chrome.storage.local.remove('tabsets.ext.app.id')
-    } else {
-      LocalStorage.setItem('tabsets.managed', current)
-      getAppId().then((appId: string) => LocalStorage.setItem('tabsets.app.id', appId))
-    }
-  } else {
-    const msg = '[BEX-CT] unknown request in tabsets-content-scripts: ' + JSON.stringify(request)
-    console.log(msg)
-    sendResponse({ content: msg })
-  }
-  return true
-})
+chrome.runtime.onMessage.addListener(onMessageListener)

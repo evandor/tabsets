@@ -18,6 +18,10 @@ export class DownloadAIModelsCommand implements Command<boolean> {
     //   }
     // })
 
+    chrome.storage.local.set({ 'tabsets.ext.ai.active': true }).then(() => {
+      useCategorizationService().initializeLanguageModel()
+    })
+
     console.log("checking availability of 'LanguageDetector' feature...")
     if (!('LanguageDetector' in self)) {
       console.log('no language detector available')
@@ -72,10 +76,6 @@ export class DownloadAIModelsCommand implements Command<boolean> {
 
       // const result2 = await session.prompt('That sounds great, but oh no, it is actually going to rain! New advice?')
       // console.log(result2)
-
-      chrome.storage.local.set({ 'tabsets.ext.ai.active': true }).then(() => {
-        useCategorizationService().initializeLanguageModel()
-      })
 
       return Promise.resolve(new ExecutionResult(true, 'done'))
     } catch (e: any) {

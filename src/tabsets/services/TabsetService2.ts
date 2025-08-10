@@ -972,7 +972,7 @@ export function useTabsetService() {
     tabsetId: string,
     tabsetName: string,
     newColor: string | undefined,
-    contentClassification: ContentClassification = 'unclassified',
+    contentClassification: ContentClassification | 'unclassified' = 'unclassified',
     window: string = 'current',
   ): Promise<object> => {
     const trustedName = tabsetName.replace(STRIP_CHARS_IN_USER_INPUT, '')

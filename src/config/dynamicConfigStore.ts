@@ -1,6 +1,6 @@
 import * as O from 'fp-ts/lib/Option'
 import { defineStore } from 'pinia'
-import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
+import { ClassificationResult, ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { computed, ref } from 'vue'
 
 function handleCategoryMapping(line: string, categoryMapping: Map<string, Map<string, ContentClassification>>) {
@@ -99,14 +99,14 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
   }
 
   const getCategory = computed(() => {
-    return (type: string, keys: string[]): O.Option<ContentClassification> => {
+    return (type: string, keys: string[]): O.Option<ClassificationResult> => {
       //console.log(`searching category for ${type}/${keys.join(',')}`)
       const typeMapping = categoryMapping.value.get(type)
       if (typeMapping) {
         for (const key of keys) {
           if (key && key.trim().length > 0 && typeMapping.has(key.toLowerCase())) {
             console.log('category found: ', type, key.toLowerCase(), typeMapping.get(key.toLowerCase()))
-            return O.of(typeMapping.get(key.toLowerCase())!)
+            return O.of({ classification: typeMapping.get(key.toLowerCase())!, matchedFrom: type + '/' + key })
           }
         }
       }

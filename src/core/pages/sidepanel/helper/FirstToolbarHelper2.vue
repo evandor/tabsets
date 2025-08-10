@@ -211,7 +211,7 @@ watchEffect(() => {
   const currentTabTags = useContentStore().currentTabTags
   //console.log(':::currentTabTags', currentTabTags)
   // const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
-  const tsCat = useTagsService().getCurrentTabContentClassification()
+  const tsCat = useTagsService().getCurrentTabContentClassification().classification
   //console.log('tsCat', tsCat)
   if (tsCat) {
     setAutomaticSelectionLabel(tsCat + ' (auto)')

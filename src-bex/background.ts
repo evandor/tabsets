@@ -1,9 +1,10 @@
+import { createBridge } from '#q-app/bex/background'
+import ContentUtils from 'src/core/utils/ContentUtils'
+import Analytics from 'src/core/utils/google-analytics'
+
 /**
  * The background script can access chrome.storage.local, but not LocalStorage (from quasar)
  */
-
-import { createBridge } from '#q-app/bex/background'
-import Analytics from 'src/core/utils/google-analytics'
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
@@ -12,10 +13,9 @@ const updateTrigger = 10
 //console.log("ga: installing google analytics")
 
 let session: any
-
 let categoriesList: string = ''
-
 let languageModelAvailablity: string
+let categoriesToUseForModel: string[]
 
 try {
   // @ts-expect-error xxx
@@ -26,7 +26,21 @@ try {
 } catch (err: any) {}
 
 function initModel(categories: string[]) {
-  console.log('initializing model')
+  console.log('initializing model:', categories)
+  categoriesToUseForModel = categories
+  if (languageModelAvailablity === 'downloadable') {
+    console.log('languageModel is downloadable, trying to download...')
+    //@ts-expect-error xxx
+    LanguageModel.create({
+      monitor(m: any) {
+        // console.log('got monitor', m)
+        m.addEventListener('downloadprogress', (e: any) => {
+          console.log(`Downloaded: ${e.loaded * 100}%`)
+        })
+      },
+    })
+    return
+  }
   if (languageModelAvailablity !== 'available') {
     console.log('languageModel not available')
     return
@@ -38,7 +52,7 @@ function initModel(categories: string[]) {
         Please output a JSON object with the following properties:
         category, reason, score, proposedCategory
         `
-  console.log('systemPrompt', systemPrompt)
+  //console.log('systemPrompt', systemPrompt)
   // @ts-expect-error xxx
   LanguageModel.create({
     monitor(m: any) {
@@ -141,7 +155,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     } else if (message.msg === 'reload-application') {
       // no op
     } else {
-      console.log(`got unknown message '${message.name}' in background.ts`)
+      console.log(`got unknown message '${JSON.stringify(message)}' in background.ts`)
     }
   })()
   // return true to indicate we will send a response asynchronously
@@ -207,35 +221,53 @@ bridge.on('update.indicator.icon', (payload: object) => {
   })
 })
 
-// bridge.on('tabsets.bex.categoriesList', async (payload: object) => {
-//   const pl = payload['payload' as keyof object]
-//   console.log('pl', typeof pl, pl)
-//   categoriesList = pl['categories' as keyof object]
-//   console.log(`[BEX] <<< 'tabsets.bex.categoriesList': #categories=${categoriesList}`) //, bridge.portList)
-//   if (!categoriesList) {
-//     initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
-//     return
-//   }
-//   console.log('categoriesList', categoriesList)
-//
-//   console.log('hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
-//   if (Object.values(categoriesList).length > 0) {
-//     initModel(Object.values(categoriesList))
-//   } else {
-//     initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
-//   }
-// })
-
 bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
   const pl = payload['payload' as keyof object]
   console.log(`[BEX] <<< 'tabsets.bex.tab.excerpt': #html=${(pl['html' as keyof object] as string).length}`) //, bridge.portList)0
 
-  const metas = payload['payload' as keyof object]['metas' as keyof object]
-  console.log('payload', payload)
+  const metas: object | undefined = pl['metas' as keyof object]
+  const url: string | undefined = pl['url' as keyof object]
+  console.log('payload', payload, url)
+
+  const storageCategory: object | undefined = pl['storage']['tabsetsCategorization']
+  // console.log(`hier - ${JSON.stringify(pl['storage']['tabsetsCategorization'])}`)
+  // console.log(`hier - ${JSON.stringify(storageCategory[url])}`)
+  if (
+    url &&
+    storageCategory &&
+    storageCategory[url] &&
+    storageCategory[url]['timestamp'] > new Date().getTime() - 1000 * 60 * 60 * 24
+  ) {
+    console.log(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      `returning early, url: ${url}, (Cache: still ${Math.round(((storageCategory[url]['timestamp'] - (new Date().getTime() - 1000 * 60 * 60 * 24)) / 1000) * 60)}min)`,
+    )
+    return undefined
+  }
+
+  const title: string | undefined = metas['title' as keyof object]
+    ? metas['title' as keyof object]
+    : metas['og:title' as keyof object]
+  const description: string | undefined = metas['description' as keyof object]
+    ? metas['description' as keyof object]
+    : metas['og:description' as keyof object]
+  let promptText: string | undefined = '' //title ? title + ". " + description : description
+
+  if (!promptText) {
+    promptText = ContentUtils.html2text(pl['html' as keyof object] || '')
+  }
+  console.log('text', promptText)
+
   if (metas['description' as keyof object]) {
     const desc = metas['description' as keyof object]
     if (!session) {
       console.log('no session!')
+      if (categoriesToUseForModel) {
+        setTimeout(() => {
+          console.log('trying to load AI model in 5 seconds...')
+          initModel(categoriesToUseForModel)
+        }, 5000)
+      }
       return
     }
     console.log('=======================')
@@ -250,7 +282,9 @@ bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
       timestamp: number
     }
     json['timestamp'] = Date.now()
+    json['reason'] = json['reason'].replace('"', '\\"')
     // json['reason'] = ''
+    console.log('json', json)
     return json
   }
 })
@@ -305,23 +339,18 @@ bridge.on('new-annotation', async ({ payload }) => {
 })
 
 chrome.storage.local.get('tabsets.ext.ai.active').then((active: object) => {
-  console.log('[BEX-CT] active', active)
+  console.log('[BEX-CT] checking AI settings', JSON.stringify(active))
   if (true === active['tabsets.ext.ai.active' as keyof object]) {
-    console.log('[BEX-CT] hi3r')
-
     //chrome.storage.local.set({ 'tabsets.ext.ai.categories': ['recipe', 'news', 'food', 'programming'] })
     chrome.storage.local.get('tabsets.ext.ai.categories').then((categories: { [p: string]: any }) => {
       console.log('[BEX-CT] categories', categories['tabsets.ext.ai.categories'])
-
       categoriesList = categories['tabsets.ext.ai.categories']
-      //console.log(`[BEX] <<< 'tabsets.bex.categoriesList': #categories=${categoriesList}`) //, bridge.portList)
       if (!categoriesList) {
         initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
         return
       }
-      console.log('categoriesList', categoriesList)
 
-      console.log('hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
+      // console.log('hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
       if (Object.values(categoriesList).length > 0) {
         initModel(Object.values(categoriesList))
       } else {

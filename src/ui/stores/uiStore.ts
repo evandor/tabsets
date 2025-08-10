@@ -508,11 +508,12 @@ export const useUiStore = defineStore('ui', () => {
     return watermark.value
   }
 
-  function setProgress(v: number, label: string | undefined = undefined) {
+  function setProgress(v: number, label: string | undefined = undefined, cancelable: boolean = false) {
     const val = Math.max(0, Math.min(v, 1.0))
     progress.value = {
       val: val,
       label: label ? label : Math.round(100 * val) + '%',
+      cancelable,
     }
   }
 

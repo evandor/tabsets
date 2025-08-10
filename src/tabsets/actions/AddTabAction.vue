@@ -63,17 +63,18 @@ const clicked = async () => {
 
   if (props.currentChromeTab) {
     const newTab: Tab = new Tab(uid(), props.currentChromeTab)
-    const tabCategory = useTagsService().getCurrentTabContentClassification()
+    const tabCategory: ContentClassification | 'unclassified' =
+      useTagsService().getCurrentTabContentClassification().classification
     console.log('found category', tabCategory)
     switch (tabCategory) {
-      case 'recipe':
-        return await tabInTabset('recipes', 'recipe', newTab)
-      case 'news':
-        return await tabInTabset('news', 'news', newTab)
-      case 'shopping':
-        return await tabInTabset('shopping', 'shopping', newTab)
-      case 'restaurant':
-        return await tabInTabset('restaurants', 'restaurant', newTab)
+      case 'system:recipe':
+        return await tabInTabset('recipes', 'system:recipe', newTab)
+      case 'system:news':
+        return await tabInTabset('news', 'system:news', newTab)
+      case 'system:shopping':
+        return await tabInTabset('shopping', 'system:shopping', newTab)
+      case 'system:restaurant':
+        return await tabInTabset('restaurants', 'system:restaurant', newTab)
       default:
         // noop
         break
@@ -103,7 +104,7 @@ const activeFolderNameFor = (ts: Tabset, activeFolder: string) => {
 
 const tabsetNameOrChain = (tabset: Tabset) => {
   if (tabset.id === 'UNCATEGORIZED') {
-    const classification = useTagsService().getCurrentTabContentClassification()
+    const classification = useTagsService().getCurrentTabContentClassification().classification
     if (classification) {
       return classification
     }
