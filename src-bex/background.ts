@@ -1,63 +1,58 @@
 import { createBridge } from '#q-app/bex/background'
 import ContentUtils from 'src/core/utils/ContentUtils'
 import Analytics from 'src/core/utils/google-analytics'
+import { PageData } from 'src/tabsets/models/PageData'
 
 /**
  * The background script can access chrome.storage.local, but not LocalStorage (from quasar)
+
+ * to check: https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
  */
 
 // https://stackoverflow.com/questions/49739438/when-and-how-does-a-pwa-update-itself
 const updateTrigger = 10
-
-// https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
-//console.log("ga: installing google analytics")
 
 let session: any
 let categoriesList: string = ''
 let languageModelAvailablity: string
 let categoriesToUseForModel: string[]
 
-try {
-  // @ts-expect-error xxx
-  LanguageModel.availability().then((availability: string) => {
-    console.log('languageModel', availability)
-    languageModelAvailablity = availability
-  })
-} catch (err: any) {}
-
 function initModel(categories: string[]) {
-  console.log('initializing model:', categories)
+  console.log('[BEX-BG] initializing model:', categories)
   categoriesToUseForModel = categories
   if (languageModelAvailablity === 'downloadable') {
-    console.log('languageModel is downloadable, trying to download...')
+    console.log('[BEX-BG] languageModel is downloadable, trying to download...')
     //@ts-expect-error xxx
     LanguageModel.create({
       monitor(m: any) {
-        // console.log('got monitor', m)
+        // console.log('[BEX-BG] got monitor', m)
         m.addEventListener('downloadprogress', (e: any) => {
-          console.log(`Downloaded: ${e.loaded * 100}%`)
+          if (e.loaded > 0.0 && e.loaded < 1.0) console.log(`[BEX-BG] Downloaded: ${e.loaded * 100}%`)
         })
       },
     })
     return
   }
   if (languageModelAvailablity !== 'available') {
-    console.log('languageModel not available')
+    console.log('[BEX-BG] languageModel not available')
     return
   }
   const catList = categories.join(', ')
   const systemPrompt = `Your purpose is to categorize text, using only the following categories:
         ${catList}.
-        The user will give you texts as input for you to categorize. If you do not have a good match, propose a new categary.
+        The user will give you texts as input for you to categorize. If you do not have a good match, propose a new category.
         Please output a JSON object with the following properties:
-        category, reason, score, proposedCategory
+        category, reason, score, proposedCategory.
+        Score should be a value between 0 and 100, where 100 is the highest score.
         `
-  //console.log('systemPrompt', systemPrompt)
+  //console.log('[BEX-BG] systemPrompt', systemPrompt)
   // @ts-expect-error xxx
   LanguageModel.create({
     monitor(m: any) {
       m.addEventListener('downloadprogress', (e: any) => {
-        console.log(`Downloaded: ${e.loaded * 100}%`)
+        if (e.loaded > 0.0 && e.loaded < 1.0) {
+          console.log(`[BEX-BG] Downloaded(2): ${e.loaded * 100}%`)
+        }
       })
     },
     initialPrompts: [
@@ -68,26 +63,55 @@ function initModel(categories: string[]) {
     ],
   })
     .then((s: any) => {
-      console.log('=== setting session ===', s)
+      console.log('[BEX-BG] === setting session ===', s)
       session = s
     })
     .catch((err: any) => console.warn('could not create AI session', err))
 }
 
+// function setActionContextMenu(label: string) {
+//   const menuId = 'tabset_extension_action_bg'
+//   //console.log(`deleting context menu (save in ${label})`)
+//   chrome.contextMenus.remove(menuId, () => {
+//     if (chrome.runtime.lastError) {
+//       // menuId propably didnt exist
+//     }
+//     console.log(`create context menu (save in ${label})`)
+//     chrome.contextMenus.create({
+//       id: menuId,
+//       title: 'Save in ' + label + ' collection',
+//       documentUrlPatterns: ['*://*/*'],
+//       contexts: ['action'],
+//     })
+//   })
+// }
+
 addEventListener('unhandledrejection', (event) => {
-  console.log('[service-worker] ga: fire error event', event)
+  console.log('[BEX-BG] ga: fire error event', event)
   // getting error: Service worker registration failed. Status code: 15
   Analytics.fireErrorEvent(event.reason)
 })
 
 chrome.omnibox.onInputEntered.addListener((text) => {
   const newURL = chrome.runtime.getURL('/www/index.html#/searchresult?t=' + encodeURIComponent(text))
-  chrome.tabs.create({ url: newURL }).catch((err) => console.log('[BEX] background.js error', err))
+  chrome.tabs.create({ url: newURL }).catch((err) => console.log('[BEX-BG] background.js error', err))
 })
 
+// setting openPanelOnActionClick
 if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch((error: any) => console.error(error))
 }
+
+// chrome.contextMenus.onClicked.addListener((e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
+//   console.log('listening to', e, tab)
+//   if (e.menuItemId === 'tabset_extension_action_bg') {
+//     console.log('bridge.portList', bridge.portList)
+//     // const cmd = new AddTabToTabsetCommand(new Tab(uid(), null as unknown as chrome.tabs.Tab))
+//     // console.log('cmd', cmd)
+//   } else {
+//     console.log('unknown context menu event', e)
+//   }
+// })
 
 // TODO remove listener (when?)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -96,51 +120,42 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // tabId: tabId,
       enabled: true,
     }
-    console.log('triggering', tabId, options)
+    console.log('[BEX-BG] triggering', tabId, options)
     chrome.sidePanel
       .setOptions(options)
-      .then((r: any) => console.log('r2', r))
-      .catch((e: any) => console.log('warning', e))
+      .then((r: any) => console.log('[BEX-BG] r2', r))
+      .catch((e: any) => console.log('[BEX-BG] warning', e))
   }
 
   ;(async function () {
-    if (message.name === 'zero-shot-classification') {
-      try {
-        console.log('hier', modelPromise)
-        // const result = await aiGateway.zeroShotClassification(message.data.text, message.data.candidates as string[])
-        // sendResponse(result)
-      } catch (err) {
-        console.log('got error', err)
-        sendResponse(err)
-      }
-    } else if (message.name === 'url-added') {
-      console.log('got message url-added!!', message)
+    if (message.name === 'url-added') {
+      console.log('[BEX-BG] got message url-added!!', message)
       chrome.action.setBadgeText({ text: '✅' })
       const currentTabs = await chrome.tabs.query({ url: message.data.url })
-      console.log('currentTabs', currentTabs)
+      console.log('[BEX-BG] currentTabs', currentTabs)
       currentTabs
         .filter((tab: chrome.tabs.Tab) => tab.id)
         .forEach((tab: chrome.tabs.Tab) => {
           chrome.tabs.sendMessage(tab.id!, { name: 'url-added', url: message.data.url }).catch((err) => {
-            console.log("could not handle 'url-added'", err)
+            console.log("[BEX-BG] could not handle 'url-added'", err)
           })
         })
     } else if (message.name === 'url-deleted') {
-      console.log('got message url-deleted!!', message)
+      console.log('[BEX-BG] got message url-deleted!!', message)
       chrome.action.setBadgeText({ text: '' })
       const currentTabs = await chrome.tabs.query({ url: message.data.url })
       currentTabs
         .filter((tab: chrome.tabs.Tab) => tab.id)
         .forEach((tab: chrome.tabs.Tab) => {
           chrome.tabs.sendMessage(tab.id!, { name: 'url-deleted', url: message.data.url }).catch((err) => {
-            console.log("could not handle 'url-deleted'", err)
+            console.log("[BEX-BG] could not handle 'url-deleted'", err)
           })
         })
     } else if (message.action === 'sidePanelOpened') {
       // if (initialActiveTabId === null) {
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         if (tabs.length > 0) {
-          console.log('got tab', tabs[0])
+          console.log('[BEX-BG] got tab', tabs[0])
           // initialActiveTabId = tabs[0].id;
           openSidePanel(tabs[0]!.id!)
         }
@@ -150,12 +165,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // no op
     } else if (message.msg === 'tab-added') {
       // no op
-    } else if (message.msg === 'feature-activated') {
+    } else if (message.name === 'tabset-added') {
       // no op
-    } else if (message.msg === 'reload-application') {
+    } else if (message.name === 'feature-activated') {
+      // no op
+    } else if (message.name === 'reload-application') {
       // no op
     } else {
-      console.log(`got unknown message '${JSON.stringify(message)}' in background.ts`)
+      console.log(`[BEX-BG] got unknown message '${JSON.stringify(message)}' in background.ts`)
     }
   })()
   // return true to indicate we will send a response asynchronously
@@ -165,7 +182,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 let modelPromise: any = null
 
-// if (useQuasar().platform.is.firefox) {
 chrome.action.onClicked.addListener((t: chrome.tabs.Tab) => {
   try {
     // @ts-expect-error unknown
@@ -174,7 +190,7 @@ chrome.action.onClicked.addListener((t: chrome.tabs.Tab) => {
       browser.sidebarAction.toggle()
     }
   } catch (e: any) {
-    console.log('e', e)
+    console.log('[BEX-BG] e', e)
     // opera maybe?
     // @ts-expect-error unknown
     if (opr && opr.sidebarAction) {
@@ -183,30 +199,20 @@ chrome.action.onClicked.addListener((t: chrome.tabs.Tab) => {
     }
   }
 })
-// }
 
 chrome.runtime.onInstalled.addListener((details) => {
-  console.debug('adding onInstalled listener in background.ts', details)
+  console.debug('[BEX-BG] onInstalled listener fired in background.ts', details)
   if (chrome.runtime.lastError) {
     console.warn('got runtime error', chrome.runtime.lastError)
   }
 })
 
-declare module '@quasar/app-vite' {
-  interface BexEventMap {
-    log: [{ message: string; data?: any[] }, void]
-    getTime: [never, number]
-
-    'storage.get': [string | undefined, any]
-    'storage.set': [{ key: string; value: any }, void]
-    'storage.remove': [string, void]
-  }
-}
+/* === bridge communication === */
 
 const bridge = createBridge({ debug: false })
 
 bridge.on('update.indicator.icon', (payload: object) => {
-  console.log(`[BEX] <<< 'update.indicator.icon': ${JSON.stringify(payload['payload' as keyof object])}`) //, bridge.portList)
+  console.log(`[BEX-BG] <<< 'update.indicator.icon': ${JSON.stringify(payload['payload' as keyof object])}`) //, bridge.portList)
   chrome.tabs.query({ active: true, lastFocusedWindow: true }).then((tabs: chrome.tabs.Tab[]) => {
     if (tabs.length > 0 && tabs[0]) {
       const msg = payload['payload' as keyof object]
@@ -222,25 +228,32 @@ bridge.on('update.indicator.icon', (payload: object) => {
 })
 
 bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
-  const pl = payload['payload' as keyof object]
-  console.log(`[BEX] <<< 'tabsets.bex.tab.excerpt': #html=${(pl['html' as keyof object] as string).length}`) //, bridge.portList)0
+  const pageData = payload['payload' as keyof object] as PageData
+  console.log(
+    `[BEX-BG] <<< 'tabsets.bex.tab.excerpt': #html=${pageData.html.length}, #metas:${Object.keys(pageData.metas).length}, url=${pageData.url}`,
+  ) //, bridge.portList)0
+  // console.log('[BEX-BG] ---payload---', typeof payload, payload)
 
-  const metas: object | undefined = pl['metas' as keyof object]
-  const url: string | undefined = pl['url' as keyof object]
-  console.log('payload', payload, url)
+  const metas: { [k: string]: string } = pageData.metas
+  const url: string | undefined = pageData.url
 
-  const storageCategory: object | undefined = pl['storage']['tabsetsCategorization']
-  // console.log(`hier - ${JSON.stringify(pl['storage']['tabsetsCategorization'])}`)
-  // console.log(`hier - ${JSON.stringify(storageCategory[url])}`)
+  const storageCategory: object | undefined = pageData.storage
+    ? pageData.storage['tabsetsCategorization' as keyof object]
+    : undefined
+  // console.log(`[BEX-BG] hier - ${JSON.stringify(pl['storage']['tabsetsCategorization'])}`)
+  // console.log(`[BEX-BG] hier - ${JSON.stringify(storageCategory[url])}`)
   if (
     url &&
     storageCategory &&
     storageCategory[url] &&
     storageCategory[url]['timestamp'] > new Date().getTime() - 1000 * 60 * 60 * 24
   ) {
+    const cacheLeft = Math.round(
+      (storageCategory[url]['timestamp'] - (new Date().getTime() - 1000 * 60 * 60 * 24)) / 60_000,
+    )
     console.log(
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      `returning early, url: ${url}, (Cache: still ${Math.round(((storageCategory[url]['timestamp'] - (new Date().getTime() - 1000 * 60 * 60 * 24)) / 1000) * 60)}min)`,
+      `[BEX-BG] returning early, url: ${url}, (Cache: ${cacheLeft}min left, value=${storageCategory[url]['category']})`,
     )
     return undefined
   }
@@ -251,30 +264,29 @@ bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
   const description: string | undefined = metas['description' as keyof object]
     ? metas['description' as keyof object]
     : metas['og:description' as keyof object]
-  let promptText: string | undefined = '' //title ? title + ". " + description : description
+  let promptText: string | undefined = title ? title + '. ' + description : description
 
   if (!promptText) {
-    promptText = ContentUtils.html2text(pl['html' as keyof object] || '')
+    promptText = ContentUtils.html2text(pageData.html || '')
   }
-  console.log('text', promptText)
 
-  if (metas['description' as keyof object]) {
-    const desc = metas['description' as keyof object]
+  if (promptText) {
+    //const desc = metas['description' as keyof object]
     if (!session) {
-      console.log('no session!')
+      console.log('[BEX-BG] no session!')
       if (categoriesToUseForModel) {
         setTimeout(() => {
-          console.log('trying to load AI model in 5 seconds...')
+          console.log('[BEX-BG] trying to load AI model in 5 seconds...')
           initModel(categoriesToUseForModel)
         }, 5000)
       }
       return
     }
-    console.log('=======================')
-    console.log(desc)
-    console.log('=======================')
-    const r = await session.prompt(desc)
-    console.log('r', r)
+    console.log('[BEX-BG] =======================')
+    console.log('[BEX-BG] ', promptText)
+    console.log('[BEX-BG] =======================')
+    const r = await session.prompt(promptText)
+    console.log('[BEX-BG] r', r)
     const json = JSON.parse(r.replace('```json', '').replace('```', '')) as {
       category: string
       reason: string
@@ -284,7 +296,8 @@ bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
     json['timestamp'] = Date.now()
     json['reason'] = json['reason'].replace('"', '\\"')
     // json['reason'] = ''
-    console.log('json', json)
+    console.log('[BEX-BG] json', json)
+    // setActionContextMenu(json['category'])
     return json
   }
 })
@@ -292,7 +305,7 @@ bridge.on('tabsets.bex.tab.excerpt', async (payload: object) => {
 bridge.on('reload-current-tabset', async ({ payload }) => {
   // const ts = useTabsetsStore().getCurrentTabset
   // const currentTabsetId = await useTabsetsStore().getCurrentTabsetId()
-  console.log('reload-current-tabset', payload)
+  console.log('[BEX-BG] reload-current-tabset', payload)
   await bridge.send({
     event: 'reload-current-tabset',
     to: 'app',
@@ -307,12 +320,12 @@ bridge.on('reload-current-tabset', async ({ payload }) => {
 })
 
 bridge.on('new-annotation', async ({ payload }) => {
-  console.log('payload', payload)
+  console.log('[BEX-BG] payload', payload)
 
   let initialActiveTabId: number | undefined = undefined
 
   function openSidePanel(tabId: number) {
-    console.log('opening', tabId)
+    console.log('[BEX-BG] opening', tabId)
     chrome.sidePanel.setOptions({
       tabId: tabId,
       path: 'popup.html',
@@ -338,19 +351,29 @@ bridge.on('new-annotation', async ({ payload }) => {
   // })
 })
 
+/* === once everytime the background script loads === */
+
+try {
+  // @ts-expect-error xxx
+  LanguageModel.availability().then((availability: string) => {
+    console.log('[BEX-BG] languageModel', availability)
+    languageModelAvailablity = availability
+  })
+} catch (err: any) {}
+
 chrome.storage.local.get('tabsets.ext.ai.active').then((active: object) => {
-  console.log('[BEX-CT] checking AI settings', JSON.stringify(active))
+  console.log('[BEX-BG] checking AI settings', JSON.stringify(active))
   if (true === active['tabsets.ext.ai.active' as keyof object]) {
     //chrome.storage.local.set({ 'tabsets.ext.ai.categories': ['recipe', 'news', 'food', 'programming'] })
     chrome.storage.local.get('tabsets.ext.ai.categories').then((categories: { [p: string]: any }) => {
-      console.log('[BEX-CT] categories', categories['tabsets.ext.ai.categories'])
+      console.log('[BEX-BG] categories', categories['tabsets.ext.ai.categories'])
       categoriesList = categories['tabsets.ext.ai.categories']
       if (!categoriesList) {
         initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
         return
       }
 
-      // console.log('hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
+      // console.log('[BEX-BG] hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
       if (Object.values(categoriesList).length > 0) {
         initModel(Object.values(categoriesList))
       } else {

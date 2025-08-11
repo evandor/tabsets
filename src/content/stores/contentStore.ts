@@ -70,12 +70,12 @@ export const useContentStore = defineStore('content', () => {
     currentTabTags.value = []
     currentTabDerivedData.value = {}
 
-    console.log('000>>>', browserTab.id, browserTab.url, browserTab)
+    // console.log('000>>>', browserTab.id, browserTab.url, browserTab)
 
     if (browserTab.url && browserTab.id) {
       try {
         const r = await chrome.tabs.sendMessage(browserTab.id, 'getExcerpt', {}) //, async (res) => {
-        console.log('r', r)
+        //console.log('r', r)
         // console.log(
         //   `getContent returned result with length ${Math.round((r?.html.length || 0) / 1024)}kB (tabId ${browserTab.id})`,
         // )

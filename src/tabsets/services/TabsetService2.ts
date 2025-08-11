@@ -15,7 +15,6 @@ import { TabPredicate } from 'src/core/domain/Types'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import JsUtils from 'src/core/utils/JsUtils'
-import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { searchUtils } from 'src/search/searchUtils'
 import { BlobType } from 'src/snapshots/models/BlobMetadata'
 import { useSnapshotsStore } from 'src/snapshots/stores/SnapshotsStore'
@@ -337,46 +336,6 @@ export function useTabsetService() {
         return { name: ts.name, id: ts.id }
       },
     )
-
-    // try to apply AI logic
-    if (useFeaturesStore().hasFeature(FeatureIdent.AI)) {
-      const matchAgainst = title + '; ' + tab.url + '; ' + text || ''
-      const data = {
-        text: matchAgainst,
-        candidates: _.map(candidates, (c: any) => c.name),
-      }
-      console.log('about to apply KI logic on meta description...', data)
-      //sendMsg('zero-shot-classification', data)
-
-      chrome.runtime.sendMessage(
-        {
-          name: 'zero-shot-classification',
-          data: data,
-        },
-        (callback: any) => {
-          console.log('got callback!', callback)
-          if (chrome.runtime.lastError) {
-            /* ignore */
-          }
-          const tabsetScores: object[] = []
-          // if (callback.scores) {
-          //   callback.scores.forEach((score: number, index: number) => {
-          //     console.log("got score", score)
-          //     if (score > .1) {
-          //       tabsetScores.push({
-          //         score: score,
-          //         candidateName: candidates[index].name,
-          //         candidateId: candidates[index].id
-          //       })
-          //     }
-          //   })
-          //   // force reload in other pages (like CurrentTabElementHelper)
-          //   // TODO check
-          //   //useTabsStore().setCurrentChromeTab(tab)
-          // }
-        },
-      )
-    }
 
     useContentService()
       .saveContent(tab.id, tab.url, text, metas, title, tabsetIds)

@@ -1,7 +1,10 @@
 import { createBridge } from '#q-app/bex/content'
 import { LOCAL_STORAGE_CATEGORIZATION_KEY } from 'boot/constants'
 import { LocalStorage } from 'quasar'
+import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { PageData } from 'src/tabsets/models/PageData'
+import { Tab } from 'src/tabsets/models/Tab'
+
 
 /**
  * The content script can access chrome.storage.local and the LocalStorage (from quasar)
@@ -175,6 +178,8 @@ bridge
     console.log(
       `[BEX-CT] Connected to background (portName: ${bridge.portName}, portList: ${JSON.stringify(bridge.portList)}, url: ${location.href}, visible: ${document.visibilityState})`,
     )
+
+    // useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), null as unknown as chrome.tabs.Tab)))
 
     if (document.visibilityState !== 'visible') {
       console.log(`[BEX-CT] returning early, document not visible right now`)

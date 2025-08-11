@@ -129,16 +129,24 @@ class BrowserApi {
       return
     }
 
-    // console.log(' building context menu', caller)
+    console.log(' building context menu', caller)
     try {
       chrome.contextMenus.removeAll(() => {
-        console.log(' ...creating contextmenu for tabset_extension')
+        //console.log(' ...creating contextmenu for tabset_extension')
+
+        // chrome.contextMenus.create({
+        //   id: 'tabset_extension_action',
+        //   title: 'Save in ' + useTagsService().getCurrentTabContentClassification().classification + ' collection',
+        //   documentUrlPatterns: ['*://*/*'],
+        //   contexts: ['action'],
+        // })
+
         chrome.contextMenus.create(
           {
             id: 'tabset_extension',
             title: EXTENSION_NAME,
             documentUrlPatterns: ['*://*/*'],
-            contexts: ['all'],
+            contexts: ['page'],
           },
           () => {
             // chrome.contextMenus.create({
