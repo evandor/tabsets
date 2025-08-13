@@ -462,51 +462,6 @@ watchEffect(() => {
     const articleContent = ContentUtils.html2text(article['content' as keyof object])
     //console.log('articleContent', articleContent)
     text.value = articleContent
-
-    const categories: CategoryInfo[] = LocalStorage.getItem(TAGS_CATEGORIES) || []
-
-    //console.log('::::', text.value.length)
-    console.log('::::', description.value)
-
-    if (
-      useFeaturesStore().hasFeature(FeatureIdent.AI) &&
-      !tab.value &&
-      categories.length > 0 &&
-      text.value &&
-      text.value.trim().length > 10
-    ) {
-      useUiStore().aiLoading = true
-      console.log('::::', text.value.length)
-      //console.log('::::', pageModel.description)
-      const data = {
-        text: description.value,
-        candidates: categories.map((c: CategoryInfo) => c.label),
-      }
-
-      chrome.runtime.sendMessage(
-        {
-          name: 'zero-shot-classification',
-          data: data,
-        },
-        (callback: any) => {
-          console.log('got callback!!', callback)
-          if (chrome.runtime.lastError) {
-            /* ignore */
-          }
-          if (callback) {
-            const labels: string[] = callback['labels'] as string[]
-            const scores: number[] = callback['scores'] as number[]
-            console.log('adding tags for ', labels, scores)
-
-            useTagsService()
-              .tagsFromClassification(categories, labels, scores, 0.3 / Math.log(labels.length))
-              .forEach(pushTagsInfo())
-            useUiStore().aiLoading = false
-          }
-          useUiStore().aiLoading = false
-        },
-      )
-    }
   }
 })
 

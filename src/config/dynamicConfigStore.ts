@@ -1,6 +1,6 @@
 import * as O from 'fp-ts/lib/Option'
 import { defineStore } from 'pinia'
-import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
+import { ClassificationResult, ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { computed, ref } from 'vue'
 
 function handleCategoryMapping(line: string, categoryMapping: Map<string, Map<string, ContentClassification>>) {
@@ -18,7 +18,7 @@ function handleCategoryMapping(line: string, categoryMapping: Map<string, Map<st
   if (!categoryMapping.has(type)) {
     categoryMapping.set(type, new Map())
   }
-  categoryMapping.get(type)!.set(key, cat as ContentClassification)
+  categoryMapping.get(type)!.set(key, ('system:' + cat) as ContentClassification)
 }
 
 function handleLdJsonMapping(line: string, ldJsonMapping: Map<string, Map<string, Map<string, any>>>) {
@@ -99,13 +99,26 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
   }
 
   const getCategory = computed(() => {
-    return (type: string, keys: string[]): O.Option<ContentClassification> => {
+    return (type: string, keys: string[]): O.Option<ClassificationResult> => {
+      // e.g. langModel/journalismus,nachrichtenseite,analysen,
       //console.log(`searching category for ${type}/${keys.join(',')}`)
       const typeMapping = categoryMapping.value.get(type)
       if (typeMapping) {
+        // e.g. [{"nachrichten" => "system:news"}, ...]
         for (const key of keys) {
-          if (key && key.trim().length > 0 && typeMapping.has(key.toLowerCase())) {
-            return O.of(typeMapping.get(key.toLowerCase())!)
+          if (key && key.trim().length > 0) {
+            //console.log('key', key, typeMapping.keys())
+            const index = [...typeMapping.keys()].findIndex((k: string) => key.toLowerCase().includes(k))
+            //            console.log('index', index)
+            if (index < 0) {
+              continue
+            }
+            const typeMappingKey = [...typeMapping.keys()][index]!
+            console.log('category found: ', type, typeMappingKey, typeMapping.get(typeMappingKey))
+            return O.of({
+              classification: typeMapping.get(typeMappingKey)!,
+              matchedFrom: type + '/' + key,
+            })
           }
         }
       }
@@ -114,14 +127,15 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
   })
 
   const getLinkedDataDefinition = computed(() => {
-    console.log('lDJsonMapping.value', lDJsonMapping.value)
+    // console.log('lDJsonMapping.value', lDJsonMapping.value)
     return (schema: string, type: string): Map<string, Map<string, any>> => {
       const theSchema: Map<string, Map<string, Map<string, any>>> = lDJsonMapping.value.get(schema) || new Map()
-      console.log('schema', schema, theSchema)
+      // console.log('schema', schema, theSchema)
       if (theSchema) {
         const theType: Map<string, Map<string, any>> = theSchema.get(type) || new Map()
-        console.log('type', type, theType)
+        //console.log('type', type, theType)
         if (theType) {
+          //console.log('found: ', theType)
           return theType
         }
       }

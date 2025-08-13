@@ -129,16 +129,24 @@ class BrowserApi {
       return
     }
 
-    // console.log(' building context menu', caller)
+    console.log(' building context menu', caller)
     try {
       chrome.contextMenus.removeAll(() => {
-        //console.debug(' ...creating contextmenu for tabset_extension')
+        //console.log(' ...creating contextmenu for tabset_extension')
+
+        // chrome.contextMenus.create({
+        //   id: 'tabset_extension_action',
+        //   title: 'Save in ' + useTagsService().getCurrentTabContentClassification().classification + ' collection',
+        //   documentUrlPatterns: ['*://*/*'],
+        //   contexts: ['action'],
+        // })
+
         chrome.contextMenus.create(
           {
             id: 'tabset_extension',
             title: EXTENSION_NAME,
             documentUrlPatterns: ['*://*/*'],
-            contexts: ['all'],
+            contexts: ['page'],
           },
           () => {
             // chrome.contextMenus.create({
@@ -165,21 +173,23 @@ class BrowserApi {
             //   contexts: ['all']
             // })
             //}
-            chrome.contextMenus.create({
-              id: 'save_to_currentTS',
-              parentId: 'tabset_extension',
-              title: 'Save to current Collection (' + useTabsetsStore().currentTabsetName + ')',
-              documentUrlPatterns: ['*://*/*'],
-              contexts: ['all'],
-            })
+            if (useTabsetsStore().currentTabsetName) {
+              chrome.contextMenus.create({
+                id: 'save_to_currentTS',
+                parentId: 'tabset_extension',
+                title: 'Save to current Collection (' + useTabsetsStore().currentTabsetName + ')',
+                documentUrlPatterns: ['*://*/*'],
+                contexts: ['all'],
+              })
 
-            chrome.contextMenus.create({
-              id: 'separator_ignore_url',
-              parentId: 'tabset_extension',
-              type: 'separator',
-              documentUrlPatterns: ['*://*/*'],
-              contexts: ['all'],
-            })
+              chrome.contextMenus.create({
+                id: 'separator_ignore_url',
+                parentId: 'tabset_extension',
+                type: 'separator',
+                documentUrlPatterns: ['*://*/*'],
+                contexts: ['all'],
+              })
+            }
             chrome.contextMenus.create({
               id: 'ignore_url',
               parentId: 'tabset_extension',

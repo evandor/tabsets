@@ -34,10 +34,19 @@
     <div class="col-7">
       <div class="text-h6">{{ appFeature?.name }}</div>
       <div>
-        Status: {{ featureActive ? 'active' : 'inactive' }}
+        Status: {{ featureActive ? 'activated' : 'inactive' }}
         <span v-if="needsAccountAndUserNotLoggedIn()" class="text-warning">
           - You need a (free) account to use this feature</span
         >
+      </div>
+      <div v-if="route.path.endsWith('/ai')">
+        <span class="text-bold">Internal Status: </span>
+        <span class="cursor-pointer" @click="useNavigationService().browserTabFor('chrome://on-device-internals')">{{
+          availability
+        }}</span
+        ><br />
+        <span>{{ aiStatusFromStorage }}</span>
+        <!--        <span>{{ languageModelParams }}</span>-->
       </div>
     </div>
 
@@ -137,6 +146,7 @@ import { AppFeatures } from 'src/app/models/AppFeatures'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import Command from 'src/core/domain/Command'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useNavigationService } from 'src/core/services/NavigationService'
 import { useUtils } from 'src/core/services/Utils'
 import Analytics from 'src/core/utils/google-analytics'
 import { Feature } from 'src/features/models/Feature'
@@ -157,9 +167,30 @@ useUiStore().rightDrawerSetActiveTab(DrawerTabs.FEATURES)
 const feature = ref(null as unknown as string)
 const appFeature = ref<Feature | undefined>(undefined)
 const featureActive = ref(false)
+const availability = ref<object>({})
+const aiStatusFromStorage = ref<object>({})
+const languageModelParams = ref<string>('')
 
 onMounted(() => {
   Analytics.firePageViewEvent('FeaturesPage', document.location.href)
+  if (route.path.endsWith('/ai')) {
+    chrome.storage.local.get('tabsets.ext.ai.active').then((res: object) => {
+      aiStatusFromStorage.value = res
+    })
+    try {
+      // @ts-expect-error xxx
+      LanguageModel.availability().then((a) => {
+        availability.value = a
+        if (a === 'available') {
+          // @ts-expect-error xxx
+          LanguageModel.params().then((p) => {
+            console.log('p', p, JSON.stringify(p))
+            languageModelParams.value = JSON.stringify(p)
+          })
+        }
+      })
+    } catch (err) {}
+  }
 })
 
 watchEffect(() => {

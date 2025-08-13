@@ -86,7 +86,7 @@ const routes: RouteRecordRaw[] = [
     path: '/sidepanel',
     component: () => import('layouts/SidePanelLayout.vue'),
     children: [
-      { path: '', component: () => import('src/core/pages/SidePanelPage2.vue') },
+      { path: '', component: () => import('src/core/pages/SidePanelPage3.vue') },
       { path: 'bookmarks', component: () => import('src/core/pages/sidepanel/SidePanelBookmarksPage.vue') },
       {
         path: 'bookmarks/import',

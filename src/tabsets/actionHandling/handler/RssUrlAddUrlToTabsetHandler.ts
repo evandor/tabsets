@@ -33,9 +33,9 @@ export class RssUrlAddUrlToTabsetHandler implements TabActionMatcher {
         request.responseHeaders
           ?.find((rh: chrome.webRequest.HttpHeader) => rh.name.toLowerCase() === 'content-type')
           ?.value?.toLowerCase() || 'text/html'
-      console.log('found content type ', contentType)
+      //console.log('found content type ', contentType)
       if (contentType.indexOf('application/xml') >= 0 || contentType.indexOf('application/rss+xml') >= 0) {
-        console.log('found application/xml or application/rss+xml content type', request)
+        // console.log('found application/xml or application/rss+xml content type', request)
         return true
       }
     }

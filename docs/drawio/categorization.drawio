@@ -1,0 +1,86 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" version="28.0.7">
+  <diagram name="Seite-1" id="Afa9OzGU9VT6Kw_RbNjM">
+    <mxGraphModel dx="2866" dy="1126" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="rirR2vLzDSutbt5T1oVs-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="rirR2vLzDSutbt5T1oVs-29" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-70" y="525" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AIQHAvgBHXDuTM8aEul7-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" target="AIQHAvgBHXDuTM8aEul7-2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-380" y="630" as="sourcePoint" />
+            <mxPoint x="-165" y="920" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-380" y="631" />
+              <mxPoint x="-165" y="631" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AIQHAvgBHXDuTM8aEul7-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="rirR2vLzDSutbt5T1oVs-29" target="rirR2vLzDSutbt5T1oVs-37" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-830" y="580" />
+              <mxPoint x="-830" y="1000" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rirR2vLzDSutbt5T1oVs-29" value="&lt;b&gt;tabsets-content-script&amp;nbsp;&lt;/b&gt;&lt;br&gt;(running in each tab)&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;listening on messages: &lt;i&gt;getExcerpt, url-added, url-deleted&lt;/i&gt;&lt;br&gt;listening on events: &lt;i&gt;visibilitychange (-&amp;gt;sendUptIndiatorIcon)&lt;/i&gt;&lt;br&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;#onLoad (connectToBackground)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;sendUptIndiatorIcon&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;&amp;gt;&amp;gt;&amp;gt; tabsets.bext.tab.excerpt -&amp;gt; app&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;&amp;gt;&amp;gt;&amp;gt; tabsets.bex.tab.excerpt -&amp;gt; background&lt;br&gt;&lt;/i&gt;&lt;br&gt;updateIndicatorIconMessage()&lt;/div&gt;&lt;div&gt;bex.send(&#39;tabsets.bex.tab.excerpt&#39;)&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
+          <mxGeometry x="-770" y="480" width="390" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="rirR2vLzDSutbt5T1oVs-37" value="&lt;b&gt;background.ts&lt;/b&gt;&lt;div&gt;&lt;u&gt;&lt;br&gt;&lt;/u&gt;&lt;/div&gt;&lt;div&gt;&lt;u&gt;onLoad&lt;/u&gt;:&amp;nbsp;&lt;br&gt;check if ai is active&lt;br&gt;if so, get categories from ext. storage&lt;/div&gt;&lt;div&gt;and initialise LanguageModel&lt;br&gt;&lt;br&gt;on(&#39;tabsets.ext.bex.excerpt&#39;)&lt;/div&gt;&lt;div&gt;run prompt,&lt;/div&gt;&lt;div&gt;return categorization json&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;" parent="1" vertex="1">
+          <mxGeometry x="-770" y="890" width="390" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="AIQHAvgBHXDuTM8aEul7-2" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;b&gt;AppService.ts#init&lt;/b&gt;&lt;br&gt;(&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;called only first time tabsets opens, i.e.&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: rgb(179, 255, 102);&quot;&gt;reloading sidepanel)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=4;" parent="1" vertex="1">
+          <mxGeometry x="-360" y="870" width="390" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="t_RJBEyMKExhr2YtHwcH-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="j5nO92X6wfStYqYwYL5U-9" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-40" y="935" />
+              <mxPoint x="95" y="935" />
+            </Array>
+            <mxPoint x="95" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AIQHAvgBHXDuTM8aEul7-4" value="tabsets.bex.tab.excerpt&lt;br&gt;(only if tabsets is active)" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-170" y="780" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="AIQHAvgBHXDuTM8aEul7-6" value="excerpt" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-827" y="860" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="j5nO92X6wfStYqYwYL5U-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-200" y="705" as="sourcePoint" />
+            <mxPoint x="-15" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j5nO92X6wfStYqYwYL5U-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="j5nO92X6wfStYqYwYL5U-3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-282.5" y="760" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j5nO92X6wfStYqYwYL5U-3" value="&lt;span style=&quot;background-color: transparent; font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; color: rgb(145, 76, 7);&quot;&gt;updateExtensionIcon&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; color: rgb(63, 145, 1);&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; color: rgb(135, 16, 148);&quot;&gt;tabId&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; color: rgb(63, 145, 1);&quot;&gt;)&lt;br&gt;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(8, 8, 8); font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; font-style: italic;&quot;&gt;useContentStore&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; color: rgb(14, 74, 142);&quot;&gt;()&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(8, 8, 8); font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace;&quot;&gt;.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; color: rgb(145, 76, 7);&quot;&gt;resetFor&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; color: rgb(14, 74, 142);&quot;&gt;(&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; color: rgb(42, 140, 124);&quot;&gt;tab&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-family: &amp;quot;JetBrains Mono&amp;quot;, monospace; color: rgb(14, 74, 142);&quot;&gt;)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="-280" y="1030" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="j5nO92X6wfStYqYwYL5U-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.003;entryY=0.885;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=classicThin;startFill=1;" parent="1" target="rirR2vLzDSutbt5T1oVs-29" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-330" y="657" />
+              <mxPoint x="-330" y="657" />
+            </Array>
+            <mxPoint x="-310" y="657" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="j5nO92X6wfStYqYwYL5U-7" value="getExcerpt" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="-374" y="655" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="j5nO92X6wfStYqYwYL5U-9" value="&lt;b&gt;App.ts#bex.on(&#39;tabsets.bex.tab.exerpt&#39;)&lt;/b&gt;&lt;br&gt;BexFunctions#handleBexExerpt()" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="-290" y="920" width="250" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

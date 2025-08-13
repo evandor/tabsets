@@ -4,7 +4,7 @@
       <q-card class="q-dialog-plugin" style="max-width: 100%">
         <q-card-section>
           <div class="text-h6" v-if="props.windowId">Save Windows Tabs as Tabset</div>
-          <div class="text-h6" v-else>Add Tabset Collection</div>
+          <div class="text-h6" v-else>Add Collection</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
@@ -39,9 +39,25 @@
             &nbsp;
             <q-icon v-if="!props.windowId" name="sym_o_help" color="primary" size="1em">
               <q-tooltip class="tooltip-small"
-                >If you select this option, all currently open tabs will be added to your new Collection</q-tooltip
-              >
+                >If you select this option, all currently open tabs will be added to your new Collection
+              </q-tooltip>
             </q-icon>
+
+            <template v-if="useFeaturesStore().hasFeature(FeatureIdent.AI)">
+              <q-checkbox
+                data-testid="newTabsetAutoAdd"
+                v-model="useAsAiClassification"
+                :disable="newTabsetName.trim().split(' ').length !== 1">
+                <slot><span>Use as AI classification</span></slot>
+              </q-checkbox>
+              &nbsp;
+              <q-icon name="sym_o_help" color="primary" size="1em">
+                <q-tooltip class="tooltip-small"
+                  >{{ newTabsetName }} will be used as AI category, i.e. if you save a matching tab, it will be stored
+                  in this collection. This needs to be exactly one word.
+                </q-tooltip>
+              </q-icon>
+            </template>
           </template>
         </q-card-section>
 
@@ -91,11 +107,13 @@ import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import ColorSelector from 'src/core/dialog/ColorSelector.vue'
+import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useUtils } from 'src/core/services/Utils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import { MarkTabsetAsDefaultCommand } from 'src/tabsets/commands/MarkTabsetAsDefault'
+import { SaveOrReplaceResult } from 'src/tabsets/models/SaveOrReplaceResult'
 import { Tabset, TabsetStatus } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -107,8 +125,6 @@ import { useRouter } from 'vue-router'
 
 const { dialogRef, onDialogHide, onDialogCancel } = useDialogPluginComponent()
 const { inBexMode } = useUtils()
-
-// const bus = inject('bus') as EventBus
 
 const props = defineProps({
   spaceId: { type: String, required: false },
@@ -129,9 +145,16 @@ const windowOptions = ref<string[]>([])
 const theColor = ref<string | undefined>(undefined)
 const windowsStore = useWindowsStore()
 const openTabsCount = ref(0)
+const useAsAiClassification = ref(false)
 
 watchEffect(() => {
   openTabsCount.value = useTabsStore2().browserTabs.length
+})
+
+watchEffect(() => {
+  if (newTabsetName.value.trim().split(' ').length !== 1) {
+    useAsAiClassification.value = false
+  }
 })
 
 watchEffect(() => {
@@ -191,15 +214,18 @@ const submit = () => {
       .executeFromUi(
         new CreateTabsetCommand(newTabsetName.value, tabsToUse, props.spaceId, windowModel.value, theColor.value),
       )
-      .then((res) => {
+      .then((res: ExecutionResult<SaveOrReplaceResult>) => {
         //bus.emit('run-metrics')
         // if (props.spaceId) {
         //   const ts: Tabset = res.result?.tabset
         //   ts.spaces.push(props.spaceId)
         //   useTabsetService().saveTabset(ts)
         // }
+        if (useAsAiClassification.value && res.result.tabset) {
+          res.result.tabset.contentClassification = `user:${newTabsetName.value.toLowerCase()}`
+        }
         if (!props.fromPanel) {
-          router.push('/sidepanel/tabsets/' + res.result?.tabsetId)
+          router.push('/sidepanel/tabsets/' + res.result?.tabset.id)
         } else {
           useUiStore().sidePanelSetActiveView(SidePanelViews.MAIN)
           router.push('/sidepanel?first=')

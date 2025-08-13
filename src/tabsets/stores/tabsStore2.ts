@@ -192,26 +192,31 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
     }
     console.log(` -> tabUpdate (complete): ${chromeTab.url?.substring(0, 30)}, ${JSON.stringify(info)}`)
     browserTabs.value = await queryTabs()
-    await setCurrentTab()
 
-    useTabsetsUiStore()
-      .updateExtensionIcon(chromeTab)
-      .catch((err: any) => console.error('error', err))
-    await useContentStore()
-      .resetFor(chromeTab)
-      .catch((err: any) => console.error('error', err))
+    // the updated tab does not need to be the active one
+    if (chromeTab.id === currentChromeTab.value?.id) {
+      //console.log('--- tab update3 ---: match')
+      await setCurrentTab()
 
-    useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
-    useTabsetService().urlWasActivated(chromeTab.url)
-    currentChromeTab.value = chromeTab
+      useTabsetsUiStore()
+        .updateExtensionIcon(chromeTab)
+        .catch((err: any) => console.error('error', err))
+      await useContentStore()
+        .resetFor(chromeTab)
+        .catch((err: any) => console.error('error', err))
 
-    await checkSwitchTabsetSuggestion(chromeTab.windowId)
+      useTabsetsUiStore().setMatchingTabsFor(chromeTab.url)
+      useTabsetService().urlWasActivated(chromeTab.url)
+      currentChromeTab.value = chromeTab
+
+      await checkSwitchTabsetSuggestion(chromeTab.windowId)
+    }
   }
 
   // #endregion snippet
 
   async function onTabRemoved(tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
-    // console.log(`tabRemoved tabId: ${tabId}, windowId: ${removeInfo.windowId}`)
+    console.log(`tabRemoved tabId: ${tabId}, windowId: ${removeInfo.windowId}`)
     browserTabs.value = await queryTabs()
   }
 

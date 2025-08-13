@@ -48,6 +48,7 @@
             <q-badge :label="progressLabel" color="white" text-color="primary" />
           </div>
         </q-linear-progress>
+        <!--        <q-btn v-if="useUiStore().progress && useUiStore().progress!['cancelable' as keyof object]" name="cancel" />-->
       </div>
     </div>
 

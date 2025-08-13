@@ -1,5 +1,6 @@
 import { createBridge } from '#q-app/bex/content'
 import { LocalStorage } from 'quasar'
+import { PageData } from 'src/tabsets/models/PageData'
 
 const bridge = createBridge({ debug: false })
 
@@ -8,7 +9,7 @@ bridge
   .then(() => {
     console.log('[BEX-CT] Connected to background...', bridge.portName, window.location.href)
     if (window.location.href === 'https://excalidraw.com/' || window.location.href === 'https://draw.kvb.local') {
-      const responseMessage = {
+      const responseMessage: PageData = {
         html: document.documentElement.outerHTML,
         metas: {},
         port: bridge.portName,

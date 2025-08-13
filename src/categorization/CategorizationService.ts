@@ -1,3 +1,5 @@
+import { useUiStore } from 'src/ui/stores/uiStore'
+
 let session: any
 
 export function useCategorizationService() {
@@ -8,9 +10,14 @@ export function useCategorizationService() {
       LanguageModel.create({
         monitor(m: any) {
           m.addEventListener('downloadprogress', (e: any) => {
+            useUiStore().setProgress(e.loaded, 'downloading AI', true)
             console.log(`Downloaded: ${e.loaded * 100}%`)
+            if (e.loaded >= 1) {
+              useUiStore().stopProgress()
+            }
           })
         },
+        // output_language: ['en'],
         initialPrompts: [
           {
             role: 'system',
@@ -23,7 +30,7 @@ export function useCategorizationService() {
         session = s
       })
     } catch (err) {
-      // Firefox ?
+      console.log('categorization service error', err)
     }
   }
 
@@ -32,7 +39,7 @@ export function useCategorizationService() {
     // const params = await LanguageModel.params()
     // console.log('params', params)
     if (!session) {
-      console.log('no session!')
+      console.log('no session!!!')
       return
     }
     console.log('=======================')

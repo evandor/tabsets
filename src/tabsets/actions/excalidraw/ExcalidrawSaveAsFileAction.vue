@@ -12,12 +12,6 @@
   <template v-else>
     <fab-like-btn @button-clicked="clicked()" color="warning" icon="img:https://excalidraw.com/favicon-32x32.png" />
     <q-tooltip class="tooltip-small">Add Excalidraw File</q-tooltip>
-    <!--    <q-tooltip class="tooltip-small" v-else-if="containedInTsCount > 0">-->
-    <!--      {{ tooltipAlreadyInOtherTabsets(props.tabset!.name) }}-->
-    <!--    </q-tooltip>-->
-    <!--    <q-tooltip class="tooltip-small" v-else>-->
-    <!--      Add current Tab to '{{ tabsetNameOrChain(props.tabset as Tabset) }}'...-->
-    <!--    </q-tooltip>-->
   </template>
 </template>
 <script setup lang="ts">

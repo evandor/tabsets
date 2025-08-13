@@ -14,10 +14,6 @@
         "css": [ "assets/content.css" ]
       },
       {
-        "matches": ["<all_urls>", "*://*/*"],
-        "js": ["tabsets-ai-content-script.ts"]
-      },
-      {
         "matches": ["*://rapidapi.com/*"],
         "js": ["tabsets-request-interceptor-inject.js","tabsets-request-interceptor.js"]
       },

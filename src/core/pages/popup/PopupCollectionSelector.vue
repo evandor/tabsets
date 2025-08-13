@@ -132,7 +132,7 @@ const stashedTabs = ref(false)
 const { tabsetSelectionOptions, tabsetSelectionModel, setAutomaticSelectionLabel } = useTabsetSelector('popup')
 
 watchEffect(() => {
-  const tsCat = useTagsService().getCurrentTabContentClassification()
+  const tsCat = useTagsService().getCurrentTabContentClassification().classification
   if (tsCat) {
     setAutomaticSelectionLabel(tsCat + ' (auto)')
   }

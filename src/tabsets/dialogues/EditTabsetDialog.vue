@@ -116,7 +116,7 @@ type Props = {
   tabsetColor?: string
   window?: string
   details: ListDetailLevel
-  contentClassification: ContentClassification
+  contentClassification: ContentClassification | 'unclassified'
   fromPanel: boolean
 }
 
@@ -143,7 +143,7 @@ const detailOptions = [
   { label: 'Default', value: 'DEFAULT' },
 ]
 
-const classificationOption = ref<ContentClassification>(props.contentClassification)
+const classificationOption = ref<ContentClassification | 'unclassified'>(props.contentClassification)
 
 const classificationOptions = [
   { label: 'Unclassified', value: 'unclassified' },

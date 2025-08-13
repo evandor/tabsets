@@ -30,29 +30,37 @@
       </div>
     </transition>
 
-    <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none q-pt-xs">
+      <!-- list of (normal) tabsets-->
       <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
-        <!--        <div class="col-12 text-center" v-for="sts in specialTabsets">-->
-        <!--          <q-btn :label="sts.name" color="primary" size="xs" @click="openGallery()" />-->
-        <!--        </div>-->
-        <template v-if="currentTabset">
-          <SidePanelPageContent
-            v-if="useFolderExpansion === 'goInto'"
-            :tabset="currentTabset"
-            :key="currentTabset?.id"
-            :filter="filter"
-            @tabs-found="(n: number) => (filteredTabsCount = n)"
-            @folders-found="(n: number) => (filteredFoldersCount = n)" />
-          <SidePanelPageContentExpand
-            v-else
-            :tabset="currentTabset"
-            :key="currentTabset.id"
-            :filter="filter"
-            @tabs-found="(n: number) => (filteredTabsCount = n)"
-            @folders-found="(n: number) => (filteredFoldersCount = n)" />
-        </template>
+        <div class="rounded-borders fit q-mt-lg" v-if="tabsets.length > 0">
+          <q-expansion-item
+            v-for="ts in tabsets"
+            class="overflow-hidden"
+            :class="bgColorForSpecialTab(ts)"
+            style="border-radius: 7px"
+            header-class="text-bold"
+            :icon="ts.icon"
+            :label="ts.name">
+            <template v-slot:header>
+              <div class="row fit cursor-pointer" @click.stop="openGallery(ts)">
+                <div class="col-10 q-mt-xs">{{ capitalize(ts.name.toLowerCase()) }}</div>
+                <div class="col text-caption text-right q-mr-md q-mt-xs">
+                  {{ ts.tabs.length > 0 ? ts.tabs.length : '' }}
+                </div>
+              </div>
+            </template>
+            <SidePanelPageContent
+              :tabset="ts"
+              :key="ts?.id"
+              :filter="filter"
+              @tabs-found="(n: number) => (filteredTabsCount = n)"
+              @folders-found="(n: number) => (filteredFoldersCount = n)" />
+          </q-expansion-item>
+        </div>
+      </div>
 
+      <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
         <div class="rounded-borders fit q-mt-lg" v-if="showSpecialTabsets()">
           <q-expansion-item
             v-for="sts in specialTabsets.filter((sts: Tabset) => sts.tabs.length > 0)"
@@ -99,12 +107,7 @@
       position="top"
       class="darkInDarkMode brightInBrightMode"
       :class="uiDensity === 'dense' ? 'q-mx-none' : 'q-ma-md'">
-      <FirstToolbarHelper2 :element="'contextmenu'" @tabset-changed="tabsetChanged()" />
-      <SearchToolbarHelper
-        v-if="showSearchToolbarHelper"
-        @on-term-changed="(val) => termChanged(val)"
-        :filteredFoldersCount="filteredFoldersCount"
-        :filteredTabsCount="filteredTabsCount" />
+      <FirstToolbarHelper3 :element="'contextmenu'" @tabset-changed="tabsetChanged()" />
     </q-page-sticky>
   </q-page>
 </template>
@@ -115,10 +118,8 @@ import { format, LocalStorage, useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { useContentStore } from 'src/content/stores/contentStore'
 import OfflineInfo from 'src/core/components/helper/offlineInfo.vue'
-import FirstToolbarHelper2 from 'src/core/pages/sidepanel/helper/FirstToolbarHelper2.vue'
-import SearchToolbarHelper from 'src/core/pages/sidepanel/helper/SearchToolbarHelper.vue'
+import FirstToolbarHelper3 from 'src/core/pages/sidepanel/helper/FirstToolbarHelper3.vue'
 import SidePanelPageContent from 'src/core/pages/SidePanelPageContent.vue'
-import SidePanelPageContentExpand from 'src/core/pages/SidePanelPageContentExpand.vue'
 import DebugInfo from 'src/core/pages/widgets/DebugInfo.vue'
 import StartingHint from 'src/core/pages/widgets/StartingHint.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
@@ -223,16 +224,28 @@ const getTabsetOrder = [
   },
 ]
 
-function determineTabsets() {
-  return _.sortBy(
-    _.filter(
-      [...useTabsetsStore().tabsets.values()] as Tabset[],
-      (ts: Tabset) =>
-        ts.status !== TabsetStatus.DELETED && ts.status !== TabsetStatus.HIDDEN && ts.status !== TabsetStatus.ARCHIVED,
-    ),
-    getTabsetOrder,
-    ['asc'],
-  )
+function determineTabsets(): Tabset[] {
+  return [...useTabsetsStore().tabsets.values()]
+    .filter((ts: Tabset) => {
+      return (
+        ts.status !== TabsetStatus.DELETED && ts.status !== TabsetStatus.HIDDEN && ts.status !== TabsetStatus.ARCHIVED
+      )
+    })
+    .filter((ts: Tabset) => {
+      return ts.type !== TabsetType.SPECIAL
+    })
+    .sort((a: Tabset, b: Tabset) => {
+      return a.name?.toLowerCase().localeCompare(b.name?.toLowerCase())
+    })
+  // return _.sortBy(
+  //   _.filter(
+  //     [...useTabsetsStore().tabsets.values()] as Tabset[],
+  //     (ts: Tabset) =>
+  //       ts.status !== TabsetStatus.DELETED && ts.status !== TabsetStatus.HIDDEN && ts.status !== TabsetStatus.ARCHIVED,
+  //   ),
+  //   getTabsetOrder,
+  //   ['asc'],
+  // )
 }
 
 watchEffect(() => {
@@ -502,4 +515,4 @@ checkAnalysisBroken(0, 1)
 setPaddingTop()
 </script>
 
-<style lang="scss" src="src/pages/css/sidePanelPage2.scss" />
+<style lang="scss" src="src/pages/css/sidePanelPage3.scss" />

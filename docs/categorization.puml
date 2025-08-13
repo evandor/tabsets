@@ -1,0 +1,31 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+:background.ts initialized;
+if (storage.local.get('tabsets.ext.ai.active')) then (true)
+  :storage.local.get('tabsets.ext.ai.categories');
+  if (!categories) then (no)
+    :initModel('default');
+  else (yes)
+    :initModel(categories);
+  endif
+endif
+
+stop
+
+start
+:bridge.on('tabsets.bex.tab.excerpt');
+if (metas['description']) then (true)
+  if (!session) then (stop)
+    stop
+  else (yes)
+    :json = session.prompt(desc);
+    :return json;
+  endif
+else (false)
+endif
+
+stop
+
+@enduml

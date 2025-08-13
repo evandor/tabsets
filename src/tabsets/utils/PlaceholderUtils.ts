@@ -10,11 +10,11 @@ class PH {
 
 class PlaceholderUtils {
   defaultPlaceholders: Map<RegExp, PH> = new Map([
-    [
-      /^(.*)(github\.com)\/([^\/]*)\/([^\/]*)\/($)/gm,
-      new PH('$1$2/$3/$4/${path}', new Map([['path', 'actions,issues']])),
-    ],
-    [/^(.*)(sueddeutsche\.de)\/($)/gm, new PH('$1$2/$3${path}', new Map([['path', 'muenchen,sport,bayern']]))],
+    // [
+    //   /^(.*)(github\.com)\/([^\/]*)\/([^\/]*)\/($)/gm,
+    //   new PH('$1$2/$3/$4/${path}', new Map([['path', 'actions,issues']])),
+    // ],
+    // [/^(.*)(sueddeutsche\.de)\/($)/gm, new PH('$1$2/$3${path}', new Map([['path', 'muenchen,sport,bayern']]))],
   ])
 
   applyForDefaultDomains(tab: Tab): Tab {

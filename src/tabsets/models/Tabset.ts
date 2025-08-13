@@ -101,7 +101,7 @@ export class Tabset {
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT
 
-  contentClassification: ContentClassification = 'unclassified'
+  contentClassification: ContentClassification | 'unclassified' = 'unclassified'
 
   bookmarkId: string | undefined = undefined
 

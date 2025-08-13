@@ -92,22 +92,11 @@ class AppService {
         useTabsetsUiStore()
           .updateExtensionIcon(currentTabs[0]!)
           .catch((err: any) => console.error('error', err))
-        await useContentStore()
+        useContentStore()
           .resetFor(currentTabs[0]!)
           .catch((err: any) => console.error('error', err))
 
-        // happened already in resetFor
-        // console.log(` >>> chrome.tab.sendMessage 'getExcerpt' to tab ${currentTabs[0]!.id}`)
-        // chrome.tabs
-        //   .sendMessage(currentTabs[0]!.id, 'getExcerpt', {})
-        //   .then((payload) => {
-        //     BexFunctions.handleBexTabExcerpt({ from: '', to: '', event: '', payload })
-        //   })
-        //   .catch((err) => {
-        //     console.log('could not handle tab excerpt', err)
-        //   })
       }
-      //})
     }
 
     await useRequestsService().init(IndexedDbRequestPersistence)
@@ -148,14 +137,16 @@ class AppService {
      */
 
     watch(useSpacesStore().spaces, (newSpaces: Map<string, any>) => {
-      const spacesInfo = _.map([...newSpaces.values()], (ts: any) => new SpaceInfo(ts.id, ts.name))
-      useEntityRegistryStore().spacesRegistry = spacesInfo
+      useEntityRegistryStore().spacesRegistry = _.map(
+        [...newSpaces.values()],
+        (ts: any) => new SpaceInfo(ts.id, ts.name),
+      )
     })
     await useSpacesStore().initialize(useDB().spacesDb)
 
     const tabsetsStore = useTabsetsStore()
     watch(tabsetsStore.tabsets, (newTabsets: Map<string, any>) => {
-      const tsInfo = _.map(
+      useEntityRegistryStore().tabsetRegistry = _.map(
         [...newTabsets.values()],
         (ts: any) => new TabsetInfo(ts.id, ts.name, ts.window, ts.tabs.length),
       )

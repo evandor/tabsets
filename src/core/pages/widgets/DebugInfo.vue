@@ -36,13 +36,19 @@
       :class="useContentStore().getCurrentTabUrl !== useTabsStore2().currentChromeTab?.url ? 'text-negative' : ''">
       {{ useTabsStore2().currentChromeTab?.url }}
     </div>
-    <!--    <div class="col-4 text-caption">tabs store</div>-->
-    <!--    <div class="col-8 text-caption ellipsis" style="font-size: smaller">-->
-    <!--      {{ useTabsetsStore().get}}-->
-    <!--    </div>-->
+
     <div class="col-4 text-caption">category</div>
-    <div class="col-8 text-caption text-bold" style="font-size: smaller">
-      {{ useTagsService().getCurrentTabContentClassification() }}/{{ aiCategory }}
+    <div class="col-8 text-caption" style="font-size: smaller">
+      Classic: <span class="text-bold">{{ classicCategory }}</span>
+      <span v-if="classicCategorySource"> [{{ classicCategorySource }}]</span>
+      <br />
+      AI:
+      <span class="text-bold">
+        {{ aiCategory }}
+        <q-tooltip class="tooltip-small" v-if="aiCategoryTooltip()">{{ aiCategoryTooltip() }}</q-tooltip>
+      </span>
+      <span v-if="aiAlternativeCategory">({{ aiAlternativeCategory }})</span>
+      <span v-if="aiCategorySource" class="tex"> [{{ aiCategorySource }}]</span>
     </div>
 
     <div class="col-4 text-caption">content length</div>
@@ -58,12 +64,12 @@
 
     <div class="col-4 text-caption">Tags ({{ useContentStore().currentTabTags.length }})</div>
     <div class="col-8 text-caption" style="font-size: smaller">
-      <i>LD+JSON</i>: {{ tagsWithType('linkingData') }}<br />
-      <i>URL</i>: {{ tagsWithType('url') }}<br />
-      <i>Keywords</i>: {{ tagsWithType('keyword') }}<br />
-      <i>Hierarchy</i>: {{ tagsWithType('hierarchy') }}<br />
-      <i>Language</i>: {{ tagsWithType('langDetection') }}<br />
-      <i>LangModel</i>: {{ tagsWithType('languageModel') }}<br />
+      <div v-if="tagsWithType('linkingData')"><i>LD+JSON</i>: {{ tagsWithType('linkingData') }}</div>
+      <div v-if="tagsWithType('url')"><i>URL</i>: {{ tagsWithType('url') }}</div>
+      <div v-if="tagsWithType('keyword')"><i>Keywords</i>: {{ tagsWithType('keyword') }}</div>
+      <div v-if="tagsWithType('hierarchy')"><i>Hierarchy</i>: {{ tagsWithType('hierarchy') }}</div>
+      <div v-if="tagsWithType('langDetection')"><i>langDetection</i>: {{ tagsWithType('langDetection') }}</div>
+      <div v-if="tagsWithType('languageModel')"><i>Lang. Model</i>: {{ tagsWithType('languageModel') }}</div>
     </div>
 
     <div class="col-4 text-caption">Meta Data</div>
@@ -136,18 +142,29 @@ const props = withDefaults(defineProps<Props>(), { inPopup: false })
 const $q = useQuasar()
 
 const aiCategory = ref<string>('---')
+const aiAlternativeCategory = ref<string | undefined>(undefined)
+const aiCategorySource = ref<string | undefined>(undefined)
+
+const classicCategory = ref<string>('---')
+const classicCategorySource = ref<string | undefined>(undefined)
 
 watchEffect(() => {
   const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
   if (tsCat) {
     const url = useContentStore().getCurrentTabUrl
-    console.log('got tsCat', tsCat, url)
     const cat = tsCat[url as keyof object]
-    console.log('got cat', cat)
     if (cat) {
       aiCategory.value = cat['category']
+      aiAlternativeCategory.value = cat['proposedCategory']
+      aiCategorySource.value = 'storage'
     }
   }
+})
+
+watchEffect(() => {
+  const classificationResult = useTagsService().getCurrentTabContentClassification()
+  classicCategory.value = classificationResult.classification
+  classicCategorySource.value = classificationResult.matchedFrom
 })
 
 const infoDialog = (title: string, input: object) => {
@@ -196,5 +213,17 @@ const tagsWithType = (type: TagType) => {
     .currentTabTags.filter((ti: TagInfo) => ti.type === type)
     .map((ti: TagInfo) => ti.label)
     .join(', ')
+}
+
+const aiCategoryTooltip = () => {
+  const url = useTabsStore2().currentChromeTab?.url || '---'
+  if (!url) {
+    return undefined
+  }
+  const tabCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
+  if (!tabCat) {
+    return undefined
+  }
+  return tabCat[url] ? tabCat[url]['reason' as keyof object] : undefined
 }
 </script>

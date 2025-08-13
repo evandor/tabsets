@@ -1,0 +1,142 @@
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+.q-item__section--avatar {
+  min-width: 46px !important;
+  padding-right: 12px !important;
+  margin-bottom: 14px;
+}
+
+.welcome-tooltip-container {
+  position: absolute;
+  top: 30px;
+  right: -50px;
+  width: 140px;
+  display: inline-block;
+}
+
+.welcome-tooltip-container .tooltip {
+  z-index: 10000;
+  padding: 0 8px;
+  background: white;
+  color: #333;
+  position: absolute;
+  top: -17px;
+  right: 0;
+  border: 2px solid #ffbf46;
+  border-radius: 8px;
+  font-size: 16px;
+  box-shadow: 3px 3px 3px #ddd;
+  animation: welcome-tooltip-pulse 1s ease-in-out infinite alternate;
+}
+
+.welcome-tooltip-container .tooltip p {
+  margin: 15px 0;
+  line-height: 1.5;
+}
+
+.welcome-tooltip-container .tooltip * {
+  vertical-align: middle;
+}
+
+.welcome-tooltip-container .tooltip::after {
+  content: ' ';
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 12.5px 0 12.5px;
+  border-color: #ffbf46 transparent transparent transparent;
+  position: absolute;
+  top: -10px;
+  right: 35px;
+  transform: rotate(180deg);
+}
+
+$width: 25px;
+$height: 25px;
+
+$bounce_height: 30px;
+
+body {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.wrap2 {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.text {
+  //color: #000066;
+  font-size: 24px;
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.bounceball {
+  position: relative;
+  display: inline-block;
+  height: 37px;
+  width: $width;
+
+  &:before {
+    position: absolute;
+    content: '';
+    display: block;
+    top: 0;
+    width: $width;
+    height: $height;
+    border-radius: 50%;
+    background-color: #fbae17;
+    transform-origin: 50%;
+    animation: bounce 500ms alternate infinite ease;
+  }
+}
+
+@keyframes bounce {
+  0% {
+    top: $bounce_height;
+    height: 5px;
+    border-radius: 60px 60px 20px 20px;
+    transform: scaleX(2);
+  }
+  35% {
+    height: $height;
+    border-radius: 50%;
+    transform: scaleX(1);
+  }
+  100% {
+    top: 0;
+  }
+}
+
+.fade-enter-active {
+  transition: opacity 1.5s ease;
+}
+
+.fade-leave-active {
+  transition: opacity 1s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
