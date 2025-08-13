@@ -289,7 +289,7 @@ const logout = () => {
   useAuthStore()
     .logout()
     .then(() => {
-      // router.push("/refresh/sidepanel")
+      router.push("/")
     })
     .catch((err: any) => {
       console.log('error logging out', err)

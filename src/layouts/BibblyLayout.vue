@@ -29,6 +29,12 @@
         <div class="row items-center q-gutter-sm">
           <!-- Desktop -->
           <div class="row q-gutter-sm items-center" v-if="$q.screen.gt.sm">
+            <template v-if="!currentUser?.isAnonymous">
+              <q-btn flat class="text-capitalize" style="color: #191919" @click="logout()">
+                <span style="font-size: 1rem">Logout</span>
+              </q-btn>
+            </template>
+            <template v-else>
             <q-btn flat class="text-capitalize" style="color: #191919" @click="goToLogin">
               <span style="font-size: 1rem">Login</span>
             </q-btn>
@@ -36,6 +42,7 @@
               <span style="font-size: 1rem">Sign Up</span>
               <q-icon name="arrow_forward" size="16px" class="q-ml-sm" />
             </q-btn>
+            </template>
           </div>
 
           <!-- Mobile -->
@@ -116,7 +123,7 @@
           <q-item-section>Terms</q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple :to="{ path: '/legal-notice' }">
+        <q-item clickable v-ripple :to="{ path: '/p/legal-notice' }">
           <q-item-section avatar>
             <q-icon name="info" />
           </q-item-section>
@@ -142,9 +149,9 @@
       <!-- Desktop (ab sm > 1024px) -->
       <div v-if="$q.screen.gt.sm" class="column items-center q-mb-md q-mt-md">
         <div class="row q-gutter-md justify-center">
-          <q-btn flat dense label="Legal Notice" class="text-caption text-capitalize" :to="{ path: '/legal-notice' }" />
-          <q-btn flat dense label="Privacy" class="text-caption text-capitalize" :to="{ path: '/privacy' }" />
-          <q-btn flat dense label="Disclaimer" class="text-caption text-capitalize" :to="{ path: '/disclaimer' }" />
+          <q-btn flat dense label="Legal Notice" class="text-caption text-capitalize" :to="{ path: '/p/legal-notice' }" />
+          <q-btn flat dense label="Privacy" class="text-caption text-capitalize" :to="{ path: '/p/privacy' }" />
+          <q-btn flat dense label="Disclaimer" class="text-caption text-capitalize" :to="{ path: '/p/disclaimer' }" />
           <q-btn flat dense label="Contact" class="text-caption text-capitalize" @click="contactDialog = true" />
         </div>
 
@@ -261,18 +268,30 @@
 <script setup lang="ts">
 import CookieConsent from 'components/CookieConsent.vue'
 import { useQuasar } from 'quasar'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from 'stores/authStore'
+import { User } from 'firebase/auth/web-extension'
 
 const rightDrawerOpen = ref(false)
 const route = useRoute()
 const router = useRouter()
 
+onMounted(() => {
+  console.log("useAuthStore", useAuthStore().user)
+})
+
 // Hier gibst du die Routen-Namen an, bei denen der Zurück-Button angezeigt werden soll
 const showBackButton = computed(() => ['recipe-detail'].includes(route.name as string))
 
+const currentUser = ref<User | undefined>(undefined)
 const browserName = ref('Browser')
 const supportedBrowsers = ['Chrome', 'Firefox', 'Edge', 'Opera']
+
+watchEffect(() => {
+  currentUser.value = useAuthStore().user
+  console.log("user set to", currentUser.value)
+})
 
 //Kontaktformular
 const contactDialog = ref(false)
@@ -302,11 +321,11 @@ async function goBack() {
 }
 
 async function goToLogin() {
-  await router.push('/login')
+  await router.push('/p/login')
 }
 
 async function goToRegister() {
-  await router.push('/register')
+  await router.push('/p/register')
 }
 
 // Beispielaktionen:
@@ -422,6 +441,17 @@ function detectBrowser(): string {
 const isSupportedBrowser = computed(() => supportedBrowsers.includes(browserName.value))
 
 const extensionLabel = computed(() => (isSupportedBrowser.value ? `Add to ${browserName.value}` : 'Get extension'))
+
+const logout = () => {
+  useAuthStore()
+    .logout()
+    .then(() => {
+      router.push("/")
+    })
+    .catch((err: any) => {
+      console.log('error logging out', err)
+    })
+}
 </script>
 
 <style scoped>

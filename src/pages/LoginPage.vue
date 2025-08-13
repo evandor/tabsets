@@ -3,14 +3,14 @@
     <q-card class="q-pa-lg shadow-2" style="width: 360px; max-width: 90vw;">
       <q-card-section class="text-center">
         <div class="text-h6 text-primary">Login</div>
-        <div class="text-subtitle2 text-grey-7">Melde dich an, um fortzufahren</div>
+        <div class="text-subtitle2 text-grey-7">Please log in to continue</div>
       </q-card-section>
 
       <q-form @submit.prevent="onSubmit" class="q-gutter-md q-mt-md">
-        <q-input v-model="email" type="email" label="E-Mail" outlined dense
-          :rules="[val => !!val || 'E-Mail ist erforderlich']" />
-        <q-input v-model="password" type="password" label="Passwort" outlined dense
-          :rules="[val => !!val || 'Passwort ist erforderlich']" />
+        <q-input v-model="email" type="email" label="Email" outlined dense
+          :rules="[val => !!val || 'Email is required']" />
+        <q-input v-model="password" type="password" label="Password" outlined dense
+          :rules="[val => !!val || 'Password is required']" />
 
         <div class="q-mt-sm">
           <q-btn label="Login" type="submit" color="primary" class="full-width" icon="login" />
@@ -18,7 +18,7 @@
       </q-form>
 
       <q-card-actions align="center" class="q-mt-md">
-        <q-btn flat label="Noch kein Konto?" to="/register" color="secondary" />
+        <q-btn flat label="Don't have an account yet?" to="/register" color="secondary" />
       </q-card-actions>
     </q-card>
   </q-page>
@@ -51,7 +51,7 @@ function onSubmit() {
 
   useAuthService().signin(email.value, password.value, false, false)
     .then(() => {
-      router.push('/p/tabsets')
+      router.push('/tabsets')
     })
     .catch((err:any) => {
       console.log("error login in", err)

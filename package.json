@@ -2,7 +2,7 @@
   "name": "tabsets-pro",
   "version": "0.2.1",
   "description": "Use tabsets.net to safely keep track of all your tabs and links in the Side Panel, stored locally on your browser",
-  "productName": "Tabsets Pro (Alpha!)",
+  "productName": "Bibbly Pro",
   "author": "evandor <evandor@gmail.com>",
   "type": "module",
   "private": true,

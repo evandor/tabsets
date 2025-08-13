@@ -150,7 +150,6 @@ class AppService {
         [...newTabsets.values()],
         (ts: any) => new TabsetInfo(ts.id, ts.name, ts.window, ts.tabs.length),
       )
-      useEntityRegistryStore().tabsetRegistry = tsInfo
     })
     await tabsetsStore.initialize(useDB().tabsetsDb)
     await useTabsetService().init()

@@ -211,12 +211,27 @@ const routes: RouteRecordRaw[] = [
       //   component: () => import('layouts/PlainLayout.vue'),
       //   children: [{ path: ':sharedId', component: () => import('pages/public/ImportPublicTabsetPage.vue') }],
       // },
-      { path: 'home', component: () => import('src/pages/WelcomePageDesktop.vue') },
+      { path: 'home', component: () => import('src/pages/BibblyWelcomePage.vue') },
       { path: 'login', component: () => import('src/pages/LoginPage.vue') },
       { path: 'register', component: () => import('src/pages/RegisterPage.vue') },
       { path: 'tabsets', component: () => import('src/tabsets/pages/PublicTabsetPage.vue') },
       { path: 'tabsets/:id', component: () => import('src/tabsets/pages/PublicTabsetPage.vue') },
       { path: 'tabs/:tabId', component: () => import('src/tabsets/pages/PublicTabsetPage.vue') },
+      {
+        path: 'legal-notice',
+        name: 'legal-notice',
+        component: () => import('pages/LegalNoticePage.vue'),
+      },
+      {
+        path: 'privacy',
+        name: 'privacy',
+        component: () => import('pages/PrivacyPage.vue'),
+      },
+      {
+        path: 'disclaimer',
+        name: 'disclaimer',
+        component: () => import('pages/DisclaimerPage.vue'),
+      },
     ],
   },
   {
