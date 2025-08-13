@@ -45,7 +45,7 @@ export default defineConfig((ctx) => {
       sourcemap: 'true' as unknown as boolean,
 
       target: {
-        browser: ['es2022', 'edge88', 'firefox115', 'chrome115'],
+        browser: ['es2022', 'edge88', 'firefox115', 'chrome115', 'safari14'],
         node: 'node20',
       },
 
@@ -160,6 +160,8 @@ export default defineConfig((ctx) => {
         brand: {
           primary: '#087f8c',
           secondary: '#698f3f',
+          tertiary: '#eb5160',
+          quaternary: '#ffba49',
           accent: '#095256',
         },
       },
@@ -271,7 +273,7 @@ export default defineConfig((ctx) => {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'tabsets-pro',
+        appId: 'bibbly',
       },
     },
 

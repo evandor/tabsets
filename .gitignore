@@ -62,3 +62,4 @@ docs/.vitepress/cache
 /envs/env.emulator
 /docs/submodules/build/
 /e2e/results/
+/envs/bibbly.env.dev

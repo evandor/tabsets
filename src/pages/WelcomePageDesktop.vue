@@ -40,10 +40,10 @@
           </div>
         </div>
         <q-carousel animated v-model="slide" navigation infinite :autoplay="autoplay" arrows
-                    transition-prev="slide-right" transition-next="slide-left" swipeable control-color="secondary" height="500px"
-                    class="welcome-carousel">
+          transition-prev="slide-right" transition-next="slide-left" swipeable control-color="secondary" height="500px"
+          class="welcome-carousel">
           <q-carousel-slide v-for="(item, index) in slides" :key="index" :name="item.name" :img-src="item.img"
-                            class="column no-wrap flex-center">
+            class="column no-wrap flex-center">
             <div class="slide-overlay" />
             <div class="carousel-overlay q-pa-md">
               <div class="q-mb-md icon-wrapper">
@@ -58,7 +58,7 @@
               <div class="text-body1 q-mt-md text-center">Try it now</div>
               <q-form @submit.prevent="submitUrl" class="q-mt-sm">
                 <q-input v-model="demoUrl" :label="item.inputLabel" dense filled bg-color="white" type="url"
-                         :rules="[isValidUrl]" class="q-mt-sm">
+                  :rules="[isValidUrl]" class="q-mt-sm">
                   <template #append>
                     <q-btn flat icon="send" color="secondary" @click="submitUrl" />
                   </template>
@@ -84,7 +84,7 @@
         <div class="row q-gutter-y-xl justify-between">
 
           <q-card v-for="(feature, index) in features" :key="index" class="q-pa-sm" flat bordered
-                  style="width: 32%; min-height: 220px; display: flex; flex-direction: column; justify-content: center;">
+            style="width: 32%; min-height: 220px; display: flex; flex-direction: column; justify-content: center;">
             <q-card-section class="text-center">
               <q-icon :name="feature.icon" size="42px" color="secondary" class="q-mb-sm" />
               <div class="text-h6 text-accent">{{ feature.title }}</div>
@@ -114,7 +114,7 @@
           </p>
         </div>
         <q-btn v-if="isSupportedBrowser" label="Get the Extension" icon="extension" color="primary" unelevated size="md"
-               class="q-mt-sm text-capitalize" @click="goToExtension" />
+          class="q-mt-sm text-capitalize" @click="goToExtension" />
       </AppPageWrapper>
     </section>
     <!-- About Section -->
@@ -141,7 +141,7 @@
           <!-- Bild Spalte -->
           <div class="col flex flex-center" style="flex: 1 1 50%;">
             <q-img :src="Pic200" style="max-width: 100%; max-height: 320px;" spinner-color="primary"
-                   alt="Organizing information illustration" />
+              alt="Organizing information illustration" />
           </div>
         </div>
 

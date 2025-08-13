@@ -112,33 +112,33 @@ onAuthStateChanged(auth, async (user) => {
   }
 })
 
-let useDarkMode: string = $q.localStorage.getItem('darkMode') || ('auto' as string)
-
-if ($q.platform.is.safari && !$q.platform.is.bex) {
-  console.log('switching dark mode default to false on safari non-bex')
-  useDarkMode = $q.localStorage.getItem('darkMode') || ('false' as string)
-}
-
-if (useDarkMode === 'true') {
-  $q.dark.set(true)
-} else if (useDarkMode === 'false') {
-  $q.dark.set(false)
-} else {
-  $q.dark.set('auto')
-}
-
-if (useDarkMode === 'true') {
-  setCssVar('primary', '#D9E8F5')
-  setCssVar('secondary', '#26A69A')
-  setCssVar('accent', '#9C27B0')
-  setCssVar('dark', '#1d1d1d')
-  setCssVar('positive', '#21BA45')
-  setCssVar('negative', '#C10015')
-  setCssVar('info', '#31CCEC')
-  setCssVar('separator', '#AA0099')
-  // setCssVar('text-xxx', '#AA0099')
-  // setCssVar('warning', 'green');
-}
+// let useDarkMode: string = $q.localStorage.getItem('darkMode') || ('auto' as string)
+//
+// if ($q.platform.is.safari && !$q.platform.is.bex) {
+//   console.log('switching dark mode default to false on safari non-bex')
+//   useDarkMode = $q.localStorage.getItem('darkMode') || ('false' as string)
+// }
+//
+// if (useDarkMode === 'true') {
+//   $q.dark.set(true)
+// } else if (useDarkMode === 'false') {
+//   $q.dark.set(false)
+// } else {
+//   $q.dark.set('auto')
+// }
+//
+// if (useDarkMode === 'true') {
+//   setCssVar('primary', '#D9E8F5')
+//   setCssVar('secondary', '#26A69A')
+//   setCssVar('accent', '#9C27B0')
+//   setCssVar('dark', '#1d1d1d')
+//   setCssVar('positive', '#21BA45')
+//   setCssVar('negative', '#C10015')
+//   setCssVar('info', '#31CCEC')
+//   setCssVar('separator', '#AA0099')
+//   // setCssVar('text-xxx', '#AA0099')
+//   // setCssVar('warning', 'green');
+// }
 
 const fontsize = useUiStore().fontsize
 useUiStore().setFontsize(fontsize)
@@ -160,20 +160,20 @@ if (inBexMode()) {
 
 // newtab extension installed?
 //console.log('checkin', NEW_TAB_EXTENSION_ID)
-try {
-  chrome.runtime.sendMessage(NEW_TAB_EXTENSION_ID, { message: 'getVersion' }, function (response) {
-    //console.log('testing for newtab extension', response)
-    if (response) {
-      console.log('newtab is installed')
-      LocalStorage.setItem('ui.newtab.installed', true)
-    } else if (chrome.runtime.lastError) {
-      LocalStorage.setItem('ui.newtab.installed', false)
-      /* ignore */
-    }
-    // if (targetInRange(response.targetData))
-    //chrome.runtime.sendMessage('bafapaeaebbfoobjakidbomlnpfcfakn', { activateLasers: true })
-  })
-} catch (error) {
-  console.debug("can't check for newtab extension", error)
-}
+// try {
+//   chrome.runtime.sendMessage(NEW_TAB_EXTENSION_ID, { message: 'getVersion' }, function (response) {
+//     //console.log('testing for newtab extension', response)
+//     if (response) {
+//       console.log('newtab is installed')
+//       LocalStorage.setItem('ui.newtab.installed', true)
+//     } else if (chrome.runtime.lastError) {
+//       LocalStorage.setItem('ui.newtab.installed', false)
+//       /* ignore */
+//     }
+//     // if (targetInRange(response.targetData))
+//     //chrome.runtime.sendMessage('bafapaeaebbfoobjakidbomlnpfcfakn', { activateLasers: true })
+//   })
+// } catch (error) {
+//   console.debug("can't check for newtab extension", error)
+// }
 </script>

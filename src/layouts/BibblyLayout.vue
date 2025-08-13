@@ -29,7 +29,7 @@
         <div class="row items-center q-gutter-sm">
           <!-- Desktop -->
           <div class="row q-gutter-sm items-center" v-if="$q.screen.gt.sm">
-            <template v-if="!currentUser?.isAnonymous">
+            <template v-if="currentUser && !currentUser.isAnonymous">
               <q-btn flat class="text-capitalize" style="color: #191919" @click="logout()">
                 <span style="font-size: 1rem">Logout</span>
               </q-btn>
@@ -405,7 +405,8 @@ function onLogout() {
 }
 
 async function scrollToSection(sectionId: string) {
-  if (route.name === 'welcome') {
+  console.log("route", route)
+  if (route.path === '/p/home') {
     scrollToAnchor(sectionId)
   } else {
     await router.push({ name: 'welcome', hash: `#${sectionId}` })

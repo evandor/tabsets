@@ -135,14 +135,14 @@ const filteredRecipes = computed(() => {
 })
 </script>
 <style lang="scss" scoped>
-.badge-green {
-  border: 1px solid;
-  border-color: $aspargus;
-  color: $aspargus;
-}
-
-.badge-green.active {
-  background-color: $aspargus;
-  color: white;
-}
+//.badge-green {
+//  border: 1px solid;
+//  border-color: $aspargus;
+//  color: $aspargus;
+//}
+//
+//.badge-green.active {
+//  background-color: $aspargus;
+//  color: white;
+//}
 </style>

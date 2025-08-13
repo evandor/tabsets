@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "cp envs/env.dev ./.env && quasar dev -m bex -T chrome",
-    "dev pwa": "cp envs/env.dev ./.env && quasar dev -m pwa -T chrome",
+    "dev pwa": "cp envs/bibbly.env.dev ./.env && quasar dev -m pwa -T chrome",
     "dev emulator": "cp envs/env.emulator ./.env && quasar dev -m bex -T chrome",
     "dev pwa emulator": "cp envs/env.emulator ./.env && quasar dev -m pwa",
     "dev ff emulator": "cp envs/env.emulator ./.env && quasar dev -m bex -T firefox",

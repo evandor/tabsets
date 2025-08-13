@@ -8,27 +8,65 @@
 // Your own variables (that are declared here) and Quasar's own
 // ones will be available out of the box in your .vue/.scss/.sass files
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,500;1,700;1,900&display=swap');
+
+// Set the default font-family
+//$typography-font-family : 'Montserrat', sans-serif !default;
+
 // It's highly recommended to change the default colors
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary: #087f8c;
-$secondary: #698f3f;
-$accent: #095256;
+$primary: hsl(228, 80%, 20%);
+$secondary: hsl(168, 50%, 10%);
+$accent: hsl(108, 80%, 20%);
 
 $dark: #1d1d1d;
 $dark-page: #121212;
 
-$positive: #21ba45;
+$positive: #26661A;
 $negative: #c10015;
-$info: #31ccec;
-$warning: #f2c037;
+$info: #1B158F;
+$warning: #f3ba20;
 
 $lightgrey: #efefef;
 $bordergrey: #e0e0e0;
 
+$separator: #e0e0e0;
+
+// dark mode (dm-)
+$dm-bg-dark: hsl(0, 0%, 0%);
+$dm-bg: hsl(0, 0%, 5%);
+$dm-bg-light: hsl(0, 0%, 10%);
+
+$dm-text-default: hsl(0, 0%, 90%);
+$dm-text-muted: hsl(0, 0%, 60%);
+
+// light mode (lm-)
+$lm-bg-dark: hsl(0, 0%, 90%);
+$lm-bg: hsl(0, 0%, 95%);
+$lm-bg-light: hsl(0, 0%, 100%);
+
+$lm-text-default: hsl(0, 0%, 10%);
+$lm-text-muted: hsl(0, 0%, 40%);
+
+
+//$body-font-size : 14px;
+//$dark-page: #333;
+
+//$body-font-size: 16px;
+
 $atomic-tangerine: #ff934f;
+$aspargus: #698f3f;
+$midnight-green: #095256;
 $teal: #087f8c;
+$indian-red: #eb5160;
+$xanthous: #ffba49;
+$mountbatten-pink: #9a7aa0;
+$columbia-blue: #c0d6df;
+$alice-blue: #dbe9ee;
+$celadon: #b8ebd0;
+$grey-white: #fefdff;
 
 .source-link {
   color: $teal;
@@ -40,15 +78,26 @@ $teal: #087f8c;
 }
 
 .card-show-button {
-  color: green;
+  color: $atomic-tangerine;
   background-color: rgba($atomic-tangerine, 0.1);
 
   &:hover {
     background-color: transparent !important;
-    color: red;
+    color: $aspargus;
     font-weight: bold;
     box-shadow: none !important;
   }
+}
+.atomic-tangerine {
+  color: $atomic-tangerine;
+}
+
+.midnight-green {
+  color: $midnight-green;
+}
+
+.indian-red {
+  color: $indian-red;
 }
 
 .app-logo-text {
@@ -94,7 +143,7 @@ $teal: #087f8c;
 }
 
 .gradient-text {
-  background: linear-gradient(to right, $primary, $secondary);
+  background: linear-gradient(to right, $teal, $aspargus);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -134,10 +183,18 @@ $teal: #087f8c;
   color: grey;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 430px) {
   .app-ext-text-welcome {
-    font-size: 1rem;
+    font-size: 0.7rem;
   }
+}
+
+.subtitle {
+  font-family: 'Lobster', cursive;
+  font-size: 1.1rem;
+  font-style: italic;
+  opacity: 0.7;
+  margin-left: -5px;
 }
 
 .bg-image {
@@ -155,3 +212,4 @@ $teal: #087f8c;
     z-index: 0;
   }
 }
+
