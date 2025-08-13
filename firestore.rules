@@ -1,0 +1,111 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    match /users/{uid} {
+
+      function isSharedTabset(tabsetId) {
+        let test = exists(/databases/$(database)/documents/shared-with/$(request.auth.uid)/tabsets/$(tabsetId));
+        return test //request.auth.uid == '6WYnZ4UGPalNX32Q4Kbny9yyPWe1'
+      }
+
+      function isWriteableSharedTabset(tabsetId) {
+        let test = get(/databases/$(database)/documents/shared-with/$(request.auth.uid)/tabsets/$(tabsetId)).data.access == "write";
+        return test //request.auth.uid == '6WYnZ4UGPalNX32Q4Kbny9yyPWe1'
+      }
+
+       function isPublic(tabsetId) {
+         return exists(/databases/$(database)/documents/public/tabsets/ids/$(tabsetId));
+         //return get(/databases/$(database)/documents/public/tabsets).data.ids.contains(tabsetId);
+       }
+
+       function isPublicNote(noteId) {
+         //debug(noteId)
+         //let exists = exists(/databases/$(database)/documents/users/{uid}/notes/$(noteId));
+         //return get(/databases/$(database)/documents/public/tabsets).data.ids.contains(tabsetId);
+         return false
+         //return debug(
+         //      debug(request.auth.uid) == debug(resource.data.ownerUID)
+         //   );
+       }
+
+      allow read: if request.auth.uid == uid;
+
+      match /checkout_sessions/{id} {
+        allow read, write: if request.auth.uid == uid;
+      }
+      match /subscriptions/{id} {
+        allow read: if request.auth.uid == uid;
+      }
+      match /payments/{id} {
+        allow read: if request.auth.uid == uid;
+      }
+
+      match /tabsets/{tabsetId} {
+        allow read: if request.auth.uid == uid || isSharedTabset(tabsetId)  || isPublic(tabsetId)
+        allow write: if request.auth.uid == uid || isWriteableSharedTabset(tabsetId);
+      }
+
+      // further matching in code (https://firebase.google.com/docs/firestore/security/rules-query?authuser=0)
+      match /notes/{document=**} {
+          allow read: if true
+          allow write: if request.auth.uid == uid
+      }
+
+      match /{document=**} {
+        allow read: if request.auth.uid == uid
+      }
+
+      match /{document=**} {
+        allow write: if request.auth.uid == uid;
+      }
+    }
+
+//    match /users/{uid}/{document=**} {
+//            allow read, update, delete,write: if
+//                          debug(
+//                            debug(request.auth.uid) == debug(document)
+//                          );
+//    }
+    
+    match /users/{uid}/snapshotmetadata/{document=**} {
+      allow read, write: if true;
+    }
+    
+    match /publictabsets/{document=**} {
+      allow read: if true
+      allow delete: if request.auth.uid == resource.data.sharedById
+      allow write: if request.auth.uid == request.resource.data.sharedById
+    }
+    
+    match /public-tabsets/{document=**} {
+      allow read: if true
+      allow delete: if request.auth.uid == resource.data.sharedById
+      allow write: if request.auth.uid == request.resource.data.sharedById
+    }
+    
+    match /public-notes/{document=**} {
+      allow read: if true
+      allow delete: if request.auth.uid == resource.data.sharedById
+      allow write: if request.auth.uid == request.resource.data.sharedById
+    }
+    
+    match /products/{id} {
+      allow read: if true;
+
+      match /prices/{id} {
+        allow read: if true;
+      }
+
+      match /tax_rates/{id} {
+        allow read: if true;
+      }
+    }
+
+
+    match /emails/{document=**} {
+      allow write: if request.auth != null
+    }
+
+  }
+}
