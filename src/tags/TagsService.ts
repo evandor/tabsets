@@ -29,6 +29,8 @@ import { useUiStore } from 'src/ui/stores/uiStore'
 
 const { extractSecondLevelDomain } = useUtils()
 
+const debug = true
+
 function removeDuplicatesByProperty<T>(array: T[], property: keyof T): T[] {
   const uniqueMap = new Map<any, T>()
 
@@ -433,12 +435,12 @@ export function useTagsService() {
 
     let analysisNecessary = true
     const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
-    console.log('tsCat', tsCat)
+    //console.log('tsCat', tsCat)
     if (tsCat) {
       const url = useContentStore().getCurrentTabUrl
-      console.log('got tsCat', tsCat, url)
+      // console.log('got tsCat', tsCat, url)
       const cat = tsCat[url as keyof object]
-      console.log('got cat', cat)
+      console.log(' <> got cat', cat)
       if (cat) {
         analysisNecessary = false
         // aiCategory.value = cat['category']

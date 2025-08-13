@@ -6,6 +6,7 @@ import { useSettingsStore } from 'src/core/stores/settingsStore'
 
 const version = import.meta.env?.PACKAGE_VERSION || '0.0.0'
 
+console.log('Logger.ts...')
 const { setupErrorHandling } = useErrorHandlingConfig()
 
 var scope = setupErrorHandling()

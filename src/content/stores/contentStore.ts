@@ -155,7 +155,7 @@ export const useContentStore = defineStore('content', () => {
               currentTabReferences.value.push(
                 new TabReference(uid(), TabReferenceType.OPEN_SEARCH, 'opensearch', [{ xml: text }], href),
               )
-              console.log('Found TabReference', currentTabReferences.value)
+              //console.log('Found TabReference', currentTabReferences.value)
             })
         } catch (err) {
           console.log('not able to create opensearch tabReference for', currentTabUrl.value)
@@ -191,8 +191,12 @@ export const useContentStore = defineStore('content', () => {
       addFromMeta('locale', name, content)
       addFromMeta('description', name, content)
     }
-    currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.OPEN_GRAPH, 'Open Graph', openGraphRefs))
-    currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.META_DATA, 'Meta Data', metadataRefs))
+    if (openGraphRefs.length > 0) {
+      currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.OPEN_GRAPH, 'Open Graph', openGraphRefs))
+    }
+    if (metadataRefs.length > 0) {
+      currentTabReferences.value.push(new TabReference(uid(), TabReferenceType.META_DATA, 'Meta Data', metadataRefs))
+    }
   }
 
   const checkScripts = ($: CheerioAPI) => {

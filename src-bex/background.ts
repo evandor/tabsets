@@ -5,7 +5,7 @@ import { PageData } from 'src/tabsets/models/PageData'
 
 /**
  * The background script can access chrome.storage.local, but not LocalStorage (from quasar)
-
+ *
  * to check: https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
  */
 
@@ -69,29 +69,13 @@ function initModel(categories: string[]) {
     .catch((err: any) => console.warn('could not create AI session', err))
 }
 
-// function setActionContextMenu(label: string) {
-//   const menuId = 'tabset_extension_action_bg'
-//   //console.log(`deleting context menu (save in ${label})`)
-//   chrome.contextMenus.remove(menuId, () => {
-//     if (chrome.runtime.lastError) {
-//       // menuId propably didnt exist
-//     }
-//     console.log(`create context menu (save in ${label})`)
-//     chrome.contextMenus.create({
-//       id: menuId,
-//       title: 'Save in ' + label + ' collection',
-//       documentUrlPatterns: ['*://*/*'],
-//       contexts: ['action'],
-//     })
-//   })
-// }
-
 addEventListener('unhandledrejection', (event) => {
   console.log('[BEX-BG] ga: fire error event', event)
   // getting error: Service worker registration failed. Status code: 15
   Analytics.fireErrorEvent(event.reason)
 })
 
+// open search window on omnibox input
 chrome.omnibox.onInputEntered.addListener((text) => {
   const newURL = chrome.runtime.getURL('/www/index.html#/searchresult?t=' + encodeURIComponent(text))
   chrome.tabs.create({ url: newURL }).catch((err) => console.log('[BEX-BG] background.js error', err))
@@ -102,18 +86,7 @@ if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false }).catch((error: any) => console.error(error))
 }
 
-// chrome.contextMenus.onClicked.addListener((e: chrome.contextMenus.OnClickData, tab: chrome.tabs.Tab | undefined) => {
-//   console.log('listening to', e, tab)
-//   if (e.menuItemId === 'tabset_extension_action_bg') {
-//     console.log('bridge.portList', bridge.portList)
-//     // const cmd = new AddTabToTabsetCommand(new Tab(uid(), null as unknown as chrome.tabs.Tab))
-//     // console.log('cmd', cmd)
-//   } else {
-//     console.log('unknown context menu event', e)
-//   }
-// })
-
-// TODO remove listener (when?)
+// TODO remove listener (when? possible? does it make sense?)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   function openSidePanel(tabId: number) {
     const options = {
@@ -180,8 +153,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true
 })
 
-let modelPromise: any = null
-
+// toggles sidepanel on click in extension icon
 chrome.action.onClicked.addListener((t: chrome.tabs.Tab) => {
   try {
     // @ts-expect-error unknown
@@ -201,7 +173,7 @@ chrome.action.onClicked.addListener((t: chrome.tabs.Tab) => {
 })
 
 chrome.runtime.onInstalled.addListener((details) => {
-  console.debug('[BEX-BG] onInstalled listener fired in background.ts', details)
+  console.debug('[BEX-BG] "onInstalled" fired', details)
   if (chrome.runtime.lastError) {
     console.warn('got runtime error', chrome.runtime.lastError)
   }
@@ -353,6 +325,7 @@ bridge.on('new-annotation', async ({ payload }) => {
 
 /* === once everytime the background script loads === */
 
+// print Language Model availability
 try {
   // @ts-expect-error xxx
   LanguageModel.availability().then((availability: string) => {
@@ -361,8 +334,11 @@ try {
   })
 } catch (err: any) {}
 
+/**
+ * if AI is active, get the current categories and init the Language Model with them
+ */
 chrome.storage.local.get('tabsets.ext.ai.active').then((active: object) => {
-  console.log('[BEX-BG] checking AI settings', JSON.stringify(active))
+  console.log('[BEX-BG] checking AI settings (ext. storage)', JSON.stringify(active))
   if (true === active['tabsets.ext.ai.active' as keyof object]) {
     //chrome.storage.local.set({ 'tabsets.ext.ai.categories': ['recipe', 'news', 'food', 'programming'] })
     chrome.storage.local.get('tabsets.ext.ai.categories').then((categories: { [p: string]: any }) => {
@@ -372,8 +348,6 @@ chrome.storage.local.get('tabsets.ext.ai.active').then((active: object) => {
         initModel(['recipe', 'food', 'travel', 'leisure', 'news', 'unknown'])
         return
       }
-
-      // console.log('[BEX-BG] hier:::', typeof categoriesList, categoriesList, Object.values(categoriesList).length > 0)
       if (Object.values(categoriesList).length > 0) {
         initModel(Object.values(categoriesList))
       } else {

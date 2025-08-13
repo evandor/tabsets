@@ -1,15 +1,15 @@
 import { createBridge } from '#q-app/bex/content'
 import { LOCAL_STORAGE_CATEGORIZATION_KEY } from 'boot/constants'
 import { LocalStorage } from 'quasar'
-import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { PageData } from 'src/tabsets/models/PageData'
-import { Tab } from 'src/tabsets/models/Tab'
-
 
 /**
  * The content script can access chrome.storage.local and the LocalStorage (from quasar)
  */
 
+/**
+ * handles IndicatorIcon
+ */
 const visibilityChangeListener = () => {
   return () => {
     if (document.visibilityState === 'visible') {
@@ -22,6 +22,9 @@ const visibilityChangeListener = () => {
   }
 }
 
+/**
+ * message handling for getExcerpt, url-added, url-deleted, ...
+ */
 const onMessageListener = (
   request: any,
   sender: chrome.runtime.MessageSender,
@@ -82,14 +85,6 @@ window.dispatchEvent(new Event(orphanMessageId))
 window.addEventListener(orphanMessageId, unregisterOrphan)
 // === https://stackoverflow.com/questions/57468219/how-to-remove-orphaned-script-after-chrome-extension-update ===
 
-const bridge = createBridge({ debug: false })
-
-declare module '@quasar/app-vite' {
-  interface BexEventMap {
-    'some.event': [{ someProp: string }, void]
-  }
-}
-
 async function getAppId(): Promise<string> {
   const appId = await chrome.storage.local.get('tabsets.ext.app.id')
   return appId['tabsets.ext.app.id'] || '-'
@@ -144,10 +139,10 @@ function sendUpdateIndicatorIconMessage(show: boolean = true) {
         // compare installation ids - if not matching, information is not valid anymore
         chrome.storage.local.get('tabsets.ext.app.id').then((currentAppId: { [p: string]: any }) => {
           const appId = currentAppId['tabsets.ext.app.id']
-          console.log('[BEX-CT] got currentAppId', appId)
-          console.log('[BEX-CT] got appIdFromSite', appIdFromSite)
+          //console.log('[BEX-CT] got currentAppId', appId)
+          //console.log('[BEX-CT] got appIdFromSite', appIdFromSite)
           if (appId !== appIdFromSite) {
-            console.warn('[BEX-CT] outdated info, deleting data from local storage')
+            console.warn('[BEX-CT] outdated info, deleting data from LocalStorage')
             LocalStorage.removeItem('tabsets.annotations')
             LocalStorage.removeItem('tabsets.app.id')
             LocalStorage.removeItem('tabsets.managed')
@@ -172,14 +167,19 @@ function sendUpdateIndicatorIconMessage(show: boolean = true) {
 
 document.addEventListener('visibilitychange', visibilityChangeListener)
 
+const bridge = createBridge({ debug: false })
+
+/**
+ * run once the page loads. Updates the IndicatorIcon and checks if AI is available and active.
+ * If so, the background script is asked to create the matching AI category for the current URL
+ * and the LocalStorage will be updated with this information.
+ */
 bridge
   .connectToBackground()
   .then(() => {
     console.log(
       `[BEX-CT] Connected to background (portName: ${bridge.portName}, portList: ${JSON.stringify(bridge.portList)}, url: ${location.href}, visible: ${document.visibilityState})`,
     )
-
-    // useCommandExecutor().execute(new AddTabToTabsetCommand(new Tab(uid(), null as unknown as chrome.tabs.Tab)))
 
     if (document.visibilityState !== 'visible') {
       console.log(`[BEX-CT] returning early, document not visible right now`)
@@ -210,7 +210,6 @@ bridge
               //LocalStorage.setItem(LOCAL_STORAGE_CATEGORIZATION_KEY, json)
               const current: { [k: string]: object } = LocalStorage.getItem(LOCAL_STORAGE_CATEGORIZATION_KEY) || {}
               console.log('[BEX-CT] current', current)
-              const toStore: { [k: string]: string } = {}
               current[location.href as keyof object] = answer
               LocalStorage.setItem(LOCAL_STORAGE_CATEGORIZATION_KEY, JSON.parse(JSON.stringify(current)))
             }

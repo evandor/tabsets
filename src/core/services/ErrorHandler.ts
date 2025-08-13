@@ -15,6 +15,7 @@ const { error } = useLogger()
 export function useNotificationHandler() {
   const handleError = (err: any, type: NotificationType = NotificationType.TOAST) => {
     const errorMsg = err ? err.toString() : 'unknown error'
+    console.log('ErrorHandler.ts...')
     const { setupErrorHandling } = useErrorHandlingConfig()
     var scope = setupErrorHandling()
 

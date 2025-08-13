@@ -9,58 +9,6 @@
         </q-linear-progress>
       </div>
       <div class="row q-ma-none q-pa-none">
-        <div class="col-1 q-ma-none q-pa-none q-mr-md q-mt-xs" style="border: 0 solid red; max-width: 24px">
-          <q-btn
-            icon="menu"
-            flat
-            :disabled="props.disable"
-            size="md"
-            class="cursor-pointer"
-            :class="{ shakeWithColor: animateMenuButton, 'cursor-pointer': true }" />
-          <q-menu>
-            <q-list style="min-width: 200px" dense>
-              <!--              <CreateTabsetAction :tabset="currentTabset" level="root" />-->
-              <!--              <EditTabsetAction :tabset="currentTabset" level="root" :element="props.element" />-->
-              <SearchAction
-                :tabset="currentTabset || new Tabset('dummy', 'dummy', [])"
-                level="root"
-                v-if="showSearchAction"
-                @clicked="delayedRemoval()"
-                :element="props.element" />
-              <!--              <CreateSubfolderAction :tabset="currentTabset" level="root" :element="props.element" />-->
-              <OpenAllInMenuAction
-                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
-                level="root"
-                :element="props.element" />
-              <ShareTabsetAction :tabset="currentTabset" level="root" :element="props.element" />
-              <ShowGalleryAction
-                v-if="useFeaturesStore().hasFeature(FeatureIdent.GALLERY)"
-                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
-                :element="props.element"
-                level="root" />
-              <ShowRezepteAction
-                v-if="useFeaturesStore().hasFeature(FeatureIdent.GALLERY)"
-                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
-                :element="props.element"
-                level="root" />
-              <!--              <CreateNoteAction-->
-              <!--                :tabset="currentTabset"-->
-              <!--                level="root"-->
-              <!--                v-if="useSettingsStore().has('DEV_MODE')" />-->
-              <CreatePageAction
-                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
-                level="root"
-                v-if="useFeaturesStore().hasFeature(FeatureIdent.PAGES)"
-                :element="props.element" />
-              <ArchiveTabsetAction
-                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
-                level="root"
-                :element="props.element"
-                v-if="useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET)" />
-              <!--              <DeleteTabsetAction :tabset="currentTabset" level="root" :element="props.element" />-->
-            </q-list>
-          </q-menu>
-        </div>
         <div class="col-9 q-ma-none q-pa-none q-px-sm text-center" style="border: 0 solid red">
           <div class="col-12 text-subtitle1">
             <div class="q-ml-xs q-mt-none">
@@ -148,13 +96,6 @@ import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
 import { ActionHandlerButtonClickedHolder } from 'src/tabsets/actionHandling/model/ActionHandlerButtonClickedHolder'
 import SidePanelToolbarFab2 from 'src/tabsets/actionHandling/SidePanelToolbarFab2.vue'
-import ArchiveTabsetAction from 'src/tabsets/actions/ArchiveTabsetAction.vue'
-import CreatePageAction from 'src/tabsets/actions/CreatePageAction.vue'
-import OpenAllInMenuAction from 'src/tabsets/actions/OpenAllInMenuAction.vue'
-import SearchAction from 'src/tabsets/actions/SearchAction.vue'
-import ShareTabsetAction from 'src/tabsets/actions/ShareTabsetAction.vue'
-import ShowGalleryAction from 'src/tabsets/actions/ShowGalleryAction.vue'
-import ShowRezepteAction from 'src/tabsets/actions/ShowRezepteAction.vue'
 import { SelectTabsetCommand } from 'src/tabsets/commands/SelectTabsetCommand'
 import AddUrlDialog from 'src/tabsets/dialogues/AddUrlDialog.vue'
 import DeleteTabsetDialog from 'src/tabsets/dialogues/DeleteTabsetDialog.vue'
@@ -212,7 +153,7 @@ watchEffect(() => {
   //console.log(':::currentTabTags', currentTabTags)
   // const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
   const tsCat = useTagsService().getCurrentTabContentClassification().classification
-  console.log('tsCat', tsCat, tsCat.split(':').length)
+  //  console.log('tsCat', tsCat)
   if (tsCat) {
     const label: string = tsCat.split(':').length === 2 ? tsCat.split(':')[1]! : tsCat
     setAutomaticSelectionLabel(label + ' (auto)')

@@ -195,7 +195,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
 
     // the updated tab does not need to be the active one
     if (chromeTab.id === currentChromeTab.value?.id) {
-      console.log('--- tab update3 ---: match')
+      //console.log('--- tab update3 ---: match')
       await setCurrentTab()
 
       useTabsetsUiStore()
@@ -216,7 +216,7 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
   // #endregion snippet
 
   async function onTabRemoved(tabId: number, removeInfo: chrome.tabs.TabRemoveInfo) {
-    // console.log(`tabRemoved tabId: ${tabId}, windowId: ${removeInfo.windowId}`)
+    console.log(`tabRemoved tabId: ${tabId}, windowId: ${removeInfo.windowId}`)
     browserTabs.value = await queryTabs()
   }
 
