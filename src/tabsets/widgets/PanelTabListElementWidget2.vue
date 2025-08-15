@@ -431,7 +431,6 @@ import { useNavigationService } from 'src/core/services/NavigationService'
 import { useUtils } from 'src/core/services/Utils'
 import ShortUrl from 'src/core/utils/ShortUrl.vue'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { RestTab } from 'src/rest/models/RestTab'
 import TabService from 'src/services/TabService'
 import { Suggestion } from 'src/suggestions/domain/models/Suggestion'
 import { useSuggestionsStore } from 'src/suggestions/stores/suggestionsStore'
@@ -688,9 +687,9 @@ const placeholders = (): { url: string; name: string }[] => {
 }
 
 const callRestApi = (tab: Tab) => {
-  const restTab = tab as RestTab
-  console.log(`about to call ${restTab.api} with ${JSON.stringify(restTab.params)}`)
-  useNavigationService().browserTabFor(chrome.runtime.getURL('www/index.html/#/mainpanel/restapi/' + restTab.id))
+  // const restTab = tab as RestTab
+  // console.log(`about to call ${restTab.api} with ${JSON.stringify(restTab.params)}`)
+  // useNavigationService().browserTabFor(chrome.runtime.getURL('www/index.html/#/mainpanel/restapi/' + restTab.id))
 }
 
 const addComment = () => {

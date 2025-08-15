@@ -339,7 +339,6 @@ import { useUtils } from 'src/core/services/Utils'
 import ShortUrl from 'src/core/utils/ShortUrl.vue'
 import { useEventsServices } from 'src/events/services/EventsServices'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { RestTab } from 'src/rest/models/RestTab'
 import NavigationService from 'src/services/NavigationService'
 import TabService from 'src/services/TabService'
 import { SavedBlob } from 'src/snapshots/models/SavedBlob'
@@ -515,9 +514,9 @@ const handleNameClick = useDblClickHandler(
 )
 
 const callRestApi = (tab: Tab) => {
-  const restTab = tab as RestTab
-  console.log(`about to call ${restTab.api} with ${JSON.stringify(restTab.params)}`)
-  useNavigationService().browserTabFor(chrome.runtime.getURL('www/index.html/#/mainpanel/restapi/' + restTab.id))
+  // const restTab = tab as RestTab
+  // console.log(`about to call ${restTab.api} with ${JSON.stringify(restTab.params)}`)
+  // useNavigationService().browserTabFor(chrome.runtime.getURL('www/index.html/#/mainpanel/restapi/' + restTab.id))
 }
 
 function hasReference(tab: Tab, refType: TabReferenceType) {
