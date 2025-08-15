@@ -48,7 +48,6 @@ import { useUtils } from 'src/core/services/Utils'
 import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { useEventsServices } from 'src/events/services/EventsServices'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
-import { RestTab } from 'src/rest/models/RestTab'
 import TabService from 'src/services/TabService'
 import { CreateFolderCommand } from 'src/tabsets/commands/CreateFolderCommand'
 import { OpenTabCommand } from 'src/tabsets/commands/OpenTabCommand'
@@ -211,12 +210,6 @@ const handleNameClick = useDblClickHandler(
     })
   },
 )
-
-const callRestApi = (tab: Tab) => {
-  const restTab = tab as RestTab
-  console.log(`about to call ${restTab.api} with ${JSON.stringify(restTab.params)}`)
-  useNavigationService().browserTabFor(chrome.runtime.getURL('www/index.html/#/mainpanel/restapi/' + restTab.id))
-}
 
 function hasReference(tab: Tab, refType: TabReferenceType) {
   const t: Tab = Object.assign(new Tab(tab.id, BrowserApi.createChromeTabObject('', '')), tab)
