@@ -17,21 +17,26 @@ class IndexedDbTabsetsPersistence implements TabsetsPersistence {
 
   async init() {
     this.db = await this.initDatabase()
-    // console.debug(` ...initialized tabsets: ${this.getServiceName()}`, '✅')
+    console.debug(` ...initialized tabsets: ${this.getServiceName()}`, '✅')
     return Promise.resolve()
   }
 
   private async initDatabase(): Promise<IDBPDatabase> {
     const ctx = this
-    return await openDB('tabsetsDB', 1, {
-      // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
-      upgrade(db) {
-        if (!db.objectStoreNames.contains(ctx.STORE_IDENT)) {
-          console.log('creating db ' + ctx.STORE_IDENT)
-          db.createObjectStore(ctx.STORE_IDENT)
-        }
-      },
-    })
+    try {
+      return await openDB('tabsetsDB', 1, {
+        // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
+        upgrade(db) {
+          if (!db.objectStoreNames.contains(ctx.STORE_IDENT)) {
+            console.log('creating db ' + ctx.STORE_IDENT)
+            db.createObjectStore(ctx.STORE_IDENT)
+          }
+        },
+      })
+    } catch (e: any) {
+      console.log('eeee', e)
+      return Promise.reject(e)
+    }
   }
 
   async loadTabsets(): Promise<any> {

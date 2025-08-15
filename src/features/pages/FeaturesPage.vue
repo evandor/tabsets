@@ -39,7 +39,7 @@
           - You need a (free) account to use this feature</span
         >
       </div>
-      <div v-if="route.path.endsWith('/ai')">
+      <div v-if="route.path?.endsWith('/ai')">
         <span class="text-bold">Internal Status: </span>
         <span class="cursor-pointer" @click="useNavigationService().browserTabFor('chrome://on-device-internals')">{{
           availability
@@ -173,7 +173,7 @@ const languageModelParams = ref<string>('')
 
 onMounted(() => {
   Analytics.firePageViewEvent('FeaturesPage', document.location.href)
-  if (route.path.endsWith('/ai')) {
+  if (route.path?.endsWith('/ai')) {
     chrome.storage.local.get('tabsets.ext.ai.active').then((res: object) => {
       aiStatusFromStorage.value = res
     })

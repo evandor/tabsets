@@ -78,7 +78,7 @@ describe('AddTabToTabsetCommand', () => {
     const tab = createTabWithChromeTabId('tabId', skysailChromeTab)
     const result = await new AddTabToTabsetCommand(tab, tabset).execute()
 
-    expect(result.message).toBe('Link was added')
+    expect(result.message).toBe('Link was added to collection new Tabset')
     const tabsetFromDB = useTabsetsStore().getTabset(tabset.id)
     expect(tabsetFromDB!.tabs.length).toBe(1)
     expect(tabsetFromDB!.tabs[0]!.id).toBe('tabId')
@@ -110,7 +110,7 @@ describe('AddTabToTabsetCommand', () => {
     rootTabset.folderActive = subfolder.id
 
     const result = await new AddTabToTabsetCommand(theTab, rootTabset, subfolder.id).execute()
-    expect(result.message).toBe('Link was added')
+    expect(result.message).toBe('Link was to collection new Tabset2')
 
     const tabsetFromDB = useTabsetsStore().getTabset(rootTabset.id)!
     // console.log("tabsetFromDB", tabsetFromDB)
