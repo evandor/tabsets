@@ -84,7 +84,7 @@
           @click="newTabsetDialog()">
           + Create Collection
         </div>
-        <div class="fit text-center text-grey-7 text-body2" v-else>click the plus icon to add the current tab</div>
+        <!--        <div class="fit text-center text-grey-7 text-body2" v-else>click the plus icon to add the current tab</div>-->
 
         <template v-if="useSettingsStore().has('DEBUG_MODE')">
           <DebugInfo />
@@ -476,7 +476,7 @@ const bgColorForSpecialTab = (sts: Tabset) => {
 }
 
 const showSpecialTabsets = () => {
-  return specialTabsets.value.length > 1 || (specialTabsets.value[0] && specialTabsets.value[0].tabs?.length > 0)
+  return false //specialTabsets.value.length > 1 || (specialTabsets.value[0] && specialTabsets.value[0].tabs?.length > 0)
 }
 
 const newTabsetDialog = () => {

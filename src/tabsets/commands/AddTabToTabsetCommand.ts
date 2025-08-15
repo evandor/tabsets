@@ -16,16 +16,30 @@ import { useRequestsService } from 'src/requests/services/RequestsService'
 import { useRequestsStore } from 'src/requests/stores/requestsStore'
 import { searchUtils } from 'src/search/searchUtils'
 import { Tab } from 'src/tabsets/models/Tab'
-import { ChangeInfo, Tabset } from 'src/tabsets/models/Tabset'
+import { ChangeInfo, Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import PlaceholderUtils from 'src/tabsets/utils/PlaceholderUtils'
+import { useTagsService } from 'src/tags/TagsService'
 import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 
 const { sendMsg } = useUtils()
 const { info } = useLogger()
 
 // No undo command, tab can be deleted manually easily
+
+async function tabInTabset(name: string, classification: ContentClassification): Promise<Tabset | undefined> {
+  let tabset = useTabsetsStore().getTabset(name)
+  if (!tabset) {
+    console.log('no tabset yet for id', name, tabset)
+    tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
+    tabset.type = TabsetType.SPECIAL
+    tabset.contentClassification = classification
+    await useTabsetsStore().saveTabset(tabset)
+  }
+  return tabset
+}
 
 /**
  * Add provided Tab to provided Tabset.
@@ -41,17 +55,41 @@ export class AddTabToTabsetCommand implements Command<any> {
     if (!tabset) {
       this.tabset = useTabsetsStore().getCurrentTabset
     }
-    if (!this.tabset) {
-      throw new Error('could not set current tabset')
-    }
   }
 
   async execute(): Promise<ExecutionResult<any>> {
-    console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset!.id}', active folder: ${this.activeFolder}`)
+    console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset?.id}', active folder: ${this.activeFolder}`)
 
-    let tabsetOrFolder = this.tabset!
+    if (!this.tabset) {
+      const tabCategory: ContentClassification | 'unclassified' =
+        useTagsService().getCurrentTabContentClassification().classification
+      console.log('found category', tabCategory)
+      switch (tabCategory) {
+        case 'system:recipe':
+          this.tabset = await tabInTabset('recipes', 'system:recipe')
+          break
+        case 'system:news':
+          this.tabset = await tabInTabset('news', 'system:news')
+          break
+        case 'system:shopping':
+          this.tabset = await tabInTabset('shopping', 'system:shopping')
+          break
+        case 'system:restaurant':
+          this.tabset = await tabInTabset('restaurants', 'system:restaurant')
+          break
+        default:
+          // noop
+          break
+      }
+      if (!this.tabset) {
+        console.log('could not determine tabset, falling back to "UNCATEGORIZED"')
+        this.tabset = useTabsetsStore().getSpecialTabset('UNCATEGORIZED')
+      }
+    }
+
+    let tabsetOrFolder = this.tabset
     if (this.activeFolder) {
-      const folder = useTabsetsStore().getActiveFolder(this.tabset!, this.activeFolder)
+      const folder = useTabsetsStore().getActiveFolder(this.tabset, this.activeFolder)
       if (folder) {
         tabsetOrFolder = folder
       }
@@ -123,16 +161,16 @@ export class AddTabToTabsetCommand implements Command<any> {
         }
 
         const res2 = await useTabsetService().saveTabset(
-          this.tabset!,
-          new ChangeInfo('tab', 'added', this.tab.id, this.tabset!.id),
+          this.tabset,
+          new ChangeInfo('tab', 'added', this.tab.id, this.tabset.id),
         )
-        res = new ExecutionResult(res2, 'Link was added')
+        res = new ExecutionResult(res2, 'Link was added to collection ' + this.tabset.name)
 
         // saving thumbnail
-        useThumbnailsService().captureVisibleTab(this.tab.id, this.tabset?.id || 'unknown tabsetid')
+        useThumbnailsService().captureVisibleTab(this.tab.id, this.tabset.id || 'unknown tabsetid')
       } else {
-        const res2 = await useTabsetService().saveTabset(this.tabset!)
-        res = new ExecutionResult(res2, 'Link was added')
+        const res2 = await useTabsetService().saveTabset(this.tabset)
+        res = new ExecutionResult(res2, 'Link was to collection ' + this.tabset.name)
       }
 
       // add to search index via App Dispatcher
@@ -153,7 +191,7 @@ export class AddTabToTabsetCommand implements Command<any> {
       // badge indicator icon
       sendMsg('url-added', { url: this.tab.url })
 
-      sendMsg('tab-added', { tabsetId: this.tabset!.id, url: this.tab.url })
+      sendMsg('tab-added', { tabsetId: this.tabset.id, url: this.tab.url })
 
       const req = useRequestsStore().getCurrentTabRequest
       if (req && req.url === this.tab.url) {
@@ -170,5 +208,5 @@ export class AddTabToTabsetCommand implements Command<any> {
 }
 
 AddTabToTabsetCommand.prototype.toString = function cmdToString() {
-  return `AddTabToTabsetCommand: {tabId=${this.tab.id}}`
+  return `AddTabToTabsetCommand: {tabId=${this.tab.id}, ${this.tabset?.id}}`
 }

@@ -45,7 +45,7 @@ export function searchUtils() {
       tab.url || '',
       tab.description,
       tab.keywords,
-      content.content || '',
+      content?.content || '',
       tab.favIconUrl || '',
       [],
       'Tab',

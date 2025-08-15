@@ -234,10 +234,10 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       const ts = k || new Tabset('', '', [])
       return ts.id === tabsetId
     })
-    if (found && found.type === TabsetType.SPECIAL) {
-      console.log('not setting current tabset to special one')
-      return
-    }
+    // if (found && found.type === TabsetType.SPECIAL) {
+    //   console.log('not setting current tabset to special one')
+    //   return
+    // }
     if (found) {
       await useSelectedTabsetService().setCurrentTabsetId(tabsetId)
       currentTabsetId.value = found.id

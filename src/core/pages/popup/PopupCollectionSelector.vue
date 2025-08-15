@@ -133,8 +133,10 @@ const { tabsetSelectionOptions, tabsetSelectionModel, setAutomaticSelectionLabel
 
 watchEffect(() => {
   const tsCat = useTagsService().getCurrentTabContentClassification().classification
+  console.log('gto tsCat', tsCat)
   if (tsCat) {
-    setAutomaticSelectionLabel(tsCat + ' (auto)')
+    const label: string = tsCat.split(':').length === 2 ? tsCat.split(':')[1]! : tsCat
+    setAutomaticSelectionLabel('automatic: ' + label)
   }
 })
 
@@ -146,78 +148,6 @@ watchEffect(() => {
   const space = useSpacesStore().space
 
   stashedTabs.value = tabsets.value.filter((ts: Tabset) => ts.type === TabsetType.SESSION).length > 0
-
-  // tabsetSelectionOptions.value = tabsets.value
-  //   .filter((ts: Tabset) =>
-  //     useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
-  //   )
-  //   .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
-  //   .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
-  //   .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
-  //   //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
-  //   .filter((ts: Tabset) => {
-  //     if (useSpaces && space) {
-  //       return ts.spaces.indexOf(space.id) >= 0
-  //     } else if (useSpaces && !space) {
-  //       return ts.spaces?.length === 0
-  //     }
-  //     return true
-  //   })
-  //   .map((ts: Tabset) => {
-  //     return {
-  //       label: ts.id === currentTabset.value?.id ? ts.name + ' (current)' : ts.name,
-  //       value: ts.id,
-  //       disable: ts.id === currentTabset.value?.id,
-  //     }
-  //   })
-  //   .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
-  //
-  // if (tabsetSelectionOptions.value.length == 1) {
-  //   tabsetSelectionOptions.value = []
-  // }
-  //
-  // if (tabsetSelectionOptions.value.length > 1) {
-  //   tabsetSelectionOptions.value.unshift({ label: 'Switch to', value: '', disable: true, icon: 'switch_horiz' })
-  // }
-  //
-  // if (tabsets.value.length > 1) {
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  // }
-  //
-  // tabsetSelectionOptions.value.push({ label: 'Add', value: '', disable: true, icon: 'switch_horiz' })
-  //
-  // tabsetSelectionOptions.value.push({ label: 'a new Collection', value: 'add-collection' })
-  //
-  // if (useFeaturesStore().hasFeature(FeatureIdent.FOLDER)) {
-  //   tabsetSelectionOptions.value.push({
-  //     label: 'new Folder to Collection',
-  //     value: 'popup-add-folder',
-  //     icon: 'sym_o_folder',
-  //   })
-  // }
-  //
-  // tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //
-  // tabsetSelectionOptions.value.push({ label: 'Show Collection', value: 'show-tabset', icon: 'o_eye' })
-  // //tabsetSelectionOptions.value.push({ label: 'Add Collection', value: 'add-tabset', icon: 'o_add' })
-  // tabsetSelectionOptions.value.push({ label: 'Manage Collections', value: 'popup-manage-tabsets', icon: 'o_edit' })
-  // if (useFeaturesStore().hasFeature(FeatureIdent.VISUALIZATIONS)) {
-  //   tabsetSelectionOptions.value.push({
-  //     label: 'Folder Visualisation',
-  //     value: 'popup-visualize-folders',
-  //     icon: 'sym_o_graph_5',
-  //   })
-  // }
-  //
-  // if (stashedTabs.value) {
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //   tabsetSelectionOptions.value.push({ label: 'Stashed Tabs', value: 'stashed-tabs', icon: 'o_add' })
-  // }
-  //
-  // if (useFeaturesStore().hasFeature(FeatureIdent.SPACES)) {
-  //   tabsetSelectionOptions.value.push({ label: '', value: '', disable: true })
-  //   tabsetSelectionOptions.value.push({ label: 'Select Space...', value: 'select-space', icon: 'o_space_dashboard' })
-  // }
 })
 
 watchEffect(() => {
@@ -262,6 +192,7 @@ watchEffect(() => {
 const offsetTop = () => ($q.platform.is.capacitor || $q.platform.is.cordova ? 'margin-top:40px;' : '')
 
 const switchTabset = async (tabset: object) => {
+  console.log('switching tabset', tabset)
   const tsId = tabset['value' as keyof object]
   if (tsId === 'select-space') {
     await router.push('/sidepanel/spaces')
@@ -316,6 +247,11 @@ const switchTabset = async (tabset: object) => {
   if (tsId === 'add-collection') {
     collectionMode.value = 'add'
     setTimeout(() => (focused.value = true), 600)
+  }
+  if (tsId === 'automatic-selection') {
+    useTabsetsStore().unselectCurrentTabset()
+    currentTabset.value = undefined
+    return
   }
   if (tsId === 'delete-tabset' && currentTabset.value) {
     $q.dialog({
