@@ -5,6 +5,7 @@ import 'fake-indexeddb/auto'
 import { config } from '@vue/test-utils'
 import { vi } from 'vitest'
 
+console.log('using setup-file.ts!')
 const request = indexedDB.open('db', INDEX_DB_VERSION)
 request.onupgradeneeded = async function () {
   await useJestHelper().dbInit(request)
@@ -24,9 +25,32 @@ config.global.mocks = {
 }
 
 // https://stevekinney.com/courses/testing/mocking-fetch-and-network-requests due to useMetrics calls
-// @ts-expect-error
-global.fetch = vi.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve({}),
-  }),
-)
+// @ts-expect-error xxx
+// global.fetch = vi.fn(() =>
+//   Promise.resolve({
+//     ok: true,
+//     status: 200,
+//     text: async () => '',
+//     json: async () => ({}),
+//     headers: new Headers(),
+//   }),
+// )
+
+global.fetch = vi.fn((input: URL) => {
+  const url = input.toString()
+  if (url.endsWith('categoryMapping.data')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      text: async () => 'typeA;news;news\n',
+    })
+  }
+  if (url.endsWith('ldJsonMapping.data')) {
+    return Promise.resolve({
+      ok: true,
+      status: 200,
+      text: async () => 'https://schema.org;LocalBusiness;$.longitude;number;place.longitude\n',
+    })
+  }
+  return Promise.resolve({ ok: false, status: 404, text: async () => '' })
+})

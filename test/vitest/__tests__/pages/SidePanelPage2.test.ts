@@ -4,7 +4,6 @@ import { createPinia, setActivePinia } from 'pinia'
 import { LocalStorage } from 'quasar'
 import ChromeApi from 'src/app/BrowserApi'
 import SidePanelPage2 from 'src/core/pages/SidePanelPage2.vue'
-import IFirebaseServices from 'src/services/firebase/IFirebaseServices'
 import { useDB } from 'src/services/usePersistenceService'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 import IndexedDbTabsetsPersistence from 'src/tabsets/persistence/IndexedDbTabsetsPersistence'
@@ -82,7 +81,7 @@ describe('SidePanelPage2', () => {
   it('should be mounted', async () => {
     useTabsStore2().setCurrentChromeTab(skysailChromeTab)
     console.log('hier', wrapper.html())
-    expect(wrapper.text()).toContain('menuaddtab')
+    expect(wrapper.text()).toContain('menuautomatic: unclassified')
     expect(wrapper.text()).not.toContain('search')
   })
 
