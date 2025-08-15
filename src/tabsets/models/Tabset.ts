@@ -1,7 +1,6 @@
 // 4 expected diffs to localstorage
 // 4 expected diffs to localstorage
 import { STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
-import { RestApiIdent } from 'src/rest/RestApi'
 import { useAuthStore } from 'src/stores/authStore'
 import { DynamicTabSource } from 'src/tabsets/models/DynamicTabSource'
 import { SharingInfo } from 'src/tabsets/models/SharingInfo'
@@ -135,8 +134,6 @@ export class Tabset {
   augmentedData: AugmentedData = new AugmentedData()
 
   lastChange?: ChangeInfo | undefined = undefined
-
-  restDefinition?: RestApiIdent | undefined = undefined
 
   monitoredTabs: MonitoredTab[] = []
 
