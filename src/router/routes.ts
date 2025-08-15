@@ -146,7 +146,6 @@ const routes: RouteRecordRaw[] = [
       { path: 'pdf/:tabId/:blobId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },
       { path: 'png/:snapshotId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },
       { path: 'readingmode/:tabId', component: () => import('src/core/pages/mainpanel/MainPanelReadingModePage.vue') },
-      { path: 'restapi/:api', component: () => import('src/core/pages/RestCallResultPage.vue') },
       {
         path: 'settings',
         component: () => import('layouts/PlainWithRightDrawerLayout.vue'),
