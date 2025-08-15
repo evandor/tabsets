@@ -91,7 +91,9 @@ export const useSearchStore = defineStore('search', () => {
    * replace when url matches
    */
   function addSearchDocToIndex(doc: SearchDoc): SearchDoc {
-    // console.log('doc', doc)
+    if (!fuse || !fuse.value) {
+      return null as unknown as SearchDoc // called too early?
+    }
     const newDoc = searchUtils().overwriteIfReplacing(fuse.value, doc)
     fuse.value.add(newDoc)
     // console.log('getIndex', getIndex())

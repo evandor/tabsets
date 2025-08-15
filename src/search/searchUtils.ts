@@ -25,7 +25,7 @@ export function searchUtils() {
   }
 
   const overwriteIfReplacing = (fuse: Fuse<SearchDoc>, doc: SearchDoc): SearchDoc => {
-    const removed = fuse.remove((d: any) => {
+    const removed = fuse?.remove((d: any) => {
       return d.url === doc.url
     })
     if (removed && removed[0]) {
