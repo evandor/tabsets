@@ -45,7 +45,7 @@ export function useTabsetSelector(holder: ElementHolder) {
       .filter((ts: Tabset) =>
         useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
       )
-      .filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
+      //.filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
       .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
       .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
       //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)

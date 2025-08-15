@@ -139,7 +139,6 @@
 import { useQuasar } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { useContentStore } from 'src/content/stores/contentStore'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { SelectOption, useTabsetSelector } from 'src/core/pages/common/useTabsetSelector'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
@@ -208,14 +207,11 @@ windowLocation.value = window.location.href
 const { tabsetSelectionOptions, tabsetSelectionModel, setAutomaticSelectionLabel } = useTabsetSelector(props.element)
 
 watchEffect(() => {
-  const currentTabTags = useContentStore().currentTabTags
-  //console.log(':::currentTabTags', currentTabTags)
-  // const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]
   const tsCat = useTagsService().getCurrentTabContentClassification().classification
-  console.log('tsCat', tsCat, tsCat.split(':').length)
+  console.log('got tsCat', tsCat)
   if (tsCat) {
     const label: string = tsCat.split(':').length === 2 ? tsCat.split(':')[1]! : tsCat
-    setAutomaticSelectionLabel(label + ' (auto)')
+    setAutomaticSelectionLabel('automatic: ' + label)
   }
 })
 

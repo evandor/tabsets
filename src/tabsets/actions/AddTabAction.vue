@@ -23,13 +23,11 @@ import { uid } from 'quasar'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
-import { useUtils } from 'src/core/services/Utils'
 import { ActionProps } from 'src/tabsets/actions/models/ActionProps'
 import FabLikeBtn from 'src/tabsets/actions/widgets/FabLikeBtn.vue'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
 import { Tab } from 'src/tabsets/models/Tab'
-import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
-import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
+import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTagsService } from 'src/tags/TagsService'
@@ -39,7 +37,6 @@ import { ref, watchEffect } from 'vue'
 const props = defineProps<ActionProps>()
 
 const { handleError } = useNotificationHandler()
-const { sendMsg } = useUtils()
 
 const label = ref('Add Tab')
 const containedInTsCount = ref(0)
@@ -47,38 +44,38 @@ const alreadyInTabset = ref(false)
 const animateAddtabButton = ref(false)
 
 const clicked = async () => {
-  console.log('clicked!!', props.currentChromeTab)
+  console.log('clicked!!', props.currentChromeTab, props.tabset)
 
-  async function tabInTabset(name: string, classification: ContentClassification, newTab: Tab) {
-    let tabset = useTabsetsStore().getTabset(name)
-    console.log('found tabset for id', name, tabset)
-    if (!tabset) {
-      tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
-      tabset.type = TabsetType.SPECIAL
-      tabset.contentClassification = classification
-      await useTabsetsStore().saveTabset(tabset)
-    }
-    return useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(newTab, tabset))
-  }
+  // async function tabInTabset(name: string, classification: ContentClassification, newTab: Tab) {
+  //   let tabset = useTabsetsStore().getTabset(name)
+  //   console.log('found tabset for id', name, tabset)
+  //   if (!tabset) {
+  //     tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
+  //     tabset.type = TabsetType.SPECIAL
+  //     tabset.contentClassification = classification
+  //     await useTabsetsStore().saveTabset(tabset)
+  //   }
+  //   return useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(newTab, tabset))
+  // }
 
   if (props.currentChromeTab) {
     const newTab: Tab = new Tab(uid(), props.currentChromeTab)
-    const tabCategory: ContentClassification | 'unclassified' =
-      useTagsService().getCurrentTabContentClassification().classification
-    console.log('found category', tabCategory)
-    switch (tabCategory) {
-      case 'system:recipe':
-        return await tabInTabset('recipes', 'system:recipe', newTab)
-      case 'system:news':
-        return await tabInTabset('news', 'system:news', newTab)
-      case 'system:shopping':
-        return await tabInTabset('shopping', 'system:shopping', newTab)
-      case 'system:restaurant':
-        return await tabInTabset('restaurants', 'system:restaurant', newTab)
-      default:
-        // noop
-        break
-    }
+    // const tabCategory: ContentClassification | 'unclassified' =
+    //   useTagsService().getCurrentTabContentClassification().classification
+    // console.log('found category', tabCategory)
+    // switch (tabCategory) {
+    //   case 'system:recipe':
+    //     return await tabInTabset('recipes', 'system:recipe', newTab)
+    //   case 'system:news':
+    //     return await tabInTabset('news', 'system:news', newTab)
+    //   case 'system:shopping':
+    //     return await tabInTabset('shopping', 'system:shopping', newTab)
+    //   case 'system:restaurant':
+    //     return await tabInTabset('restaurants', 'system:restaurant', newTab)
+    //   default:
+    //     // noop
+    //     break
+    // }
     const result = useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))
     //sendMsg('reload-application')
     return result

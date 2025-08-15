@@ -3,7 +3,7 @@
   <q-page class="darkInDarkMode brightInBrightMode" :style="paddingTop" style="min-width: 400px; max-height: 700px">
     <offline-info class="q-mt-lg" />
 
-    <div class="q-pa-sm q-mx-md q-mt-none boxed" v-if="[...useTabsetsStore().tabsets.keys()].length > 0">
+    <div class="q-pa-sm q-mx-md q-mt-none boxed">
       <PopupInputLine title="Collection">
         <PopupCollectionSelector
           @tabset-changed="tabsetChanged()"
