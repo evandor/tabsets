@@ -8,9 +8,12 @@ import { Term } from 'compromise/types/misc'
 import View from 'compromise/types/view/one'
 // @ts-expect-error xxx
 import nlpDE from 'de-compromise'
+import { pipe } from 'fp-ts/function'
+import * as O from 'fp-ts/lib/Option'
 import _ from 'lodash'
 import { LocalStorage } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
+import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useContentStore } from 'src/content/stores/contentStore'
 import { CategoryInfo, TagInfo, TagType } from 'src/core/models/TagInfo'
@@ -459,22 +462,21 @@ export function useTagsService() {
   }
 
   function getCurrentTabContentClassification(): ClassificationResult {
-    // const tags = useContentStore().currentTabTags
-    // const metas = useContentStore().currentTabMetas
-    //
-    // function tagLabelsFilteredBy(tagType: TagType) {
-    //   return tags.filter((t: TagInfo) => t.type === tagType).map((t: TagInfo) => t.label)
-    // }
-    //
-    // return pipe(
-    //   useDynamicConfig().getCategory('linkingData', tagLabelsFilteredBy('linkingData')),
-    //   O.orElse(() => useDynamicConfig().getCategory('openGraph', [metas['og:type' as keyof object] as string])),
-    //   O.orElse(() => useDynamicConfig().getCategory('langModel', tagLabelsFilteredBy('languageModel'))),
-    //   O.getOrElse(() => {
-    //     return { classification: 'unclassified', matchedFrom: undefined } as ClassificationResult
-    //   }),
-    // )
-    return { classification: 'unclassified', matchedFrom: undefined }
+    const tags = useContentStore().currentTabTags
+    const metas = useContentStore().currentTabMetas
+
+    function tagLabelsFilteredBy(tagType: TagType) {
+      return tags.filter((t: TagInfo) => t.type === tagType).map((t: TagInfo) => t.label)
+    }
+
+    return pipe(
+      useDynamicConfig().getCategory('linkingData', tagLabelsFilteredBy('linkingData')),
+      O.orElse(() => useDynamicConfig().getCategory('openGraph', [metas['og:type' as keyof object] as string])),
+      O.orElse(() => useDynamicConfig().getCategory('langModel', tagLabelsFilteredBy('languageModel'))),
+      O.getOrElse(() => {
+        return { classification: 'unclassified', matchedFrom: undefined } as ClassificationResult
+      }),
+    )
   }
 
   return {
