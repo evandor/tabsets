@@ -1,13 +1,14 @@
 {
   "name": "functions",
   "scripts": {
-    "lint": "eslint --ext .js,.ts .",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint --ext .js,.ts .",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "serve": "npm run build && firebase emulators:start --only functions",
+    "serve": "npm run build && firebase emulators:start --import ./persistence --export-on-exit ./persistence",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
+    "deploy dev": "firebase use bibbly-dev-64742 && firebase deploy --only functions,firestore:rules,storage:rules",
     "logs": "firebase functions:log"
   },
   "engines": {

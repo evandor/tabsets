@@ -1,6 +1,6 @@
 import { boot } from 'quasar/wrappers'
 
-const EXTENSION_NAME = 'tabsets-pro'
+const EXTENSION_NAME = 'bibbly-dev'
 
 const INDEX_DB_VERSION = 23
 

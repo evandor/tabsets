@@ -8,7 +8,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "dev": "cp envs/env.dev ./.env && quasar dev -m bex -T chrome",
+    "dev": "cp envs/bibbly.env.dev ./.env && quasar dev -m bex -T chrome",
     "dev pwa": "cp envs/bibbly.env.dev ./.env && quasar dev -m pwa -T chrome",
     "dev emulator": "cp envs/env.emulator ./.env && quasar dev -m bex -T chrome",
     "dev pwa emulator": "cp envs/env.emulator ./.env && quasar dev -m pwa",
@@ -19,7 +19,7 @@
     "build bex firefox": "cp envs/env.dev ./.env && quasar build -m bex -T firefox",
     "build pwa": "cp envs/env.dev ./.env && quasar build -m pwa",
     "build pwa.prd & deploy to india032": "cp envs/env.prd ./.env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.tabsets.net",
-    "build pwa.dev & deploy to india032": "cp envs/env.dev ./.env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.tabsets.net",
+    "build pwa.dev & deploy to india032": "cp envs/bibbly.env.dev ./.env && quasar build -m pwa && scp -r -P 222 dist/pwa/* carsten@carsten.evandor.de:/home/carsten/tabsets/pwa.dev.tabsets.net",
     "icon": "icongenie generate -i src/assets/icon.png",
     "postinstall": "quasar prepare",
     "test:unit:ui": "vitest --ui",
