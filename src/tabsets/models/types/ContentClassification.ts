@@ -1,4 +1,4 @@
-export type ContentTemplates = 'recipe' | 'news' | 'shopping' | 'restaurant'
+export type ContentTemplates = 'recipe' | 'news' | 'shopping' | 'restaurant' | 'travel'
 
 // we have templates for those
 export type SystemContentClassification = `system:${ContentTemplates}`

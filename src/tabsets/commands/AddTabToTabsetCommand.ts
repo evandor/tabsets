@@ -17,7 +17,7 @@ import { useRequestsStore } from 'src/requests/stores/requestsStore'
 import { searchUtils } from 'src/search/searchUtils'
 import { Tab } from 'src/tabsets/models/Tab'
 import { ChangeInfo, Tabset, TabsetType } from 'src/tabsets/models/Tabset'
-import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
+import { ContentClassification, SystemContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import PlaceholderUtils from 'src/tabsets/utils/PlaceholderUtils'
@@ -39,6 +39,13 @@ async function tabInTabset(name: string, classification: ContentClassification):
     await useTabsetsStore().saveTabset(tabset)
   }
   return tabset
+}
+
+function mapSystemCategoryToName(tabCategory: SystemContentClassification) {
+  if (tabCategory.endsWith(':shopping')) {
+    return tabCategory.replace('system:', '')
+  }
+  return tabCategory.replace('system:', '') + 's'
 }
 
 /**
@@ -64,23 +71,29 @@ export class AddTabToTabsetCommand implements Command<any> {
       const tabCategory: ContentClassification | 'unclassified' =
         useTagsService().getCurrentTabContentClassification().classification
       console.log('found category', tabCategory)
-      switch (tabCategory) {
-        case 'system:recipe':
-          this.tabset = await tabInTabset('recipes', 'system:recipe')
-          break
-        case 'system:news':
-          this.tabset = await tabInTabset('news', 'system:news')
-          break
-        case 'system:shopping':
-          this.tabset = await tabInTabset('shopping', 'system:shopping')
-          break
-        case 'system:restaurant':
-          this.tabset = await tabInTabset('restaurants', 'system:restaurant')
-          break
-        default:
-          // noop
-          break
+      if (tabCategory.startsWith('system:') && tabCategory !== 'unclassified') {
+        this.tabset = await tabInTabset(
+          mapSystemCategoryToName(tabCategory as unknown as SystemContentClassification),
+          tabCategory,
+        )
       }
+      // switch (tabCategory) {
+      //   case 'system:recipe':
+      //     this.tabset = await tabInTabset('recipes', 'system:recipe')
+      //     break
+      //   case 'system:news':
+      //     this.tabset = await tabInTabset('news', 'system:news')
+      //     break
+      //   case 'system:shopping':
+      //     this.tabset = await tabInTabset('shopping', 'system:shopping')
+      //     break
+      //   case 'system:restaurant':
+      //     this.tabset = await tabInTabset('restaurants', 'system:restaurant')
+      //     break
+      //   default:
+      //     // noop
+      //     break
+      // }
       if (!this.tabset) {
         console.log('could not determine tabset, falling back to "UNCATEGORIZED"')
         this.tabset = useTabsetsStore().getSpecialTabset('UNCATEGORIZED')
