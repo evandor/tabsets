@@ -106,6 +106,8 @@ describe('PopupPage', () => {
     expect(wrapper.vm.note).toBe('')
     // console.log('***', wrapper.vm.tagsInfo)
     expect(wrapper.vm.tagsInfo).toEqual([
+      { label: 'skysail', type: 'url', score: 1 },
+      { label: 'io', type: 'url', score: 1 },
       { label: 'newtabset', type: 'hierarchy', score: 1 },
       { label: 'websites', type: 'languageModel', score: 5.78 },
       { label: 'description', type: 'languageModel', score: 4.65 },
