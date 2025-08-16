@@ -29,8 +29,6 @@ import { useUiStore } from 'src/ui/stores/uiStore'
 
 const { extractSecondLevelDomain } = useUtils()
 
-const debug = true
-
 function removeDuplicatesByProperty<T>(array: T[], property: keyof T): T[] {
   const uniqueMap = new Map<any, T>()
 
@@ -59,8 +57,6 @@ function sanitizeContent(s: string): string {
   // console.log('s', typeof s, s)
   return s.replace(/[^\wäöüßÄÖÜ\s]/gi, '')
 }
-
-// const catService = new CategorizationService()
 
 export function useTagsService() {
   const deduplicateTags = (tags: TagInfo[]): TagInfo[] => {
@@ -188,7 +184,8 @@ export function useTagsService() {
         })
         .join(' ')
 
-      return tagsFromLanguageModel(urlParts, language, 'url')
+      const urlPartsResult = tagsFromLanguageModel(urlParts, language, 'url')
+      return result.concat(urlPartsResult)
       // theURL.pathname
       //   .replace('.html', '')
       //   .split('/')
@@ -369,12 +366,20 @@ export function useTagsService() {
     tabReferences: TabReference[],
     url: string | undefined,
   ): Promise<TagInfo[]> => {
-    function pushTagsInfo() {
-      return (ti: TagInfo) => tagsInfo.push(ti)
-    }
-
     console.log(' <> Starting Tags Analysis...')
     const tagsInfo: TagInfo[] = []
+
+    tagsFromReferences(tabReferences).forEach((ti: TagInfo) => tagsInfo.push(ti))
+
+    if (metas['keywords' as keyof object]) {
+      tagsFromKeywords(metas['keywords' as keyof object] as string).forEach((ti: TagInfo) => tagsInfo.push(ti))
+    }
+
+    const currentTabset = useTabsetsStore().getCurrentTabset
+    if (currentTabset) {
+      tagsFromHierarchy(currentTabset).forEach((ti: TagInfo) => tagsInfo.push(ti))
+    }
+
     let description: string = metas['description' as keyof object] || '' //alternatives?
     let text = title.trim().length > 0 ? title + '. ' + description : description
     if (text.length < 3 && article && article['content' as keyof object]) {
@@ -396,19 +401,6 @@ export function useTagsService() {
       text = Array.from(tokenSet).join(' ')
     }
 
-    tagsFromReferences(tabReferences).forEach(pushTagsInfo())
-
-    // console.log('hier', tagsInfo)
-
-    if (metas['keywords' as keyof object]) {
-      tagsFromKeywords(metas['keywords' as keyof object] as string).forEach(pushTagsInfo())
-    }
-
-    const currentTabset = useTabsetsStore().getCurrentTabset
-    if (currentTabset) {
-      tagsFromHierarchy(currentTabset).forEach(pushTagsInfo())
-    }
-
     // language
     let language = langFromHostname(url)
     // let confidence = 0
@@ -427,10 +419,10 @@ export function useTagsService() {
     // }
 
     if (url) {
-      tagsFromUrl(url, language).forEach(pushTagsInfo())
+      tagsFromUrl(url, language).forEach((ti: TagInfo) => tagsInfo.push(ti))
     }
     if (text) {
-      tagsFromLanguageModel(text, language, 'languageModel').forEach(pushTagsInfo())
+      tagsFromLanguageModel(text, language, 'languageModel').forEach((ti: TagInfo) => tagsInfo.push(ti))
     }
 
     let analysisNecessary = true

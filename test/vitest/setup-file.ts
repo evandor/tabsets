@@ -36,13 +36,27 @@ config.global.mocks = {
 //   }),
 // )
 
-global.fetch = vi.fn((input: URL) => {
+global.fetch = vi.fn(async (input: URL) => {
   const url = input.toString()
   if (url.endsWith('categoryMapping.data')) {
+    const data = `linkingData;foodestablishment;restaurant
+linkingData;newsarticle;news
+linkingData;newsmediaorganization;news
+linkingData;news;news
+linkingData;product;shopping
+linkingData;recipe;recipe
+linkingData;restaurant;restaurant
+openGraph;article;news
+langModel;nachrichten;news
+langModel;news;news
+langModel;rezept;recipe
+langModel;rezepte;recipe
+langModel;restaurant;restaurant
+`
     return Promise.resolve({
       ok: true,
       status: 200,
-      text: async () => 'typeA;news;news\n',
+      text: async () => data,
     })
   }
   if (url.endsWith('ldJsonMapping.data')) {
