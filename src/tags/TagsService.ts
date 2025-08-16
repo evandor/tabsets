@@ -463,8 +463,8 @@ export function useTagsService() {
 
     return pipe(
       useDynamicConfig().getCategory('linkingData', tagLabelsFilteredBy('linkingData')),
-      O.orElse(() => useDynamicConfig().getCategory('openGraph', [metas['og:type' as keyof object] as string])),
       O.orElse(() => useDynamicConfig().getCategory('langModel', tagLabelsFilteredBy('languageModel'))),
+      O.orElse(() => useDynamicConfig().getCategory('openGraph', [metas['og:type' as keyof object] as string])),
       O.getOrElse(() => {
         return { classification: 'unclassified', matchedFrom: undefined } as ClassificationResult
       }),
