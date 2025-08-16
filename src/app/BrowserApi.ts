@@ -125,7 +125,7 @@ class BrowserApi {
   }
 
   buildContextMenu(caller: string) {
-    if (process.env.MODE !== 'bex' || !chrome.contextMenus) {
+    if (process.env.MODE !== 'bex' || !chrome || !chrome.contextMenus) {
       return
     }
 
@@ -441,6 +441,7 @@ class BrowserApi {
     favIconUrl: string = 'https://tabsets.web.app/icons/favicon-128x128.png',
   ) {
     return {
+      id: new Date().getTime(),
       active: false,
       discarded: true,
       groupId: -1,
