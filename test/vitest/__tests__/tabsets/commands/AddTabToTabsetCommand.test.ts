@@ -110,7 +110,7 @@ describe('AddTabToTabsetCommand', () => {
     rootTabset.folderActive = subfolder.id
 
     const result = await new AddTabToTabsetCommand(theTab, rootTabset, subfolder.id).execute()
-    expect(result.message).toBe('Link was to collection new Tabset2')
+    expect(result.message).toBe('Link was added to collection new Tabset2')
 
     const tabsetFromDB = useTabsetsStore().getTabset(rootTabset.id)!
     // console.log("tabsetFromDB", tabsetFromDB)
