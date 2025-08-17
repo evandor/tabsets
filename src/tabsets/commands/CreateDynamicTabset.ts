@@ -15,10 +15,13 @@ export class CreateDynamicTabset implements Command<object> {
 
   async execute(): Promise<ExecutionResult<object>> {
     try {
+      const useName = this.sourceType === DynamicTabSourceType.TAG ? 'Tag ' + this.tabsetName : this.tabsetName
       const tabset = await useTabsetsStore().createTabset('Tag: ' + this.tabsetName, [])
       if (tabset) {
         if (this.sourceType === DynamicTabSourceType.TAG) {
           tabset.dynamicTabs = new DynamicTabSource(this.sourceType, { tags: [this.tabsetName] })
+        } else if (this.sourceType === DynamicTabSourceType.CLASSIFICATION) {
+          tabset.dynamicTabs = new DynamicTabSource(this.sourceType, { classification: [this.tabsetName] })
         } else {
           tabset.dynamicTabs = new DynamicTabSource(this.sourceType)
         }

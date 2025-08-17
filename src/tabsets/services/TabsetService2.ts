@@ -945,7 +945,6 @@ export function useTabsetService() {
       tabset.name = trustedName
       tabset.color = trustedColor
       tabset.window = window
-      tabset.contentClassification = contentClassification
       //console.log("saving tabset", tabset)
       return saveTabset(tabset).then(() =>
         Promise.resolve({

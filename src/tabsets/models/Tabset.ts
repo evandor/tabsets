@@ -17,14 +17,13 @@ export enum TabsetStatus {
   HIDDEN = 'HIDDEN',
 }
 
-export type SpecialTabsetId = 'UNCATEGORIZED'
-
 export enum TabsetType {
   DEFAULT = 'DEFAULT',
   SESSION = 'SESSION',
 
   SPECIAL = 'SPECIAL',
   DYNAMIC = 'DYNAMIC',
+  BIBBLY = 'BIBBLY',
   RSS_FOLDER = 'RSS_FOLDER',
   REST = 'REST',
 }
@@ -99,8 +98,6 @@ export class Tabset {
   sorting: string = 'custom'
   status: TabsetStatus = TabsetStatus.DEFAULT
   type: TabsetType = TabsetType.DEFAULT
-
-  contentClassification: ContentClassification | 'unclassified' = 'unclassified'
 
   bookmarkId: string | undefined = undefined
 

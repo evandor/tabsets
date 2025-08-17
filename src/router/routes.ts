@@ -164,7 +164,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue'),
       },
       {
-        path: 'rezepte/:tabsetId',
+        path: 'recipe/:tabsetId',
         component: () => import('layouts/RezepteLayout.vue'),
         children: [{ path: '', component: () => import('src/pages/rezepte/IndexPage.vue') }],
       },

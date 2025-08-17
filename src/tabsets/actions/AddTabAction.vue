@@ -30,7 +30,6 @@ import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
-import { useTagsService } from 'src/tags/TagsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { ref, watchEffect } from 'vue'
 
@@ -45,19 +44,6 @@ const animateAddtabButton = ref(false)
 
 const clicked = async () => {
   console.log('clicked!!', props.currentChromeTab, props.tabset)
-
-  // async function tabInTabset(name: string, classification: ContentClassification, newTab: Tab) {
-  //   let tabset = useTabsetsStore().getTabset(name)
-  //   console.log('found tabset for id', name, tabset)
-  //   if (!tabset) {
-  //     tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
-  //     tabset.type = TabsetType.SPECIAL
-  //     tabset.contentClassification = classification
-  //     await useTabsetsStore().saveTabset(tabset)
-  //   }
-  //   return useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(newTab, tabset))
-  // }
-
   if (props.currentChromeTab) {
     const newTab: Tab = new Tab(uid(), props.currentChromeTab)
     return useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(newTab, props.tabset, props.folder?.id))
@@ -82,12 +68,6 @@ const activeFolderNameFor = (ts: Tabset, activeFolder: string) => {
 }
 
 const tabsetNameOrChain = (tabset: Tabset) => {
-  if (tabset.id === 'UNCATEGORIZED') {
-    const classification = useTagsService().getCurrentTabContentClassification().classification
-    if (classification) {
-      return classification
-    }
-  }
   return tabset.folderActive ? activeFolderNameFor(tabset, tabset.folderActive) : tabset.name
 }
 

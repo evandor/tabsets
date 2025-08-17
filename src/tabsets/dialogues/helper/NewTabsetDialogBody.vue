@@ -222,7 +222,7 @@ const submit = () => {
         //   useTabsetService().saveTabset(ts)
         // }
         if (useAsAiClassification.value && res.result.tabset) {
-          res.result.tabset.contentClassification = `user:${newTabsetName.value.toLowerCase()}`
+          // res.result.tabset.contentClassification = `user:${newTabsetName.value.toLowerCase()}`
         }
         if (!props.fromPanel) {
           router.push('/sidepanel/tabsets/' + res.result?.tabset.id)

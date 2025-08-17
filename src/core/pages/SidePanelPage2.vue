@@ -33,9 +33,52 @@
     <!-- list of tabs, assuming here we have at least one tabset -->
     <div class="q-ma-none q-pa-none q-pt-xs">
       <div class="row q-ma-none q-pa-none items-start darkInDarkMode brightInBrightMode">
-        <!--        <div class="col-12 text-center" v-for="sts in specialTabsets">-->
+        <!--        <div class="col-12 text-center" v-for="sts in bibblyTabsets">-->
         <!--          <q-btn :label="sts.name" color="primary" size="xs" @click="openGallery()" />-->
         <!--        </div>-->
+        <div class="rounded-borders fit q-ma-none q-mb-md" v-if="showBibblyCollections()">
+          <!--          <div-->
+          <!--            v-for="sts in bibblyTabsets.filter((tsAndSize: TabsetAndSize) => tsAndSize.size > 0)"-->
+          <!--            class="row fit cursor-pointer"-->
+          <!--            @click.stop="openGallery(sts.ts)">-->
+          <!--            <div class="col-2 text-center">-->
+          <!--              <q-icon :name="sts.ts.icon" />-->
+          <!--            </div>-->
+          <!--            <div class="col-8 q-mt-xs text-bold">{{ capitalize(sts.ts.name.toLowerCase()) }}</div>-->
+          <!--            <div class="col text-caption text-right q-mr-md q-mt-xs"></div>-->
+          <!--          </div>-->
+
+          <q-expansion-item
+            v-for="sts in bibblyTabsets.filter((tsAndSize: TabsetAndSize) => tsAndSize.size > 0)"
+            class="overflow-hidden"
+            :class="bgColorForSpecialTab(sts.ts)"
+            style="border-radius: 7px"
+            header-class="text-bold"
+            :icon="sts.ts.icon"
+            :label="sts.ts.name">
+            <template v-slot:header>
+              <div class="row fit cursor-pointer" @click.stop="openGallery(sts.ts)">
+                <div class="col-10 q-mt-xs">{{ capitalize(sts.ts.name.toLowerCase()) }}</div>
+                <div class="col text-caption text-right q-mr-md q-mt-xs">
+                  {{ sts.size > 0 ? sts.size : '' }}
+                </div>
+              </div>
+            </template>
+            <SidePanelPageContent
+              :tabset="sts.ts"
+              :key="sts.ts?.id"
+              :filter="filter"
+              @tabs-found="(n: number) => (filteredTabsCount = n)"
+              @folders-found="(n: number) => (filteredFoldersCount = n)" />
+          </q-expansion-item>
+        </div>
+        <!--        <div-->
+        <!--          v-if="showBibblyCollections()"-->
+        <!--          class="fit q-mt-lg text-center text-grey-7 cursor-pointer"-->
+        <!--          @click="newTabsetDialog()">-->
+        <!--          + Create Collection-->
+        <!--        </div>-->
+
         <template v-if="currentTabset">
           <SidePanelPageContent
             v-if="useFolderExpansion === 'goInto'"
@@ -53,37 +96,6 @@
             @folders-found="(n: number) => (filteredFoldersCount = n)" />
         </template>
 
-        <div class="rounded-borders fit q-mt-lg" v-if="showSpecialTabsets()">
-          <q-expansion-item
-            v-for="sts in specialTabsets.filter((sts: Tabset) => sts.tabs.length > 0)"
-            class="overflow-hidden"
-            :class="bgColorForSpecialTab(sts)"
-            style="border-radius: 7px"
-            header-class="text-bold"
-            :icon="sts.icon"
-            :label="sts.name">
-            <template v-slot:header>
-              <div class="row fit cursor-pointer" @click.stop="openGallery(sts)">
-                <div class="col-10 q-mt-xs">{{ capitalize(sts.name.toLowerCase()) }}</div>
-                <div class="col text-caption text-right q-mr-md q-mt-xs">
-                  {{ sts.tabs.length > 0 ? sts.tabs.length : '' }}
-                </div>
-              </div>
-            </template>
-            <SidePanelPageContent
-              :tabset="sts"
-              :key="sts?.id"
-              :filter="filter"
-              @tabs-found="(n: number) => (filteredTabsCount = n)"
-              @folders-found="(n: number) => (filteredFoldersCount = n)" />
-          </q-expansion-item>
-        </div>
-        <div
-          v-if="showSpecialTabsets()"
-          class="fit q-mt-lg text-center text-grey-7 cursor-pointer"
-          @click="newTabsetDialog()">
-          + Create Collection
-        </div>
         <!--        <div class="fit text-center text-grey-7 text-body2" v-else>click the plus icon to add the current tab</div>-->
 
         <template v-if="useSettingsStore().has('DEBUG_MODE')">
@@ -135,10 +147,13 @@ import { Tabset, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
+import { useTagsService } from 'src/tags/TagsService'
 import { FolderAppearance, UiDensity, useUiStore } from 'src/ui/stores/uiStore'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { onMounted, onUnmounted, provide, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+
+type TabsetAndSize = { ts: Tabset; size: number }
 
 const { inBexMode } = useUtils()
 const { capitalize } = format
@@ -157,7 +172,7 @@ const useFolderExpansion = ref<FolderAppearance>(useUiStore().folderStyle)
 const showSearchToolbarHelper = ref<boolean>(false)
 const paddingTop = ref('padding-top: 80px')
 const uiDensity = ref<UiDensity>(useUiStore().uiDensity)
-const specialTabsets = ref<Tabset[]>([])
+const bibblyTabsets = ref<TabsetAndSize[]>([])
 const showAnalysisBrokenBanner = ref(false)
 
 provide('ui.density', uiDensity)
@@ -202,9 +217,9 @@ function checkAnalysisBroken(a: number, b: number) {
   }, 1000)
 }
 
-watchEffect(() => {
-  specialTabsets.value = [...useTabsetsStore().tabsets.values()].filter((ts: Tabset) => ts.type === TabsetType.SPECIAL)
-})
+// watchEffect(() => {
+//   bibblyTabsets.value = [...useTabsetsStore().tabsets.values()].filter((ts: Tabset) => ts.type === TabsetType.SPECIAL)
+// })
 
 watchEffect(() => {
   useFolderExpansion.value = useUiStore().folderStyle
@@ -239,8 +254,17 @@ watchEffect(() => {
   tabsetsLastUpdate.value = useTabsetsStore().lastUpdate
   //console.log('tabsetsLastUpdate set to', tabsetsLastUpdate.value)
   tabsets.value = determineTabsets()
-  specialTabsets.value = [...useTabsetsStore().tabsets.values()].filter((ts: Tabset) => ts.type === TabsetType.SPECIAL)
-  //console.log('got', tabsets.value)
+  bibblyTabsets.value = [...useTabsetsStore().tabsets.values()]
+    .filter((ts: Tabset) => ts.type === TabsetType.BIBBLY)
+    .map((ts: Tabset) => {
+      return { ts: ts, size: 0 }
+    })
+  console.log('got', bibblyTabsets.value)
+  bibblyTabsets.value = bibblyTabsets.value.map((bt: TabsetAndSize) => {
+    const classification = bt.ts.dynamicTabs!.config['classification' as keyof object]
+    const size = useTagsService().getTabsWithClassification(classification).length
+    return { ts: bt.ts, size: size }
+  })
 })
 
 watchEffect(() => {
@@ -455,10 +479,7 @@ const reloadCurrentTab = () => {
 }
 
 const openGallery = (ts: Tabset) => {
-  let url = `mainpanel/tabsets/overview/${ts.id}`
-  if (ts.id === 'recipes') {
-    url = `mainpanel/rezepte/${ts.id}`
-  }
+  const url = `mainpanel/${ts.name}/${ts.id}`
   NavigationService.openOrCreateTab([chrome.runtime.getURL(`www/index.html#/${url}`)])
 }
 
@@ -475,8 +496,8 @@ const bgColorForSpecialTab = (sts: Tabset) => {
   return ''
 }
 
-const showSpecialTabsets = () => {
-  return false //specialTabsets.value.length > 1 || (specialTabsets.value[0] && specialTabsets.value[0].tabs?.length > 0)
+const showBibblyCollections = () => {
+  return true //bibblyTabsets.value.length > 1 || (bibblyTabsets.value[0] && bibblyTabsets.value[0].tabs?.length > 0)
 }
 
 const newTabsetDialog = () => {

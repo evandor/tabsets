@@ -23,7 +23,7 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
-import { ClassificationResult } from 'src/tabsets/models/types/ContentClassification'
+import { ClassificationResult, ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
 
@@ -339,6 +339,22 @@ export function useTagsService() {
     return result
   }
 
+  function getTabsWithClassification(classification: string) {
+    const result: IndexedTab[] = []
+    //const term: string = classification.length > 0 ? (classification[0] as string) : ''
+    let i = 0
+    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
+      _.forEach(tabset.tabs, (tab: Tab) => {
+        console.log('comparing', classification, tab.classifications)
+        if (tab.classifications.indexOf(classification as ContentClassification) >= 0) {
+          console.log('found tab', classification, tab.tags)
+          result.push(new IndexedTab(i++, tab))
+        }
+      })
+    })
+    return result
+  }
+
   const addToIgnored = (v: string) => {
     const tags = (LocalStorage.getItem(TAGS_IGNORED) as string[]) || []
     if (tags.indexOf(v) < 0) {
@@ -483,5 +499,6 @@ export function useTagsService() {
     addToIgnored,
     analyse,
     getCurrentTabContentClassification,
+    getTabsWithClassification,
   }
 }

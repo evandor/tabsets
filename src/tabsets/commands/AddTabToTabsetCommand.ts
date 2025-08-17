@@ -35,7 +35,7 @@ async function tabInTabset(name: string, classification: ContentClassification):
     console.log('no tabset yet for id', name, tabset)
     tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
     tabset.type = TabsetType.SPECIAL
-    tabset.contentClassification = classification
+    // tabset.contentClassification = classification
     await useTabsetsStore().saveTabset(tabset)
   }
   return tabset
@@ -62,54 +62,41 @@ export class AddTabToTabsetCommand implements Command<any> {
     if (!tabset) {
       this.tabset = useTabsetsStore().getCurrentTabset
     }
+    if (!this.tabset) {
+      throw new Error('could not set current tabset')
+    }
   }
 
   async execute(): Promise<ExecutionResult<any>> {
     console.info(`adding tab '${this.tab.id}' to tabset '${this.tabset?.id}', active folder: ${this.activeFolder}`)
 
-    if (!this.tabset) {
-      const tabCategory: ContentClassification | 'unclassified' =
-        useTagsService().getCurrentTabContentClassification().classification
-      console.log('found category', tabCategory)
-      if (tabCategory.startsWith('system:') && tabCategory !== 'unclassified') {
-        this.tabset = await tabInTabset(
-          mapSystemCategoryToName(tabCategory as unknown as SystemContentClassification),
-          tabCategory,
-        )
-      }
-      // switch (tabCategory) {
-      //   case 'system:recipe':
-      //     this.tabset = await tabInTabset('recipes', 'system:recipe')
-      //     break
-      //   case 'system:news':
-      //     this.tabset = await tabInTabset('news', 'system:news')
-      //     break
-      //   case 'system:shopping':
-      //     this.tabset = await tabInTabset('shopping', 'system:shopping')
-      //     break
-      //   case 'system:restaurant':
-      //     this.tabset = await tabInTabset('restaurants', 'system:restaurant')
-      //     break
-      //   default:
-      //     // noop
-      //     break
-      // }
-      if (!this.tabset) {
-        console.log('could not determine tabset, falling back to "UNCATEGORIZED"')
-        this.tabset = useTabsetsStore().getSpecialTabset('UNCATEGORIZED')
-      }
+    // if (!this.tabset || this.tabset.id === 'UNCATEGORIZED') {
+    const tabCategory: ContentClassification | 'unclassified' =
+      useTagsService().getCurrentTabContentClassification().classification
+    console.log('found category', tabCategory)
+    if (tabCategory.startsWith('system:') && tabCategory !== 'unclassified') {
+      // this.tabset = await tabInTabset(
+      //   mapSystemCategoryToName(tabCategory as unknown as SystemContentClassification),
+      //   tabCategory,
+      // )
+      this.tab.classifications.push(tabCategory)
     }
+    // if (!this.tabset) {
+    //   console.log('could not determine tabset, falling back to "UNCATEGORIZED"')
+    //   this.tabset = useTabsetsStore().getSpecialTabset('UNCATEGORIZED')
+    // }
+    // }
 
     let tabsetOrFolder = this.tabset
     if (this.activeFolder) {
-      const folder = useTabsetsStore().getActiveFolder(this.tabset, this.activeFolder)
+      const folder = useTabsetsStore().getActiveFolder(this.tabset!, this.activeFolder)
       if (folder) {
         tabsetOrFolder = folder
       }
     }
 
     if (!this.allowDuplicates) {
-      const exists = _.findIndex(tabsetOrFolder.tabs, (t: any) => t.url === this.tab.url) >= 0
+      const exists = _.findIndex(tabsetOrFolder!.tabs, (t: any) => t.url === this.tab.url) >= 0
       if (exists && !this.ignoreDuplicates) {
         return Promise.reject('tab already exists in this tabset')
       } else if (exists) {
@@ -148,7 +135,7 @@ export class AddTabToTabsetCommand implements Command<any> {
         }
       }
 
-      const tabset: Tabset = await useTabsetService().addToTabset(tabsetOrFolder, this.tab, 0, this.allowDuplicates)
+      const tabset: Tabset = await useTabsetService().addToTabset(tabsetOrFolder!, this.tab, 0, this.allowDuplicates)
 
       Analytics.fireEvent('tabset_tab_added', { tabsCount: tabset.tabs.length })
 
@@ -174,16 +161,16 @@ export class AddTabToTabsetCommand implements Command<any> {
         }
 
         const res2 = await useTabsetService().saveTabset(
-          this.tabset,
-          new ChangeInfo('tab', 'added', this.tab.id, this.tabset.id),
+          this.tabset!,
+          new ChangeInfo('tab', 'added', this.tab.id, this.tabset!.id),
         )
-        res = new ExecutionResult(res2, 'Link was added to collection ' + this.tabset.name)
+        res = new ExecutionResult(res2, 'Link was added to collection ' + this.tabset!.name)
 
         // saving thumbnail
-        useThumbnailsService().captureVisibleTab(this.tab.id, this.tabset.id || 'unknown tabsetid')
+        useThumbnailsService().captureVisibleTab(this.tab.id, this.tabset!.id || 'unknown tabsetid')
       } else {
-        const res2 = await useTabsetService().saveTabset(this.tabset)
-        res = new ExecutionResult(res2, 'Link was to collection ' + this.tabset.name)
+        const res2 = await useTabsetService().saveTabset(this.tabset!)
+        res = new ExecutionResult(res2, 'Link was to collection ' + this.tabset!.name)
       }
 
       // add to search index via App Dispatcher
@@ -204,7 +191,7 @@ export class AddTabToTabsetCommand implements Command<any> {
       // badge indicator icon
       sendMsg('url-added', { url: this.tab.url })
 
-      sendMsg('tab-added', { tabsetId: this.tabset.id, url: this.tab.url })
+      sendMsg('tab-added', { tabsetId: this.tabset!.id, url: this.tab.url })
 
       const req = useRequestsStore().getCurrentTabRequest
       if (req && req.url === this.tab.url) {

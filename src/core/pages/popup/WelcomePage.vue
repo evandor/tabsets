@@ -94,7 +94,9 @@ import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import Analytics from 'src/core/utils/google-analytics'
-import { CreateSpecialTabsetCommand } from 'src/tabsets/commands/CreateSpecialTabsetCommand'
+import { CreateBibblyCollection } from 'src/tabsets/commands/CreateBibblyCollection'
+import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
+import { ContentTemplate, ContentTemplatesTypes } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, ref, watchEffect } from 'vue'
@@ -122,8 +124,24 @@ const createGettingStartedTabset = () => {
   // router.push('/popup/getstarted')
 
   useCommandExecutor()
-    .executeFromUi(new CreateSpecialTabsetCommand('UNCATEGORIZED', 'sym_o_help_center'))
+    .execute(new CreateTabsetCommand('Links', []))
     .then(() => {
+      ContentTemplatesTypes.forEach((template: ContentTemplate) => {
+        let tabsetName = template
+        if (template === 'restaurant' || template === 'recipe') {
+          tabsetName = template + 's'
+        }
+        const iconMap = new Map<ContentTemplate, string>()
+        iconMap.set('recipe', 'sym_o_skillet')
+        iconMap.set('travel', 'sym_o_travel')
+        iconMap.set('restaurant', 'restaurant')
+        iconMap.set('shopping', 'shopping_cart')
+        iconMap.set('news', 'sym_o_newsmode')
+        useCommandExecutor().execute(
+          new CreateBibblyCollection(tabsetName, `system:${template}`, iconMap.get(template) || 'category'),
+        )
+      })
+
       LocalStorage.setItem('ui.hideWelcomePage', true)
       chrome.storage.local.remove('tabsets.ext.ai.active')
       console.log('route', route.fullPath)
