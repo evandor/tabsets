@@ -162,9 +162,17 @@ const tabsForColumn = (): IndexedTab[] => {
     return property.toLowerCase().indexOf(props.filter!.toLowerCase()) >= 0
   }
 
+  console.log('hier', props.tabset?.type)
   if (props.tabset?.type === TabsetType.DYNAMIC && props.tabset?.dynamicTabs?.type === DynamicTabSourceType.TAG) {
     const tags = props.tabset.dynamicTabs.config['tags' as keyof object]
     return useTagsService().getDynamicTabsBy(tags)
+  }
+  if (
+    props.tabset?.type === TabsetType.BIBBLY &&
+    props.tabset?.dynamicTabs?.type === DynamicTabSourceType.CLASSIFICATION
+  ) {
+    const classification = props.tabset.dynamicTabs.config['classification' as keyof object]
+    return useTagsService().getTabsWithClassification(classification)
   }
 
   return (props.tabset?.tabs as Tab[])

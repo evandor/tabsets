@@ -47,7 +47,8 @@ export function useTabsetSelector(holder: ElementHolder) {
       )
       //.filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
       .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
-      .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
+      //.filter((ts: Tabset) => ts.type !== TabsetType.BIBBLY)
+      // .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
       //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
       .filter((ts: Tabset) => {
         if (useSpaces && space) {
@@ -105,7 +106,7 @@ export function useTabsetSelector(holder: ElementHolder) {
       tabsetSelectionOptions.value.push({ label: 'Select Space...', value: 'select-space', icon: 'o_space_dashboard' })
     }
 
-    tabsetSelectionOptions.value.unshift(automaticSelectionOption.value)
+    //tabsetSelectionOptions.value.unshift(automaticSelectionOption.value)
     // console.log(':::calculated', tabsetSelectionOptions.value.map((ts) => ts.label).join(','))
   }
 

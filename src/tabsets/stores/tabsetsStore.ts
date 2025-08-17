@@ -9,7 +9,7 @@ import { useAuthStore } from 'src/stores/authStore'
 import { FolderNode } from 'src/tabsets/models/FolderNode'
 import { Tab, TabComment } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
-import { ChangeInfo, SpecialTabsetId, Tabset, TabsetSharing, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { ChangeInfo, Tabset, TabsetSharing, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -159,19 +159,19 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     return Promise.resolve(ts)
   }
 
-  async function createSpecialTabset(tabsetId: SpecialTabsetId): Promise<Tabset> {
-    const tabsetWithSameId: Tabset | undefined = _.find(
-      [...tabsets.value.values()] as Tabset[],
-      (ts: Tabset) => ts.id === tabsetId,
-    )
-    if (tabsetWithSameId) {
-      return Promise.reject(`tabset with same id ('${tabsetId}') exists already`)
-    }
-
-    const ts: Tabset = new Tabset(tabsetId, tabsetId, [], [])
-    ts.type = TabsetType.SPECIAL
-    return Promise.resolve(ts)
-  }
+  // async function createSpecialTabset(tabsetId: SpecialTabsetId): Promise<Tabset> {
+  //   const tabsetWithSameId: Tabset | undefined = _.find(
+  //     [...tabsets.value.values()] as Tabset[],
+  //     (ts: Tabset) => ts.id === tabsetId,
+  //   )
+  //   if (tabsetWithSameId) {
+  //     return Promise.reject(`tabset with same id ('${tabsetId}') exists already`)
+  //   }
+  //
+  //   const ts: Tabset = new Tabset(tabsetId, tabsetId, [], [])
+  //   ts.type = TabsetType.SPECIAL
+  //   return Promise.resolve(ts)
+  // }
 
   async function addTabset(ts: Tabset) {
     console.log('adding tabset (new)', ts.name)
@@ -265,6 +265,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     }
     currentTabsetId.value = undefined
     currentTabsetFolderId.value = undefined
+    lastUpdate.value = new Date().getTime()
   }
 
   // *** getters ***
@@ -579,7 +580,6 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     initialize,
     tabsets,
     createTabset,
-    createSpecialTabset,
     addTabset,
     saveTabset, // check save vs add vs create
     setTabset,

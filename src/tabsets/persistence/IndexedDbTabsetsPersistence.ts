@@ -26,11 +26,22 @@ class IndexedDbTabsetsPersistence implements TabsetsPersistence {
     try {
       return await openDB('tabsetsDB', 1, {
         // upgrading see https://stackoverflow.com/questions/50193906/create-index-on-already-existing-objectstore
-        upgrade(db) {
+        upgrade(db, oldVersion, newVersion, transaction, event) {
           if (!db.objectStoreNames.contains(ctx.STORE_IDENT)) {
             console.log('creating db ' + ctx.STORE_IDENT)
-            db.createObjectStore(ctx.STORE_IDENT)
+            const store = db.createObjectStore(ctx.STORE_IDENT)
+            //store.createIndex('classifications', 'tabs.classifications', { unique: false, multiEntry: true })
           }
+          // const store = transaction.store as unknown as IDBObjectStore
+          // if (!store.indexNames.contains('classifications')) {
+          //   store.createIndex('classifications', 'tabs.classifications', { unique: false, multiEntry: true })
+          // }
+          // if (!store.indexNames.contains('idx1')) {
+          //   store.createIndex('idx1', 'tabs.id', { unique: false, multiEntry: true })
+          // }
+          // if (!store.indexNames.contains('idx2')) {
+          //   store.createIndex('idx2', 'updated', { unique: false, multiEntry: true })
+          // }
         },
       })
     } catch (e: any) {
