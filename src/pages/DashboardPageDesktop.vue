@@ -187,8 +187,15 @@ import Pic30 from 'src/assets/images/pic30.jpg'
 import { useAuthStore } from 'stores/authStore'
 import { computed, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
+import ChromeApi from 'src/app/BrowserApi'
+import { Tab } from 'src/tabsets/models/Tab'
+import { uid } from 'quasar'
+import { useUtils } from 'src/core/services/Utils'
 
 const router = useRouter()
+const { normalize } = useUtils()
 
 type Coll = { key: string; label: string; icon: string; img: string }
 const authenticated = ref(false)
@@ -238,7 +245,15 @@ function onAdd(t: AddType = addType.value) {
 }
 
 async function addLink(url: string) {
-  // TODO: Link speichern
+  console.log("url", url)
+  let useUrl = normalize(url)
+  console.log('normalizing url', url, useUrl)
+  const chromeTab = ChromeApi.createChromeTabObject(useUrl, useUrl, null as unknown as string)
+  const tab = new Tab(uid(), chromeTab)
+  // tab.created = new Date().getTime()
+  // tab.createdBy = useAuthStore().user.email || undefined
+  // tab.extension = tab.determineUrlExtension(chromeTab)
+  await useCommandExecutor().executeFromUi(new AddTabToTabsetCommand(tab))
 }
 
 async function addCollection(name: string) {

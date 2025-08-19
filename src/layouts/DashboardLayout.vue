@@ -185,7 +185,8 @@
                 class="q-pl-lg hover-actions"
                 v-ripple
                 v-for="link in drawerCustomCollections"
-                :key="link.text"
+                :key="link.id"
+                @click.stop="openCollection(link.id)"
                 clickable>
                 <q-item-section avatar>
                   <q-icon :name="link.icon" />
@@ -193,7 +194,7 @@
 
                 <q-item-section>
                   <q-item-label>
-                    {{ link.text }}
+                    {{ link.name }}
                   </q-item-label>
                 </q-item-section>
 
@@ -260,7 +261,7 @@
                 class="q-pl-lg hover-actions"
                 v-ripple
                 v-for="link in drawerBibblyCollections"
-                :key="link.text"
+                :key="link.label"
                 clickable>
                 <q-item-section avatar>
                   <q-icon :name="link.icon" />
@@ -268,7 +269,7 @@
 
                 <q-item-section>
                   <q-item-label>
-                    {{ link.text }}
+                    {{ link.label }}
                   </q-item-label>
                 </q-item-section>
 
@@ -411,6 +412,8 @@
 </template>
 
 <script setup lang="ts">
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useAuthStore } from 'stores/authStore'
 import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
@@ -424,10 +427,12 @@ const leftDrawerOpen = ref(false)
 const userName = ref('John Doe')
 const userEmail = ref('john.doe@email.com')
 const browserName = ref('Browser')
+const drawerBibblyCollections = ref<Tabset[]>([])
+const drawerCustomCollections = ref<Tabset[]>([])
 
 watchEffect(() => {
   authenticated.value = useAuthStore().isAuthenticated()
-  console.log("user", useAuthStore().user)
+  console.log('user', useAuthStore().user)
 })
 
 const drawerDefaultCollections = [
@@ -437,21 +442,31 @@ const drawerDefaultCollections = [
   { icon: 'search', text: 'Saved searches' },
 ]
 
-const drawerBibblyCollections = [
-  { icon: 'outdoor_grill', text: 'Recipies', isbibblytemplate: true },
-  { icon: 'radio', text: 'News', isbibblytemplate: true },
-  { icon: 'beach_access', text: 'Travel', isbibblytemplate: true },
-  { icon: 'restaurant_menu', text: 'Restaurants', isbibblytemplate: true },
-  { icon: 'menu_book', text: 'Bibliography', isbibblytemplate: true },
-  { icon: 'shopping_cart', text: 'Shopping', isbibblytemplate: true },
-]
+watchEffect(() => {
+  drawerBibblyCollections.value = useTabsetsStore().getBibblyCollections
+})
 
-const drawerCustomCollections = [
-  { icon: '', text: 'Work', isbibblytemplate: false },
-  { icon: '', text: 'My Italy trip 2025', isbibblytemplate: false },
-  { icon: '', text: 'Templates', isbibblytemplate: false },
-  { icon: '', text: 'Gym', isbibblytemplate: false },
-]
+watchEffect(() => {
+  drawerCustomCollections.value = [...useTabsetsStore().tabsets.values()].filter(
+    (ts: Tabset) => ts.type !== TabsetType.BIBBLY,
+  )
+})
+
+//   [
+//   { icon: 'outdoor_grill', text: 'Recipies' },
+//   { icon: 'radio', text: 'News' },
+//   { icon: 'beach_access', text: 'Travel' },
+//   { icon: 'restaurant_menu', text: 'Restaurants' },
+//   { icon: 'menu_book', text: 'Bibliography' },
+//   { icon: 'shopping_cart', text: 'Shopping' },
+// ]
+
+// const drawerCustomCollections = [
+//   { icon: '', text: 'Work', isbibblytemplate: false },
+//   { icon: '', text: 'My Italy trip 2025', isbibblytemplate: false },
+//   { icon: '', text: 'Templates', isbibblytemplate: false },
+//   { icon: '', text: 'Gym', isbibblytemplate: false },
+// ]
 
 const drawerSettings = [
   { icon: '', text: 'Settings' },
@@ -487,9 +502,11 @@ function getPlan() {}
 function showAccount() {}
 
 function logoutUser() {
-  useAuthStore().logout().then(() => {
-    //router.push
-  })
+  useAuthStore()
+    .logout()
+    .then(() => {
+      //router.push
+    })
 }
 
 function setHeaderOffsetVar() {

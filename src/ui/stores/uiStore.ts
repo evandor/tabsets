@@ -310,19 +310,19 @@ export const useUiStore = defineStore('ui', () => {
     if (val) {
       switch (val) {
         case FontSize.SMALLER:
-          document.body.style.setProperty('font-size', '12px')
+          document.body.style.setProperty('font-size', '10px')
           break
         case FontSize.SMALL:
-          document.body.style.setProperty('font-size', '14px')
+          document.body.style.setProperty('font-size', '12px')
           break
         case FontSize.LARGE:
-          document.body.style.setProperty('font-size', '20px')
+          document.body.style.setProperty('font-size', '16px')
           break
         case FontSize.LARGER:
-          document.body.style.setProperty('font-size', '24px')
+          document.body.style.setProperty('font-size', '18px')
           break
         default:
-          document.body.style.setProperty('font-size', '16px')
+          document.body.style.setProperty('font-size', '14px')
       }
     }
   }

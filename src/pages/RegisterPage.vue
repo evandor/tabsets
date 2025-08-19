@@ -50,6 +50,8 @@ import { useAuthStore } from 'stores/authStore'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUtils } from 'src/core/services/Utils'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 
 const {inBexMode} = useUtils()
 const {handleError} = useNotificationHandler()
@@ -80,10 +82,13 @@ async function onRegister() {
     // }
     await useAuthStore().setUser(user)
     // createGettingStartedTabset()
+
+    await useCommandExecutor().execute(new CreateTabsetCommand('Links', []))
+
     if (inBexMode()) {
       await router.push('/popup')
     } else {
-      await router.push('/tabsets')
+      await router.push('/dashboard')
     }
     // emits('hideLogin')
   } catch (error: any) {

@@ -160,6 +160,7 @@
     indicator-color="primary"
     align="left"
     narrow-indicator>
+    <q-tab name="json" label="As Json" />
     <q-tab name="grid" label="As Grid" />
     <q-tab name="list" label="As List" />
     <q-tab name="details" label="With Details" />
@@ -167,6 +168,10 @@
   </q-tabs>
 
   <q-tab-panels v-model="tab" animated>
+    <q-tab-panel class="q-ma-none q-pa-none" name="json">
+    {{tabset}}
+    </q-tab-panel>
+
     <q-tab-panel class="q-ma-none q-pa-none" name="grid">
       <q-banner
         rounded

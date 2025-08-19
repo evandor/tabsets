@@ -16,6 +16,7 @@ import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetSer
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { computed, ref, watch } from 'vue'
+import { SelectOption } from 'src/core/pages/common/useTabsetSelector'
 
 /**
  * a pinia store for "Tabsets".
@@ -308,6 +309,22 @@ export const useTabsetsStore = defineStore('tabsets', () => {
       }
       return undefined
     }
+  })
+
+  const getBibblyCollections = computed(() => {
+      return [...tabsets.value.values()]
+        .filter((ts: Tabset) =>
+          useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
+        )
+        .filter((ts: Tabset) => ts.type === TabsetType.BIBBLY)
+        .map((ts: Tabset) => {
+          return {
+            label: ts.name,
+            value: ts.id,
+            disable: false,
+          }
+        })
+        .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
   })
 
   const tabForUrlInSelectedTabset = computed(() => {
@@ -631,6 +648,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     getPageTabs,
     getSpecialTabset,
     getBibblyCollection,
+    getBibblyCollections,
     unselectCurrentTabset,
   }
 })

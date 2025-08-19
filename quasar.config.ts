@@ -28,7 +28,7 @@ export default defineConfig((ctx) => {
       // 'ionicons-v4',
       // 'mdi-v7',
       // 'fontawesome-v6',
-      'eva-icons',
+      //'eva-icons',
       // 'themify',
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
@@ -166,7 +166,7 @@ export default defineConfig((ctx) => {
         },
       },
 
-      iconSet: 'eva-icons',
+     //iconSet: 'eva-icons',
       // lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact

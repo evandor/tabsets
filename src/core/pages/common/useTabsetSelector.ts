@@ -15,22 +15,22 @@ export type SelectOption = {
 
 export type ElementHolder = 'contextmenu' | 'btn' | 'popup'
 
-function getBibblyCollections() {
-  const tabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
-  return tabsets
-    .filter((ts: Tabset) =>
-      useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
-    )
-    .filter((ts: Tabset) => ts.type === TabsetType.BIBBLY)
-    .map((ts: Tabset) => {
-      return {
-        label: ts.name,
-        value: ts.id,
-        disable: false,
-      }
-    })
-    .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
-}
+// function getBibblyCollections() {
+//   const tabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
+//   return tabsets
+//     .filter((ts: Tabset) =>
+//       useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
+//     )
+//     .filter((ts: Tabset) => ts.type === TabsetType.BIBBLY)
+//     .map((ts: Tabset) => {
+//       return {
+//         label: ts.name,
+//         value: ts.id,
+//         disable: false,
+//       }
+//     })
+//     .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+// }
 
 export function useTabsetSelector(holder: ElementHolder) {
 
@@ -91,7 +91,7 @@ export function useTabsetSelector(holder: ElementHolder) {
       tabsetSelectionOptions.value.unshift({ label: 'Switch to', value: '', disable: true, icon: 'switch_horiz' })
     }
 
-    const bibblyCollections = getBibblyCollections()
+    const bibblyCollections = useTabsetsStore().getBibblyCollections
     bibblyCollections.forEach((e: { label: string; value: string; disable: boolean }) => {
       const path = e.value.split(':')
       tabsetSelectionOptions.value.unshift({

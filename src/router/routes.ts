@@ -300,6 +300,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/DashboardLayout.vue'),
     children: [{ path: '', component: () => import('src/pages/NewCollectionPage.vue') }],
   },
+  {
+    path: '/mycollections/:tabsetId',
+    component: () => import('layouts/DashboardLayout.vue'),
+    children: [{ path: '', component: () => import('src/tabsets/pages/TabsetPage.vue') }],
+  },
 
   /** Overlay (in originl page) **/
   {

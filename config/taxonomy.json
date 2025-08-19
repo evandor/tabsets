@@ -1,0 +1,20 @@
+{
+  "recipe": {
+    "dinner": [
+      "supper",
+      "evening meal",
+      "banquet",
+      "feast"
+    ],
+    "lunch": [
+      "luncheon",
+      "midday meal"
+    ],
+    "snack": [
+      "nibble",
+      "treat",
+      "bite",
+      "bite"
+    ]
+  }
+}
