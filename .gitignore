@@ -63,3 +63,5 @@ docs/.vitepress/cache
 /docs/submodules/build/
 /e2e/results/
 /envs/bibbly.env.dev
+/functions/firestore-debug.log
+/functions/firebase-export-**/

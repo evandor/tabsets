@@ -13,12 +13,13 @@
           :rules="[val => !!val || 'Password is required']" />
 
         <div class="q-mt-sm">
-          <q-btn label="Login" type="submit" color="primary" class="full-width" icon="login" />
+          <q-btn no-caps label="Login" type="submit" color="primary" class="full-width" icon="login" />
         </div>
       </q-form>
 
       <q-card-actions align="center" class="q-mt-md">
-        <q-btn flat label="Don't have an account yet?" to="/register" color="secondary" />
+        <div class="text-grey-7">Don't have an account yet?</div>
+        <q-btn no-caps flat label="Sign Up" to="/register" color="secondary" />
       </q-card-actions>
     </q-card>
   </q-page>
@@ -51,7 +52,7 @@ function onSubmit() {
 
   useAuthService().signin(email.value, password.value, false, false)
     .then(() => {
-      router.push('/tabsets')
+      router.push('/dashboard')
     })
     .catch((err:any) => {
       console.log("error login in", err)

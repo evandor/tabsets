@@ -252,7 +252,7 @@ function scrollToSection(sectionId: string) {
 }
 
 async function goToRegister() {
-  await router.push('/register')
+  await router.push('/p/register')
 }
 
 

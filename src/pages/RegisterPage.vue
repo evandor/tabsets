@@ -30,11 +30,12 @@
           dense
           :rules="[(val) => val === password || 'Passwords do not match']" />
 
-        <q-btn label="Sign Up" type="submit" color="primary" class="full-width" icon="person_add" />
+        <q-btn no-caps label="Sign Up" type="submit" color="primary" class="full-width" icon="person_add" />
       </q-form>
 
       <q-card-actions align="center" class="q-mt-md">
-        <q-btn flat label="Already have an account?" to="/p/login" color="secondary" />
+        <div class="text-grey-7">Already have an account?</div>
+        <q-btn flat no-caps label="Login" to="/login" color="secondary" />
       </q-card-actions>
     </q-card>
   </q-page>

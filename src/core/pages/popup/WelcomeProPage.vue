@@ -114,19 +114,16 @@
 <script lang="ts" setup>
 import { LocalStorage, openURL } from 'quasar'
 import { SidePanelViews } from 'src/app/models/SidePanelViews'
-import { STRIP_CHARS_IN_USER_INPUT, TITLE_IDENT } from 'src/boot/constants'
+import { TITLE_IDENT } from 'src/boot/constants'
 import DialogButton from 'src/core/dialog/buttons/DialogButton.vue'
-import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import Analytics from 'src/core/utils/google-analytics'
 import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
-import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
 import { onMounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
-import { CreateSpecialTabsetCommand } from 'src/tabsets/commands/CreateSpecialTabsetCommand'
 
 const router = useRouter()
 

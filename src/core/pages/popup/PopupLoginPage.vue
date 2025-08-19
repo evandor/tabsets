@@ -200,7 +200,6 @@ import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { NotificationType, useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useUtils } from 'src/core/services/Utils'
-import { CreateSpecialTabsetCommand } from 'src/tabsets/commands/CreateSpecialTabsetCommand'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
 import { ref, watchEffect } from 'vue'
@@ -255,15 +254,15 @@ watchEffect(() => {
 })
 
 const createGettingStartedTabset = () => {
-  useCommandExecutor()
-    .executeFromUi(new CreateSpecialTabsetCommand('UNCATEGORIZED', 'sym_o_help_center'))
-    .then(() => {
-      LocalStorage.setItem('ui.hideWelcomePage', true)
-      chrome.storage.local.remove('tabsets.ext.ai.active')
-      console.log('route', route.fullPath)
-      router.push('/popup/getstarted')
-    })
-    .catch((err: any) => console.warn('got error', err))
+  // useCommandExecutor()
+  //   .executeFromUi(new CreateSpecialTabsetCommand('UNCATEGORIZED', 'sym_o_help_center'))
+  //   .then(() => {
+  //     LocalStorage.setItem('ui.hideWelcomePage', true)
+  //     chrome.storage.local.remove('tabsets.ext.ai.active')
+  //     console.log('route', route.fullPath)
+  //     router.push('/popup/getstarted')
+  //   })
+  //   .catch((err: any) => console.warn('got error', err))
 }
 
 const signin = async (registerMode: boolean) => {

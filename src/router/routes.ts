@@ -284,6 +284,23 @@ const routes: RouteRecordRaw[] = [
     },
   },
 
+  {
+    path: '/dashboard',
+    component: () => import('layouts/DashboardLayout.vue'),
+    children: [{ path: '', component: () => import('src/pages/DashboardPage.vue') }],
+    beforeEnter: (to: any, from: any) => {
+      // console.error(`to2: ${JSON.stringify(to)}`)
+      if (useAuthStore().user?.isAnonymous) {
+        return '/mainpanel/login'
+      }
+    },
+  },
+  {
+    path: '/newcollection',
+    component: () => import('layouts/DashboardLayout.vue'),
+    children: [{ path: '', component: () => import('src/pages/NewCollectionPage.vue') }],
+  },
+
   /** Overlay (in originl page) **/
   {
     path: '/overlay',
