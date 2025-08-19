@@ -1,18 +1,28 @@
 <template>
   <!-- Karte: klickbar auf Mobile -->
-  <q-card class="full-width recipe-card" :class="{ 'cursor-pointer': isMobile }" @click="isMobile && goToDetail()">
+  <q-card
+    class="full-width recipe-card"
+    :class="{ 'cursor-pointer': isMobile }"
+    @click="isMobile && goToDetail(props.recipe.id)">
     <!-- Rezeptbild -->
-    <q-img :src="recipe.image" style="height: 200px; width: 100%;" ratio="16/9" class="recipe-img">
+    <q-img :src="recipe.image" style="height: 200px; width: 100%" ratio="16/9" class="recipe-img">
       <!-- Share-Button oben rechts -->
-      <q-btn round dense flat icon="clear" class="absolute-top-right q-ma-sm midnight-green"
-        style="background-color: rgba(255, 255, 255, 0.7);" size="sm" @click.stop="deleteRecipe"
+      <q-btn
+        round
+        dense
+        flat
+        icon="clear"
+        class="absolute-top-right q-ma-sm midnight-green"
+        style="background-color: rgba(255, 255, 255, 0.7)"
+        size="sm"
+        @click.stop="deleteRecipe"
         :aria-label="`Rezept löschen: ${recipe.title}`" />
     </q-img>
 
     <!-- Titel & Kategorie -->
     <q-card-section>
-      <div class="text-h6 midnight-green">{{ recipe.title }}</div>
-      <div class="text-subtitle2 text-grey-7">{{ recipe.category }}</div>
+      <div class="text-h6 midnight-green ellipsis">{{ recipe.title }}</div>
+      <div class="text-subtitle2 text-grey-7 ellipsis">{{ recipe.category }}</div>
       <div v-if="recipe.source" class="text-caption">
         <a :href="recipe.source" target="_blank" rel="noopener" class="text-8 source-link">
           {{ recipe.domain }}
@@ -27,54 +37,43 @@
         <span class="text-caption text-grey-7">{{ recipe.prepTime + recipe.cookTime }} min</span>
       </div>
       <div>
-        <q-btn padding="xs lg" v-if="!isMobile" flat rounded class="card-show-button" @click.stop="goToDetail">
+        <q-btn
+          padding="xs lg"
+          v-if="!isMobile"
+          flat
+          rounded
+          class="card-show-button"
+          @click.stop="goToDetail(recipe.id)">
           Anzeigen
         </q-btn>
       </div>
     </q-card-actions>
-
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-
-
+import { Rezept } from 'src/bibblyCollections/recipes/models/Rezept'
+import { Tabset } from 'src/tabsets/models/Tabset'
+import { useRoute, useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const router = useRouter()
+const route = useRoute()
 const isMobile = $q.screen.lt.md
 
-
 const props = defineProps<{
-  recipe: {
-    id: string
-    title: string
-    category: string
-    instructions: string[]
-    prepTime: number
-    cookTime: number
-    portions: number
-    image: string
-    source?: string
-    domain: string
-  }
+  tabset: Tabset
+  recipe: Rezept
 }>()
 
-
-
-function goToDetail() {
-  router.push({ name: 'recipe-detail', params: { id: props.recipe.id } }).catch(err => {
-    console.error('Navigation fehlgeschlagen:', err)
-  })
+function goToDetail(id: string) {
+  router.push(`${route.path}/${id}`)
 }
 
 function deleteRecipe() {
   alert(`Löschen: ${props.recipe.title}`)
 }
-
-
 </script>
 
 <style scoped>

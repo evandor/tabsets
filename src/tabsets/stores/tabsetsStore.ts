@@ -10,6 +10,7 @@ import { FolderNode } from 'src/tabsets/models/FolderNode'
 import { Tab, TabComment } from 'src/tabsets/models/Tab'
 import { TabAndTabsetId } from 'src/tabsets/models/TabAndTabsetId'
 import { ChangeInfo, Tabset, TabsetSharing, TabsetStatus, TabsetType } from 'src/tabsets/models/Tabset'
+import { ContentClassification, SystemContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import TabsetsPersistence from 'src/tabsets/persistence/TabsetsPersistence'
 import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetService'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
@@ -292,6 +293,18 @@ export const useTabsetsStore = defineStore('tabsets', () => {
         return match[0]!
       }
       return new Tabset(id, id, [])
+    }
+  })
+
+  const getBibblyCollection = computed(() => {
+    return (template: SystemContentClassification): Tabset | undefined => {
+      const match: Tabset[] = [...tabsets.value.values()].filter(
+        (ts: Tabset) => ts.type === TabsetType.BIBBLY && ts.name === template,
+      )
+      if (match && match.length > 0) {
+        return match[0]!
+      }
+      return undefined
     }
   })
 
@@ -615,6 +628,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     getParentChainForTabId,
     getPageTabs,
     getSpecialTabset,
+    getBibblyCollection,
     unselectCurrentTabset,
   }
 })

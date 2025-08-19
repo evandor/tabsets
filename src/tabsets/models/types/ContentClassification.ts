@@ -4,7 +4,7 @@ export type ContentTemplate = (typeof ContentTemplatesTypes)[number]
 //export type ContentTemplates = 'recipe' | 'news' | 'shopping' | 'restaurant' | 'travel'
 
 // we have templates for those
-export type SystemContentClassification = `system:${ContentTemplate}`
+export type SystemContentClassification = `bibbly:${ContentTemplate}`
 
 // no template (i.e. the default template) is used for those:
 export type UserContentClassification = `user:${string}`

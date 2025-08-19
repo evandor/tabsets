@@ -1,6 +1,5 @@
 <template>
-  <q-layout view="hHh pR fFf">
-
+  <q-layout view="hHh LpR fFf">
     <!-- Variante 1: Kleiner Header für bestimmte Seiten -->
     <q-header v-if="isSimpleHeader" class="bg-white">
       <q-toolbar class="justify-between q-py-md">
@@ -14,7 +13,10 @@
           <!-- Desktop: Zwei Buttons -->
           <div class="row q-gutter-sm items-center" v-if="$q.screen.gt.sm">
             <q-btn flat label="Login" color="teal" @click="goToLogin" />
-            <q-btn style="background: #ff934f; color: white" label="Sign Up" icon-right="arrow_forward"
+            <q-btn
+              style="background: #ff934f; color: white"
+              label="Sign Up"
+              icon-right="arrow_forward"
               @click="goToRegister" />
           </div>
 
@@ -36,16 +38,20 @@
     </q-header>
 
     <!-- Variante 2: Voller Header mit Menü-Button -->
-    <q-header v-else elevated style="background-color: #087F8C; color: white;">
+    <q-header v-else elevated style="background-color: #087f8c; color: white">
       <q-toolbar class="q-gutter-sm justify-between">
         <div class="row items-center">
-          <q-btn v-if="showBackButton" flat dense icon="arrow_back" @click="goBack"
-            :label="$q.screen.gt.sm ? 'Zurück' : undefined" :round="$q.screen.lt.sm" />
+          <q-btn
+            v-if="showBackButton"
+            flat
+            dense
+            icon="arrow_back"
+            @click="goBack"
+            :label="$q.screen.gt.sm ? 'Zurück' : undefined"
+            :round="$q.screen.lt.sm" />
         </div>
 
-        <q-toolbar-title class="text-center app-title">
-          bibbly <span class="subtitle">recipes</span>
-        </q-toolbar-title>
+        <q-toolbar-title class="text-center app-title"> bibbly <span class="subtitle">recipes</span> </q-toolbar-title>
 
         <q-btn flat round dense icon="menu" @click="rightDrawerOpen = !rightDrawerOpen" />
       </q-toolbar>
@@ -54,7 +60,6 @@
     <!-- Right Drawer -->
     <q-drawer v-if="!isSimpleHeader" side="right" v-model="rightDrawerOpen" overlay bordered behavior="mobile">
       <q-list>
-
         <q-item clickable v-ripple @click="onImport">
           <q-item-section avatar><q-icon name="file_upload" /></q-item-section>
           <q-item-section>Importieren</q-item-section>
@@ -81,7 +86,6 @@
           <q-item-section avatar><q-icon name="logout" /></q-item-section>
           <q-item-section>Abmelden</q-item-section>
         </q-item>
-
       </q-list>
     </q-drawer>
 
@@ -89,28 +93,22 @@
     <q-page-container>
       <router-view />
     </q-page-container>
-
   </q-layout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { useRouter } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const rightDrawerOpen = ref(false);
-const route = useRoute();
-const router = useRouter();
+const rightDrawerOpen = ref(false)
+const route = useRoute()
+const router = useRouter()
 // Hier gibst du die Routen-Namen an, bei denen der Zurück-Button angezeigt werden soll
-const showBackButton = computed(() =>
-  ['recipe-detail'].includes(route.name as string)
-);
+const showBackButton = computed(() => ['recipe-detail'].includes(route.name as string))
 
 const simpleHeaderRoutes = ['welcome', 'login', 'register', 'preview']
 
-const isSimpleHeader = computed(() =>
-  typeof route.name === 'string' && simpleHeaderRoutes.includes(route.name)
-)
+const isSimpleHeader = computed(() => typeof route.name === 'string' && simpleHeaderRoutes.includes(route.name))
 
 async function goToWelcome() {
   await router.push('/')
@@ -123,7 +121,6 @@ async function goBack() {
 async function goToLogin() {
   await router.push('/login')
 }
-
 
 async function goToRegister() {
   await router.push('/register')
@@ -145,7 +142,6 @@ function onAgb() {
 function onImpressum() {
   console.log('Impressum geklickt')
 }
-
 
 function onLogout() {
   console.log('Logout geklickt')

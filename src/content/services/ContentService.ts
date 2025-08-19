@@ -9,7 +9,7 @@ export function useContentService() {
     db = storage
     await db.init()
     initListeners()
-    //console.debug(` ...initialized content: Service`, '✅')
+    console.debug(` ...initialized content: Service`, '✅')
   }
 
   const populateSearch = async (existingUrls: string[]) => {

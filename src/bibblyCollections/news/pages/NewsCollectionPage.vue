@@ -15,12 +15,24 @@
 
   <q-tabs v-model="tab" dense class="text-grey q-ma-none q-pa-none" align="left" narrow-indicator>
     <q-tab name="grid" label="As Grid" @click="setView('grid')" />
+    <q-tab name="newsfeed" label="News Feed" @click="setView('newsfeed')" />
     <q-tab name="list" label="As List" @click="setView('list')" />
   </q-tabs>
 
   <q-tab-panels v-model="tab" animated>
     <q-tab-panel class="q-ma-none q-pa-none" name="grid">
       <TabsetPageCards :tabset="tabset" :tabsetFolder="tabsetFolder" :key="tabsetFolder.id" :simple-ui="false" />
+    </q-tab-panel>
+
+    <q-tab-panel class="q-ma-none q-pa-none q-mt-md" name="newsfeed">
+      <div class="row">
+        <div class="col-4" v-for="feed in feeds">
+          <div class="q-ma-sm" style="border: 1px solid grey; border-radius: 5px">
+            <div class="q-ma-md">{{ feed }}</div>
+            <RssFeed :url="feed" />
+          </div>
+        </div>
+      </div>
     </q-tab-panel>
 
     <q-tab-panel class="q-ma-none q-pa-none" name="list">
@@ -37,8 +49,11 @@
 
 <script setup lang="ts">
 import { uid, useMeta } from 'quasar'
+import RssFeed from 'src/bibblyCollections/news/components/RssFeed.vue'
+import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import Analytics from 'src/core/utils/google-analytics'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
+import { Tab } from 'src/tabsets/models/Tab'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { SystemContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import TabList from 'src/tabsets/pages/pwa/TabList.vue'
@@ -55,6 +70,7 @@ const tabsetId = ref(null as unknown as string)
 const folderId = ref<string | undefined>(undefined)
 const tabset = ref<Tabset>(new Tabset(uid(), 'empty', []))
 const tabsetFolder = ref<Tabset>(new Tabset(uid(), 'empty', []))
+const feeds = ref<string[]>([])
 
 const tab = ref('')
 const title = ref('Tabsets')
@@ -99,6 +115,18 @@ onMounted(() => {
       tabsetFolder.value.tabs = useTagsService()
         .getTabsWithClassification(bibblyCollection)
         .map((iT: IndexedTab) => iT.tab)
+      if (tabsetFolder.value) {
+        feeds.value = Array.from(
+          new Set(
+            tabsetFolder.value.tabs.flatMap((ts: Tab) => {
+              return ts.tabReferences
+                .filter((tR: TabReference) => tR.type === TabReferenceType.RSS)
+                .map((tR: TabReference) => tR.href)
+                .filter((href: string | undefined) => href !== undefined)
+            }),
+          ),
+        )
+      }
     }
   }
 })

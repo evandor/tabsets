@@ -164,9 +164,24 @@ const routes: RouteRecordRaw[] = [
         component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue'),
       },
       {
-        path: 'recipe/:tabsetId',
+        path: 'bibbly/recipe',
         component: () => import('layouts/RezepteLayout.vue'),
         children: [{ path: '', component: () => import('src/pages/rezepte/IndexPage.vue') }],
+      },
+      {
+        path: 'bibbly/recipe/:id',
+        component: () => import('layouts/RezepteLayout.vue'),
+        children: [{ path: '', component: () => import('src/pages/RecipeDetail.vue') }],
+      },
+      {
+        path: 'bibbly/news',
+        component: () => import('layouts/PlainLayout.vue'),
+        children: [{ path: '', component: () => import('src/bibblyCollections/news/pages/NewsCollectionPage.vue') }],
+      },
+      {
+        path: 'bibbly/restaurant',
+        component: () => import('layouts/PlainLayout.vue'),
+        children: [{ path: '', component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue') }],
       },
       {
         path: 'visualizations/folders',

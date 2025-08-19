@@ -15,6 +15,23 @@ export type SelectOption = {
 
 export type ElementHolder = 'contextmenu' | 'btn' | 'popup'
 
+function getBibblyCollections() {
+  const tabsets = [...useTabsetsStore().tabsets.values()] as Tabset[]
+  return tabsets
+    .filter((ts: Tabset) =>
+      useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
+    )
+    .filter((ts: Tabset) => ts.type === TabsetType.BIBBLY)
+    .map((ts: Tabset) => {
+      return {
+        label: ts.name,
+        value: ts.id,
+        disable: false,
+      }
+    })
+    .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+}
+
 export function useTabsetSelector(holder: ElementHolder) {
   const useSpaces = useFeaturesStore().hasFeature(FeatureIdent.SPACES)
   const space = useSpacesStore().space
@@ -45,7 +62,7 @@ export function useTabsetSelector(holder: ElementHolder) {
       )
       //.filter((ts: Tabset) => ts.type !== TabsetType.SPECIAL)
       .filter((ts: Tabset) => ts.type !== TabsetType.SESSION)
-      //.filter((ts: Tabset) => ts.type !== TabsetType.BIBBLY)
+      .filter((ts: Tabset) => ts.type !== TabsetType.BIBBLY)
       // .filter((ts: Tabset) => ts.type !== TabsetType.DYNAMIC)
       //.filter((ts: Tabset) => ts.id !== currentTabset.value?.id)
       .filter((ts: Tabset) => {
@@ -70,6 +87,25 @@ export function useTabsetSelector(holder: ElementHolder) {
     // }
     if (tabsetSelectionOptions.value.length > 1) {
       tabsetSelectionOptions.value.unshift({ label: 'Switch to', value: '', disable: true, icon: 'switch_horiz' })
+    }
+
+    const bibblyCollections = getBibblyCollections()
+    bibblyCollections.forEach((e: { label: string; value: string; disable: boolean }) => {
+      const path = e.value.split(':')
+      tabsetSelectionOptions.value.unshift({
+        label: e.label,
+        value: `/mainpanel/${path[0]}/${path[1]}`,
+        disable: e.disable,
+      })
+    })
+
+    if (bibblyCollections.length > 0) {
+      tabsetSelectionOptions.value.unshift({
+        label: 'Open Bibbly Collection',
+        value: '',
+        disable: true,
+        icon: 'switch_horiz',
+      })
     }
 
     if (tabsets.length > 1) {

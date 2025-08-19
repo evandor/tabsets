@@ -75,6 +75,7 @@
     "gsap": "^3.13.0",
     "html-to-text": "^9.0.5",
     "idb": "^8.0.0",
+    "iso8601-duration": "^2.1.2",
     "js-sha256": "^0.11.0",
     "jsonpath-plus": "^10.2.0",
     "lodash": "^4.17.21",

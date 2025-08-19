@@ -27,14 +27,14 @@
     </div>
     <div class="col-4 text-caption">content store</div>
     <div class="col-8 text-caption ellipsis" style="font-size: smaller">
-      {{ useContentStore().getCurrentTabUrl }}
+      {{ contentStoreCurrentTabUrl }}
     </div>
     <div class="col-4 text-caption">tabs store</div>
     <div
       class="col-8 text-caption ellipsis"
       style="font-size: smaller"
       :class="useContentStore().getCurrentTabUrl !== useTabsStore2().currentChromeTab?.url ? 'text-negative' : ''">
-      {{ useTabsStore2().currentChromeTab?.url }}
+      {{ tabsStoreCurrentChromeTab?.url }}
     </div>
 
     <div class="col-4 text-caption">category</div>
@@ -147,6 +147,19 @@ const aiCategorySource = ref<string | undefined>(undefined)
 
 const classicCategory = ref<string>('---')
 const classicCategorySource = ref<string | undefined>(undefined)
+
+const tabsStoreCurrentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
+const contentStoreCurrentTabUrl = ref<string | undefined>(undefined)
+
+watchEffect(() => {
+  tabsStoreCurrentChromeTab.value = useTabsStore2().currentChromeTab
+  console.log('updated tabsStoreCurrentChromeTab: ', tabsStoreCurrentChromeTab.value)
+})
+
+watchEffect(() => {
+  contentStoreCurrentTabUrl.value = useContentStore().getCurrentTabUrl
+  console.log('updated contentStoreCurrentTabUrl: ', contentStoreCurrentTabUrl.value)
+})
 
 watchEffect(() => {
   const tsCat = useContentStore().getCurrentTabStorage['tabsetsCategorization' as keyof object]

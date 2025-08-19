@@ -18,7 +18,7 @@ function handleCategoryMapping(line: string, categoryMapping: Map<string, Map<st
   if (!categoryMapping.has(type)) {
     categoryMapping.set(type, new Map())
   }
-  categoryMapping.get(type)!.set(key, ('system:' + cat) as ContentClassification)
+  categoryMapping.get(type)!.set(key, ('bibbly:' + cat) as ContentClassification)
 }
 
 function handleLdJsonMapping(line: string, ldJsonMapping: Map<string, Map<string, Map<string, any>>>) {
@@ -104,7 +104,7 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
       //console.log(`searching category for ${type}/${keys.join(',')}`)
       const typeMapping = categoryMapping.value.get(type)
       if (typeMapping) {
-        // e.g. [{"nachrichten" => "system:news"}, ...]
+        // e.g. [{"nachrichten" => "bibbly:news"}, ...]
         for (const key of keys) {
           if (key && key.trim().length > 0) {
             //console.log('key', key, typeMapping.keys())
