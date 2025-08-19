@@ -25,7 +25,11 @@
               <template v-if="scope.opt.label.length > 0">
                 <q-item-section
                   style="max-width: 20px"
-                  v-if="scope.opt.label !== 'Switch to' && scope.opt.label !== 'Add'">
+                  v-if="
+                    scope.opt.label !== 'Switch to' &&
+                    scope.opt.label !== 'Open Bibbly Collection' &&
+                    scope.opt.label !== 'Add'
+                  ">
                   <q-icon
                     size="xs"
                     :color="scope.opt.icon_color ? scope.opt.icon_color : 'primary'"

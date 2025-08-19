@@ -121,6 +121,6 @@ describe('notify example', () => {
     const browserTab = BrowserApi.createChromeTabObject('tabset', 'https://www.test.de', 'favicon')
     await useContentStore().resetFor(browserTab)
     const res = useTagsService().getCurrentTabContentClassification()
-    expect(res).toEqual({ classification: 'system:news', matchedFrom: 'openGraph/Article' })
+    expect(res).toEqual({ classification: 'bibbly:news', matchedFrom: 'openGraph/Article' })
   })
 })

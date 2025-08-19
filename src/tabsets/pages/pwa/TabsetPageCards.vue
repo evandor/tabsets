@@ -5,7 +5,6 @@
     Click the image to move your tabs to your liking; right-click to (re-)create thumbnails and click on the URL to open
     the page.
   </InfoMessageWidget>
-
   <TabGrid2
     :key="randomKey2"
     @was-clicked="updateGrids()"
@@ -85,6 +84,16 @@ function currentTabs(): Tab[] {
       .getDynamicTabsBy(tags)
       .map((it: IndexedTab) => it.tab)
   }
+  if (
+    props.tabset.type === TabsetType.BIBBLY &&
+    props.tabset.dynamicTabs?.type === DynamicTabSourceType.CLASSIFICATION
+  ) {
+    const classification = props.tabset.dynamicTabs.config['classification' as keyof object]
+    return useTagsService()
+      .getTabsWithClassification(classification)
+      .map((iT: IndexedTab) => iT.tab)
+  }
+
   return _.orderBy(props.tabsetFolder.tabs, getOrder(), [orderDesc.value ? 'desc' : 'asc'])
 }
 

@@ -86,7 +86,7 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  //console.log('defaultAction!!', props.currentChromeTab.url, props.tabset)
+  console.log('defaultAction!!', props.currentChromeTab?.url, props.tabset.name)
   handler.value = getHandler(props.currentChromeTab.url, props.folder)
   // defaultAction.value = handler.value.defaultAction()
   // showExtraMenuItems()

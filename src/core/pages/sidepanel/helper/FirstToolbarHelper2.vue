@@ -84,7 +84,9 @@
                   <template v-slot:option="scope">
                     <q-item v-bind="scope.itemProps">
                       <template v-if="scope.opt.label.length > 0">
-                        <q-item-section style="max-width: 20px" v-if="scope.opt.label !== 'Switch to'">
+                        <q-item-section
+                          style="max-width: 20px"
+                          v-if="scope.opt.label !== 'Switch to' && scope.opt.label !== 'Open Bibbly Collection'">
                           <q-icon
                             size="xs"
                             :color="scope.opt.icon_color ? scope.opt.icon_color : 'primary'"
@@ -139,6 +141,7 @@ import { SidePanelViews } from 'src/app/models/SidePanelViews'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
 import { SelectOption, useTabsetSelector } from 'src/core/pages/common/useTabsetSelector'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useNavigationService } from 'src/core/services/NavigationService'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useSpacesStore } from 'src/spaces/stores/spacesStore'
 import { useActionHandlers } from 'src/tabsets/actionHandling/ActionHandlers'
@@ -343,6 +346,11 @@ const switchTabset = async (option: SelectOption) => {
   if (tsId === '') {
     await router.push('/sidepanel/collections')
     return
+  }
+  if (tsId.startsWith('/mainpanel/')) {
+    console.log('hier', tsId, tabsetSelectionModel.value)
+    const url = chrome.runtime.getURL(`/www/index.html/#${tsId}`)
+    useNavigationService().browserTabFor(url)
   }
   const result: ExecutionResult<Tabset | undefined> = await useCommandExecutor().execute(
     new SelectTabsetCommand(option.value),

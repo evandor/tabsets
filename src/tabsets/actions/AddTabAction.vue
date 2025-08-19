@@ -14,7 +14,7 @@
       {{ tooltipAlreadyInOtherTabsets(props.tabset!.name) }}
     </q-tooltip>
     <q-tooltip class="tooltip-small" v-else>
-      Add current Tab to '{{ tabsetNameOrChain(props.tabset as Tabset) }}'...
+      Add current Tab {{ currentTabIfInDebugMode() }} to '{{ tabsetNameOrChain(props.tabset as Tabset) }}'...
     </q-tooltip>
   </template>
 </template>
@@ -23,6 +23,7 @@ import { uid } from 'quasar'
 import ContextMenuItem from 'src/core/components/helper/ContextMenuItem.vue'
 import { useCommandExecutor } from 'src/core/services/CommandExecutor'
 import { useNotificationHandler } from 'src/core/services/ErrorHandler'
+import { useSettingsStore } from 'src/core/stores/settingsStore'
 import { ActionProps } from 'src/tabsets/actions/models/ActionProps'
 import FabLikeBtn from 'src/tabsets/actions/widgets/FabLikeBtn.vue'
 import { AddTabToTabsetCommand } from 'src/tabsets/commands/AddTabToTabsetCommand'
@@ -73,4 +74,11 @@ const tabsetNameOrChain = (tabset: Tabset) => {
 
 const tooltipAlreadyInOtherTabsets = (tabsetName: string) =>
   `Already contained in ${containedInTsCount.value} other tabsets. Click to add here as well.`
+
+const currentTabIfInDebugMode = () => {
+  if (useSettingsStore().has('DEBUG_MODE')) {
+    return props.currentChromeTab?.url
+  }
+  return ''
+}
 </script>

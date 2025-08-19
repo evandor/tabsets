@@ -36,42 +36,42 @@
         <!--        <div class="col-12 text-center" v-for="sts in bibblyTabsets">-->
         <!--          <q-btn :label="sts.name" color="primary" size="xs" @click="openGallery()" />-->
         <!--        </div>-->
-        <div class="rounded-borders fit q-ma-none q-mb-md" v-if="showBibblyCollections()">
-          <!--          <div-->
-          <!--            v-for="sts in bibblyTabsets.filter((tsAndSize: TabsetAndSize) => tsAndSize.size > 0)"-->
-          <!--            class="row fit cursor-pointer"-->
-          <!--            @click.stop="openGallery(sts.ts)">-->
-          <!--            <div class="col-2 text-center">-->
-          <!--              <q-icon :name="sts.ts.icon" />-->
-          <!--            </div>-->
-          <!--            <div class="col-8 q-mt-xs text-bold">{{ capitalize(sts.ts.name.toLowerCase()) }}</div>-->
-          <!--            <div class="col text-caption text-right q-mr-md q-mt-xs"></div>-->
-          <!--          </div>-->
+        <!--        <div class="rounded-borders fit q-ma-none q-mb-md" v-if="showBibblyCollections()">-->
+        <!--          <div-->
+        <!--            v-for="sts in bibblyTabsets.filter((tsAndSize: TabsetAndSize) => tsAndSize.size > 0)"-->
+        <!--            class="row fit cursor-pointer"-->
+        <!--            @click.stop="openGallery(sts.ts)">-->
+        <!--            <div class="col-2 text-center">-->
+        <!--              <q-icon :name="sts.ts.icon" />-->
+        <!--            </div>-->
+        <!--            <div class="col-8 q-mt-xs text-bold">{{ capitalize(sts.ts.name.toLowerCase()) }}</div>-->
+        <!--            <div class="col text-caption text-right q-mr-md q-mt-xs"></div>-->
+        <!--          </div>-->
 
-          <q-expansion-item
-            v-for="sts in bibblyTabsets.filter((tsAndSize: TabsetAndSize) => tsAndSize.size > 0)"
-            class="overflow-hidden"
-            :class="bgColorForSpecialTab(sts.ts)"
-            style="border-radius: 7px"
-            header-class="text-bold"
-            :icon="sts.ts.icon"
-            :label="sts.ts.name">
-            <template v-slot:header>
-              <div class="row fit cursor-pointer" @click.stop="openGallery(sts.ts)">
-                <div class="col-10 q-mt-xs">{{ capitalize(sts.ts.name.toLowerCase()) }}</div>
-                <div class="col text-caption text-right q-mr-md q-mt-xs">
-                  {{ sts.size > 0 ? sts.size : '' }}
-                </div>
-              </div>
-            </template>
-            <SidePanelPageContent
-              :tabset="sts.ts"
-              :key="sts.ts?.id"
-              :filter="filter"
-              @tabs-found="(n: number) => (filteredTabsCount = n)"
-              @folders-found="(n: number) => (filteredFoldersCount = n)" />
-          </q-expansion-item>
-        </div>
+        <!--          <q-expansion-item-->
+        <!--            v-for="sts in bibblyTabsets.filter((tsAndSize: TabsetAndSize) => tsAndSize.size > 0)"-->
+        <!--            class="overflow-hidden"-->
+        <!--            :class="bgColorForSpecialTab(sts.ts)"-->
+        <!--            style="border-radius: 7px"-->
+        <!--            header-class="text-bold"-->
+        <!--            :icon="sts.ts.icon"-->
+        <!--            :label="sts.ts.name">-->
+        <!--            <template v-slot:header>-->
+        <!--              <div class="row fit cursor-pointer" @click.stop="openGallery(sts.ts)">-->
+        <!--                <div class="col-10 q-mt-xs">{{ capitalize(sts.ts.name.toLowerCase()) }}</div>-->
+        <!--                <div class="col text-caption text-right q-mr-md q-mt-xs">-->
+        <!--                  {{ sts.size > 0 ? sts.size : '' }}-->
+        <!--                </div>-->
+        <!--              </div>-->
+        <!--            </template>-->
+        <!--            <SidePanelPageContent-->
+        <!--              :tabset="sts.ts"-->
+        <!--              :key="sts.ts?.id"-->
+        <!--              :filter="filter"-->
+        <!--              @tabs-found="(n: number) => (filteredTabsCount = n)"-->
+        <!--              @folders-found="(n: number) => (filteredFoldersCount = n)" />-->
+        <!--          </q-expansion-item>-->
+        <!--        </div>-->
         <!--        <div-->
         <!--          v-if="showBibblyCollections()"-->
         <!--          class="fit q-mt-lg text-center text-grey-7 cursor-pointer"-->

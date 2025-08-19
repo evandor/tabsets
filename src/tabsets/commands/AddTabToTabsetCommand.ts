@@ -1,4 +1,3 @@
-// 6 expected diffs to localstorage
 import _ from 'lodash'
 import { uid } from 'quasar'
 import AppEventDispatcher from 'src/app/AppEventDispatcher'
@@ -7,6 +6,8 @@ import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useContentStore } from 'src/content/stores/contentStore'
 import Command from 'src/core/domain/Command'
 import { ExecutionResult } from 'src/core/domain/ExecutionResult'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useNotificationHandler } from 'src/core/services/ErrorHandler'
 import { useLogger } from 'src/core/services/Logger'
 import { useUtils } from 'src/core/services/Utils'
 import ContentUtils from 'src/core/utils/ContentUtils'
@@ -15,8 +16,9 @@ import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useRequestsService } from 'src/requests/services/RequestsService'
 import { useRequestsStore } from 'src/requests/stores/requestsStore'
 import { searchUtils } from 'src/search/searchUtils'
+import { CreateBibblyCollection } from 'src/tabsets/commands/CreateBibblyCollection'
 import { Tab } from 'src/tabsets/models/Tab'
-import { ChangeInfo, Tabset, TabsetType } from 'src/tabsets/models/Tabset'
+import { ChangeInfo, Tabset } from 'src/tabsets/models/Tabset'
 import { ContentClassification, SystemContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
@@ -26,26 +28,15 @@ import { useThumbnailsService } from 'src/thumbnails/services/ThumbnailsService'
 
 const { sendMsg } = useUtils()
 const { info } = useLogger()
+const { handleSuccess, handleError } = useNotificationHandler()
 
 // No undo command, tab can be deleted manually easily
 
-async function tabInTabset(name: string, classification: ContentClassification): Promise<Tabset | undefined> {
-  let tabset = useTabsetsStore().getTabset(name)
-  if (!tabset) {
-    console.log('no tabset yet for id', name, tabset)
-    tabset = await useTabsetsStore().createTabset(name, [], undefined, undefined, false, name)
-    tabset.type = TabsetType.SPECIAL
-    // tabset.contentClassification = classification
-    await useTabsetsStore().saveTabset(tabset)
-  }
-  return tabset
-}
-
 function mapSystemCategoryToName(tabCategory: SystemContentClassification) {
   if (tabCategory.endsWith(':shopping')) {
-    return tabCategory.replace('system:', '')
+    return tabCategory.replace('bibbly:', '')
   }
-  return tabCategory.replace('system:', '') + 's'
+  return tabCategory.replace('bibbly:', '') + 's'
 }
 
 /**
@@ -74,11 +65,15 @@ export class AddTabToTabsetCommand implements Command<any> {
     const tabCategory: ContentClassification | 'unclassified' =
       useTagsService().getCurrentTabContentClassification().classification
     console.log('found category', tabCategory)
-    if (tabCategory.startsWith('system:') && tabCategory !== 'unclassified') {
-      // this.tabset = await tabInTabset(
-      //   mapSystemCategoryToName(tabCategory as unknown as SystemContentClassification),
-      //   tabCategory,
-      // )
+    if (tabCategory.startsWith('bibbly:') && tabCategory !== 'unclassified') {
+      const existingCollection = useTabsetsStore().getBibblyCollection(
+        tabCategory as unknown as SystemContentClassification,
+      )
+      if (!existingCollection) {
+        await useCommandExecutor().executeFromUi(new CreateBibblyCollection(tabCategory as SystemContentClassification))
+      } else {
+        handleSuccess(new ExecutionResult('', `added to view ${tabCategory}`))
+      }
       this.tab.classifications.push(tabCategory)
     }
     // if (!this.tabset) {

@@ -22,7 +22,7 @@ import ContentUtils from 'src/core/utils/ContentUtils'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab } from 'src/tabsets/models/Tab'
-import { Tabset } from 'src/tabsets/models/Tabset'
+import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
 import { ClassificationResult, ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useUiStore } from 'src/ui/stores/uiStore'
@@ -339,19 +339,22 @@ export function useTagsService() {
     return result
   }
 
-  function getTabsWithClassification(classification: string) {
+  function getTabsWithClassification(classification: string): IndexedTab[] {
     const result: IndexedTab[] = []
     //const term: string = classification.length > 0 ? (classification[0] as string) : ''
     let i = 0
-    _.forEach([...useTabsetsStore().tabsets.values()] as Tabset[], (tabset: Tabset) => {
+    const tabsetsToUse = [...useTabsetsStore().tabsets.values()].filter((ts: Tabset) => ts.type === TabsetType.DEFAULT)
+    _.forEach(tabsetsToUse, (tabset: Tabset) => {
+      //console.log('checking tabset', tabset.name)
       _.forEach(tabset.tabs, (tab: Tab) => {
-        console.log('comparing', classification, tab.classifications)
+        // console.log('comparing', classification, tab.classifications)
         if (tab.classifications.indexOf(classification as ContentClassification) >= 0) {
-          console.log('found tab', classification, tab.tags)
+          //  console.log('found tab', classification, tab.tags)
           result.push(new IndexedTab(i++, tab))
         }
       })
     })
+    // console.log('result', result)
     return result
   }
 
