@@ -27,7 +27,12 @@
           @click="clearSearch()">
           <q-tooltip class="tooltip-small">Clear Input</q-tooltip>
         </q-icon>
-        <q-icon name="o_cancel" size="xs" color="grey" class="q-ml-xs q-mb-xs cursor-pointer">
+        <q-icon
+          name="o_cancel"
+          size="xs"
+          color="grey"
+          class="q-ml-xs q-mb-xs cursor-pointer"
+          @click="useUiStore().setQuickAccess('search', false)">
           <q-tooltip class="tooltip-small">Hide Search Box</q-tooltip>
         </q-icon>
       </span>
@@ -40,6 +45,7 @@ import { useQuasar } from 'quasar'
 import { useSearchStore } from 'src/search/stores/searchStore'
 import { Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
+import { useUiStore } from 'src/ui/stores/uiStore'
 import { onMounted, ref, watchEffect } from 'vue'
 
 type Props = {

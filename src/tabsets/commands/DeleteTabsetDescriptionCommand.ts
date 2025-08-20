@@ -13,7 +13,6 @@ class UndoCommand implements Command<TabsetStatus> {
   async execute(): Promise<ExecutionResult<any>> {
     const tabset = useTabsetsStore().getTabset(this.tabsetId)
     if (tabset) {
-      tabset.page = this.tabsetPage
       const res = await useTabsetService().saveTabset(tabset)
       return new ExecutionResult(res, 'Description was reverted')
     }

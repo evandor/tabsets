@@ -23,7 +23,7 @@ export function useComponent(block: ContentBlock, htmlRef: Ref<any, any>, emits:
   const setClass = (cssClass: string) => {
     console.log('setclass', cssClass)
     block.classes = [cssClass]
-    emits('content-changed')
+    // emits('content-changed')
   }
 
   const convertTo = (type: ContentBlockType) => {

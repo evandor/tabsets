@@ -36,17 +36,17 @@ const { getClass, hovered, deleteBlock, convertTo, setClass } = useComponent(pro
 const data = props.data as ListContentContainer
 
 function update() {
-  const newText = htmlRef.value.innerText
-  console.log('newtext', newText, props.block.id)
-  //data.text = htmlRef.value.innerText.trim()
-  emits('content-changed')
+  console.log('newtext', props.block.id)
+  const dataClone = structuredClone(JSON.parse(JSON.stringify(data)))
+  dataClone.text = htmlRef.value.innerText
+  emits('content-changed', dataClone)
 }
 
 const deletePressed = (e: any, index: number) => {
   console.log('deletePressed', e, htmlRef.value[index].innerText)
   if (htmlRef.value[index].innerText.trim().length === 0) {
     data.lines.splice(index, 1)
-    emits('content-changed')
+    // emits('content-changed')
   }
 }
 
@@ -57,6 +57,6 @@ const enterPressed = (e: any, index: number) => {
   const parts = newText.split('\n')
   data.lines.splice(index, 0, parts[0])
   data.lines[index + 1] = parts[1]
-  emits('content-changed')
+  // emits('content-changed')
 }
 </script>

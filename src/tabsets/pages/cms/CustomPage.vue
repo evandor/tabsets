@@ -1,44 +1,34 @@
 <template>
-  <q-header :style="edit ? 'background-color: grey' : 'background-color: white'">
-    <div class="row">
-      <div class="col-12 text-right">
-        <q-icon
-          v-if="!props.edit"
-          name="edit"
-          color="primary"
-          size="xs"
-          class="q-mx-md q-my-xs cursor-pointer"
-          @click="editPage()" />
-        <template v-else>
-          {{ page?.version }} - {{ date.formatDate(page?.changed || 0, 'DD.MM.YYYY HH:MM:SS') }}
-          <q-icon name="edit_off" size="xs" class="q-mx-md q-my-xs cursor-pointer" @click="editOff()" />
-        </template>
-      </div>
-    </div>
-  </q-header>
+  <!--  <q-header style="background-color: white; border-bottom: 1px solid lightgrey">-->
+  <!--    <div class="row">-->
+  <!--      <div class="col-6 q-ma-sm text-h6 text-black">-->
+  <!--        {{ tabAndTabsetId?.tab.name || '?' }}-->
+  <!--      </div>-->
+  <!--      <div class="col text-right q-ma-sm">-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </q-header>-->
   <!--  <q-page padding class="home-page column justify-center items-center">-->
-  <q-page style="max-width: 1200px; margin: 0 auto">
+  <q-page>
     <div class="row">
-      <div class="col-2 q-pa-md q-mr-xl">
-        <q-list>
-          <q-item clickable v-ripple v-for="p in pageTabs" @click="switchPage(p)">
-            <q-item-section>{{ p.name || p.title || '?' }}</q-item-section>
-          </q-item>
-        </q-list>
+      <div class="col q-mt-lg q-ml-xl">
+        <component-list
+          :page="page"
+          :editable="props.edit"
+          @content-changed="(cc: ContentBlock) => savePage(cc)"></component-list>
       </div>
-      <div class="col q-mt-lg">
-        <component-list :page="page" :editable="props.edit" @content-changed="savePage()"></component-list>
-      </div>
-      <div class="col-2">
-        <div v-for="heading in headings()">
-          {{ heading.data['text' as keyof object] }}
-        </div>
+      <div class="col-2 q-mt-lg">
+        <template v-if="headings().length > 1">
+          <div v-for="heading in headings()">{{ heading.data['text' as keyof object] }}</div>
+        </template>
       </div>
     </div>
   </q-page>
 </template>
 <script lang="ts" setup>
-import { date } from 'quasar'
+import { useCommandExecutor } from 'src/core/services/CommandExecutor'
+import { useUtils } from 'src/core/services/Utils'
+import { CreatePageCommand } from 'src/tabsets/commands/cms/CreatePageCommand'
 import ComponentList from 'src/tabsets/components/cms/ComponentList.vue'
 import { Page } from 'src/tabsets/models/cms/backend'
 import { ContentBlock, ContentBlockType } from 'src/tabsets/models/cms/frontend'
@@ -52,11 +42,14 @@ import { useRoute } from 'vue-router'
 const props = defineProps<{ edit: boolean }>()
 
 const page = ref<Page | undefined>(undefined)
-const pageTabs = ref<Tab[]>([])
+const pages = ref<Page[]>([])
+
+// const pageTabs = ref<Tab[]>([])
 const tabAndTabsetId = ref<TabAndTabsetId | undefined>(undefined)
 const tabset = ref<Tabset | undefined>(undefined)
 
 const route = useRoute()
+const { sendMsg } = useUtils()
 
 const pageId = route.params.pageId as string
 
@@ -64,38 +57,45 @@ const pageId = route.params.pageId as string
 watchEffect(async () => {
   console.log('pageId', pageId)
   tabAndTabsetId.value = useTabsetsStore().getTabAndTabsetId(pageId)
+  console.log('tabAndTabsetId', tabAndTabsetId.value?.tab.pages)
   if (tabAndTabsetId.value) {
-    page.value = tabAndTabsetId.value.tab.page
+    page.value = tabAndTabsetId.value.tab.pages[0]
     tabset.value = useTabsetsStore().getTabset(tabAndTabsetId.value.tabsetId)
 
-    pageTabs.value = useTabsetsStore().getPageTabs(tabset.value)
+    // pageTabs.value = useTabsetsStore().getPageTabs(tabset.value)
   }
 })
 
-const editOff = () => {
-  const partsArray = window.location.href.split('/')
-  partsArray.pop()
-  window.location.href = partsArray.join('/')
-}
-
 const editPage = () => (window.location.href = window.location.href + '/edit')
-const savePage = () => {
+const savePage = (cc: ContentBlock) => {
+  console.log('savePage1: ', page.value)
+  console.log('savePage2: ', cc)
   if (page.value && tabAndTabsetId.value) {
     //usePagesStore().updatePage(page.value)
     if (tabset.value) {
       page.value.version++
       page.value.changed = new Date().getTime()
       useTabsetsStore().saveTabset(tabset.value)
+      sendMsg('tabsets.app.change.currentTabset', {})
     }
   }
 }
 
-const switchPage = (page: Tab) => {
-  const prefixUrl = chrome.runtime.getURL('www/index.html#/mainpanel/pages/' + page.id)
-  window.location.replace(props.edit ? prefixUrl + '/edit' : prefixUrl)
+const switchPage = (page: Page) => {
+  // const prefixUrl = chrome.runtime.getURL('www/index.html#/mainpanel/pages/' + page.id)
+  // window.location.replace(props.edit ? prefixUrl + '/edit' : prefixUrl)
 }
 
 const headings = (): ContentBlock[] => {
-  return page.value?.elements.filter((c: ContentBlock) => c.data.kind == ContentBlockType.ContentBlockHeading) || []
+  return (
+    page.value?.elements.filter((c: ContentBlock) => {
+      console.log('c.data.kind: ', c.data)
+      return c.data?.kind === ContentBlockType.ContentBlockHeading
+    }) || []
+  )
+}
+
+const createSubPage = () => {
+  useCommandExecutor().executeFromUi(new CreatePageCommand())
 }
 </script>

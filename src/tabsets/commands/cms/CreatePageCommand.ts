@@ -26,10 +26,10 @@ export class CreatePageCommand implements Command<Tab> {
         ),
       )
       const page = new Page(tabId, 'newPage', currentTs.id, 1, new Date().getTime(), 0, 0, [
-        new ContentBlock(uid(), createHeading('New Page'), {}, ['text-h3']),
+        new ContentBlock(uid(), createHeading('New Page...'), {}, ['text-h3']),
         new ContentBlock(uid(), createText('click upper right icon to edit...')),
       ])
-      pageTab.page = page
+      pageTab.pages = [page]
       currentTs.tabs.push(pageTab)
       // await usePagesStore().updatePage(page)
       await useTabsetsStore().saveTabset(currentTs)

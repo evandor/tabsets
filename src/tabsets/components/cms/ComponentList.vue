@@ -16,7 +16,7 @@
       @convert-to="(v: object) => convertTo(v)"
       @hovered="setHovered"
       @delete-block="(blockId: string) => deleteBlock(blockId)"
-      @content-changed="emits('content-changed')" />
+      @content-changed="(cc: ContentContainer) => contentChanged(c, cc)" />
   </template>
   <!--  <add-component-menu v-if="props.editable" blockId="root" position="after" />-->
   <!--  <hr />-->
@@ -28,6 +28,7 @@ import { Page } from 'src/tabsets/models/cms/backend'
 import {
   ContentBlock,
   ContentBlockType,
+  ContentContainer,
   createBanner,
   createHeading,
   createList,
@@ -103,6 +104,13 @@ const isHovered = (c: ContentBlock) => {
 const calcKey = (c: ContentBlock) => {
   //keyCounter.value++
   return c.id //+ '_' + keyCounter.value
+}
+
+const contentChanged = (c: ContentBlock, cc: ContentContainer) => {
+  console.log('c', c)
+  console.log('cc', cc)
+  c.data = cc
+  emits('content-changed', c)
 }
 </script>
 

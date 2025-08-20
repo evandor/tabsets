@@ -34,6 +34,8 @@ export enum DrawerTabs {
 
 export type ListDetailLevel = 'MINIMAL' | 'SOME' | 'MAXIMAL' | 'DEFAULT'
 
+export type QuickAccess = 'search'
+
 export type LoadingType = 'categorization'
 
 export enum FontSize {
@@ -160,6 +162,10 @@ export const useUiStore = defineStore('ui', () => {
 
   const importedBookmarks = ref<string[]>([])
 
+  // quick access
+  const quickAccess = ref<string[]>((LocalStorage.getItem('ui.quickAccess') as unknown as string[]) || [])
+  const quickAccessLastChange = ref(new Date().getTime())
+
   watch(
     rightDrawer.value,
     (val: Object) => {
@@ -210,6 +216,14 @@ export const useUiStore = defineStore('ui', () => {
     hiddenMessages,
     (thresholdsVal: Object) => {
       LocalStorage.set('ui.hiddenInfoMessages', thresholdsVal)
+    },
+    { deep: true },
+  )
+
+  watch(
+    quickAccess,
+    (val: String[]) => {
+      LocalStorage.set('ui.quickAccess', val)
     },
     { deep: true },
   )
@@ -556,6 +570,19 @@ export const useUiStore = defineStore('ui', () => {
     showTabsetList.value = !hide
   }
 
+  function setQuickAccess(type: QuickAccess, value: boolean) {
+    quickAccessLastChange.value = new Date().getTime()
+    if (value && quickAccess.value.indexOf(type) < 0) {
+      quickAccess.value.push(type)
+    } else if (!value) {
+      quickAccess.value = quickAccess.value.filter((q: string) => q !== type)
+    }
+  }
+
+  function quickAccessFor(type: QuickAccess) {
+    return quickAccess.value.indexOf(type) >= 0
+  }
+
   function setLoading(type: LoadingType, isLoading: boolean) {
     loadingIndicators.value.set(type, isLoading)
   }
@@ -653,6 +680,9 @@ export const useUiStore = defineStore('ui', () => {
     errorCount,
     hideTabsetList,
     showTabsetList,
+    setQuickAccess,
+    quickAccessFor,
+    quickAccessLastChange,
     setLoading,
     isLoading,
   }

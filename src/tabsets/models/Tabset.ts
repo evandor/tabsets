@@ -108,9 +108,6 @@ export class Tabset {
 
   canvas: object | undefined = undefined
 
-  // = description
-  page: string | undefined = undefined
-
   headerDescription: string | undefined = undefined
 
   window: string = 'current'

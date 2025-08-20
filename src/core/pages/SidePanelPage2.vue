@@ -221,12 +221,25 @@ function checkAnalysisBroken(a: number, b: number) {
 //   bibblyTabsets.value = [...useTabsetsStore().tabsets.values()].filter((ts: Tabset) => ts.type === TabsetType.SPECIAL)
 // })
 
+watch(
+  () => useUiStore().quickAccessLastChange,
+  (a: any, b: any) => {
+    setTimeout(() => {
+      showSearchToolbarHelper.value = useUiStore().quickAccessFor('search')
+      setPaddingTop()
+    }, 500)
+  },
+)
+
 watchEffect(() => {
   useFolderExpansion.value = useUiStore().folderStyle
 })
 
 watchEffect(() => {
-  currentTabset.value = useTabsetsStore().getCurrentTabset
+  console.log('updating current tabset', useTabsetsStore().lastUpdate)
+  if (useTabsetsStore().lastUpdate) {
+    currentTabset.value = useTabsetsStore().getCurrentTabset
+  }
 })
 
 const getTabsetOrder = [

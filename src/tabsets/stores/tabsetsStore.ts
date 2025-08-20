@@ -212,7 +212,11 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     }
     ts.lastChange = changeInfo
     const tabsetWithType: Tabset = JSON.parse(JSON.stringify(ts))
-    console.log(`storing tabset: ${Tabset.logIdent(tabsetWithType)}`) //,  changeInfo.)
+    console.log(
+      `%cstoring tabset%c: ${Tabset.logIdent(tabsetWithType)}`,
+      'background-color:yellow',
+      'background-color:white',
+    ) //,  changeInfo.)
     const res = await storage.saveTabset(tabsetWithType)
     lastUpdate.value = new Date().getTime()
     return res
@@ -568,7 +572,7 @@ export const useTabsetsStore = defineStore('tabsets', () => {
     if (!tabset) {
       return []
     }
-    return tabset.tabs.filter((t: Tab) => t.page !== undefined)
+    return tabset.tabs.filter((t: Tab) => t.pages.length > 0)
   }
 
   const loadPublicTabset = (sharedId: string) => storage.loadPublicTabset(sharedId, undefined)

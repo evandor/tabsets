@@ -14,7 +14,7 @@ export type DefaultEmits = {
   (e: 'add-block', type: ContentBlockType, position: string, blockId: string): void
   (e: 'hovered', blockId: string): void
   (e: 'delete-block', blockId: string): void
-  (e: 'content-changed'): void
+  (e: 'content-changed', data: ContentContainer): void
   (e: 'convert-to', type: ContentBlockType): void
 }
 

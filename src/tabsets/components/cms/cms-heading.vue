@@ -39,8 +39,10 @@ const data = props.data as HeadingContentContainer
 
 function update() {
   const newText = htmlRef.value.innerText
-  console.log('newtext', newText, props.block.id)
-  data.text = htmlRef.value.innerText.trim()
-  emits('content-changed')
+  //console.log('newtext', newText, props.block.id)
+  //data.text = newText.trim()
+  const deepCopy = structuredClone(JSON.parse(JSON.stringify(data)))
+  deepCopy.text = newText.trim()
+  emits('content-changed', deepCopy)
 }
 </script>

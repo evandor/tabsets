@@ -1,11 +1,12 @@
 <template>
   <div v-for="f in feed" class="q-ma-sm">
     <div class="row" @click="open(f)">
-      <div class="col-2 text-center">
-        <q-img class="cursor-pointer" v-if="f.img" :src="f.img" style="width: 50px; height: 50px" />
+      <div class="col-2 q-ml-sm q-mt-xs">
+        <q-img class="rounded-borders cursor-pointer" v-if="f.img" :src="f.img" style="width: 55px; height: 55px" />
       </div>
-      <div class="col text-caption">
+      <div class="col">
         {{ f.title }}
+        <div class="ellipsis-2-lines text-caption">{{ f.desc }}</div>
       </div>
     </div>
   </div>
