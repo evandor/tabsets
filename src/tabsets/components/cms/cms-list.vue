@@ -42,14 +42,15 @@ function update() {
   const newText = htmlRef.value.innerText
   console.log('newtext', newText, props.block.id)
   //data.text = htmlRef.value.innerText.trim()
-  emits('content-changed')
+
+  //emits('content-changed')
 }
 
 const deletePressed = (e: any, index: number) => {
   console.log('deletePressed', e, htmlRef.value[index].innerText)
   if (htmlRef.value[index].innerText.trim().length === 0) {
     data.lines.splice(index, 1)
-    emits('content-changed')
+    // emits('content-changed')
   }
 }
 
@@ -60,6 +61,6 @@ const enterPressed = (e: any, index: number) => {
   const parts = newText.split('\n')
   data.lines.splice(index, 0, parts[0])
   data.lines[index + 1] = parts[1]
-  emits('content-changed')
+  //emits('content-changed')
 }
 </script>

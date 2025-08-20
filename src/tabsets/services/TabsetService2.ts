@@ -7,7 +7,7 @@ import {
   GITHUB_AUTO_SYNC,
   GITHUB_AUTO_SYNC_READONLY,
   STRIP_CHARS_IN_COLOR_INPUT,
-  STRIP_CHARS_IN_USER_INPUT,
+  STRIP_CHARS_IN_USER_INPUT
 } from 'src/boot/constants'
 import { ContentItem } from 'src/content/models/ContentItem'
 import { useContentService } from 'src/content/services/ContentService'
@@ -238,7 +238,6 @@ export function useTabsetService() {
   const deleteTabsetDescription = (tabsetId: string): Promise<string> => {
     const tabset = useTabsetsStore().getTabset(tabsetId)
     if (tabset) {
-      tabset.page = undefined
       useTabsetService().saveTabset(tabset)
       return Promise.resolve('done')
     }

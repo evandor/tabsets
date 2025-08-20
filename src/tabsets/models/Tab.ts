@@ -192,7 +192,7 @@ export class Tab {
 
   details: ListDetailLevel = 'DEFAULT'
 
-  page: Page | undefined = undefined
+  pages: Page[] = []
 
   annotations: Annotation[] = []
 

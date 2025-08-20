@@ -132,16 +132,35 @@ const routes: RouteRecordRaw[] = [
         children: [{ path: '', component: () => import('src/core/pages/mainpanel/NavigationPage.vue') }],
       },
       { path: 'obsidian/files/:file', component: () => import('src/core/pages/ObsidianPage.vue') },
+
       {
-        path: 'pages/:pageId',
-        component: () => import('src/tabsets/pages/cms/CustomPage.vue'),
-        props: { edit: false },
+        path: 'pages',
+        component: () => import('layouts/PagesLayout.vue'),
+        children: [
+          {
+            path: ':pageId',
+            component: () => import('src/tabsets/pages/cms/CustomPage.vue'),
+            props: { edit: false },
+          },
+          {
+            path: ':pageId/edit',
+            component: () => import('src/tabsets/pages/cms/CustomPage.vue'),
+            props: { edit: true },
+          },
+        ],
       },
-      {
-        path: 'pages/:pageId/edit',
-        component: () => import('src/tabsets/pages/cms/CustomPage.vue'),
-        props: { edit: true },
-      },
+
+      // {
+      //   path: 'pages/:pageId',
+      //   component: () => import('src/tabsets/pages/cms/CustomPage.vue'),
+      //   props: { edit: false },
+      // },
+      // {
+      //   path: 'pages/:pageId/edit',
+      //   component: () => import('src/tabsets/pages/cms/CustomPage.vue'),
+      //   props: { edit: true },
+      // },
+
       { path: 'pdf/:snapshotId', component: () => import('src/snapshots/pages/MainPanelPdfPage.vue') },
       { path: 'pdf/:tabId/:blobId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },
       { path: 'png/:snapshotId', component: () => import('src/snapshots/pages/MainPanelPngPage.vue') },

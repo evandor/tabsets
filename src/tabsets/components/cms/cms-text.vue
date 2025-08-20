@@ -67,8 +67,9 @@ const selectionTextEnd = ref<number>(0)
 
 function update() {
   if (htmlRef.value.innerText) {
-    data.text = htmlRef.value.innerHTML.replaceAll('\n', '<br>').trim()
-    emits('content-changed')
+    const dataClone = structuredClone(JSON.parse(JSON.stringify(data)))
+    dataClone.text = htmlRef.value.innerHTML.replaceAll('\n', '<br>').trim()
+    emits('content-changed', dataClone)
   }
 }
 
