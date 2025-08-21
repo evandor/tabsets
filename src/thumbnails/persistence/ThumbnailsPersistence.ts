@@ -6,7 +6,7 @@ abstract class ThumbnailsPersistence implements Persistence {
     return this.constructor.name
   }
 
-  abstract init(firebaseServices: IFirebaseServices): Promise<any>
+  abstract init(): Promise<any>
 
   abstract saveThumbnail(tabId: string, tabsetId: string, thumbnail: string): Promise<void>
 

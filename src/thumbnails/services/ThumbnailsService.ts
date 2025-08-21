@@ -8,7 +8,7 @@ let db: ThumbnailsPersistence = null as unknown as ThumbnailsPersistence
 export function useThumbnailsService() {
   const init = async (storage: ThumbnailsPersistence) => {
     db = storage
-    await db.init(useFirebaseServices().firebaseServices)
+    await db.init()
     //initListeners()
     // console.debug(` ...initialized thumbnails: Service`, '✅')
   }
