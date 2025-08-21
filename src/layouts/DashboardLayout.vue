@@ -50,7 +50,7 @@
                 </q-item>
 
                 <!-- Subscription -->
-                <q-item clickable v-ripple  v-close-popup>
+                <q-item clickable v-ripple v-close-popup>
                   <q-item-section avatar>
                     <q-icon name="credit_card" />
                   </q-item-section>
@@ -186,7 +186,6 @@
                 v-ripple
                 v-for="link in drawerCustomCollections"
                 :key="link.id"
-
                 clickable>
                 <q-item-section avatar>
                   <q-icon :name="link.icon" />
@@ -262,9 +261,10 @@
                 v-ripple
                 v-for="link in drawerBibblyCollections"
                 :key="link.label"
+                @click="openBibblyCollection(link)"
                 clickable>
                 <q-item-section avatar>
-<!--                  <q-icon :name="link.icon" />-->
+                  <!--                  <q-icon :name="link.icon" />-->
                 </q-item-section>
 
                 <q-item-section>
@@ -287,7 +287,7 @@
                     @mousedown.stop>
                     <q-menu anchor="top right" self="top left" :offset="[0, 0]">
                       <q-list dense style="min-width: 100px">
-                        <q-item clickable v-close-popup >
+                        <q-item clickable v-close-popup>
                           <q-item-section side class="icon-tight">
                             <q-icon size="xs" name="push_pin" color="grey-8" />
                           </q-item-section>
@@ -295,7 +295,7 @@
                             ><q-item-label class="text-grey-8 text-caption">Pin</q-item-label></q-item-section
                           >
                         </q-item>
-                        <q-item clickable v-close-popup >
+                        <q-item clickable v-close-popup>
                           <q-item-section side class="icon-tight">
                             <q-icon size="xs" name="visibility_off" color="grey-8" />
                           </q-item-section>
@@ -416,7 +416,9 @@ import { Tabset, TabsetType } from 'src/tabsets/models/Tabset'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useAuthStore } from 'stores/authStore'
 import { onBeforeUnmount, onMounted, ref, watchEffect } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
 
 const headerRef = ref(null)
 const router = useRouter()
@@ -427,12 +429,13 @@ const leftDrawerOpen = ref(false)
 const userName = ref('John Doe')
 const userEmail = ref('john.doe@email.com')
 const browserName = ref('Browser')
-const drawerBibblyCollections = ref<{label: string, value: string, disable: boolean}[]>([])
+const drawerBibblyCollections = ref<{ label: string; value: string; disable: boolean }[]>([])
 const drawerCustomCollections = ref<Tabset[]>([])
 
 watchEffect(() => {
   authenticated.value = useAuthStore().isAuthenticated()
   console.log('user', useAuthStore().user)
+  userName.value = useAuthStore().user?.email || '?'
 })
 
 const drawerDefaultCollections = [
@@ -451,22 +454,6 @@ watchEffect(() => {
     (ts: Tabset) => ts.type !== TabsetType.BIBBLY,
   )
 })
-
-//   [
-//   { icon: 'outdoor_grill', text: 'Recipies' },
-//   { icon: 'radio', text: 'News' },
-//   { icon: 'beach_access', text: 'Travel' },
-//   { icon: 'restaurant_menu', text: 'Restaurants' },
-//   { icon: 'menu_book', text: 'Bibliography' },
-//   { icon: 'shopping_cart', text: 'Shopping' },
-// ]
-
-// const drawerCustomCollections = [
-//   { icon: '', text: 'Work', isbibblytemplate: false },
-//   { icon: '', text: 'My Italy trip 2025', isbibblytemplate: false },
-//   { icon: '', text: 'Templates', isbibblytemplate: false },
-//   { icon: '', text: 'Gym', isbibblytemplate: false },
-// ]
 
 const drawerSettings = [
   { icon: '', text: 'Settings' },
@@ -542,6 +529,14 @@ async function onNewCollectionClick() {
   } else {
     await router.push('/newcollection')
   }
+}
+
+const openBibblyCollection = (link: { label: string; value: string; disable: boolean }) => {
+  console.log('link', link, route.fullPath)
+  const url = window.location.href.split('#')[0]!
+  // parts = value.split(":")
+  //useNavigationService().browserTabFor(url + link.value.replace(':', '/'))
+  window.location.href = url + '#/' + link.value.replace(':', '/')
 }
 </script>
 
@@ -642,11 +637,11 @@ async function onNewCollectionClick() {
   /* gängige Ad-Breite */
   max-width: 320px;
   position: sticky;
- /* top: var(--header-offset, 72px); */
+  /* top: var(--header-offset, 72px); */
   /* „unter den Header schieben“ */
   align-self: flex-start;
   /* damit sich die Spalte nicht ausdehnt */
- /* height: calc(100vh - var(--header-offset, 72px));*/
+  /* height: calc(100vh - var(--header-offset, 72px));*/
   /* q-scroll-area braucht eine feste Höhe */
 }
 

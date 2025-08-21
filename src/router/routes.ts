@@ -60,6 +60,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PopupLayout.vue'),
     children: [{ path: '', component: () => import('src/core/pages/popup/PopupDebugPage.vue') }],
   },
+
   {
     path: '/overlay/annotations',
     component: () => import('layouts/PlainLayout.vue'),
@@ -323,6 +324,28 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/DashboardLayout.vue'),
     children: [{ path: '', component: () => import('src/tabsets/pages/TabsetPage.vue') }],
   },
+
+  {
+    path: '/bibbly/recipe',
+    component: () => import('layouts/DashboardLayout.vue'),
+    children: [{ path: '', component: () => import('src/pages/rezepte/IndexPage.vue') }],
+  },
+  {
+    path: '/bibbly/recipe/:id',
+    component: () => import('layouts/DashboardLayout.vue'),
+    children: [{ path: '', component: () => import('src/pages/RecipeDetail.vue') }],
+  },
+  {
+    path: '/bibbly/news',
+    component: () => import('layouts/DashboardLayout.vue'),
+    children: [{ path: '', component: () => import('src/bibblyCollections/news/pages/NewsCollectionPage.vue') }],
+  },
+  {
+    path: '/bibbly/restaurant',
+    component: () => import('layouts/DashboardLayout.vue'),
+    children: [{ path: '', component: () => import('src/tabsets/pages/MainPanelTabsetOverviewPage.vue') }],
+  },
+
 
   /** Overlay (in originl page) **/
   {

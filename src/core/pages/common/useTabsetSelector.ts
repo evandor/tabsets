@@ -33,16 +33,14 @@ export type ElementHolder = 'contextmenu' | 'btn' | 'popup'
 // }
 
 export function useTabsetSelector(holder: ElementHolder) {
-
   const useSpaces = useFeaturesStore().hasFeature(FeatureIdent.SPACES)
   const space = useSpacesStore().space
 
-  //console.log(`called with ${holder}, tabsets: ${tabsets.length}`)
+  // console.log(`called with ${holder}, tabsets: ${tabsets.length}`)
 
   const currentTabset = ref<Tabset | undefined>(useTabsetsStore().getCurrentTabset)
   const tabsetSelectionOptions = ref<SelectOption[]>([])
   const tabsetSelectionModel = ref<SelectOption | undefined>(undefined)
-
 
   const automaticSelectionOption = ref({
     label: 'select automatically',
@@ -156,12 +154,12 @@ export function useTabsetSelector(holder: ElementHolder) {
   )
 
   watchEffect(() => {
-    console.log('-- watchEffect() B called --')
+    //console.log('-- watchEffect() B called --')
     calculate()
   })
 
   watchEffect(() => {
-    console.log('-- watchEffect() C called --')
+    //console.log('-- watchEffect() C called --')
     currentTabset.value = useTabsetsStore().getCurrentTabset
     //console.log('---got current tabset', currentTabset.value)
     if (currentTabset.value) {

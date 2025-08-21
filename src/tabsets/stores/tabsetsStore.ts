@@ -205,7 +205,6 @@ export const useTabsetsStore = defineStore('tabsets', () => {
   }
 
   async function saveTabset(ts: Tabset, changeInfo?: ChangeInfo) {
-    console.log("--->", ts.id)
     if (ts.id === currentTabsetId.value) {
       //console.debug('setting folderactive', ts.folderActive)
       currentTabsetFolderId.value = ts.folderActive
