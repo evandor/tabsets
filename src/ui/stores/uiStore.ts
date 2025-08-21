@@ -76,6 +76,8 @@ export const useUiStore = defineStore('ui', () => {
 
   const loadingIndicators = ref<Map<LoadingType, boolean>>(new Map())
 
+  const pageEditable = ref(false)
+
   // online offline
   const networkOnline = ref(navigator.onLine)
   const networkState = ref<object>({})
@@ -591,6 +593,10 @@ export const useUiStore = defineStore('ui', () => {
     return loadingIndicators.value.get(type) || false
   }
 
+  function setPageEditable(editable: boolean) {
+    pageEditable.value = editable
+  }
+
   return {
     rightDrawer,
     rightDrawerOpen,
@@ -685,5 +691,7 @@ export const useUiStore = defineStore('ui', () => {
     quickAccessLastChange,
     setLoading,
     isLoading,
+    setPageEditable,
+    pageEditable,
   }
 })

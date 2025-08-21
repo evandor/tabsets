@@ -17,6 +17,14 @@
       @hovered="setHovered"
       @delete-block="(blockId: string) => deleteBlock(blockId)"
       @content-changed="(cc: ContentContainer) => contentChanged(c, cc)" />
+    <!--    <cms-text-->
+    <!--      v-if="props.editable"-->
+    <!--      :data="dummyBlockToAdd.data"-->
+    <!--      @add-block="addBlock"-->
+    <!--      :block="dummyBlockToAdd"-->
+    <!--      :editable="true"-->
+    <!--      :is-hovered="true" />-->
+    <div v-if="props.editable" class="text-grey-7 cursor-pointer">+ Add Element</div>
   </template>
   <!--  <add-component-menu v-if="props.editable" blockId="root" position="after" />-->
   <!--  <hr />-->
@@ -44,7 +52,9 @@ const props = defineProps<{
 const emits = defineEmits(['content-changed'])
 
 const hovered = ref<string | undefined>(undefined)
-// const keyCounter = ref(0)
+
+const dummyContentContainer: ContentContainer = { kind: ContentBlockType.ContentBlockText, text: '*' }
+const dummyBlockToAdd = new ContentBlock(uid(), dummyContentContainer)
 
 const getTypeFor = (c: ContentBlock): string => {
   return c.data.kind

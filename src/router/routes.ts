@@ -138,12 +138,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('layouts/PagesLayout.vue'),
         children: [
           {
-            path: ':pageId',
+            path: ':tabId',
             component: () => import('src/tabsets/pages/cms/CustomPage.vue'),
-            props: { edit: false },
           },
           {
-            path: ':pageId/edit',
+            path: ':tabId/:pageId',
             component: () => import('src/tabsets/pages/cms/CustomPage.vue'),
             props: { edit: true },
           },
