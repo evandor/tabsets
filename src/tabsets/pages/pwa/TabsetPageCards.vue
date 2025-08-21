@@ -78,6 +78,8 @@ watchEffect(() => {
 })
 
 function currentTabs(): Tab[] {
+  console.log('***')
+
   if (props.tabset.type === TabsetType.DYNAMIC && props.tabset.dynamicTabs?.type === DynamicTabSourceType.TAG) {
     const tags = props.tabset.dynamicTabs.config['tags' as keyof object]
     return useTagsService()

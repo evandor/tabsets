@@ -32,7 +32,7 @@
                 :tabset="currentTabset || new Tabset('dummy', 'dummy')"
                 level="root"
                 :element="props.element" />
-              <ShareTabsetAction :tabset="currentTabset" level="root" :element="props.element" />
+              <ShareTabsetAction :tabset="currentTabset|| new Tabset('dummy', 'dummy')" level="root" :element="props.element" />
               <ShowGalleryAction
                 v-if="useFeaturesStore().hasFeature(FeatureIdent.GALLERY)"
                 :tabset="currentTabset || new Tabset('dummy', 'dummy')"
