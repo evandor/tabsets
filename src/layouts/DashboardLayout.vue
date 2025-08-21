@@ -50,7 +50,7 @@
                 </q-item>
 
                 <!-- Subscription -->
-                <q-item clickable v-ripple @click="openSubscription" v-close-popup>
+                <q-item clickable v-ripple  v-close-popup>
                   <q-item-section avatar>
                     <q-icon name="credit_card" />
                   </q-item-section>
@@ -186,7 +186,7 @@
                 v-ripple
                 v-for="link in drawerCustomCollections"
                 :key="link.id"
-                @click.stop="openCollection(link.id)"
+
                 clickable>
                 <q-item-section avatar>
                   <q-icon :name="link.icon" />
@@ -264,7 +264,7 @@
                 :key="link.label"
                 clickable>
                 <q-item-section avatar>
-                  <q-icon :name="link.icon" />
+<!--                  <q-icon :name="link.icon" />-->
                 </q-item-section>
 
                 <q-item-section>
@@ -287,7 +287,7 @@
                     @mousedown.stop>
                     <q-menu anchor="top right" self="top left" :offset="[0, 0]">
                       <q-list dense style="min-width: 100px">
-                        <q-item clickable v-close-popup @click="pinCollection(link)">
+                        <q-item clickable v-close-popup >
                           <q-item-section side class="icon-tight">
                             <q-icon size="xs" name="push_pin" color="grey-8" />
                           </q-item-section>
@@ -295,7 +295,7 @@
                             ><q-item-label class="text-grey-8 text-caption">Pin</q-item-label></q-item-section
                           >
                         </q-item>
-                        <q-item clickable v-close-popup @click="hideCollection(link)">
+                        <q-item clickable v-close-popup >
                           <q-item-section side class="icon-tight">
                             <q-icon size="xs" name="visibility_off" color="grey-8" />
                           </q-item-section>
@@ -427,7 +427,7 @@ const leftDrawerOpen = ref(false)
 const userName = ref('John Doe')
 const userEmail = ref('john.doe@email.com')
 const browserName = ref('Browser')
-const drawerBibblyCollections = ref<Tabset[]>([])
+const drawerBibblyCollections = ref<{label: string, value: string, disable: boolean}[]>([])
 const drawerCustomCollections = ref<Tabset[]>([])
 
 watchEffect(() => {
@@ -510,9 +510,9 @@ function logoutUser() {
 }
 
 function setHeaderOffsetVar() {
-  const el = headerRef.value?.$el as HTMLElement | undefined
-  const h = el?.offsetHeight ?? 72 // Fallback
-  document.documentElement.style.setProperty('--header-offset', `${h}px`)
+  // const el = headerRef.value?.$el as HTMLElement | undefined
+  // const h = el?.offsetHeight ?? 72 // Fallback
+  // document.documentElement.style.setProperty('--header-offset', `${h}px`)
 }
 
 onMounted(() => {
@@ -642,11 +642,11 @@ async function onNewCollectionClick() {
   /* gängige Ad-Breite */
   max-width: 320px;
   position: sticky;
-  top: var(--header-offset, 72px);
+ /* top: var(--header-offset, 72px); */
   /* „unter den Header schieben“ */
   align-self: flex-start;
   /* damit sich die Spalte nicht ausdehnt */
-  height: calc(100vh - var(--header-offset, 72px));
+ /* height: calc(100vh - var(--header-offset, 72px));*/
   /* q-scroll-area braucht eine feste Höhe */
 }
 
