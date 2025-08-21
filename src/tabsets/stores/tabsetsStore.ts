@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { uid } from 'quasar'
 import { FeatureIdent } from 'src/app/models/FeatureIdent'
 import { STRIP_CHARS_IN_COLOR_INPUT, STRIP_CHARS_IN_USER_INPUT } from 'src/boot/constants'
+import { SelectOption } from 'src/core/pages/common/useTabsetSelector'
 import { useNavigationService } from 'src/core/services/NavigationService'
 import { useFeaturesStore } from 'src/features/stores/featuresStore'
 import { useAuthStore } from 'src/stores/authStore'
@@ -16,7 +17,6 @@ import { useSelectedTabsetService } from 'src/tabsets/services/selectedTabsetSer
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { computed, ref, watch } from 'vue'
-import { SelectOption } from 'src/core/pages/common/useTabsetSelector'
 
 /**
  * a pinia store for "Tabsets".
@@ -315,19 +315,19 @@ export const useTabsetsStore = defineStore('tabsets', () => {
   })
 
   const getBibblyCollections = computed(() => {
-      return [...tabsets.value.values()]
-        .filter((ts: Tabset) =>
-          useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
-        )
-        .filter((ts: Tabset) => ts.type === TabsetType.BIBBLY)
-        .map((ts: Tabset) => {
-          return {
-            label: ts.name,
-            value: ts.id,
-            disable: false,
-          }
-        })
-        .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+    return [...tabsets.value.values()]
+      .filter((ts: Tabset) =>
+        useFeaturesStore().hasFeature(FeatureIdent.ARCHIVE_TABSET) ? ts.status !== TabsetStatus.ARCHIVED : true,
+      )
+      .filter((ts: Tabset) => ts.type === TabsetType.BIBBLY)
+      .map((ts: Tabset) => {
+        return {
+          label: ts.name,
+          value: ts.id,
+          disable: false,
+        }
+      })
+      .sort((a: SelectOption, b: SelectOption) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
   })
 
   const tabForUrlInSelectedTabset = computed(() => {

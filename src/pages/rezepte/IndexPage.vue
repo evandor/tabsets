@@ -47,6 +47,7 @@ import { Rezept } from 'src/bibblyCollections/recipes/models/Rezept'
 import { useRecipesServices } from 'src/bibblyCollections/recipes/RecipesServices'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import { useLdJsonUtils } from 'src/core/services/LdJsonUtils'
+import Analytics from 'src/core/utils/google-analytics'
 import recipesData from 'src/data/recipes.json'
 import { IndexedTab } from 'src/tabsets/models/IndexedTab'
 import { Tab } from 'src/tabsets/models/Tab'
@@ -62,6 +63,7 @@ const tabset = ref<Tabset>(new Tabset(uid(), 'empty', []))
 const route = useRoute()
 
 onMounted(() => {
+  Analytics.firePageViewEvent('IndexPage', document.location.href)
   tabsetId.value = route?.params.tabsetId as string
 })
 
