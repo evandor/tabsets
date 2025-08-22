@@ -8,9 +8,10 @@ import { useFirebaseServices } from 'src/services/firebase/useFirebaseServices'
 
 class FirestoreThumbnailsPersistence extends ThumbnailsPersistence {
   private firebaseServices: IFirebaseServices = null as unknown as IFirebaseServices
-  async init(firebaseServices: IFirebaseServices) {
-    console.debug(` ...initialized thumbnails: ${this.getServiceName()}`, '✅')
-    this.firebaseServices = firebaseServices
+  async init() {
+    this.firebaseServices = useFirebaseServices().firebaseServices
+    console.debug(` ...initialized thumbnails: ${this.getServiceName()}`, this.firebaseServices, '✅')
+    //this.firebaseServices = firebaseServices
     return Promise.resolve('')
   }
 
@@ -36,7 +37,7 @@ class FirestoreThumbnailsPersistence extends ThumbnailsPersistence {
   }
 
   async deleteThumbnail(tabId: string): Promise<void> {
-    const storageReference = ref(FirebaseServices.getStorage(), `users/${useAuthStore().user.uid}/thumbnails/${tabId}`)
+    const storageReference = ref(this.firebaseServices.getStorage(), `users/${useAuthStore().user.uid}/thumbnails/${tabId}`)
     console.log(`deleting thumbnail for ${storageReference.fullPath}`)
     await deleteObject(storageReference)
     await this.updateStorageQuote()
@@ -50,8 +51,10 @@ class FirestoreThumbnailsPersistence extends ThumbnailsPersistence {
         tabsetId: tabsetId,
       },
     }
-    console.log('metadata', metadata)
-    const storageReference = ref(FirebaseServices.getStorage(), `users/${useAuthStore().user.uid}/thumbnails/${tabId}`)
+    const path = `users/${useAuthStore().user.uid}/thumbnails/${tabId}`
+    console.log('this.firebaseServices.getStorage()', this.firebaseServices.getStorage())
+    console.log('metadata', metadata, path)
+    const storageReference = ref(this.firebaseServices.getStorage(), path)
     // console.log('storageReference', storageReference, data)
     uploadString(storageReference, data, StringFormat.RAW, metadata)
       .then(() => console.log(`uploaded thumbnail, length ${data.length}`))
@@ -63,14 +66,14 @@ class FirestoreThumbnailsPersistence extends ThumbnailsPersistence {
 
   private async saveQuote(quote: object) {
     if (useAuthStore().user?.uid) {
-      const userDoc = doc(useFirebaseServices().firebaseServices.getFirestore(), 'users', useAuthStore().user.uid)
+      const userDoc = doc(this.firebaseServices.getFirestore(), 'users', useAuthStore().user.uid)
       //console.log('userDoc', userDoc, useAuthStore().user?.uid)
       await setDoc(userDoc, quote, { merge: true })
     }
   }
 
   private async updateStorageQuote() {
-    const userThumnnails = ref(FirebaseServices.getStorage(), `users/${useAuthStore().user.uid}/thumbnails`)
+    const userThumnnails = ref(this.firebaseServices.getStorage(), `users/${useAuthStore().user.uid}/thumbnails`)
     const res = await listAll(userThumnnails)
     let size = 0
     for (const itemRef of res.items) {

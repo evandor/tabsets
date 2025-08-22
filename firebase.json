@@ -29,5 +29,36 @@
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
-  ]
+  ],
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "storage": {
+      "port": 9199
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true,
+    "pubsub": {
+      "port": 8085
+    },
+    "database": {
+      "port": 9000
+    }
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "extensions": {
+    "delete-user-data": "firebase/delete-user-data@0.1.24",
+    "mailersend-email": "mailersend/mailersend-email@0.1.8"
+  }
 }

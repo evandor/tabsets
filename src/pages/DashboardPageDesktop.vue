@@ -101,7 +101,7 @@
 
       <!-- Grid: 1 / 2 / 4 pro Zeile -->
       <div class="row items-stretch q-col-gutter-lg q-row-gutter-lg">
-        <div v-for="c in displayedCollections" :key="c.key" class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div v-for="c in displayedCollections" :key="c.key" class="col-12 col-sm-6 col-md-4 col-lg-3" @click="openBibblyCollection(c)">
           <q-card class="collection-card">
             <q-img :src="c.img" :alt="c.label" fit="cover" :ratio="16 / 10">
               <div class="absolute-bottom text-subtitle2 text-center">
@@ -125,7 +125,7 @@
       </header>
       <!-- Grid: 1 / 2 / 4 pro Zeile -->
       <div class="row items-stretch q-col-gutter-lg q-row-gutter-lg">
-        <div v-for="c in displayedCollections" :key="c.key" class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div v-for="c in displayedCollections" :key="c.key" class="col-12 col-sm-6 col-md-4 col-lg-3" >
           <q-card class="collection-card">
             <q-video src="https://www.youtube.com/embed/k3_tw44QsZQ?rel=0" />
 
@@ -197,7 +197,7 @@ import { useUtils } from 'src/core/services/Utils'
 const router = useRouter()
 const { normalize } = useUtils()
 
-type Coll = { key: string; label: string; icon: string; img: string }
+type Coll = { key: string; label: string; icon: string; img: string, link?: string }
 const authenticated = ref(false)
 const showAuthDialog = ref(false)
 const maxDesktopItems = 4
@@ -208,9 +208,9 @@ watchEffect(() => {
 })
 
 const collections: Coll[] = [
-  { key: 'recipes', label: 'Recipies', icon: 'outdoor_grill', img: Pic7 },
+  { key: 'recipes', label: 'Recipies', icon: 'outdoor_grill', img: Pic7, link: "bibbly:recipe" },
   { key: 'restaurants', label: 'Restaurants', icon: 'restaurant_menu', img: Pic30 },
-  { key: 'news', label: 'News', icon: 'radio', img: Pic10 },
+  { key: 'news', label: 'News', icon: 'radio', img: Pic10, link: "bibbly:news" },
   { key: 'travel', label: 'Travel', icon: 'beach_access', img: Pic20 },
   { key: 'news', label: 'Shopping', icon: 'radio', img: Pic10 },
   { key: 'travel', label: 'Bibliography', icon: 'beach_access', img: Pic20 },
@@ -267,6 +267,12 @@ async function addCollection(name: string) {
 async function goToRegister() {
   await router.push('/register')
 }
+
+const openBibblyCollection = (c: Coll) => {
+  const url = window.location.href.split("#")[0]
+  window.location.href = url + "#" + (c.link ? c.link.replace(":","/") : '')
+}
+
 </script>
 
 <style lang="sass" scoped>

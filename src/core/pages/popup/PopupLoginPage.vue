@@ -204,6 +204,7 @@ import { useUiStore } from 'src/ui/stores/uiStore'
 import { useAuthStore } from 'stores/authStore'
 import { ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { CreateTabsetCommand } from 'src/tabsets/commands/CreateTabsetCommand'
 
 const $q = useQuasar()
 
@@ -254,6 +255,7 @@ watchEffect(() => {
 })
 
 const createGettingStartedTabset = () => {
+  useCommandExecutor().executeFromUi(new CreateTabsetCommand('My Links'))
   // useCommandExecutor()
   //   .executeFromUi(new CreateSpecialTabsetCommand('UNCATEGORIZED', 'sym_o_help_center'))
   //   .then(() => {

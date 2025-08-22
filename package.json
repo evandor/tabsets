@@ -10,8 +10,8 @@
   "scripts": {
     "dev": "cp envs/bibbly.env.dev ./.env && quasar dev -m bex -T chrome",
     "dev pwa": "cp envs/bibbly.env.dev ./.env && quasar dev -m pwa -T chrome",
-    "dev emulator": "cp envs/env.emulator ./.env && quasar dev -m bex -T chrome",
-    "dev pwa emulator": "cp envs/env.emulator ./.env && quasar dev -m pwa",
+    "dev emulator": "cp envs/bibbly.env.emulator ./.env && quasar dev -m bex -T chrome",
+    "dev pwa emulator": "cp envs/bibbly.env.emulator ./.env && quasar dev -m pwa",
     "dev ff emulator": "cp envs/env.emulator ./.env && quasar dev -m bex -T firefox",
     "lint": "eslint -c ./eslint.config.js \"./src*/**/*.{ts,js,cjs,mjs,vue}\"",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",

@@ -27,7 +27,7 @@ class FirebaseCloudServices implements IFirebaseServices {
   }
 
   init() {
-    // console.log('initializing FirebaseServices')
+    console.log('initializing FirebaseServices')
     this.firebaseApp = initializeApp(this.firebaseConfig)
     this.auth = getAuth(this.firebaseApp)
     if (process.env.TABSETS_STAGE === 'EMULATOR') {

@@ -82,6 +82,8 @@ class AppService {
     await useSnapshotsService().init()
 
     // should be initialized before search submodule
+    // await tabsetsStore.initialize(useDB().tabsetsDb)
+    // await useTabsetService().init()
     await useThumbnailsService().init(useDB().thumbnailsDb)
 
     await useContentService().init(IndexedDbContentPersistence)
