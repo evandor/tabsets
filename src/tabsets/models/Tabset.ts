@@ -6,7 +6,6 @@ import { DynamicTabSource } from 'src/tabsets/models/DynamicTabSource'
 import { SharingInfo } from 'src/tabsets/models/SharingInfo'
 import { Tab } from 'src/tabsets/models/Tab'
 import { TabsetColumn } from 'src/tabsets/models/TabsetColumn'
-import { ContentClassification } from 'src/tabsets/models/types/ContentClassification'
 import { ListDetailLevel } from 'src/ui/stores/uiStore'
 
 export enum TabsetStatus {
@@ -85,13 +84,6 @@ export class Tabset {
 
   icon: string = ''
 
-  // additional initialization in "loadTabsets()" for older tabsets.
-  // in the application, we can assume that columns is always set, at least with an empty array
-  // tabs have a columnId field which references a group or which is undefined.
-  // a tabset's group _can_ contain a group with identifier "SPECIAL_ID_FOR_NO_GROUP_ASSIGNED"
-  // was: groups: Group[]
-  columns: TabsetColumn[] = []
-
   spaces: string[] // got json problems with set<string>
   view: string = 'grid'
   details: ListDetailLevel | undefined = 'DEFAULT'
@@ -115,12 +107,9 @@ export class Tabset {
   dynamicUrl: string | undefined = undefined
 
   // can be set (to the installtion.id) when saving the tabset in order to omit triggering an update
-  origin: string = ''
+  origin: string = '' // needed??
 
-  size: number = 0
-
-  // should be done using firebase events
-  //log: TabsetLog[] = []
+  size: number = 0 // could be calculated? needed?
 
   loaded: number = 0 // will always be set when the tabset is loaded
   lastChangeBy: string = '' // set for tabsets with sharedReference
@@ -148,7 +137,6 @@ export class Tabset {
     this.created = new Date().getTime()
     this.updated = new Date().getTime()
     this.tabs = tabs
-    this.columns = columns
     this.spaces = spaces
 
     if (!this.view) {

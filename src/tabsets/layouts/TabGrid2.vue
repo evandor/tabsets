@@ -3,15 +3,15 @@
   <div class="row">
     <div class="col-2 text-center cursor-pointer" v-for="index in 6">
       {{ columns[index]?.title || '&nbsp;' }}
-      <q-popup-edit v-if="columns[index]" v-model="columns[index].title" auto-save v-slot="scope">
-        <q-input
-          v-model="scope.value"
-          dense
-          autofocus
-          counter
-          @update:model-value="(val) => setColumn(index, val)"
-          @keyup.enter="scope.set" />
-      </q-popup-edit>
+      <!--      <q-popup-edit v-if="columns[index]" v-model="columns[index].title" auto-save v-slot="scope">-->
+      <!--        <q-input-->
+      <!--          v-model="scope.value"-->
+      <!--          dense-->
+      <!--          autofocus-->
+      <!--          counter-->
+      <!--          @update:model-value="(val) => setColumn(index, val)"-->
+      <!--          @keyup.enter="scope.set" />-->
+      <!--      </q-popup-edit>-->
     </div>
   </div>
 
@@ -167,14 +167,14 @@ function getCoordinate(t: Tab, ident: string, def: number) {
 }
 
 watchEffect(() => {
-  _.forEach(props.tabsetFolder?.columns, (c: TabsetColumn) => {
-    if (c.id.startsWith('grid_')) {
-      var index = parseInt(c.id.split('_')[1]!)
-      if (index >= 0 && index <= 6) {
-        columns.value[index] = { title: c.title }
-      }
-    }
-  })
+  // _.forEach(props.tabsetFolder?.columns, (c: TabsetColumn) => {
+  //   if (c.id.startsWith('grid_')) {
+  //     var index = parseInt(c.id.split('_')[1]!)
+  //     if (index >= 0 && index <= 6) {
+  //       columns.value[index] = { title: c.title }
+  //     }
+  //   }
+  // })
 })
 
 watch(
@@ -185,15 +185,15 @@ watch(
   },
 )
 
-const setColumn = (i: number, v: any) => {
-  console.log('setting column', i, v)
-  const tsCol = new TabsetColumn('grid_' + i, v)
-  columns.value[i].title = tsCol.title
-  var newColumns = _.filter(props.tabsetFolder?.columns, (c: TabsetColumn) => c.id !== tsCol.id)
-  newColumns.push(tsCol)
-  props.tabsetFolder.columns = newColumns
-  useTabsetsStore().saveTabset(props.tabsetFolder)
-}
+// const setColumn = (i: number, v: any) => {
+//   console.log('setting column', i, v)
+//   const tsCol = new TabsetColumn('grid_' + i, v)
+//   columns.value[i].title = tsCol.title
+//   var newColumns = _.filter(props.tabsetFolder?.columns, (c: TabsetColumn) => c.id !== tsCol.id)
+//   newColumns.push(tsCol)
+//   props.tabsetFolder.columns = newColumns
+//   useTabsetsStore().saveTabset(props.tabsetFolder)
+// }
 
 const movedEvent = (i: any, newX: any, newY: any) => {
   const msg = 'MOVED i=' + i + ', X=' + newX + ', Y=' + newY

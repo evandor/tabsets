@@ -468,8 +468,11 @@ export function useTagsService() {
       //   }
     }
     //console.log(' <> overall result', tagsInfo)
+    let tagsSet = deduplicateTags(tagsInfo)
+    const tagsToIgnore = useDynamicConfig().ignoredTags
+    tagsSet = tagsSet.filter((t: TagInfo) => tagsToIgnore.indexOf(t.label) < 0)
     useUiStore().setLoading('categorization', false)
-    return deduplicateTags(tagsInfo)
+    return tagsSet
   }
 
   function getCurrentTabContentClassification(): ClassificationResult {

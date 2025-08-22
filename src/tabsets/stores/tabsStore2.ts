@@ -11,6 +11,7 @@ import { ChangeInfo, Tabset } from 'src/tabsets/models/Tabset'
 import { useTabsetService } from 'src/tabsets/services/TabsetService2'
 import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsetsUiStore } from 'src/tabsets/stores/tabsetsUiStore'
+import { useWindowsStore } from 'src/windows/stores/windowsStore'
 import { computed, ComputedRef, ref } from 'vue'
 
 async function queryTabs(): Promise<chrome.tabs.Tab[]> {
@@ -146,7 +147,17 @@ export const useTabsStore2 = defineStore('browsertabs', () => {
   }
 
   async function onTabActivated(activeInfo: chrome.tabs.TabActiveInfo) {
-    console.log(` -> tabActivated: ${JSON.stringify(activeInfo)}`)
+    console.log(` -> tabActivated: ${JSON.stringify(activeInfo)}:`)
+    if (activeInfo.windowId !== useWindowsStore().currentBrowserWindow?.id) {
+      console.log(
+        'returning, window does not match: ',
+        useWindowsStore()
+          .currentBrowserWindows.map((w: chrome.windows.Window) => w.id)
+          .join(','),
+        useWindowsStore().currentBrowserWindow?.id || 'none',
+      )
+      return
+    }
     const tab: chrome.tabs.Tab = await chrome.tabs.get(activeInfo.tabId)
     currentChromeTab.value = tab
     useTabsetsUiStore()

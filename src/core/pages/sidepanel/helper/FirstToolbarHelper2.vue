@@ -32,7 +32,10 @@
                 :tabset="currentTabset || new Tabset('dummy', 'dummy')"
                 level="root"
                 :element="props.element" />
-              <ShareTabsetAction :tabset="currentTabset|| new Tabset('dummy', 'dummy')" level="root" :element="props.element" />
+              <ShareTabsetAction
+                :tabset="currentTabset || new Tabset('dummy', 'dummy')"
+                level="root"
+                :element="props.element" />
               <ShowGalleryAction
                 v-if="useFeaturesStore().hasFeature(FeatureIdent.GALLERY)"
                 :tabset="currentTabset || new Tabset('dummy', 'dummy')"
@@ -165,8 +168,7 @@ import { useTabsetsStore } from 'src/tabsets/stores/tabsetsStore'
 import { useTabsStore2 } from 'src/tabsets/stores/tabsStore2'
 import { useTagsService } from 'src/tags/TagsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
-import { useWindowsStore } from 'src/windows/stores/windowsStore'
-import { inject, ref, watchEffect } from 'vue'
+import { inject, ref, watch, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 
@@ -195,20 +197,24 @@ const watermark = ref('')
 const tabsets = ref<Tabset[]>([])
 const animateMenuButton = ref(false)
 
-// const tabsetSelectionOptions = ref<SelectOption[]>([])
 const stashedTabs = ref(false)
-
 let showSearchAction = ref(true)
-
 const uiDensity = inject('ui.density')
 
 windowLocation.value = window.location.href
 
 const { tabsetSelectionOptions, tabsetSelectionModel, setAutomaticSelectionLabel } = useTabsetSelector(props.element)
 
+chrome.tabs.query({ active: true, currentWindow: true }, function (tabs: chrome.tabs.Tab[]) {
+  // console.log('%ccurrentTab:::', 'color:red', tabs.length > 0 ? tabs[0]!.url : '???')
+  if (tabs.length > 0) {
+    currentChromeTab.value = tabs[0]
+  }
+})
+
 watchEffect(() => {
   const tsCat = useTagsService().getCurrentTabContentClassification().classification
-  console.log('got tsCat', tsCat)
+  //console.log('got tsCat', tsCat)
   if (tsCat) {
     const label: string = tsCat.split(':').length === 2 ? tsCat.split(':')[1]! : tsCat
     setAutomaticSelectionLabel('automatic: ' + label)
@@ -245,11 +251,26 @@ const overlapStyle = (d: any) => {
   return res + (d === 'dense' ? '' : 'position: absolute; top:-15px')
 }
 
-watchEffect(() => {
-  const windowId = useWindowsStore().currentBrowserWindow?.id || 0
-  currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
-  // console.log(' --- updated currentChromeTab', currentChromeTab.value?.url)
-})
+// watchEffect(() => {
+//   const windowId = useWindowsStore().currentBrowserWindow?.id || 0
+//   currentChromeTab.value = useTabsStore2().getCurrentChromeTab(windowId) || useTabsStore2().currentChromeTab
+//   console.log(
+//     ' --- updated currentChromeTab',
+//     windowId,
+//     useTabsStore2().getCurrentChromeTab(windowId)?.id || '???',
+//     currentChromeTab.value?.url,
+//   )
+// })
+
+watch(
+  () => useTabsStore2().currentChromeTab,
+  (newTab: chrome.tabs.Tab | undefined, oldTab: chrome.tabs.Tab | undefined) => {
+    console.log('new, old', newTab?.url, oldTab?.url)
+    if (newTab) {
+      currentChromeTab.value = newTab
+    }
+  },
+)
 
 watchEffect(() => {
   annimateNewTabsetButton.value = useUiStore().animateNewTabsetButton

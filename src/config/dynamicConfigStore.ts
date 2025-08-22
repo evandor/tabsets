@@ -61,6 +61,7 @@ function handleLdJsonMapping(line: string, ldJsonMapping: Map<string, Map<string
 export const useDynamicConfig = defineStore('dynamicConfig', () => {
   const categoryMapping = ref<Map<string, Map<string, ContentClassification>>>(new Map())
   const lDJsonMapping = ref<Map<string, Map<string, Map<string, any>>>>(new Map())
+  const ignoredTags = ref<string[]>([])
 
   fetch('https://raw.githubusercontent.com/evandor/tabsets/refs/heads/main/config/categoryMapping.data').then((res) => {
     res.text().then((body: string) => {
@@ -94,6 +95,13 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
     })
   })
 
+  fetch('https://raw.githubusercontent.com/evandor/tabsets/refs/heads/main/config/ignoredTags.data').then((res) => {
+    res.text().then((body: string) => {
+      ignoredTags.value = body.split('\n')
+      console.log(` config: ignoredTags from input (${ignoredTags.value.length} lines)`, ignoredTags.value)
+    })
+  })
+
   const init = () => {
     // triggers data fetching
   }
@@ -114,7 +122,7 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
               continue
             }
             const typeMappingKey = [...typeMapping.keys()][index]!
-            console.log('category found: ', type, typeMappingKey, typeMapping.get(typeMappingKey))
+            // console.log('category found: ', type, typeMappingKey, typeMapping.get(typeMappingKey))
             return O.of({
               classification: typeMapping.get(typeMappingKey)!,
               matchedFrom: type + '/' + key,
@@ -146,6 +154,7 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
   return {
     getCategory,
     getLinkedDataDefinition,
+    ignoredTags,
     init,
   }
 })

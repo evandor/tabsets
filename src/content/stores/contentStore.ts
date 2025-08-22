@@ -75,7 +75,7 @@ export const useContentStore = defineStore('content', () => {
     if (browserTab.url && browserTab.id) {
       try {
         const r = await chrome.tabs.sendMessage(browserTab.id, 'getExcerpt', {}) //, async (res) => {
-        console.log('r', r)
+        //console.log('r', r)
         // console.log(
         //   `getContent returned result with length ${Math.round((r?.html.length || 0) / 1024)}kB (tabId ${browserTab.id})`,
         // )
@@ -147,7 +147,7 @@ export const useContentStore = defineStore('content', () => {
             href.startsWith('http://') || href.startsWith('https://')
               ? href
               : theURL.protocol + '//' + theURL.host + href
-          console.log('analyse application/opensearchdescription+xml link: ', href, useUrl)
+          // console.log('analyse application/opensearchdescription+xml link: ', href, useUrl)
           fetch(useUrl)
             .then((res) => res.text())
             .then((text: string) => {

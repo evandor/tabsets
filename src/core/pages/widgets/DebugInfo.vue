@@ -153,12 +153,12 @@ const contentStoreCurrentTabUrl = ref<string | undefined>(undefined)
 
 watchEffect(() => {
   tabsStoreCurrentChromeTab.value = useTabsStore2().currentChromeTab
-  console.log('updated tabsStoreCurrentChromeTab: ', tabsStoreCurrentChromeTab.value)
+  // console.log('>>>updated tabsStoreCurrentChromeTab: ', tabsStoreCurrentChromeTab.value?.url)
 })
 
 watchEffect(() => {
   contentStoreCurrentTabUrl.value = useContentStore().getCurrentTabUrl
-  console.log('updated contentStoreCurrentTabUrl: ', contentStoreCurrentTabUrl.value)
+  // console.log('>>>updated contentStoreCurrentTabUrl: ', contentStoreCurrentTabUrl.value)
 })
 
 watchEffect(() => {
