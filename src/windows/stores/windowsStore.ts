@@ -216,7 +216,9 @@ export const useWindowsStore = defineStore('windows', () => {
 
     const browserWindows: chrome.windows.Window[] = await chrome.windows.getAll({ populate: true })
     currentBrowserWindows.value = browserWindows
-    //console.debug(` initializing current chrome windows with ${currentBrowserWindows.value?.length} window(s)`)
+    // console.debug(
+    //   ` initializing current chrome windows with ${currentBrowserWindows.value.map((w: chrome.windows.Window) => w.id).join(',')}`,
+    // )
 
     if (!keepWindowsFromStorage) {
       // adding potentially new windows to storage
@@ -257,6 +259,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
     chrome.windows.getCurrent({ windowTypes: ['normal'], populate: true }, (window: chrome.windows.Window) => {
       currentBrowserWindow.value = window
+      console.log('%ccurrentBrowserWindow', 'color: #0000ff', currentBrowserWindow.value?.id || '???')
       if (currentBrowserWindow.value && currentBrowserWindow.value.id) {
         currentWindowName.value = windowNameFor(currentBrowserWindow.value.id)
       }
@@ -449,7 +452,7 @@ export const useWindowsStore = defineStore('windows', () => {
   }
 
   async function refreshCurrentWindows(msg: string) {
-    //console.debug('refreshCurrentWindows', msg)
+    console.debug('refreshCurrentWindows', msg)
     currentBrowserWindows.value = await chrome.windows.getAll({ populate: true })
   }
 

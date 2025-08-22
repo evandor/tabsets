@@ -122,7 +122,7 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
               continue
             }
             const typeMappingKey = [...typeMapping.keys()][index]!
-            console.log('category found: ', type, typeMappingKey, typeMapping.get(typeMappingKey))
+            // console.log('category found: ', type, typeMappingKey, typeMapping.get(typeMappingKey))
             return O.of({
               classification: typeMapping.get(typeMappingKey)!,
               matchedFrom: type + '/' + key,
