@@ -4,6 +4,7 @@ import { CheerioAPI } from 'cheerio'
 import { JSONPath } from 'jsonpath-plus'
 import { defineStore } from 'pinia'
 import { uid } from 'quasar'
+import { SiteAnalysis } from 'site-analysis'
 import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import BexFunctions from 'src/core/communication/BexFunctions'
@@ -32,6 +33,7 @@ export const useContentStore = defineStore('content', () => {
   const currentTabTags = ref<TagInfo[]>([])
   const currentTabDerivedData = ref<{ [k: string]: any }>({})
   const currentTabResettedAt = ref(new Date().getTime())
+  const currentTabSiteAnalysis = ref<SiteAnalysis | undefined>(undefined)
 
   const setCurrentTabContent = (content: string | undefined) => {
     //console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
@@ -46,6 +48,11 @@ export const useContentStore = defineStore('content', () => {
   const setCurrentTabStorage = (storage: object = {}) => {
     // console.debug('setting current tab storage: #', Object.keys(storage).length)
     currentTabStorage.value = storage
+  }
+
+  const setCurrentTabSiteAnalysis = (sa: SiteAnalysis) => {
+    // console.debug('setting current tab storage: #', Object.keys(storage).length)
+    currentTabSiteAnalysis.value = sa
   }
 
   const setCurrentTabUrl = (url: string | undefined) => {
@@ -374,5 +381,7 @@ export const useContentStore = defineStore('content', () => {
     currentTabTags,
     currentTabDerivedData,
     currentTabResettedAt,
+    currentTabSiteAnalysis,
+    setCurrentTabSiteAnalysis,
   }
 })

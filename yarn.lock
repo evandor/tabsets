@@ -4261,7 +4261,7 @@ cheerio-select@^2.1.0:
     domhandler "^5.0.3"
     domutils "^3.0.1"
 
-cheerio@^1.0.0:
+cheerio@^1.0.0, cheerio@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/cheerio/-/cheerio-1.1.2.tgz#26af77e89336c81c63ea83197f868b4cbd351369"
   integrity sha512-IkxPpb5rS/d1IiLbHMgfPuS0FgiWTtFIm/Nj+2woXDLTZ7fOT2eqzgYbdMlLweqlHbsZjxEChoVK+7iph7jyQg==
@@ -7289,7 +7289,7 @@ jsonfile@^6.0.1:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-jsonpath-plus@^10.2.0:
+jsonpath-plus@^10.2.0, jsonpath-plus@^10.3.0:
   version "10.3.0"
   resolved "https://registry.yarnpkg.com/jsonpath-plus/-/jsonpath-plus-10.3.0.tgz#59e22e4fa2298c68dfcd70659bb47f0cad525238"
   integrity sha512-8TNmfeTCk2Le33A3vRRwtuworG/L5RrgMvdjhKZxvyShO+mBu2fP50OWUjRLNtvw344DdDarFh9buFAZs5ujeA==
@@ -9558,6 +9558,20 @@ sirv@^3.0.1:
     "@polka/url" "^1.0.0-next.24"
     mrmime "^2.0.0"
     totalist "^3.0.0"
+
+site-analysis@^0.0.18:
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/site-analysis/-/site-analysis-0.0.18.tgz#b40a293778761f297fdd41179cddabf04775cdca"
+  integrity sha512-ITP9vbnpQCmUCNlKP6ztIBp47i2x06qHg3Y8jzwTYrCII7lX7XXXJytdPn2YZiYLvVfkHIupiXQGoEOqXbDdfg==
+  dependencies:
+    "@mozilla/readability" "^0.6.0"
+    cheerio "^1.1.2"
+    compromise "^14.14.4"
+    compromise-speech "^0.1.1"
+    compromise-stats "^0.1.1"
+    de-compromise "^0.0.10"
+    jsonpath-plus "^10.3.0"
+    uuid "^11.1.0"
 
 smob@^1.0.0:
   version "1.5.0"
