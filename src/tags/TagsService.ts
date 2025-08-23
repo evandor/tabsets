@@ -386,6 +386,7 @@ export function useTagsService() {
     url: string | undefined,
   ): Promise<TagInfo[]> => {
     console.log(' <> Starting Tags Analysis...')
+
     const tagsInfo: TagInfo[] = []
 
     tagsFromReferences(tabReferences).forEach((ti: TagInfo) => tagsInfo.push(ti))

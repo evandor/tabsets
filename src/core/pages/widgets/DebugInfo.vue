@@ -73,11 +73,14 @@
     </div>
 
     <div class="col-4 text-caption">Meta Data</div>
-    <div
-      class="col-8 text-caption cursor-pointer"
-      style="font-size: smaller"
-      @click="infoDialog('Meta', useContentStore().getCurrentTabMetas)">
-      {{ Object.keys(useContentStore().getCurrentTabMetas).length }}
+    <div class="col-8 text-caption cursor-pointer" style="font-size: smaller">
+      <span @click="infoDialog('Meta old', useContentStore().getCurrentTabMetas)">{{
+        Object.keys(useContentStore().getCurrentTabMetas).length
+      }}</span>
+      /
+      <span @click="infoDialog('Meta new', useContentStore().currentTabSiteAnalysis?.metas || {})">{{
+        Object.keys(useContentStore().currentTabSiteAnalysis?.metas || {}).length
+      }}</span>
     </div>
 
     <div class="col-4 text-caption">storage</div>
@@ -114,12 +117,28 @@
         </span>
       </template>
     </div>
+
     <div class="col-4 text-caption">derived data</div>
     <div
       class="col-8 text-caption ellipsis-3-lines cursor-pointer"
       style="font-size: smaller"
       @click="infoDialog('Derived Data', useContentStore().currentTabDerivedData)">
       {{ useContentStore().currentTabDerivedData }}
+    </div>
+
+    <div class="col-4 text-caption">
+      Site Analysis Tags ({{ useContentStore().currentTabSiteAnalysis?.tags.length }})
+    </div>
+    <div
+      class="col-8 text-caption cursor-pointer"
+      style="font-size: smaller"
+      @click="infoDialog('Site Analysis', useContentStore().currentTabSiteAnalysis as unknown as object)">
+      <div v-if="tagsWithType2('linkingData')"><i>LD+JSON</i>: {{ tagsWithType2('linkingData') }}</div>
+      <div v-if="tagsWithType2('url')"><i>URL</i>: {{ tagsWithType2('url') }}</div>
+      <div v-if="tagsWithType2('keyword')"><i>Keywords</i>: {{ tagsWithType2('keyword') }}</div>
+      <div v-if="tagsWithType2('hierarchy')"><i>Hierarchy</i>: {{ tagsWithType2('hierarchy') }}</div>
+      <div v-if="tagsWithType2('langDetection')"><i>langDetection</i>: {{ tagsWithType2('langDetection') }}</div>
+      <div v-if="tagsWithType2('languageModel')"><i>Lang. Model</i>: {{ tagsWithType2('languageModel') }}</div>
     </div>
   </div>
 </template>
@@ -224,6 +243,13 @@ const reloadCurrentTab = () => {
 const tagsWithType = (type: TagType) => {
   return useContentStore()
     .currentTabTags.filter((ti: TagInfo) => ti.type === type)
+    .map((ti: TagInfo) => ti.label)
+    .join(', ')
+}
+
+const tagsWithType2 = (type: TagType) => {
+  return useContentStore()
+    .currentTabSiteAnalysis?.tags.filter((ti: TagInfo) => ti.type === type)
     .map((ti: TagInfo) => ti.label)
     .join(', ')
 }
