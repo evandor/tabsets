@@ -49,6 +49,10 @@
       </span>
       <span v-if="aiAlternativeCategory">({{ aiAlternativeCategory }})</span>
       <span v-if="aiCategorySource" class="tex"> [{{ aiCategorySource }}]</span>
+      <br />
+      Classic New: <span class="text-bold">{{ classicCategoryNew }}</span>
+      <!--      <span v-if="classicCategorySource"> [{{ classicCategorySource }}]</span>-->
+      <!--      <br />-->
     </div>
 
     <div class="col-4 text-caption">content length</div>
@@ -165,6 +169,7 @@ const aiAlternativeCategory = ref<string | undefined>(undefined)
 const aiCategorySource = ref<string | undefined>(undefined)
 
 const classicCategory = ref<string>('---')
+const classicCategoryNew = ref<string>('---')
 const classicCategorySource = ref<string | undefined>(undefined)
 
 const tabsStoreCurrentChromeTab = ref<chrome.tabs.Tab | undefined>(undefined)
@@ -197,6 +202,10 @@ watchEffect(() => {
   const classificationResult = useTagsService().getCurrentTabContentClassification()
   classicCategory.value = classificationResult.classification
   classicCategorySource.value = classificationResult.matchedFrom
+})
+
+watchEffect(() => {
+  classicCategoryNew.value = useContentStore().currentTabCategory?.classification || 'unclassified'
 })
 
 const infoDialog = (title: string, input: object) => {

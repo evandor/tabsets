@@ -156,5 +156,6 @@ export const useDynamicConfig = defineStore('dynamicConfig', () => {
     getLinkedDataDefinition,
     ignoredTags,
     init,
+    categoryMapping,
   }
 })
