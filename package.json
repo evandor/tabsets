@@ -67,7 +67,7 @@
     "compromise-stats": "^0.1.1",
     "date-fns": "^4.1.0",
     "de-compromise": "^0.0.10",
-    "diff": "^7.0.0",
+    "diff": "^8.0.2",
     "events": "^3.3.0",
     "firebase": "^11.4.0",
     "fp-ts": "^2.16.10",
