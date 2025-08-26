@@ -9,6 +9,7 @@ import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import { TabReference, TabReferenceType } from 'src/content/models/TabReference'
 import BexFunctions from 'src/core/communication/BexFunctions'
 import { TagInfo } from 'src/core/models/TagInfo'
+import { ClassificationResult } from 'src/tabsets/models/types/ContentClassification'
 import { useTagsService } from 'src/tags/TagsService'
 import { useUiStore } from 'src/ui/stores/uiStore'
 import { computed, ref, watchEffect } from 'vue'
@@ -34,6 +35,7 @@ export const useContentStore = defineStore('content', () => {
   const currentTabDerivedData = ref<{ [k: string]: any }>({})
   const currentTabResettedAt = ref(new Date().getTime())
   const currentTabSiteAnalysis = ref<SiteAnalysis | undefined>(undefined)
+  const currentTabCategory = ref<ClassificationResult | undefined>(undefined)
 
   const setCurrentTabContent = (content: string | undefined) => {
     //console.debug(`setting current tab content with length ${content?.length}, ${content?.substring(0, 230)}`)
@@ -53,6 +55,11 @@ export const useContentStore = defineStore('content', () => {
   const setCurrentTabSiteAnalysis = (sa: SiteAnalysis) => {
     // console.debug('setting current tab storage: #', Object.keys(storage).length)
     currentTabSiteAnalysis.value = sa
+  }
+
+  const setCurrentTabCategory = (cr: ClassificationResult) => {
+    // console.debug('setting current tab storage: #', Object.keys(storage).length)
+    currentTabCategory.value = cr
   }
 
   const setCurrentTabUrl = (url: string | undefined) => {
@@ -383,5 +390,7 @@ export const useContentStore = defineStore('content', () => {
     currentTabResettedAt,
     currentTabSiteAnalysis,
     setCurrentTabSiteAnalysis,
+    setCurrentTabCategory,
+    currentTabCategory,
   }
 })

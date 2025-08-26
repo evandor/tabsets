@@ -6143,6 +6143,11 @@ fp-ts@^2.16.10:
   resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.16.10.tgz#829b82a46571c2dc202bed38a9c2eeec603e38c4"
   integrity sha512-vuROzbNVfCmUkZSUbnWSltR1sbheyQbTzug7LB/46fEa1c0EucLeBaCEUE0gF3ZGUGBt9lVUiziGOhhj6K1ORA==
 
+fp-ts@^2.16.11:
+  version "2.16.11"
+  resolved "https://registry.yarnpkg.com/fp-ts/-/fp-ts-2.16.11.tgz#831a10514bf4e22adf12065732fc5a20c85d9623"
+  integrity sha512-LaI+KaX2NFkfn1ZGHoKCmcfv7yrZsC3b8NtWsTVQeHkq4F27vI5igUuO53sxqDEa2gNQMHFPmpojDw/1zmUK7w==
+
 fraction.js@^4.3.7:
   version "4.3.7"
   resolved "https://registry.yarnpkg.com/fraction.js/-/fraction.js-4.3.7.tgz#06ca0085157e42fda7f9e726e79fefc4068840f7"
@@ -9559,10 +9564,10 @@ sirv@^3.0.1:
     mrmime "^2.0.0"
     totalist "^3.0.0"
 
-site-analysis@^0.0.18:
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/site-analysis/-/site-analysis-0.0.18.tgz#b40a293778761f297fdd41179cddabf04775cdca"
-  integrity sha512-ITP9vbnpQCmUCNlKP6ztIBp47i2x06qHg3Y8jzwTYrCII7lX7XXXJytdPn2YZiYLvVfkHIupiXQGoEOqXbDdfg==
+site-analysis@^0.0.27:
+  version "0.0.27"
+  resolved "https://registry.yarnpkg.com/site-analysis/-/site-analysis-0.0.27.tgz#48d9bde6f89991f019d68f262ba54234c86d6c2c"
+  integrity sha512-nol9QlXCE6MjGRbqVkj3/TTuG1Tr0haUqdBJx5f8nzaCn0ZzejoJckUYw0BTbcsUUxFa6xoMxIFrQ///4BevFw==
   dependencies:
     "@mozilla/readability" "^0.6.0"
     cheerio "^1.1.2"
@@ -9570,6 +9575,7 @@ site-analysis@^0.0.18:
     compromise-speech "^0.1.1"
     compromise-stats "^0.1.1"
     de-compromise "^0.0.10"
+    fp-ts "^2.16.11"
     jsonpath-plus "^10.3.0"
     uuid "^11.1.0"
 

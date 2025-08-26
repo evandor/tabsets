@@ -1,5 +1,6 @@
 import { QVueGlobals } from 'quasar'
-import { analyseHtml, SiteAnalysis } from 'site-analysis'
+import { analyseHtml, CategoryAnalyzer, SiteAnalysis } from 'site-analysis'
+import { useDynamicConfig } from 'src/config/dynamicConfigStore'
 import { ContentItem } from 'src/content/models/ContentItem'
 import { useContentService } from 'src/content/services/ContentService'
 import { useContentStore } from 'src/content/stores/contentStore'
@@ -49,12 +50,16 @@ class BexFunctions {
     const res: SiteAnalysis = analyseHtml(payload.html, payload.url!)
     console.log('%cres', 'background-color:red', res)
 
+    const cat = new CategoryAnalyzer(useDynamicConfig().categoryMapping, res).getCategory()
+    console.log('***cat***', cat)
+
     // updating (transient) content in contentStore
     useContentStore().setCurrentTabUrl(payload.url)
     useContentStore().setCurrentTabContent(payload.html)
     useContentStore().setCurrentTabMetas(payload.metas)
     useContentStore().setCurrentTabStorage(payload.storage)
     useContentStore().setCurrentTabSiteAnalysis(res)
+    useContentStore().setCurrentTabCategory(cat)
 
     if (!payload.url) {
       return
